@@ -1,3 +1,104 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap");
+
 $bgColor: #2C3149;
 $textColor: #fff;
 $accentColor: #FFD600;
+
+body,
+html {
+    margin: 0;
+    padding: 0;
+
+    min-height: 100vh;
+    font-family: "Lato", sans-serif;
+
+    background-color: $bgColor;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+select,
+option,
+input,
+button {
+    font-family: "Lato", sans-serif;
+}
+
+button {
+    border: none;
+    outline: none;
+    background: none;
+
+    padding: 0;
+    margin: 0;
+
+    cursor: pointer;;
+}
+
+button.btn {
+    padding: 0.25em 1em;
+
+    border-radius: 0.25em;
+    border: 2px solid white;
+    outline: none;
+    background: none;
+    color: white;
+
+
+    transition: all 250ms;
+
+    &:hover {
+        color: $accentColor;
+        border-color: $accentColor;
+    }
+}
+
+button.btn-rect {
+    width: 1.5em;
+    height: 1.5em;
+    font-size: 1.65em;
+
+    line-height: 1em;
+
+    border-radius: 0.25em;
+    border: 2px solid black;
+    outline: none;
+    background: white;
+    color: black;
+
+
+    transition: all 250ms;
+
+    &:hover {
+        color: white;
+        background-color: black;
+    }
+}
+
+select {
+    background: none;
+    border: 2px solid white;
+    outline: none;
+
+    padding: 0.25em 0.35em;
+
+    color: white;
+    font-size: 1em;
+
+    width: 20em;
+}
+
+option {
+    color: black;
+    border: none;
+}
+
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
