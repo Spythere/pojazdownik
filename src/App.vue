@@ -1,7 +1,7 @@
 <template>
   <header>
     <h1 class="header-top">POJAZDOWNIK</h1>
-    <p class="header-bottom">EDYTOR SKŁADÓW ONLINE</p>
+    <p class="header-bottom"><span>EDYTOR SKŁADÓW ONLINE</span></p>
   </header>
 
   <main>
@@ -34,6 +34,10 @@
               {{ loco.type }}
             </option>
           </select>
+
+          <button @click="addVehicle">
+            <img :src="icons.add" alt="add vehicle" />
+          </button>
         </div>
       </div>
     </div>
@@ -48,16 +52,14 @@
       <div class="input_container">
         <h2 class="input_header">RODZAJ WAGONU</h2>
         <div class="input_radio">
-          <label
-            v-for="(label, i) in carLabels"
-            :for="label.id"
-            :key="label.id"
-          >
+          <label v-for="label in carLabels" :for="label.id" :key="label.id">
             <input
               type="radio"
               name="car"
               :id="label.id"
-              :checked="i == 0"
+              :checked="chosenCarUseType == label.id"
+              :value="label.id"
+              v-model="chosenCarUseType"
               @change="onCarUseTypeChange(label.id)"
             />
             <span>{{ label.title }}</span>
@@ -103,6 +105,10 @@
     <section class="images">
       <div class="image">
         <div class="image-content">
+          <div class="no-img" v-if="!chosenCar && !chosenLoco">
+            POGLĄD WYBRANEGO POJAZDU
+          </div>
+
           <div class="empty-message" v-if="imageLoading">
             ŁADOWANIE OBRAZU...
           </div>
@@ -124,35 +130,26 @@
 
         <button class="btn-rect" @click="addVehicle">+</button>
       </div>
-
-      <!-- <div class="image">
-
-
-        <div class="image-content">
-          <img
-            v-if="chosenCar"
-            :src="chosenCar.imageSrc"
-            :alt="chosenCar.type"
-          />
-        </div>
-
-        <button class="btn" @click="addVehicle(chosenCar)">+</button>
-      </div> -->
     </section>
 
     <section class="stock-list">
       <div class="stock-list_buttons">
-        <button class="btn btn--copy">KOPIUJ SKŁAD DO SCHOWKA</button>
-        <button class="btn btn--show-text">POKAŻ TEKST</button>
+        <button class="btn btn--copy" @click="downloadStock">
+          POBIERZ SKŁAD
+        </button>
+        <!-- <button class="btn btn--show-text">WCZYTAJ SKŁAD</button> -->
       </div>
 
       <div class="stock-list_specs">
-        Masa: {{ totalMass }} | Długość: {{ totalLength }} | Vmax:
-        {{ maxSpeed }}
+        Masa: <span class="text--accent">{{ totalMass }}</span> t | Długość:
+        <span class="text--accent">{{ totalLength }}</span>
+        m | Vmax: <span class="text--accent">{{ maxSpeed }} </span> km/h
       </div>
 
       <ul>
-        <li v-if="stockList.length == 0">Lista pojazdów jest pusta!</li>
+        <li v-if="stockList.length == 0" class="list-empty">
+          Lista pojazdów jest pusta!
+        </li>
 
         <li
           v-for="(stock, i) in stockList"
@@ -160,23 +157,51 @@
           :class="{ loco: stock.isLoco }"
           :data-id="i"
           tabindex="0"
-          @dragstart="onDragStart(i)"
-          @drop="onDragEnd"
-          @dragover="allowDrop"
           @focus="onListItemFocus(i)"
-          draggable="true"
+          :ref="`item-${i}`"
         >
-          <span>{{ stock.type }}</span>
-          &nbsp;
-          <span>
+          <div
+            class="item-content"
+            @dragstart="onDragStart(i)"
+            @drop="onDrop($event, i)"
+            @dragover="allowDrop"
+            draggable="true"
+          >
+            <span>
+              {{ stock.isLoco ? stock.type : getCarSpecFromType(stock.type) }}
+            </span>
+            <span v-if="stock.cargo"> &nbsp; ({{ stock.cargo?.id }}) </span>
             &nbsp;
-            {{ stock.cargo?.id }}
-          </span>
-          <span>{{ stock.length }}m</span>
-          &nbsp;
-          <span>{{ stock.cargo ? stock.cargo.totalMass : stock.mass }}t</span>
-          &nbsp;
-          <span> {{ stock.count }}</span>
+            <span> {{ stock.length }}m</span>
+            &nbsp;
+            <span>{{ stock.cargo ? stock.cargo.totalMass : stock.mass }}t</span>
+          </div>
+
+          <div class="item-actions">
+            <div class="count">
+              <button class="action-btn" @click="subStock(i)">
+                <img :src="icons.sub" alt="subtract vehicle count" />
+              </button>
+
+              <span>{{ stock.count }} </span>
+
+              <button class="action-btn" @click="addStock(i)">
+                <img :src="icons.add" alt="add vehicle count" />
+              </button>
+            </div>
+
+            <button class="action-btn" @click="moveUpStock(i)">
+              <img :src="icons.higher" alt="move up vehicle" />
+            </button>
+
+            <button class="action-btn" @click="moveDownStock(i)">
+              <img :src="icons.lower" alt="move down vehicle" />
+            </button>
+
+            <button class="action-btn" @click="removeStock(i)">
+              <img :src="icons.remove" alt="remove vehicle" />
+            </button>
+          </div>
           <!-- <span class="type"></span>
           <span class="cargo"></span>
           <span class="cargo"></span>
@@ -191,7 +216,14 @@
       </ul>
     </section>
   </main>
-  <footer></footer>
+  <footer>
+    <span class="text--grayed">
+      Ta strona ma charakter informacyjny. Autor nie ponosi odpowiedzialności za
+      tworzenie składów niezgodnych z regulaminem symulatora Train Driver 2!
+    </span>
+    <br />
+    &copy; Spythere 2021
+  </footer>
 </template>
 
 <script lang="ts">
@@ -239,6 +271,7 @@ function isLocomotive(vehicle: Locomotive | CarWagon): vehicle is Locomotive {
 export default class App extends Vue {
   icons = {
     add: require("./assets/add-icon.svg"),
+    sub: require("./assets/sub-icon.svg"),
     remove: require("./assets/remove-icon.svg"),
     lower: require("./assets/lower-icon.svg"),
     higher: require("./assets/higher-icon.svg"),
@@ -278,12 +311,12 @@ export default class App extends Vue {
   ];
 
   chosenLocoPower = "loco-e";
+  chosenCarUseType = "car-passenger";
 
   chosenCar: CarWagon | null = null;
   chosenLoco: Locomotive | null = null;
   chosenCargo: { id: string; totalMass: number } | null = null;
 
-  carOptions: CarWagon[] = [];
   cargoOptions: any[][] = [];
 
   stockList: {
@@ -300,16 +333,11 @@ export default class App extends Vue {
 
   onLocoPowerChange(inputId: string) {
     this.chosenLoco = null;
-
     this.imageLoading = false;
   }
 
   onCarUseTypeChange(inputId: string) {
     this.chosenCar = null;
-
-    this.carOptions = this.carDataList
-      .filter((car) => car.useType == inputId)
-      .sort((a, b) => (a.type > b.type ? 1 : -1));
 
     if (inputId == "car-passenger") this.chosenCargo = null;
 
@@ -330,21 +358,32 @@ export default class App extends Vue {
     this.imageLoading = true;
   }
 
-  onDragStart(vehicleID: number) {
-    this.draggedVehicleID = vehicleID;
+  get locoOptions() {
+    return this.locoDataList
+      .filter((loco) => loco.power == this.chosenLocoPower)
+      .sort((a, b) => (a.type > b.type ? -1 : 1));
   }
 
-  onDragEnd(e: any) {
+  get carOptions() {
+    return this.carDataList
+      .filter((car) => car.useType == this.chosenCarUseType)
+      .sort((a, b) => (a.type > b.type ? 1 : -1));
+  }
+
+  onDragStart(vehicleIndex: number) {
+    this.draggedVehicleID = vehicleIndex;
+  }
+
+  onDrop(e: DragEvent, vehicleIndex: number) {
     e.preventDefault();
 
-    const targetVehicleEl: Element = e.path.find((el: Element) =>
-      el.attributes.getNamedItem("data-id")
-    );
+    let targetEl: Element | null = this.$refs[
+      `item-${vehicleIndex}`
+    ] as Element;
 
-    if (!targetVehicleEl) return;
+    if (!targetEl) return;
 
-    const dataID =
-      targetVehicleEl.attributes.getNamedItem("data-id")?.textContent;
+    const dataID = targetEl.attributes.getNamedItem("data-id")?.textContent;
 
     if (!dataID) return;
 
@@ -352,10 +391,6 @@ export default class App extends Vue {
 
     this.stockList[Number(dataID)] = this.stockList[this.draggedVehicleID];
     this.stockList[this.draggedVehicleID] = tempVehicle;
-
-    // if (!targetVehicleEl) return;
-
-    // console.log(targetVehicleEl);
   }
 
   allowDrop(e: DragEvent) {
@@ -375,11 +410,14 @@ export default class App extends Vue {
       this.chosenLoco =
         this.locoDataList.find((v) => v.type == vehicle.type) || null;
 
-      this.onLocoTypeChange();
+      this.chosenCar = null;
+      this.chosenCargo = null;
 
       // this.onLocoPowerChange(vehicle.useType);
       return;
     }
+
+    this.chosenCarUseType = vehicle.useType;
 
     this.chosenLoco = null;
     this.chosenCar =
@@ -389,10 +427,81 @@ export default class App extends Vue {
     // this.chose = vehicle.useType;
   }
 
-  get locoOptions() {
-    return this.locoDataList
-      .filter((loco) => loco.power == this.chosenLocoPower)
-      .sort((a, b) => (a.type > b.type ? -1 : 1));
+  getCarSpecFromType(typeStr: string) {
+    const specArray = typeStr.split("_");
+
+    if (specArray.length == 0) return null;
+
+    const shortVersion = specArray.length == 3;
+
+    /* 111a_Grafitti_1 */
+    if (specArray.length == 3)
+      return `${specArray[0]} ${specArray[1]}-${specArray[2]}`;
+
+    /* 111a_PKP_Bnouz_01 */
+    return `${specArray[0]} ${specArray[2]}-${specArray[3]} (${specArray[1]})`;
+  }
+
+  addStock(index: number) {
+    this.stockList[index].count++;
+  }
+
+  subStock(index: number) {
+    if (this.stockList[index].count < 2) return;
+
+    this.stockList[index].count--;
+  }
+
+  removeStock(index: number) {
+    this.stockList = this.stockList.filter((stock, i) => i != index);
+  }
+
+  moveUpStock(index: number) {
+    if (index < 1) return;
+
+    const tempStock = this.stockList[index];
+
+    this.stockList[index] = this.stockList[index - 1];
+    this.stockList[index - 1] = tempStock;
+  }
+
+  moveDownStock(index: number) {
+    if (index > this.stockList.length - 2) return;
+
+    const tempStock = this.stockList[index];
+
+    this.stockList[index] = this.stockList[index + 1];
+    this.stockList[index + 1] = tempStock;
+  }
+
+  downloadStock() {
+    const stockString = this.stockList
+      .map((stock) => {
+        let s =
+          stock.isLoco || !stock.cargo
+            ? stock.type
+            : `${stock.type}:${stock.cargo.id}`;
+
+        for (let i = 0; i < stock.count - 1; i++) s += ";" + s;
+
+        return s;
+      })
+      .join(";");
+
+    const fileName = prompt("Nazwij plik:", "sklad");
+
+    const blob = new Blob([stockString]);
+    const file = fileName + ".con";
+
+    var e = document.createEvent("MouseEvents"),
+      a = document.createElement("a");
+    a.download = file;
+    a.href = window.URL.createObjectURL(blob);
+    a.dataset.downloadurl = ["", a.download, a.href].join(":");
+    e.initEvent("click", true, false);
+    a.dispatchEvent(e);
+
+    console.log(stockString);
   }
 
   get locoDataList() {
@@ -453,7 +562,7 @@ export default class App extends Vue {
         }
 
         // SZT
-        if (vehicleTypeKey.startsWith("loco-ezt")) {
+        if (vehicleTypeKey.startsWith("loco-szt")) {
           length = 14;
           mass = 23;
         }
@@ -544,7 +653,7 @@ export default class App extends Vue {
       return;
     }
 
-    this.stockList.push({
+    const stockObj = {
       type: vehicle.type,
       length: vehicle.length,
       mass: vehicle.mass,
@@ -557,7 +666,15 @@ export default class App extends Vue {
       count: 1,
       imgSrc: vehicle.imageSrc,
       useType: isLocomotive(vehicle) ? vehicle.power : vehicle.useType,
-    });
+    };
+
+    if (
+      isLocomotive(vehicle) &&
+      this.stockList.length > 0 &&
+      !this.stockList[0].isLoco
+    )
+      this.stockList.unshift(stockObj);
+    else this.stockList.push(stockObj);
   }
 
   get totalMass() {
@@ -599,11 +716,16 @@ export default class App extends Vue {
   color: $textColor;
 
   min-height: 100vh;
-  max-width: 1200px;
 
   padding: 0.5em 1em;
 
   overflow: hidden;
+
+  display: grid;
+  justify-content: center;
+
+  grid-template-columns: minmax(200px, 1200px);
+  grid-template-rows: 5em 1fr auto;
 }
 
 /* HEADER SECTION */
@@ -613,9 +735,12 @@ header {
 }
 
 .header-top {
+  display: inline-block;
   margin: 0;
   font-size: 3.65em;
   color: $accentColor;
+
+  padding: 0.25em 0.5em;
 
   font-weight: 900;
 }
@@ -632,7 +757,11 @@ h2 {
 .header-bottom {
   margin: 0;
   font-size: 1.5em;
-  line-height: 0.95em;
+  line-height: 0.55em;
+
+  /* span {
+    padding: 0.25em 0.65em;
+  } */
 }
 
 /* MAIN SECTION */
@@ -641,13 +770,18 @@ main {
   display: grid;
 
   grid-template-areas: "loco car" "image list";
-  gap: 2em;
+  gap: 4em 2em;
 
-  margin-top: 3em;
+  align-content: flex-start;
+
+  margin-top: 6em;
 
   @media screen and (max-width: 800px) {
     grid-template-areas: "loco" "car" "image" "list";
     justify-content: center;
+
+    margin-top: 2.5em;
+    gap: 2em;
   }
 }
 
@@ -728,15 +862,22 @@ main {
     position: relative;
 
     grid-area: "image";
-
-    .image-content {
-      max-width: 380px;
-      width: 22em;
-      height: 13em;
-    }
+    max-width: 380px;
+    width: 22em;
+    height: 13em;
     border: 1px solid white;
 
-    .empty-message {
+    &-content {
+      height: 100%;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+
+    .empty-message,
+    .no-img {
       position: absolute;
       left: 0;
       top: 0;
@@ -748,7 +889,9 @@ main {
       width: 100%;
       height: 100%;
       padding: 0.3em 0;
+    }
 
+    .empty-message {
       background: rgba(#000, 0.75);
     }
   }
@@ -771,12 +914,10 @@ main {
   grid-area: "list";
 
   &_buttons {
-    display: flex;
-    flex-wrap: wrap;
-
     button {
-      margin: 0 0.5em 0.5em 0;
-      padding: 0.35em 0.45em;
+      font-size: 0.9em;
+      padding: 0.2em 0.5em;
+      margin-bottom: 0.5em;
     }
   }
 
@@ -785,19 +926,57 @@ main {
   }
 
   ul li {
-    background: whitesmoke;
-    color: black;
-
     outline: none;
     cursor: pointer;
 
-    &:focus {
-      background: $accentColor;
+    &:focus .item-content {
+      color: $accentColor;
     }
 
-    padding: 0.5em;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
-    margin: 1em 0;
+    .item-content {
+      /* background: whitesmoke; */
+      color: white;
+      font-weight: 700;
+      margin: 1em 0;
+
+      margin-right: 0.5em;
+
+      /* max-width: 200px; */
+    }
+
+    .item-actions {
+      display: flex;
+      align-items: center;
+
+      .count {
+        display: flex;
+        align-items: center;
+
+        margin-right: 0.5em;
+
+        span {
+          margin: 0 0.5em;
+          /* font-size: 1.25em; */
+
+          color: $accentColor;
+        }
+      }
+
+      img {
+        vertical-align: middle;
+
+        width: 1.3em;
+        height: 1.3em;
+      }
+
+      button {
+        margin: 0 0.25em;
+      }
+    }
   }
 }
 
@@ -813,7 +992,7 @@ main {
   .images {
     justify-content: center;
 
-    > .image > div {
+    > .image {
       width: 25em;
       height: 15em;
     }
@@ -838,6 +1017,11 @@ main {
       justify-content: center;
     }
   }
+}
+
+footer {
+  margin-top: 1.5em;
+  text-align: center;
 }
 
 @media screen and (max-width: 650px) {
