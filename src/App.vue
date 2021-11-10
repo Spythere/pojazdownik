@@ -222,7 +222,7 @@
       tworzenie składów niezgodnych z regulaminem symulatora Train Driver 2!
     </span>
     <br />
-    &copy; Spythere 2021
+    &copy; Spythere 2021 | v{{ VERSION }}
   </footer>
 </template>
 
@@ -231,6 +231,8 @@ import { Vue } from "vue-class-component";
 
 import vehicleDataJSON from "./data/vehicleData.json";
 import vehiclePropsJSON from "./data/vehicleProps.json";
+
+import packageInfo from ".././package.json";
 
 interface VehicleData {
   [key: string]: (string | boolean)[][];
@@ -276,6 +278,8 @@ export default class App extends Vue {
     lower: require("./assets/lower-icon.svg"),
     higher: require("./assets/higher-icon.svg"),
   };
+
+  VERSION = packageInfo.version;
 
   imageLoading = false;
   draggedVehicleID = -1;
