@@ -486,9 +486,10 @@ export default class App extends Vue {
             ? stock.type
             : `${stock.type}:${stock.cargo.id}`;
 
-        for (let i = 0; i < stock.count - 1; i++) s += ";" + s;
+        let final = s;
+        for (let i = 0; i < stock.count - 1; i++) final += `;${s}`;
 
-        return s;
+        return final;
       })
       .join(";");
 
