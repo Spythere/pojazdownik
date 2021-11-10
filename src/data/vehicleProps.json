@@ -8,7 +8,7 @@
     { "type": "154a", "length":  26, "mass": 55, "cargo": ""},
     { "type": "158a", "length":  26, "mass": 50, "cargo": ""},
     { "type": "159a", "length":  26, "mass": 50, "cargo": ""},
-    { "type": "203V", "length":  8, "mass": 12, "cargo": "stone_Fll:35"},
+    { "type": "203V", "length":  9, "mass": 12, "cargo": "stone_Fll:35"},
     { "type": "208Kf", "length":  14, "mass": 15, "cargo": "mass_20:35;mass_30:45;mass_40:55"},
     { "type": "209c", "length":  25, "mass": 43, "cargo": ""},
     { "type": "29R", "length":  13, "mass": 23, "cargo": "mass_20:43;mass_30:53;mass_40:63"},
