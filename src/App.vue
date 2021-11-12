@@ -5,223 +5,225 @@
   </header>
 
   <main>
-    <div class="inputs_loco">
-      <div class="input_container">
-        <h2 class="input_header">LOKOMOTYWA / ZESP. TRAKCYJNY</h2>
-        <div class="input_radio">
-          <label v-for="label in locoLabels" :for="label.id" :key="label.id">
-            <input
-              type="radio"
-              name="loco"
-              :id="label.id"
-              :value="label.id"
-              :checked="chosenLocoPower == label.id"
-              @change="onLocoPowerChange(label.id)"
-              v-model="chosenLocoPower"
-            />
-            <span>{{ label.title }}</span>
-          </label>
-        </div>
+    <section class="inputs">
+      <div class="input inputs_loco">
+        <div class="input_container">
+          <h2 class="input_header">LOKOMOTYWA / ZESP. TRAKCYJNY</h2>
+          <div class="input_radio">
+            <label v-for="label in locoLabels" :for="label.id" :key="label.id">
+              <input
+                type="radio"
+                name="loco"
+                :id="label.id"
+                :value="label.id"
+                :checked="chosenLocoPower == label.id"
+                @change="onLocoPowerChange(label.id)"
+                v-model="chosenLocoPower"
+              />
+              <span>{{ label.title }}</span>
+            </label>
+          </div>
 
-        <div class="input_list type">
-          <select
-            id="loco-select"
-            v-model="chosenLoco"
-            @change="onLocoTypeChange"
-          >
-            <option :value="null" disabled>Wybierz pojazd z listy</option>
-            <option v-for="loco in locoOptions" :value="loco" :key="loco.type">
-              {{ loco.type }}
-            </option>
-          </select>
-
-          <button @click="addVehicle">
-            <img :src="icons.add" alt="add vehicle" />
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div
-      class="inputs_car"
-      :class="{
-        disabled:
-          chosenLocoPower == 'loco-ezt' || chosenLocoPower == 'loco-szt',
-      }"
-    >
-      <div class="input_container">
-        <h2 class="input_header">RODZAJ WAGONU</h2>
-        <div class="input_radio">
-          <label v-for="label in carLabels" :for="label.id" :key="label.id">
-            <input
-              type="radio"
-              name="car"
-              :id="label.id"
-              :checked="chosenCarUseType == label.id"
-              :value="label.id"
-              v-model="chosenCarUseType"
-              @change="onCarUseTypeChange(label.id)"
-            />
-            <span>{{ label.title }}</span>
-          </label>
-        </div>
-
-        <div class="input_list type">
-          <select id="car-select" v-model="chosenCar" @change="onCarTypeChange">
-            <option :value="null" disabled>Wybierz wagon z listy</option>
-            <option v-for="car in carOptions" :value="car" :key="car.type">
-              {{ car.type }}
-            </option>
-          </select>
-
-          <button @click="addVehicle">
-            <img :src="icons.add" alt="add vehicle" />
-          </button>
-        </div>
-
-        <div class="input_list cargo">
-          <select
-            id="cargo-select"
-            :disabled="
-              (chosenCar && !chosenCar.loadable) ||
-              (chosenCar && chosenCar.useType == 'car-passenger') ||
-              !chosenCar
-            "
-            v-model="chosenCargo"
-          >
-            <option :value="null">brak</option>
-            <option
-              v-for="cargo in chosenCar?.cargoList"
-              :value="cargo"
-              :key="cargo.id"
+          <div class="input_list type">
+            <select
+              id="loco-select"
+              v-model="chosenLoco"
+              @change="onLocoTypeChange"
             >
-              {{ cargo.id }}
-            </option>
-          </select>
+              <option :value="null" disabled>Wybierz pojazd z listy</option>
+              <option
+                v-for="loco in locoOptions"
+                :value="loco"
+                :key="loco.type"
+              >
+                {{ loco.type }}
+              </option>
+            </select>
+
+            <button @click="addVehicle">
+              <img :src="icons.add" alt="add vehicle" />
+            </button>
+          </div>
+
+          <div class="input_checkbox">
+            <label for="supporter">
+              <input type="checkbox" id="supporter" v-model="showSupporter" />
+              <span>Pokaż pojazdy dla supporterów</span>
+            </label>
+          </div>
         </div>
       </div>
-    </div>
 
-    <section class="images">
-      <div class="image">
-        <div class="image-content">
-          <div class="no-img" v-if="!chosenCar && !chosenLoco">
-            POGLĄD WYBRANEGO POJAZDU
+      <div
+        class="input inputs_car"
+        :class="{
+          disabled:
+            chosenLocoPower == 'loco-ezt' || chosenLocoPower == 'loco-szt',
+        }"
+      >
+        <div class="input_container">
+          <h2 class="input_header">RODZAJ WAGONU</h2>
+          <div class="input_radio">
+            <label v-for="label in carLabels" :for="label.id" :key="label.id">
+              <input
+                type="radio"
+                name="car"
+                :id="label.id"
+                :checked="chosenCarUseType == label.id"
+                :value="label.id"
+                v-model="chosenCarUseType"
+                @change="onCarUseTypeChange(label.id)"
+              />
+              <span>{{ label.title }}</span>
+            </label>
           </div>
 
-          <div class="empty-message" v-if="imageLoading">
-            ŁADOWANIE OBRAZU...
+          <div class="input_list type">
+            <select
+              id="car-select"
+              v-model="chosenCar"
+              @change="onCarTypeChange"
+            >
+              <option :value="null" disabled>Wybierz wagon z listy</option>
+              <option v-for="car in carOptions" :value="car" :key="car.type">
+                {{ car.type }}
+              </option>
+            </select>
+
+            <button @click="addVehicle">
+              <img :src="icons.add" alt="add vehicle" />
+            </button>
           </div>
 
-          <img
-            v-if="chosenLoco && !chosenCar"
-            :src="chosenLoco.imageSrc"
-            :alt="chosenLoco.type"
-            @load="onImageLoad"
-          />
-
-          <img
-            v-if="chosenCar"
-            :src="chosenCar.imageSrc"
-            :alt="chosenCar.type"
-            @load="onImageLoad"
-          />
+          <div class="input_list cargo">
+            <select
+              id="cargo-select"
+              :disabled="
+                (chosenCar && !chosenCar.loadable) ||
+                (chosenCar && chosenCar.useType == 'car-passenger') ||
+                !chosenCar
+              "
+              v-model="chosenCargo"
+            >
+              <option :value="null">brak</option>
+              <option
+                v-for="cargo in chosenCar?.cargoList"
+                :value="cargo"
+                :key="cargo.id"
+              >
+                {{ cargo.id }}
+              </option>
+            </select>
+          </div>
         </div>
-
-        <button class="btn-rect" @click="addVehicle">+</button>
       </div>
     </section>
 
-    <section class="stock-list">
-      <div class="stock-list_buttons">
-        <button class="btn btn--copy" @click="downloadStock">
-          POBIERZ SKŁAD
-        </button>
-        <!-- <button class="btn btn--show-text">WCZYTAJ SKŁAD</button> -->
-      </div>
-
-      <div class="stock-list_specs">
-        Masa: <span class="text--accent">{{ totalMass }}</span> t | Długość:
-        <span class="text--accent">{{ totalLength }}</span>
-        m | Vmax: <span class="text--accent">{{ maxSpeed }} </span> km/h
-      </div>
-
-      <ul>
-        <li v-if="stockList.length == 0" class="list-empty">
-          Lista pojazdów jest pusta!
-        </li>
-
-        <li
-          v-for="(stock, i) in stockList"
-          :key="stock.type + i"
-          :class="{ loco: stock.isLoco }"
-          :data-id="i"
-          tabindex="0"
-          @focus="onListItemFocus(i)"
-          :ref="`item-${i}`"
-        >
-          <div
-            class="item-content"
-            @dragstart="onDragStart(i)"
-            @drop="onDrop($event, i)"
-            @dragover="allowDrop"
-            draggable="true"
-          >
-            <span>
-              {{ stock.isLoco ? stock.type : getCarSpecFromType(stock.type) }}
-            </span>
-            <span v-if="stock.cargo"> &nbsp; ({{ stock.cargo?.id }}) </span>
-            &nbsp;
-            <span> {{ stock.length }}m</span>
-            &nbsp;
-            <span>{{ stock.cargo ? stock.cargo.totalMass : stock.mass }}t</span>
+    <div class="bottom">
+      <section class="image">
+        <div class="image__wrapper">
+          <div class="image__content">
+            <div class="no-img" v-if="!chosenCar && !chosenLoco">
+              POGLĄD WYBRANEGO POJAZDU
+            </div>
+            <div class="empty-message" v-if="imageLoading">
+              ŁADOWANIE OBRAZU...
+            </div>
+            <img
+              v-if="chosenLoco && !chosenCar"
+              :src="chosenLoco.imageSrc"
+              :alt="chosenLoco.type"
+              @load="onImageLoad"
+            />
+            <img
+              v-if="chosenCar"
+              :src="chosenCar.imageSrc"
+              :alt="chosenCar.type"
+              @load="onImageLoad"
+            />
           </div>
+        </div>
+        <!-- <button class="btn-rect" @click="addVehicle">+</button> -->
+      </section>
 
-          <div class="item-actions">
-            <div class="count">
-              <button class="action-btn" @click="subStock(i)">
-                <img :src="icons.sub" alt="subtract vehicle count" />
-              </button>
+      <section class="spacer"></section>
 
-              <span>{{ stock.count }} </span>
+      <section class="stock-list">
+        <div class="stock-list_buttons">
+          <button class="btn btn--copy" @click="downloadStock">
+            POBIERZ SKŁAD
+          </button>
+          <!-- <button class="btn btn--show-text">WCZYTAJ SKŁAD</button> -->
+        </div>
+        <div class="stock-list_specs">
+          Masa: <span class="text--accent">{{ totalMass }}</span> t | Długość:
+          <span class="text--accent">{{ totalLength }}</span>
+          m | Vmax składu:
+          <span class="text--accent">{{ maxSpeed }} </span> km/h
+        </div>
+        <ul>
+          <li v-if="stockList.length == 0" class="list-empty">
+            <div class="item-content">Lista pojazdów jest pusta!</div>
+          </li>
 
-              <button class="action-btn" @click="addStock(i)">
-                <img :src="icons.add" alt="add vehicle count" />
-              </button>
+          <li
+            v-for="(stock, i) in stockList"
+            :key="stock.type + i"
+            :class="{ loco: stock.isLoco }"
+            :data-id="i"
+            tabindex="0"
+            @focus="onListItemFocus(i)"
+            :ref="`item-${i}`"
+          >
+            <div
+              class="item-content"
+              @dragstart="onDragStart(i)"
+              @drop="onDrop($event, i)"
+              @dragover="allowDrop"
+              draggable="true"
+            >
+              <span>
+                {{ stock.isLoco ? stock.type : getCarSpecFromType(stock.type) }}
+              </span>
+              <span v-if="stock.cargo"> &nbsp; ({{ stock.cargo?.id }}) </span>
+              &nbsp;
+              <span> {{ stock.length }}m</span>
+              &nbsp;
+              <span
+                >{{ stock.cargo ? stock.cargo.totalMass : stock.mass }}t</span
+              >
             </div>
 
-            <button class="action-btn" @click="moveUpStock(i)">
-              <img :src="icons.higher" alt="move up vehicle" />
-            </button>
-
-            <button class="action-btn" @click="moveDownStock(i)">
-              <img :src="icons.lower" alt="move down vehicle" />
-            </button>
-
-            <button class="action-btn" @click="removeStock(i)">
-              <img :src="icons.remove" alt="remove vehicle" />
-            </button>
-          </div>
-          <!-- <span class="type"></span>
-          <span class="cargo"></span>
-          <span class="cargo"></span>
-
-          <span class="actions">
-            <div class="car-count">5</div>
-            <button class="btn--remove"></button>
-            <button class="btn--moveup"></button>
-            <button class="btn--movedown"></button>
-          </span> -->
-        </li>
-      </ul>
-    </section>
+            <div class="item-actions">
+              <div class="count">
+                <button class="action-btn" @click="subStock(i)">
+                  <img :src="icons.sub" alt="subtract vehicle count" />
+                </button>
+                <span>{{ stock.count }} </span>
+                <button class="action-btn" @click="addStock(i)">
+                  <img :src="icons.add" alt="add vehicle count" />
+                </button>
+              </div>
+              <button class="action-btn" @click="moveUpStock(i)">
+                <img :src="icons.higher" alt="move up vehicle" />
+              </button>
+              <button class="action-btn" @click="moveDownStock(i)">
+                <img :src="icons.lower" alt="move down vehicle" />
+              </button>
+              <button class="action-btn" @click="removeStock(i)">
+                <img :src="icons.remove" alt="remove vehicle" />
+              </button>
+            </div>
+          </li>
+        </ul>
+      </section>
+    </div>
   </main>
   <footer>
-    <span class="text--grayed">
+    <div class="text--grayed" style="margin-bottom: 0.25em">
       Ta strona ma charakter informacyjny. Autor nie ponosi odpowiedzialności za
       tworzenie składów niezgodnych z regulaminem symulatora Train Driver 2!
-    </span>
-    <br />
+    </div>
     &copy; Spythere 2021 | v{{ VERSION }}
   </footer>
 </template>
@@ -313,6 +315,8 @@ export default class App extends Vue {
       title: "TOWAROWY",
     },
   ];
+
+  showSupporter = false;
 
   chosenLocoPower = "loco-e";
   chosenCarUseType = "car-passenger";
@@ -479,6 +483,10 @@ export default class App extends Vue {
   }
 
   downloadStock() {
+    const fileName = prompt("Nazwij plik:", "sklad");
+
+    if (!fileName) return;
+
     const stockString = this.stockList
       .map((stock) => {
         let s =
@@ -493,8 +501,6 @@ export default class App extends Vue {
       })
       .join(";");
 
-    const fileName = prompt("Nazwij plik:", "sklad");
-
     const blob = new Blob([stockString]);
     const file = fileName + ".con";
 
@@ -505,8 +511,6 @@ export default class App extends Vue {
     a.dataset.downloadurl = ["", a.download, a.href].join(":");
     e.initEvent("click", true, false);
     a.dispatchEvent(e);
-
-    console.log(stockString);
   }
 
   get locoDataList() {
@@ -516,6 +520,8 @@ export default class App extends Vue {
       const locoVehiclesData = (vehicleDataJSON as VehicleData)[vehicleTypeKey];
 
       locoVehiclesData.forEach((loco) => {
+        if (loco[4] && !this.showSupporter) return;
+
         const locoType = loco[0] as string;
 
         let length = 0,
@@ -599,6 +605,8 @@ export default class App extends Vue {
       const carVehiclesData = (vehicleDataJSON as VehicleData)[vehicleTypeKey];
 
       carVehiclesData.forEach((car) => {
+        if (car[3] && !this.showSupporter) return;
+
         const carPropsData = vehiclePropsJSON.find((v) =>
           car[0].toString().includes(v.type)
         );
@@ -632,6 +640,10 @@ export default class App extends Vue {
     const vehicle = this.chosenCar || this.chosenLoco;
 
     if (!vehicle) return;
+    if (vehicle.length + this.totalLength > 650) {
+      alert("Maksymalna długość składu to 650m!");
+      return;
+    }
 
     const previousStock =
       this.stockList.length > 0
@@ -772,32 +784,25 @@ h2 {
 /* MAIN SECTION */
 
 main {
-  display: grid;
+  /* display: grid; */
 
-  grid-template-areas: "loco car" "image list";
-  gap: 4em 2em;
+  /* grid-template-areas:
+    "loco car"
+    "image image"
+    "stock stock"; */
 
-  align-content: flex-start;
-
-  margin-top: 6em;
-
-  @media screen and (max-width: 800px) {
-    grid-template-areas: "loco" "car" "image" "list";
-    justify-content: center;
-
-    margin-top: 2.5em;
-    gap: 2em;
-  }
+  margin-top: 8em;
 }
 
 .inputs {
-  &_loco {
-    grid-area: "loco";
+  display: flex;
+  justify-content: space-between;
+
+  @media screen and (max-width: 800px) {
+    flex-direction: column;
   }
 
   &_car {
-    grid-area: "car";
-
     &.disabled {
       opacity: 0.75;
       pointer-events: none;
@@ -811,19 +816,44 @@ main {
   }
 
   &_radio {
+    label span {
+      padding: 0.25em 0.55em;
+      border: 2px solid white;
+    }
+  }
+
+  &_checkbox {
+    label span {
+      /* padding: 0.25em 0.55em; */
+      /* border: 2px solid white; */
+      color: #aaa;
+
+      &::before {
+        content: "";
+        display: inline-block;
+
+        width: 1.5ex;
+        height: 1.5ex;
+        background: #aaa;
+
+        margin-right: 0.5em;
+      }
+    }
+
+    input:checked + span::before {
+      background-color: $accentColor;
+    }
+  }
+
+  &_radio,
+  &_checkbox {
     margin: 1em 0;
 
     label {
       cursor: pointer;
-
       margin-right: 0.5em;
 
-      span {
-        padding: 0.25em 0.55em;
-        border: 2px solid white;
-      }
-
-      & > input {
+      input {
         display: none;
 
         &:checked + span {
@@ -858,23 +888,42 @@ main {
   }
 }
 
-.images {
+.bottom {
   display: flex;
   justify-content: space-between;
-  flex-wrap: wrap;
 
-  .image {
-    position: relative;
+  margin-top: 2.5em;
 
-    grid-area: "image";
+  @media screen and (max-width: 800px) {
+    flex-direction: column;
+    align-items: center;
+
+    .image {
+      display: flex;
+      padding: 0 0 2em 0;
+    }
+  }
+}
+
+.spacer {
+  flex: 2 1 10%;
+}
+
+.image {
+  flex-grow: 2;
+  padding: 0 1em 0 0;
+
+  &__wrapper {
     max-width: 380px;
     width: 22em;
     height: 13em;
-    border: 1px solid white;
+  }
 
-    &-content {
-      height: 100%;
-    }
+  &__content {
+    border: 1px solid white;
+    position: relative;
+
+    height: 100%;
 
     img {
       width: 100%;
@@ -900,28 +949,17 @@ main {
       background: rgba(#000, 0.75);
     }
   }
-
-  button {
-    position: absolute;
-    right: 0;
-    top: 0;
-
-    margin: 0.25em;
-  }
-
-  img {
-    width: 100%;
-    height: 100%;
-  }
 }
 
 .stock-list {
-  grid-area: "list";
+  flex-grow: 3;
+
+  width: 100%;
 
   &_buttons {
     button {
       font-size: 0.9em;
-      padding: 0.2em 0.5em;
+      padding: 0.4em 0.5em;
       margin-bottom: 0.5em;
     }
   }
@@ -933,6 +971,11 @@ main {
   ul li {
     outline: none;
     cursor: pointer;
+
+    &.list-empty {
+      border: 1px solid whitesmoke;
+      padding: 0 0.5em;
+    }
 
     &:focus .item-content {
       color: $accentColor;
@@ -990,17 +1033,12 @@ main {
     font-size: calc(0.75vw + 0.6rem);
   }
 
-  header {
-    font-size: 0.85em;
+  main {
+    margin-top: 3.5em;
   }
 
-  .images {
-    justify-content: center;
-
-    > .image {
-      width: 25em;
-      height: 15em;
-    }
+  header {
+    font-size: 0.85em;
   }
 
   .input {
@@ -1012,12 +1050,9 @@ main {
       text-align: center;
     }
 
-    &_radio {
-      display: flex;
-      justify-content: center;
-    }
-
-    &_list {
+    &_radio,
+    &_list,
+    &_checkbox {
       display: flex;
       justify-content: center;
     }
