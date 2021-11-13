@@ -1,6 +1,6 @@
 <template>
   <header>
-    <h1 class="header-top">POJAZDOWNIK</h1>
+    <img :src="logoSVG" alt="logo pojazdownik" />
     <p class="header-bottom"><span>EDYTOR SKŁADÓW ONLINE</span></p>
   </header>
 
@@ -32,6 +32,8 @@ export default defineComponent({
   },
   data: () => ({
     VERSION: packageInfo.version,
+
+    logoSVG: require("@/assets/logo.svg"),
   }),
 
   setup() {
@@ -59,26 +61,20 @@ export default defineComponent({
   justify-content: center;
 
   grid-template-columns: minmax(200px, 1200px);
-  grid-template-rows: 5em 1fr auto;
+  grid-template-rows: 5.5em 1fr auto;
 }
 
 /* HEADER SECTION */
 
 header {
   text-align: center;
+
+  margin-top: 0.5em;
+
+  img {
+    width: 35em;
+  }
 }
-
-.header-top {
-  display: inline-block;
-  margin: 0;
-  font-size: 3.65em;
-  color: $accentColor;
-
-  padding: 0.25em 0.5em;
-
-  font-weight: 900;
-}
-
 h2 {
   margin: 0;
   margin-bottom: 0.5em;
@@ -91,7 +87,6 @@ h2 {
 .header-bottom {
   margin: 0;
   font-size: 1.5em;
-  line-height: 0.55em;
 }
 
 /* MAIN SECTION */
@@ -116,12 +111,20 @@ footer {
 
   header {
     font-size: 0.85em;
+
+    img {
+      width: 35em;
+    }
   }
 }
 
 @media screen and (max-width: 650px) {
   header {
     font-size: 0.75em;
+
+    img {
+      width: 32em;
+    }
   }
 }
 </style>
