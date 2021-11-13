@@ -266,6 +266,7 @@ export const warnings = {
     })
 }
 
+
 // export const trainTooLong = computed(() => {
 //     if (isTrainPassenger.value && totalLength.value > 350) return true;
 //     if (!isTrainPassenger.value && totalLength.value > 650) return true;

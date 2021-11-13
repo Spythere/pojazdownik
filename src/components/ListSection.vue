@@ -4,7 +4,7 @@
       <div class="image__wrapper">
         <div class="image__content">
           <div class="no-img" v-if="!store.chosenCar && !store.chosenLoco">
-            POGLĄD WYBRANEGO POJAZDU
+            PODGLĄD WYBRANEGO POJAZDU
           </div>
           <div class="empty-message" v-if="store.imageLoading">
             ŁADOWANIE OBRAZU...
@@ -14,12 +14,14 @@
             :src="store.chosenLoco.imageSrc"
             :alt="store.chosenLoco.type"
             @load="onImageLoad"
+            @click="onImageClick"
           />
           <img
             v-if="store.chosenCar"
             :src="store.chosenCar.imageSrc"
             :alt="store.chosenCar.type"
             @load="onImageLoad"
+            @click="onImageClick"
           />
         </div>
       </div>
@@ -228,6 +230,7 @@ export default defineComponent({
         this.warnings.trainTooLong.value ||
         this.warnings.trainTooHeavy.value
       ) {
+        ``;
         const allowDownload = confirm(
           "Jazda tym pociągiem może być niezgodna z regulaminem symulatora! Czy na pewno chcesz kontynuować?"
         );
@@ -295,6 +298,14 @@ export default defineComponent({
 
     onImageLoad() {
       this.store.imageLoading = false;
+    },
+
+    onImageClick() {
+      const chosenVehicle = this.store.chosenCar || this.store.chosenLoco;
+
+      if (!chosenVehicle) return;
+
+      console.log(chosenVehicle.imageSrc.replace("300", "800"));
     },
   },
 });
