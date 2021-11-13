@@ -36,9 +36,23 @@
       <div class="stock-list_specs">
         Masa: <span class="text--accent">{{ totalMass }}</span> t | Długość:
         <span class="text--accent">{{ totalLength }}</span>
-        m | Vmax składu:
-        <span class="text--accent">{{ maxSpeed }} </span> km/h
+        m
       </div>
+
+      <div class="warnings">
+        <div class="warning" v-if="warnings.locoNotSuitable.value">
+          Lokomotywy EP07 i EP08 są przeznaczone jedynie do ruchu pasażerskiego!
+        </div>
+
+        <div class="warning" v-if="warnings.trainTooLong.value">
+          Ten skład jest za długi!
+        </div>
+
+        <div class="warning" v-if="warnings.trainTooHeavy.value">
+          Ten skład jest za ciężki!
+        </div>
+      </div>
+
       <ul>
         <li v-if="store.stockList.length == 0" class="list-empty">
           <div class="item-content">Lista pojazdów jest pusta!</div>
@@ -97,42 +111,28 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject } from "vue";
-import { IStore } from "@/types";
-
-import { computed } from "@vue/reactivity";
-
-import statsMixin from "@/mixins/StatsMixin";
+import { ComputedRef, defineComponent, inject } from "vue";
+import { ICarWagon, ILocomotive, IStore } from "@/types";
 
 export default defineComponent({
-  mixins: [statsMixin],
-
   setup() {
     const store = inject("Store") as IStore;
 
     return {
       store,
-      totalMass: computed(() =>
-        store.stockList.reduce(
-          (acc, stock) =>
-            acc +
-            (stock.cargo ? stock.cargo.totalMass : stock.mass) * stock.count,
-          0
-        )
-      ),
-      totalLength: computed(() =>
-        store.stockList.reduce(
-          (acc, stock) => acc + stock.length * stock.count,
-          0
-        )
-      ),
-      maxSpeed: computed(() =>
-        store.stockList.reduce(
-          (acc, stock) =>
-            stock.maxSpeed < acc || acc == 0 ? stock.maxSpeed : acc,
-          0
-        )
-      ),
+      locoDataList: inject("locoDataList") as ILocomotive[],
+      carDataList: inject("carDataList") as ICarWagon[],
+      isTrainPassenger: inject("isTrainPassenger") as boolean,
+      totalLength: inject("totalLength") as number,
+      totalMass: inject("totalMass") as number,
+      maxStockSpeed: inject("maxStockSpeed") as number,
+      maxAllowedSpeed: inject("maxAllowedSpeed") as number,
+
+      warnings: inject("warnings") as {
+        locoNotSuitable: ComputedRef<boolean>;
+        trainTooLong: ComputedRef<boolean>;
+        trainTooHeavy: ComputedRef<boolean>;
+      },
     };
   },
 
@@ -189,11 +189,6 @@ export default defineComponent({
     },
 
     addStock(index: number) {
-      if (this.store.stockList[index].length + this.totalLength > 650) {
-        alert("Maksymalna długość składu to 650m!");
-        return;
-      }
-
       this.store.stockList[index].count++;
     },
 
@@ -228,6 +223,18 @@ export default defineComponent({
     },
 
     downloadStock() {
+      if (
+        this.warnings.locoNotSuitable.value ||
+        this.warnings.trainTooLong.value ||
+        this.warnings.trainTooHeavy.value
+      ) {
+        const allowDownload = confirm(
+          "Jazda tym pociągiem może być niezgodna z regulaminem symulatora! Czy na pewno chcesz kontynuować?"
+        );
+
+        if (!allowDownload) return;
+      }
+
       const fileName = prompt("Nazwij plik:", "sklad");
 
       if (!fileName) return;
@@ -286,7 +293,7 @@ export default defineComponent({
       e.preventDefault();
     },
 
-    onImageLoad(ev: Event) {
+    onImageLoad() {
       this.store.imageLoading = false;
     },
   },
@@ -311,6 +318,19 @@ export default defineComponent({
       padding: 0 0 2em 0;
     }
   }
+}
+
+.warnings {
+  margin-top: 0.5em;
+}
+
+.warning {
+  padding: 0.25em;
+  margin-top: 0.5em;
+  background: $accentColor;
+  color: black;
+
+  font-weight: bold;
 }
 
 .spacer {

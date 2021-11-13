@@ -100,7 +100,14 @@
             "
             v-model="store.chosenCargo"
           >
-            <option :value="null">brak</option>
+            <option
+              :value="null"
+              v-if="!store.chosenCar || !store.chosenCar.loadable"
+            >
+              brak dostępnych ładunków
+            </option>
+
+            <option :value="null" v-else>próżny</option>
             <option
               v-for="cargo in store.chosenCar?.cargoList"
               :value="cargo"
@@ -118,45 +125,26 @@
 <script lang="ts">
 import { ICarWagon, ILocomotive, IStore } from "@/types";
 import { defineComponent, inject } from "vue";
-import { computed } from "@vue/reactivity";
 
-import statsMixin from "@/mixins/StatsMixin";
-
-function isILocomotive(
+function isLocomotive(
   vehicle: ILocomotive | ICarWagon
 ): vehicle is ILocomotive {
   return (vehicle as ILocomotive).power !== undefined;
 }
 
 export default defineComponent({
-  mixins: [statsMixin],
-
   setup() {
     const store = inject("Store") as IStore;
 
     return {
       store,
-      totalMass: computed(() =>
-        store.stockList.reduce(
-          (acc, stock) =>
-            acc +
-            (stock.cargo ? stock.cargo.totalMass : stock.mass) * stock.count,
-          0
-        )
-      ),
-      totalLength: computed(() =>
-        store.stockList.reduce(
-          (acc, stock) => acc + stock.length * stock.count,
-          0
-        )
-      ),
-      maxSpeed: computed(() =>
-        store.stockList.reduce(
-          (acc, stock) =>
-            stock.maxSpeed < acc || acc == 0 ? stock.maxSpeed : acc,
-          0
-        )
-      ),
+      locoDataList: inject("locoDataList") as ILocomotive[],
+      carDataList: inject("carDataList") as ICarWagon[],
+      isTrainPassenger: inject("isTrainPassenger") as boolean,
+      totalLength: inject("totalLength") as number,
+      totalMass: inject("totalMass") as number,
+      maxStockSpeed: inject("maxStockSpeed") as number,
+      maxAllowedSpeed: inject("maxAllowedSpeed") as number,
     };
   },
 
@@ -242,18 +230,13 @@ export default defineComponent({
 
       if (!vehicle) return;
 
-      if (vehicle.length + this.totalLength > 650) {
-        alert("Maksymalna długość składu to 650m!");
-        return;
-      }
-
       const previousStock =
         this.store.stockList.length > 0
           ? this.store.stockList[this.store.stockList.length - 1]
           : null;
 
       if (
-        isILocomotive(vehicle) &&
+        isLocomotive(vehicle) &&
         previousStock &&
         previousStock.type == vehicle.type
       ) {
@@ -262,7 +245,7 @@ export default defineComponent({
       }
 
       if (
-        !isILocomotive(vehicle) &&
+        !isLocomotive(vehicle) &&
         previousStock &&
         previousStock.type == vehicle.type &&
         previousStock.cargo?.id == this.store.chosenCargo?.id
@@ -277,18 +260,18 @@ export default defineComponent({
         length: vehicle.length,
         mass: vehicle.mass,
         maxSpeed: vehicle.maxSpeed,
-        isLoco: isILocomotive(vehicle),
+        isLoco: isLocomotive(vehicle),
         cargo:
-          !isILocomotive(vehicle) && vehicle.loadable && this.store.chosenCargo
+          !isLocomotive(vehicle) && vehicle.loadable && this.store.chosenCargo
             ? this.store.chosenCargo
             : undefined,
         count: 1,
         imgSrc: vehicle.imageSrc,
-        useType: isILocomotive(vehicle) ? vehicle.power : vehicle.useType,
+        useType: isLocomotive(vehicle) ? vehicle.power : vehicle.useType,
       };
 
       if (
-        isILocomotive(vehicle) &&
+        isLocomotive(vehicle) &&
         this.store.stockList.length > 0 &&
         !this.store.stockList[0].isLoco
       )
@@ -317,7 +300,7 @@ export default defineComponent({
       pointer-events: none;
     }
   }
-  
+
   @media screen and (max-width: 800px) {
     flex-direction: column;
   }
