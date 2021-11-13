@@ -71,6 +71,8 @@ export default defineComponent({
 header {
   text-align: center;
 
+  margin-top: 1em;
+
   img {
     width: 35em;
   }

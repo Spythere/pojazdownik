@@ -235,7 +235,7 @@ export default defineComponent({
         if (!allowDownload) return;
       }
 
-      const fileName = prompt("Nazwij plik:", "sklad");
+      const fileName = prompt("Nazwij plik:", "pociag");
 
       if (!fileName) return;
 
