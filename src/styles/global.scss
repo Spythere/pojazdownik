@@ -21,6 +21,19 @@ html {
     box-sizing: border-box;
 }
 
+a {
+    color: white;
+    text-decoration: none;
+
+    &:visited {
+        color: white;
+    }
+
+    &:hover, &:focus {
+        color: $accentColor;
+    }
+}
+
 select,
 option,
 input,

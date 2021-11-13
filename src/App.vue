@@ -13,7 +13,9 @@
       Ta strona ma charakter informacyjny. Autor nie ponosi odpowiedzialności za
       tworzenie składów niezgodnych z regulaminem symulatora Train Driver 2!
     </div>
-    &copy; Spythere 2021 | v{{ VERSION }}
+    &copy;
+    <a href="https://td2.info.pl/profile/?u=20777" target="_blank">Spythere</a>
+    2021 | v{{ VERSION }}
   </footer>
 </template>
 

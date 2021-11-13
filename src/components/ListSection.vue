@@ -30,7 +30,7 @@
     <section class="stock-list">
       <div class="stock-list_buttons">
         <button class="btn btn--copy" @click="downloadStock">
-          POBIERZ SKŁAD
+          POBIERZ POCIĄG
         </button>
       </div>
       <div class="stock-list_specs">
