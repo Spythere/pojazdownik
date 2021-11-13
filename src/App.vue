@@ -1,7 +1,7 @@
 <template>
   <header>
     <img :src="logoSVG" alt="logo pojazdownik" />
-    <p class="header-bottom"><span>EDYTOR SKŁADÓW ONLINE</span></p>
+    <p class="header-bottom"><span>EDYTOR POCIĄGÓW ONLINE</span></p>
   </header>
 
   <main>
@@ -11,7 +11,7 @@
   <footer>
     <div class="text--grayed" style="margin-bottom: 0.25em">
       Ta strona ma charakter informacyjny. Autor nie ponosi odpowiedzialności za
-      tworzenie składów niezgodnych z regulaminem symulatora Train Driver 2!
+      tworzenie pociągów niezgodnych z regulaminem symulatora Train Driver 2!
     </div>
     &copy;
     <a href="https://td2.info.pl/profile/?u=20777" target="_blank">Spythere</a>
@@ -70,8 +70,6 @@ export default defineComponent({
 
 header {
   text-align: center;
-
-  margin-top: 0.5em;
 
   img {
     width: 35em;
