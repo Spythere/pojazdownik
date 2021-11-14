@@ -20,7 +20,12 @@ export const Store: IStore = reactive({
 
     stockList: [] as IStock[],
     cargoOptions: [] as any[][],
+    // locoOptions: [] as ILocomotive[],
+    // carOptions: [] as ICarWagon[],
+
+    vehiclePreviewSrc: ""
 })
+
 
 export const locoDataList = computed(() => Object.keys(vehicleDataJSON).reduce(
     (acc, vehicleTypeKey) => {
@@ -31,7 +36,7 @@ export const locoDataList = computed(() => Object.keys(vehicleDataJSON).reduce(
         ];
 
         locoVehiclesData.forEach((loco) => {
-            if (loco[4] && !Store.showSupporter) return;
+            if (Store.showSupporter && !loco[4]) return;
 
             const locoType = loco[0] as string;
 
@@ -117,7 +122,8 @@ export const carDataList = computed(() => Object.keys(vehicleDataJSON).reduce(
         ];
 
         carVehiclesData.forEach((car) => {
-            if (car[3] && !Store.showSupporter) return;
+            if (Store.showSupporter && !car[3]) return;
+
 
             const carPropsData = vehiclePropsJSON.find((v) =>
                 car[0].toString().includes(v.type)
@@ -132,10 +138,10 @@ export const carDataList = computed(() => Object.keys(vehicleDataJSON).reduce(
                 maxSpeed: Number(car[4] as string),
                 imageSrc: car[5] as string,
                 cargoList:
-                    carPropsData?.cargo.split(";").map((cargo) => ({
+                    carPropsData?.cargo.includes(";") ? carPropsData.cargo.split(";").map((cargo) => ({
                         id: cargo.split(":")[0],
                         totalMass: Number(cargo.split(":")[1]),
-                    })) || [],
+                    })) : [],
 
                 mass: carPropsData?.mass || 0,
                 length: carPropsData?.length || 0,
@@ -146,6 +152,7 @@ export const carDataList = computed(() => Object.keys(vehicleDataJSON).reduce(
     },
     [] as ICarWagon[]
 ));
+
 
 
 export const totalMass = computed(() => {
@@ -244,7 +251,10 @@ export const warnings = {
     }),
 
     locoNotSuitable: computed(() => {
-        if (!isTrainPassenger.value && Store.stockList.length > 1 && Store.stockList.find(stock => stock.isLoco && stock.type.startsWith("EP"))) return true;
+        if (!isTrainPassenger.value
+            && Store.stockList.length > 1
+            && !Store.stockList.every(stock => stock.isLoco)
+            && Store.stockList.find(stock => stock.isLoco && stock.type.startsWith("EP"))) return true;
 
         return false;
     }),

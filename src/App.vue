@@ -5,13 +5,17 @@
   </header>
 
   <main>
+    <div class="image-preview" v-if="store.vehiclePreviewSrc != ''" @click="() => (store.vehiclePreviewSrc = '')">
+      <img :src="store.vehiclePreviewSrc" alt="preview" />
+    </div>
+
     <inputs-section />
     <list-section />
   </main>
   <footer>
     <div class="text--grayed" style="margin-bottom: 0.25em">
-      Ta strona ma charakter informacyjny. Autor nie ponosi odpowiedzialności za
-      tworzenie pociągów niezgodnych z regulaminem symulatora Train Driver 2!
+      Ta strona ma charakter informacyjny. Autor nie ponosi odpowiedzialności za tworzenie pociągów niezgodnych z
+      regulaminem symulatora Train Driver 2!
     </div>
     &copy;
     <a href="https://td2.info.pl/profile/?u=20777" target="_blank">Spythere</a>
@@ -20,12 +24,13 @@
 </template>
 
 <script lang="ts">
-import packageInfo from ".././package.json";
+import packageInfo from '.././package.json';
 
-import { defineComponent } from "vue";
+import { defineComponent, inject } from 'vue';
 
-import ListSection from "@/components/ListSection.vue";
-import InputsSection from "@/components/InputsSection.vue";
+import ListSection from '@/components/ListSection.vue';
+import InputsSection from '@/components/InputsSection.vue';
+import { IStore } from './types';
 
 export default defineComponent({
   components: {
@@ -35,17 +40,30 @@ export default defineComponent({
   data: () => ({
     VERSION: packageInfo.version,
 
-    logoSVG: require("@/assets/logo.svg"),
+    logoSVG: require('@/assets/logo.svg'),
   }),
 
   setup() {
-    return {};
+    const store = inject('Store') as IStore;
+
+    return {
+      store,
+    };
+  },
+  mounted() {
+    window.addEventListener('keydown', (ev) => {
+      if (this.store.vehiclePreviewSrc == '') return;
+
+      if (ev.key.toLowerCase() == 'escape') this.store.vehiclePreviewSrc = '';
+    });
+
+    // window.focus();
   },
 });
 </script>
 
 <style lang="scss">
-@import "./styles/global";
+@import './styles/global';
 
 /* APP */
 #app {
@@ -89,6 +107,27 @@ h2 {
 .header-bottom {
   margin: 0;
   font-size: 1.5em;
+}
+
+.image-preview {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 99;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  height: 100%;
+
+  background: rgba(black, 0.85);
+
+  img {
+    width: 90%;
+    max-width: 800px;
+  }
 }
 
 /* MAIN SECTION */

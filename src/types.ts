@@ -11,6 +11,11 @@ export interface IStore {
 
   stockList: IStock[];
   cargoOptions: any[][];
+
+  // locoOptions: ILocomotive[];
+  // carOptions: ICarWagon[];
+
+  vehiclePreviewSrc: string;
 }
 
 export interface IVehicleData {
@@ -58,6 +63,7 @@ export interface IStock {
   maxSpeed: number;
   cargo?: { id: string; totalMass: number };
   isLoco: boolean;
+  supportersOnly: boolean;
   count: number;
   imgSrc: string;
 }

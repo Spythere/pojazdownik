@@ -2,27 +2,28 @@
   <div class="bottom">
     <section class="image">
       <div class="image__wrapper">
-        <div class="image__content">
-          <div class="no-img" v-if="!store.chosenCar && !store.chosenLoco">
-            PODGLĄD WYBRANEGO POJAZDU
-          </div>
-          <div class="empty-message" v-if="store.imageLoading">
-            ŁADOWANIE OBRAZU...
-          </div>
+        <div
+          class="image__content"
+          :class="{
+            supporter: (store.chosenLoco || store.chosenCar)?.supportersOnly,
+          }"
+        >
+          <div class="no-img" v-if="!store.chosenCar && !store.chosenLoco">PODGLĄD WYBRANEGO POJAZDU</div>
+          <div class="empty-message" v-if="store.imageLoading">ŁADOWANIE OBRAZU...</div>
           <img
-            v-if="store.chosenLoco && !store.chosenCar"
-            :src="store.chosenLoco.imageSrc"
-            :alt="store.chosenLoco.type"
+            v-if="store.chosenLoco || store.chosenCar"
+            :src="store.chosenLoco?.imageSrc || store.chosenCar?.imageSrc"
+            :alt="store.chosenLoco?.type || store.chosenCar?.type"
             @load="onImageLoad"
             @click="onImageClick"
           />
-          <img
+          <!-- <img
             v-if="store.chosenCar"
             :src="store.chosenCar.imageSrc"
             :alt="store.chosenCar.type"
             @load="onImageLoad"
             @click="onImageClick"
-          />
+          /> -->
         </div>
       </div>
     </section>
@@ -31,9 +32,8 @@
 
     <section class="stock-list">
       <div class="stock-list_buttons">
-        <button class="btn btn--copy" @click="downloadStock">
-          POBIERZ POCIĄG
-        </button>
+        <button class="btn" @click="downloadStock">POBIERZ POCIĄG</button>
+        <button class="btn" @click="resetStock">ZRESETUJ LISTĘ</button>
       </div>
       <div class="stock-list_specs">
         Masa: <span class="text--accent">{{ totalMass }}</span> t | Długość:
@@ -46,13 +46,9 @@
           Lokomotywy EP07 i EP08 są przeznaczone jedynie do ruchu pasażerskiego!
         </div>
 
-        <div class="warning" v-if="warnings.trainTooLong.value">
-          Ten skład jest za długi!
-        </div>
+        <div class="warning" v-if="warnings.trainTooLong.value">Ten skład jest za długi!</div>
 
-        <div class="warning" v-if="warnings.trainTooHeavy.value">
-          Ten skład jest za ciężki!
-        </div>
+        <div class="warning" v-if="warnings.trainTooHeavy.value">Ten skład jest za ciężki!</div>
       </div>
 
       <ul>
@@ -76,6 +72,7 @@
             @dragover="allowDrop"
             draggable="true"
           >
+            <span v-if="stock.supportersOnly" style="color: salmon"> *S* </span>
             <span>
               {{ stock.isLoco ? stock.type : getCarSpecFromType(stock.type) }}
             </span>
@@ -113,38 +110,40 @@
 </template>
 
 <script lang="ts">
-import { ComputedRef, defineComponent, inject } from "vue";
-import { ICarWagon, ILocomotive, IStore } from "@/types";
+import { computed, ComputedRef, defineComponent, inject } from 'vue';
+import { ICarWagon, ILocomotive, IStore } from '@/types';
 
 export default defineComponent({
   setup() {
-    const store = inject("Store") as IStore;
+    const store = inject('Store') as IStore;
 
     return {
       store,
-      locoDataList: inject("locoDataList") as ILocomotive[],
-      carDataList: inject("carDataList") as ICarWagon[],
-      isTrainPassenger: inject("isTrainPassenger") as boolean,
-      totalLength: inject("totalLength") as number,
-      totalMass: inject("totalMass") as number,
-      maxStockSpeed: inject("maxStockSpeed") as number,
-      maxAllowedSpeed: inject("maxAllowedSpeed") as number,
+      locoDataList: inject('locoDataList') as ILocomotive[],
+      carDataList: inject('carDataList') as ICarWagon[],
+      isTrainPassenger: inject('isTrainPassenger') as boolean,
+      totalLength: inject('totalLength') as number,
+      totalMass: inject('totalMass') as number,
+      maxStockSpeed: inject('maxStockSpeed') as number,
+      maxAllowedSpeed: inject('maxAllowedSpeed') as number,
 
-      warnings: inject("warnings") as {
+      warnings: inject('warnings') as {
         locoNotSuitable: ComputedRef<boolean>;
         trainTooLong: ComputedRef<boolean>;
         trainTooHeavy: ComputedRef<boolean>;
       },
+
+      hasSupporterOnlyVehicle: computed(() => store.stockList.some((stock) => stock.supportersOnly)),
     };
   },
 
   data: () => ({
     icons: {
-      add: require("@/assets/add-icon.svg"),
-      sub: require("@/assets/sub-icon.svg"),
-      remove: require("@/assets/remove-icon.svg"),
-      lower: require("@/assets/lower-icon.svg"),
-      higher: require("@/assets/higher-icon.svg"),
+      add: require('@/assets/add-icon.svg'),
+      sub: require('@/assets/sub-icon.svg'),
+      remove: require('@/assets/remove-icon.svg'),
+      lower: require('@/assets/lower-icon.svg'),
+      higher: require('@/assets/higher-icon.svg'),
     },
 
     draggedVehicleID: -1,
@@ -154,11 +153,14 @@ export default defineComponent({
     onListItemFocus(vehicleID: number) {
       const vehicle = this.store.stockList[vehicleID];
 
+      if (this.store.showSupporter && !vehicle.supportersOnly) {
+        this.store.showSupporter = false;
+      }
+
       if (vehicle.isLoco) {
         this.store.chosenLocoPower = vehicle.useType;
 
-        this.store.chosenLoco =
-          this.locoDataList.find((v) => v.type == vehicle.type) || null;
+        this.store.chosenLoco = this.locoDataList.find((v) => v.type == vehicle.type) || null;
 
         this.store.chosenCar = null;
         this.store.chosenCargo = null;
@@ -170,24 +172,26 @@ export default defineComponent({
       this.store.chosenCarUseType = vehicle.useType;
 
       this.store.chosenLoco = null;
-      this.store.chosenCar =
-        this.carDataList.find((v) => v.type == vehicle.type) || null;
+      this.store.chosenCar = this.carDataList.find((v) => v.type == vehicle.type) || null;
       this.store.chosenCargo = vehicle.cargo || null;
 
       // this.chose = vehicle.useType;
     },
 
     getCarSpecFromType(typeStr: string) {
-      const specArray = typeStr.split("_");
+      const specArray = typeStr.split('_');
 
       if (specArray.length == 0) return null;
 
       /* 111a_Grafitti_1 */
-      if (specArray.length == 3)
-        return `${specArray[0]} ${specArray[1]}-${specArray[2]}`;
+      if (specArray.length == 3) return `${specArray[0]} ${specArray[1]}-${specArray[2]}`;
 
       /* 111a_PKP_Bnouz_01 */
       return `${specArray[0]} ${specArray[2]}-${specArray[3]} (${specArray[1]})`;
+    },
+
+    resetStock() {
+      this.store.stockList.length = 0;
     },
 
     addStock(index: number) {
@@ -201,9 +205,7 @@ export default defineComponent({
     },
 
     removeStock(index: number) {
-      this.store.stockList = this.store.stockList.filter(
-        (stock, i) => i != index
-      );
+      this.store.stockList = this.store.stockList.filter((stock, i) => i != index);
     },
 
     moveUpStock(index: number) {
@@ -232,39 +234,36 @@ export default defineComponent({
       ) {
         ``;
         const allowDownload = confirm(
-          "Jazda tym pociągiem może być niezgodna z regulaminem symulatora! Czy na pewno chcesz kontynuować?"
+          'Jazda tym pociągiem może być niezgodna z regulaminem symulatora! Czy na pewno chcesz kontynuować?'
         );
 
         if (!allowDownload) return;
       }
 
-      const fileName = prompt("Nazwij plik:", "pociag");
+      const fileName = prompt('Nazwij plik:', 'pociag');
 
       if (!fileName) return;
 
       const stockString = this.store.stockList
         .map((stock) => {
-          let s =
-            stock.isLoco || !stock.cargo
-              ? stock.type
-              : `${stock.type}:${stock.cargo.id}`;
+          let s = stock.isLoco || !stock.cargo ? stock.type : `${stock.type}:${stock.cargo.id}`;
 
           let final = s;
           for (let i = 0; i < stock.count - 1; i++) final += `;${s}`;
 
           return final;
         })
-        .join(";");
+        .join(';');
 
       const blob = new Blob([stockString]);
-      const file = fileName + ".con";
+      const file = fileName + '.con';
 
-      var e = document.createEvent("MouseEvents"),
-        a = document.createElement("a");
+      var e = document.createEvent('MouseEvents'),
+        a = document.createElement('a');
       a.download = file;
       a.href = window.URL.createObjectURL(blob);
-      a.dataset.downloadurl = ["", a.download, a.href].join(":");
-      e.initEvent("click", true, false);
+      a.dataset.downloadurl = ['', a.download, a.href].join(':');
+      e.initEvent('click', true, false);
       a.dispatchEvent(e);
     },
 
@@ -275,20 +274,17 @@ export default defineComponent({
     onDrop(e: DragEvent, vehicleIndex: number) {
       e.preventDefault();
 
-      let targetEl: Element | null = this.$refs[
-        `item-${vehicleIndex}`
-      ] as Element;
+      let targetEl: Element | null = this.$refs[`item-${vehicleIndex}`] as Element;
 
       if (!targetEl) return;
 
-      const dataID = targetEl.attributes.getNamedItem("data-id")?.textContent;
+      const dataID = targetEl.attributes.getNamedItem('data-id')?.textContent;
 
       if (!dataID) return;
 
       const tempVehicle = this.store.stockList[Number(dataID)];
 
-      this.store.stockList[Number(dataID)] =
-        this.store.stockList[this.draggedVehicleID];
+      this.store.stockList[Number(dataID)] = this.store.stockList[this.draggedVehicleID];
       this.store.stockList[this.draggedVehicleID] = tempVehicle;
     },
 
@@ -305,14 +301,14 @@ export default defineComponent({
 
       if (!chosenVehicle) return;
 
-      console.log(chosenVehicle.imageSrc.replace("300", "800"));
+      this.store.vehiclePreviewSrc = chosenVehicle.imageSrc.replace('300', '800');
     },
   },
 });
 </script>
 
 <style lang="scss" scoped>
-@import "../styles/global";
+@import '../styles/global';
 
 .bottom {
   display: flex;
@@ -364,6 +360,10 @@ export default defineComponent({
 
     height: 100%;
 
+    &.supporter {
+      border: 1px solid salmon;
+    }
+
     img {
       width: 100%;
       height: 100%;
@@ -396,10 +396,16 @@ export default defineComponent({
   width: 100%;
 
   &_buttons {
+    margin-bottom: 0.5em;
     button {
       font-size: 0.9em;
-      padding: 0.4em 0.5em;
-      margin-bottom: 0.5em;
+      padding: 0.4em 0.55em;
+      margin-right: 0.5em;
+
+      &:focus {
+        color: $accentColor;
+        border-color: $accentColor;
+      }
     }
   }
 

@@ -4,88 +4,74 @@
       <div class="input_container">
         <h2 class="input_header">LOKOMOTYWA / ZESP. TRAKCYJNY</h2>
         <div class="input_radio">
-          <label v-for="label in locoLabels" :for="label.id" :key="label.id">
-            <input
-              type="radio"
-              name="loco"
-              :id="label.id"
-              :value="label.id"
-              :checked="store.chosenLocoPower == label.id"
-              @change="onLocoPowerChange(label.id)"
-              v-model="store.chosenLocoPower"
-            />
-            <span>{{ label.title }}</span>
-          </label>
+          <button
+            v-for="label in locoLabels"
+            :key="label.id"
+            @click="onLocoPowerChange(label.id)"
+            :class="{ checked: store.chosenLocoPower == label.id }"
+          >
+            {{ label.title }}
+          </button>
         </div>
 
         <div class="input_list type">
           <select
             id="loco-select"
+            ref="loco-select"
             v-model="store.chosenLoco"
             @change="onLocoTypeChange"
+            data-select="loco"
           >
             <option :value="null" disabled>Wybierz pojazd z listy</option>
             <option v-for="loco in locoOptions" :value="loco" :key="loco.type">
+              {{ loco.supportersOnly ? '*S*' : '' }}
               {{ loco.type }}
             </option>
           </select>
 
-          <button @click="addVehicle">
+          <button class="btn--add" @click="addVehicle">
             <img :src="icons.add" alt="add vehicle" />
           </button>
         </div>
 
         <div class="input_checkbox">
-          <label for="supporter">
-            <input
-              type="checkbox"
-              id="supporter"
-              v-model="store.showSupporter"
-            />
-            <span>Pokaż pojazdy dla supporterów</span>
-          </label>
+          <button @click="onShowSupporterChange" :class="{ checked: this.store.showSupporter }">
+            Pokaż tylko pojazdy dla supporterów
+          </button>
         </div>
       </div>
     </div>
 
-    <div
-      class="input inputs_car"
-      :class="{
-        disabled:
-          store.chosenLocoPower == 'loco-ezt' ||
-          store.chosenLocoPower == 'loco-szt',
-      }"
-    >
+    <div class="input inputs_car">
       <div class="input_container">
         <h2 class="input_header">RODZAJ WAGONU</h2>
         <div class="input_radio">
-          <label v-for="label in carLabels" :for="label.id" :key="label.id">
-            <input
-              type="radio"
-              name="car"
-              :id="label.id"
-              :checked="store.chosenCarUseType == label.id"
-              :value="label.id"
-              v-model="store.chosenCarUseType"
-              @change="onCarUseTypeChange(label.id)"
-            />
-            <span>{{ label.title }}</span>
-          </label>
+          <button
+            v-for="label in carLabels"
+            :key="label.id"
+            @click="onCarUseTypeChange(label.id)"
+            :class="{ checked: store.chosenCarUseType == label.id }"
+          >
+            {{ label.title }}
+          </button>
         </div>
 
         <div class="input_list type">
           <select
             id="car-select"
+            ref="car-select"
             v-model="store.chosenCar"
             @change="onCarTypeChange"
+            data-select="car"
           >
             <option :value="null" disabled>Wybierz wagon z listy</option>
             <option v-for="car in carOptions" :value="car" :key="car.type">
+              {{ car.supportersOnly ? '*S*' : '' }}
               {{ car.type }}
             </option>
           </select>
 
-          <button @click="addVehicle">
+          <button class="btn--add" @click="addVehicle">
             <img :src="icons.add" alt="add vehicle" />
           </button>
         </div>
@@ -98,21 +84,13 @@
               (store.chosenCar && store.chosenCar.useType == 'car-passenger') ||
               !store.chosenCar
             "
+            data-select="cargo"
             v-model="store.chosenCargo"
           >
-            <option
-              :value="null"
-              v-if="!store.chosenCar || !store.chosenCar.loadable"
-            >
-              brak dostępnych ładunków
-            </option>
+            <option :value="null" v-if="!store.chosenCar || !store.chosenCar.loadable">brak dostępnych ładunków</option>
 
             <option :value="null" v-else>próżny</option>
-            <option
-              v-for="cargo in store.chosenCar?.cargoList"
-              :value="cargo"
-              :key="cargo.id"
-            >
+            <option v-for="cargo in store.chosenCar?.cargoList" :value="cargo" :key="cargo.id">
               {{ cargo.id }}
             </option>
           </select>
@@ -123,62 +101,153 @@
 </template>
 
 <script lang="ts">
-import { ICarWagon, ILocomotive, IStore } from "@/types";
-import { defineComponent, inject } from "vue";
+import { ICarWagon, ILocomotive, IStore } from '@/types';
+import { defineComponent, inject } from 'vue';
 
-function isLocomotive(
-  vehicle: ILocomotive | ICarWagon
-): vehicle is ILocomotive {
+function isLocomotive(vehicle: ILocomotive | ICarWagon): vehicle is ILocomotive {
   return (vehicle as ILocomotive).power !== undefined;
 }
 
 export default defineComponent({
   setup() {
-    const store = inject("Store") as IStore;
+    const store = inject('Store') as IStore;
 
     return {
       store,
-      locoDataList: inject("locoDataList") as ILocomotive[],
-      carDataList: inject("carDataList") as ICarWagon[],
-      isTrainPassenger: inject("isTrainPassenger") as boolean,
-      totalLength: inject("totalLength") as number,
-      totalMass: inject("totalMass") as number,
-      maxStockSpeed: inject("maxStockSpeed") as number,
-      maxAllowedSpeed: inject("maxAllowedSpeed") as number,
+      locoDataList: inject('locoDataList') as ILocomotive[],
+      carDataList: inject('carDataList') as ICarWagon[],
+      isTrainPassenger: inject('isTrainPassenger') as boolean,
+      totalLength: inject('totalLength') as number,
+      totalMass: inject('totalMass') as number,
+      maxStockSpeed: inject('maxStockSpeed') as number,
+      maxAllowedSpeed: inject('maxAllowedSpeed') as number,
     };
+  },
+
+  mounted() {
+    document.addEventListener('wheel', (ev) => {
+      if (!ev.target) return;
+
+      const selectAttr = (ev.target as Element).attributes.getNamedItem('data-select');
+
+      if (!selectAttr) return;
+
+      if (selectAttr.value == 'loco') {
+        const chosenLoco = this.store.chosenLoco;
+
+        if (!chosenLoco) {
+          this.store.chosenLoco = this.locoOptions[0];
+          this.onLocoTypeChange();
+          return;
+        }
+
+        if (ev.deltaY > 0) {
+          const nextOptionIndex = this.locoOptions.findIndex((opt) => opt.type == chosenLoco.type) + 1;
+
+          if (nextOptionIndex >= this.locoOptions.length) return;
+
+          this.store.chosenLoco = this.locoOptions[nextOptionIndex];
+          this.onLocoTypeChange();
+        } else {
+          const prevOptionIndex = this.locoOptions.findIndex((opt) => opt.type == chosenLoco.type) - 1;
+
+          if (prevOptionIndex < 0) return;
+
+          this.store.chosenLoco = this.locoOptions[prevOptionIndex];
+          this.onLocoTypeChange();
+        }
+      }
+
+      if (selectAttr.value == 'car') {
+        const chosenCar = this.store.chosenCar;
+
+        if (!chosenCar) {
+          this.store.chosenCar = this.carOptions[0];
+          this.onCarTypeChange();
+
+          return;
+        }
+
+        if (ev.deltaY > 0) {
+          const nextOptionIndex = this.carOptions.findIndex((opt) => opt.type == chosenCar.type) + 1;
+
+          if (nextOptionIndex >= this.carOptions.length) return;
+
+          this.store.chosenCar = this.carOptions[nextOptionIndex];
+          this.onCarTypeChange();
+        } else {
+          const prevOptionIndex = this.carOptions.findIndex((opt) => opt.type == chosenCar.type) - 1;
+
+          if (prevOptionIndex < 0) return;
+
+          this.store.chosenCar = this.carOptions[prevOptionIndex];
+          this.onCarTypeChange();
+        }
+      }
+
+      if (selectAttr.value == 'cargo') {
+        if (!this.store.chosenCar) return;
+
+        if (!this.store.chosenCar.cargoList || this.store.chosenCar.cargoList.length == 0) return;
+
+        const chosenCargoList = this.store.chosenCar.cargoList;
+
+        if (!this.store.chosenCargo) {
+          this.store.chosenCargo = chosenCargoList[0];
+          return;
+        }
+
+        if (ev.deltaY > 0) {
+          const nextOptionIndex = chosenCargoList.findIndex((cargo) => cargo.id == this.store.chosenCargo?.id) + 1;
+
+          if (nextOptionIndex >= chosenCargoList.length) return;
+
+          this.store.chosenCargo = chosenCargoList[nextOptionIndex];
+        } else {
+          const prevOptionIndex = chosenCargoList.findIndex((cargo) => cargo.id == this.store.chosenCargo?.id) - 1;
+
+          if (prevOptionIndex < 0) return;
+
+          this.store.chosenCargo = chosenCargoList[prevOptionIndex];
+        }
+      }
+    });
+
+    this.onLocoPowerChange('loco-e');
+    this.onCarUseTypeChange('car-passenger');
   },
 
   data: () => ({
     icons: {
-      add: require("@/assets/add-icon.svg"),
+      add: require('@/assets/add-icon.svg'),
     },
     locoLabels: [
       {
-        id: "loco-e",
-        title: "ELEKTROWÓZ",
+        id: 'loco-e',
+        title: 'ELEKTROWÓZ',
       },
       {
-        id: "loco-s",
-        title: "SPALINOWÓZ",
+        id: 'loco-s',
+        title: 'SPALINOWÓZ',
       },
       {
-        id: "loco-ezt",
-        title: "EZT",
+        id: 'loco-ezt',
+        title: 'EZT',
       },
       {
-        id: "loco-szt",
-        title: "SZT",
+        id: 'loco-szt',
+        title: 'SZT',
       },
     ],
 
     carLabels: [
       {
-        id: "car-passenger",
-        title: "PASAŻERSKI",
+        id: 'car-passenger',
+        title: 'PASAŻERSKI',
       },
       {
-        id: "car-cargo",
-        title: "TOWAROWY",
+        id: 'car-cargo',
+        title: 'TOWAROWY',
       },
     ],
   }),
@@ -187,28 +256,52 @@ export default defineComponent({
     locoOptions() {
       return this.locoDataList
         .filter((loco) => loco.power == this.store.chosenLocoPower)
-        .sort((a, b) => (a.type > b.type ? -1 : 1));
+        .sort((a, b) => (a.type > b.type ? 1 : -1))
+        .sort((a) => (a.supportersOnly ? 1 : -1));
     },
 
     carOptions() {
       return this.carDataList
         .filter((car) => car.useType == this.store.chosenCarUseType)
-        .sort((a, b) => (a.type > b.type ? 1 : -1));
+        .sort((a, b) => (a.type > b.type ? 1 : -1))
+        .sort((a) => (a.supportersOnly ? 1 : -1));
     },
   },
 
   methods: {
+    onShowSupporterChange() {
+      this.store.showSupporter = !this.store.showSupporter;
+
+      console.log(this.store.showSupporter);
+
+      if (this.store.showSupporter) {
+        const chosenVehicle = this.store.chosenCar || this.store.chosenLoco;
+
+        if (!chosenVehicle) return;
+
+        if (!chosenVehicle.supportersOnly) {
+          this.store.chosenCar = null;
+          this.store.chosenLoco = null;
+        }
+      }
+    },
+
     onLocoPowerChange(inputId: string) {
       this.store.chosenLoco = null;
       this.store.imageLoading = false;
+
+      this.store.chosenLocoPower = inputId;
+
+      (this.$refs['loco-select'] as HTMLElement).focus();
     },
 
     onCarUseTypeChange(inputId: string) {
       this.store.chosenCar = null;
-
-      if (inputId == "car-passenger") this.store.chosenCargo = null;
-
       this.store.imageLoading = false;
+
+      this.store.chosenCarUseType = inputId;
+
+      if (inputId == 'car-passenger') this.store.chosenCargo = null;
     },
 
     onCarTypeChange() {
@@ -231,15 +324,9 @@ export default defineComponent({
       if (!vehicle) return;
 
       const previousStock =
-        this.store.stockList.length > 0
-          ? this.store.stockList[this.store.stockList.length - 1]
-          : null;
+        this.store.stockList.length > 0 ? this.store.stockList[this.store.stockList.length - 1] : null;
 
-      if (
-        isLocomotive(vehicle) &&
-        previousStock &&
-        previousStock.type == vehicle.type
-      ) {
+      if (isLocomotive(vehicle) && previousStock && previousStock.type == vehicle.type) {
         this.store.stockList[this.store.stockList.length - 1].count++;
         return;
       }
@@ -262,33 +349,23 @@ export default defineComponent({
         maxSpeed: vehicle.maxSpeed,
         isLoco: isLocomotive(vehicle),
         cargo:
-          !isLocomotive(vehicle) && vehicle.loadable && this.store.chosenCargo
-            ? this.store.chosenCargo
-            : undefined,
+          !isLocomotive(vehicle) && vehicle.loadable && this.store.chosenCargo ? this.store.chosenCargo : undefined,
         count: 1,
         imgSrc: vehicle.imageSrc,
         useType: isLocomotive(vehicle) ? vehicle.power : vehicle.useType,
+        supportersOnly: vehicle.supportersOnly,
       };
 
-      if (
-        isLocomotive(vehicle) &&
-        this.store.stockList.length > 0 &&
-        !this.store.stockList[0].isLoco
-      )
+      if (isLocomotive(vehicle) && this.store.stockList.length > 0 && !this.store.stockList[0].isLoco)
         this.store.stockList.unshift(stockObj);
       else this.store.stockList.push(stockObj);
     },
-  },
-
-  mounted() {
-    this.onLocoPowerChange("loco-e");
-    this.onCarUseTypeChange("car-passenger");
   },
 });
 </script>
 
 <style lang="scss" scoped>
-@import "../styles/global";
+@import '../styles/global';
 
 .inputs {
   display: flex;
@@ -312,50 +389,59 @@ export default defineComponent({
   }
 
   &_radio {
-    label span {
+    button {
       padding: 0.25em 0.55em;
+      margin-right: 0.5em;
       border: 2px solid white;
+      color: white;
+      font-size: 1em;
+    }
+
+    button:focus {
+      color: $accentColor;
+    }
+
+    button.checked {
+      border-color: $accentColor;
+      color: $accentColor;
+      font-weight: bold;
     }
   }
 
-  &_checkbox {
-    label span {
-      /* padding: 0.25em 0.55em; */
-      /* border: 2px solid white; */
-      color: #aaa;
-
-      &::before {
-        content: "";
-        display: inline-block;
-
-        width: 1.5ex;
-        height: 1.5ex;
-        background: #aaa;
-
-        margin-right: 0.5em;
-      }
-    }
-
-    input:checked + span::before {
-      background-color: $accentColor;
-    }
-  }
-
-  &_radio,
   &_checkbox {
     margin: 1em 0;
 
-    label {
-      cursor: pointer;
-      margin-right: 0.5em;
+    padding: 0 1.5em;
 
-      input {
-        display: none;
+    button {
+      position: relative;
+      color: #999;
 
-        &:checked + span {
-          border-color: $accentColor;
-          color: $accentColor;
+      &::before {
+        content: '';
+        width: 1.5ch;
+        height: 1.5ch;
+
+        display: block;
+
+        position: absolute;
+        bottom: 0.2ch;
+        left: -1.5em;
+
+        background-color: #999;
+      }
+
+      &.checked {
+        color: white;
+        font-weight: bold;
+
+        &::before {
+          background-color: $accentColor;
         }
+      }
+
+      &:focus {
+        outline: 1px solid $accentColor;
       }
     }
   }
@@ -364,12 +450,21 @@ export default defineComponent({
     margin: 0.5em 0;
 
     display: flex;
+
+    select:focus {
+      border-color: $accentColor;
+    }
   }
 
   &_list button {
     margin-left: 0.5em;
+    font-size: 0.8em;
 
     &:hover img {
+      border-color: $accentColor;
+    }
+
+    &:focus img {
       border-color: $accentColor;
     }
 
