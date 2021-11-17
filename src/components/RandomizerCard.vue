@@ -10,17 +10,32 @@
         braku
       </h3>
 
+      <div class="car-preview">
+        <div class="image-wrapper">
+          <div v-if="isPreviewLoading" class="loading">ŁADOWANIE...</div>
+          <img v-if="focusedCar" :src="focusedCar?.imageSrc" :alt="focusedCar.type" @load="onPreviewLoaded" />
+        </div>
+        <b class="text--accent" v-if="focusedCar">
+          {{ focusedCar.type.split('_')[0] }} {{ focusedCar.type.split('_')[2] }}
+        </b>
+        <b v-else>Podgląd typu wagonu</b>
+
+        <div v-if="focusedCar">{{ cargoUsage[focusedCar.type.split('_')[0]] }}</div>
+        <div v-else>Najedź na rodzaj wagonu aby wyświetlić informacje</div>
+      </div>
+
       <div class="car-choice">
         <p>Dobierz rodzaje wagonów</p>
         <div>
           <button
             class="btn choice-btn"
-            v-for="car in carList"
-            :key="car.id"
-            @click="toggleCarType(car.id)"
-            :class="{ chosen: chosenCarTypes.includes(car.id) }"
+            v-for="carType in cargoTypeList"
+            :key="carType"
+            @click="toggleCarType(carType)"
+            @mouseenter="displayPreview(carType)"
+            :class="{ chosen: chosenCarTypes.includes(carType) }"
           >
-            {{ car.title }}
+            {{ carType }}
           </button>
         </div>
       </div>
@@ -47,7 +62,7 @@
         />
       </div>
 
-      <div style="margin-top: 1em">
+      <div style="margin: 1em 0">
         <button
           class="btn choice-btn"
           :class="{ chosen: includeSupporterVehicles }"
@@ -69,20 +84,31 @@
 
 <script lang="ts">
 import { ICargo, ICarWagon, ILocomotive, IStore } from '@/types';
-import { defineComponent, inject } from 'vue';
+import { ComputedRef, defineComponent, inject } from 'vue';
 
 export default defineComponent({
   setup() {
     const isCardOpen = inject('isCardOpen') as boolean;
     const store = inject('Store') as IStore;
 
+    const carDataList = inject('carDataList') as ComputedRef<ICarWagon[]>;
+
     return {
       isCardOpen,
       store,
       locoDataList: inject('locoDataList') as ILocomotive[],
-      carDataList: inject('carDataList') as ICarWagon[],
       chosenLength: inject('chosenLength') as number,
       chosenMass: inject('chosenMass') as number,
+      cargoCarList: carDataList.value.filter((car) => car.useType == 'car-cargo'),
+      cargoTypeList: carDataList.value.reduce((list, car) => {
+        const type = car.type.split('_')[0];
+
+        if (car.useType != 'car-cargo' || list.includes(type)) return list;
+
+        list.push(type);
+
+        return list;
+      }, [] as string[]),
 
       chosenLocoType: inject('chosenLocoType') as string,
       chosenCarTypes: inject('chosenCarTypes') as string[],
@@ -96,43 +122,45 @@ export default defineComponent({
       randomize: require('@/assets/randomize-icon.svg'),
     },
 
-    carList: [
-      {
-        id: 'cisterns',
-        title: 'CYSTERNY',
-        types: ['29R'],
-      },
-      {
-        id: 'coal-cars',
-        title: 'WĘGLARKI',
-        types: ['412W', '429W'],
-      },
-      {
-        id: 'conteners',
-        title: 'KONTENEROWCE',
-        types: ['412Z', '424Z', '627Z'],
-      },
-      {
-        id: 'special-cars',
-        title: 'SPECJALNE',
-        types: ['441V', '426S', '304Ca', '209c'],
-      },
-      {
-        id: 'tanks',
-        title: 'ZBIORNIKOWE',
-        types: ['408S'],
-      },
-      {
-        id: 'covered-cars',
-        title: 'KRYTE',
-        types: ['203V'],
-      },
-    ],
+    focusedCar: null as ICarWagon | null,
+    isPreviewLoading: false,
+
+    cargoUsage: {
+      '203V': 'kruszywo, kamień wapienny, odpady kopalniane',
+      '208Kf': 'drobnica, ładunki sypkie',
+      '209c': 'wagon techniczny',
+      '29R': 'produkty naftowe',
+      '304Ca': 'pojazd specjalny',
+      '401Ka': 'drobnica, ładunki sypkie',
+      '401Zb': 'ładunki sypkie o dużej masie usypowej',
+      '408S': 'cement, wapno, popioły lotne, żużel',
+      '412W': 'drobnica, kruszywo, węgiel',
+      '412Z': 'kontenery',
+      '424Z': 'ładunki skupione, pojazdy, dłużyca',
+      '426S': 'drobnica',
+      '429W': 'towary masowe odporne na warunki atmosferyczne (węgiel, ruda)',
+      '441V': 'węgiel kamienny, żwir',
+      '627Z': 'kontenery',
+    } as { [key: string]: string },
   }),
 
   methods: {
     closeCard() {
       this.isCardOpen = false;
+    },
+
+    displayPreview(carType: string) {
+      const list = this.cargoCarList.filter((car) => car.type.includes(carType));
+      const randIndex = Math.floor(Math.random() * list.length);
+
+      if (this.focusedCar?.type == list[randIndex].type) return;
+
+      this.focusedCar = list[randIndex];
+      this.isPreviewLoading = true;
+    },
+
+    onPreviewLoaded() {
+      this.isPreviewLoading = false;
     },
 
     randomize() {
@@ -179,11 +207,10 @@ export default defineComponent({
       totalStockLength += this.store.stockList[0].length;
       totalStockMass += this.store.stockList[0].mass;
 
-      let availableCarsSet = this.carDataList.filter((car) => {
-        if (!this.includeSupporterVehicles && car.supportersOnly) return false;
+      let availableCarsSet = this.cargoCarList.filter((cargoCar) => {
+        if (!this.includeSupporterVehicles && cargoCar.supportersOnly) return false;
 
-        if (this.carList.find((c) => c.types.includes(car.constructionType) && this.chosenCarTypes.includes(c.id)))
-          return true;
+        if (this.chosenCarTypes.find((carType) => cargoCar.type.includes(carType))) return true;
 
         return false;
       });
@@ -214,9 +241,9 @@ export default defineComponent({
       this.isCardOpen = false;
     },
 
-    toggleCarType(id: string) {
-      if (this.chosenCarTypes.includes(id)) this.chosenCarTypes.splice(this.chosenCarTypes.indexOf(id), 1);
-      else this.chosenCarTypes.push(id);
+    toggleCarType(carType: string) {
+      if (this.chosenCarTypes.includes(carType)) this.chosenCarTypes.splice(this.chosenCarTypes.indexOf(carType), 1);
+      else this.chosenCarTypes.push(carType);
     },
 
     addLoco(loco: ILocomotive) {
@@ -282,6 +309,9 @@ export default defineComponent({
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+
+  overflow: auto;
+  max-height: 95vh;
 
   z-index: 100;
 
@@ -351,5 +381,51 @@ button.choice-btn {
 button.chosen {
   border-color: gold;
   color: gold;
+}
+
+.car-preview {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  flex-direction: column;
+
+  b {
+    font-size: 1.3em;
+  }
+
+  .image-wrapper {
+    position: relative;
+    width: 300px;
+    height: 180px;
+
+    border: 1px solid white;
+    margin-bottom: 1em;
+
+    .loading {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+
+      width: 100%;
+      padding: 0.5em 0;
+
+      z-index: 102;
+
+      background-color: rgba(black, 0.75);
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .car-preview .image-wrapper {
+    width: 20em;
+    height: 13em;
+  }
 }
 </style>

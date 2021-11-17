@@ -140,6 +140,15 @@ export default defineComponent({
         if (lastStock.count > 1) lastStock.count--;
         else this.store.stockList.splice(-1);
       }
+
+      // if (keyName == 'arrowdown') {
+      //   const chosenVehicle = this.store.chosenCar || this.store.chosenLoco;
+
+      //   if(!chosenVehicle) return;
+
+      //   ev.preventDefault();
+
+      // }
     });
 
     this.onLocoPowerChange('loco-e');
