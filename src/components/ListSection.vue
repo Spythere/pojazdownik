@@ -1,5 +1,11 @@
 <template>
   <div class="bottom">
+    <div class="bg-dimmer" v-if="isRandomizerCardOpen"></div>
+
+    <transition name="card-anim">
+      <randomizer-card v-if="isRandomizerCardOpen" />
+    </transition>
+
     <section class="image">
       <div class="image__wrapper">
         <div
@@ -17,13 +23,15 @@
             @load="onImageLoad"
             @click="onImageClick"
           />
-          <!-- <img
-            v-if="store.chosenCar"
-            :src="store.chosenCar.imageSrc"
-            :alt="store.chosenCar.type"
-            @load="onImageLoad"
-            @click="onImageClick"
-          /> -->
+        </div>
+      </div>
+
+      <div class="brief-info" v-if="store.chosenLoco || store.chosenCar">
+        <b class="text--accent">{{ (store.chosenLoco || store.chosenCar)?.type }}</b>
+        <div>{{ vehicleTypes[store.chosenLoco?.power || store.chosenCar?.useType || 'loco-e'] }}</div>
+        <div>
+          {{ (store.chosenCar || store.chosenLoco)?.length }}m | {{ (store.chosenCar || store.chosenLoco)?.mass }}t |
+          {{ (store.chosenCar || store.chosenLoco)?.maxSpeed }} km/h
         </div>
       </div>
     </section>
@@ -34,11 +42,14 @@
       <div class="stock-list_buttons">
         <button class="btn" @click="downloadStock">POBIERZ POCIĄG</button>
         <button class="btn" @click="resetStock">ZRESETUJ LISTĘ</button>
+        <span></span>
+        <button class="btn" @click="shuffleCars">TASUJ WAGONY</button>
+        <button class="btn" @click="openRandomizerCard">LOSUJ SKŁAD</button>
       </div>
       <div class="stock-list_specs">
-        Masa: <span class="text--accent">{{ totalMass }}</span> t | Długość:
-        <span class="text--accent">{{ totalLength }}</span>
-        m
+        Masa: <span class="text--accent">{{ totalMass }}t</span> | Długość:
+        <span class="text--accent">{{ totalLength }}m</span>
+        | Vmax pociągu: <span class="text--accent">{{ maxStockSpeed }} km/h</span>
       </div>
 
       <div class="warnings">
@@ -49,6 +60,8 @@
         <div class="warning" v-if="warnings.trainTooLong.value">Ten skład jest za długi!</div>
 
         <div class="warning" v-if="warnings.trainTooHeavy.value">Ten skład jest za ciężki!</div>
+
+        <div class="warning" v-if="warnings.tooManyLocos.value">Ten skład posiada za dużo pojazdów trakcyjnych!</div>
       </div>
 
       <ul>
@@ -72,15 +85,13 @@
             @dragover="allowDrop"
             draggable="true"
           >
-            <span v-if="stock.supportersOnly" style="color: salmon"> *S* </span>
-            <span>
+            <span class="stock__type" :class="{ supporter: stock.supportersOnly }">
               {{ stock.isLoco ? stock.type : getCarSpecFromType(stock.type) }}
             </span>
-            <span v-if="stock.cargo"> &nbsp; ({{ stock.cargo?.id }}) </span>
-            &nbsp;
-            <span> {{ stock.length }}m</span>
-            &nbsp;
-            <span>{{ stock.cargo ? stock.cargo.totalMass : stock.mass }}t</span>
+            <span class="stock__cargo" v-if="stock.cargo"> {{ stock.cargo.id }} </span>
+            <span class="stock__length"> {{ stock.length }}m </span>
+            <span class="stock__mass">{{ stock.cargo ? stock.cargo.totalMass : stock.mass }}t </span>
+            <span class="stock__speed"> {{ stock.maxSpeed }}km/h </span>
           </div>
 
           <div class="item-actions">
@@ -110,12 +121,23 @@
 </template>
 
 <script lang="ts">
-import { computed, ComputedRef, defineComponent, inject } from 'vue';
+import { computed, ComputedRef, defineComponent, inject, provide, reactive, ref } from 'vue';
 import { ICarWagon, ILocomotive, IStore } from '@/types';
+import RandomizerCard from './RandomizerCard.vue';
 
 export default defineComponent({
+  components: { RandomizerCard },
   setup() {
     const store = inject('Store') as IStore;
+
+    const isRandomizerCardOpen = ref(false);
+
+    provide('isCardOpen', isRandomizerCardOpen);
+    provide('chosenLength', ref(350));
+    provide('chosenMass', ref(1000));
+    provide('chosenLocoType', ref('loco-e'));
+    provide('chosenCarTypes', reactive([]));
+    provide('includeSupporterVehicles', ref(false));
 
     return {
       store,
@@ -131,7 +153,10 @@ export default defineComponent({
         locoNotSuitable: ComputedRef<boolean>;
         trainTooLong: ComputedRef<boolean>;
         trainTooHeavy: ComputedRef<boolean>;
+        tooManyLocos: ComputedRef<boolean>;
       },
+
+      isRandomizerCardOpen,
 
       hasSupporterOnlyVehicle: computed(() => store.stockList.some((stock) => stock.supportersOnly)),
     };
@@ -146,12 +171,25 @@ export default defineComponent({
       higher: require('@/assets/higher-icon.svg'),
     },
 
+    imageOffsetY: 0,
+
     draggedVehicleID: -1,
+
+    vehicleTypes: {
+      'loco-e': 'ELEKTROWÓZ',
+      'loco-s': 'SPALINOWÓZ',
+      'loco-ezt': 'ELEKTRYCZNY ZESP. TRAKCYJNY',
+      'loco-szt': 'SPALINOWY ZESP. TRAKCYJNY',
+      'car-passenger': 'WAGON PASAŻERSKI',
+      'car-cargo': 'WAGON TOWAROWY',
+    } as { [key: string]: string },
   }),
 
   methods: {
     onListItemFocus(vehicleID: number) {
       const vehicle = this.store.stockList[vehicleID];
+
+      if ((this.store.chosenCar || this.store.chosenLoco)?.imageSrc != vehicle.imgSrc) this.store.imageLoading = true;
 
       if (this.store.showSupporter && !vehicle.supportersOnly) {
         this.store.showSupporter = false;
@@ -165,7 +203,6 @@ export default defineComponent({
         this.store.chosenCar = null;
         this.store.chosenCargo = null;
 
-        // this.store.onLocoPowerChange(vehicle.useType);
         return;
       }
 
@@ -174,8 +211,6 @@ export default defineComponent({
       this.store.chosenLoco = null;
       this.store.chosenCar = this.carDataList.find((v) => v.type == vehicle.type) || null;
       this.store.chosenCargo = vehicle.cargo || null;
-
-      // this.chose = vehicle.useType;
     },
 
     getCarSpecFromType(typeStr: string) {
@@ -226,12 +261,32 @@ export default defineComponent({
       this.store.stockList[index + 1] = tempStock;
     },
 
+    shuffleCars() {
+      const availableIndexes = this.store.stockList.reduce((acc, stock, i) => {
+        if (!stock.isLoco) acc.push(i);
+
+        return acc;
+      }, [] as number[]);
+
+      for (let i = 0; i < this.store.stockList.length; i++) {
+        if (!availableIndexes.includes(i)) continue;
+
+        availableIndexes.splice(i, -1);
+
+        const randAvailableIndex = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
+        const tempSwap = this.store.stockList[randAvailableIndex];
+
+        this.store.stockList[randAvailableIndex] = this.store.stockList[i];
+        this.store.stockList[i] = tempSwap;
+      }
+    },
+
+    openRandomizerCard() {
+      this.isRandomizerCardOpen = true;
+    },
+
     downloadStock() {
-      if (
-        this.warnings.locoNotSuitable.value ||
-        this.warnings.trainTooLong.value ||
-        this.warnings.trainTooHeavy.value
-      ) {
+      if (Object.values(this.warnings).some((v) => v.value == true)) {
         ``;
         const allowDownload = confirm(
           'Jazda tym pociągiem może być niezgodna z regulaminem symulatora! Czy na pewno chcesz kontynuować?'
@@ -310,6 +365,17 @@ export default defineComponent({
 <style lang="scss" scoped>
 @import '../styles/global';
 
+.bg-dimmer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+
+  background: rgba(black, 0.85);
+  z-index: 100;
+}
+
 .bottom {
   display: flex;
   justify-content: space-between;
@@ -348,6 +414,9 @@ export default defineComponent({
   flex-grow: 2;
   padding: 0 1em 0 0;
 
+  display: flex;
+  flex-direction: column;
+
   &__wrapper {
     max-width: 380px;
     width: 22em;
@@ -367,6 +436,8 @@ export default defineComponent({
     img {
       width: 100%;
       height: 100%;
+
+      cursor: pointer;
     }
 
     .empty-message,
@@ -390,17 +461,42 @@ export default defineComponent({
   }
 }
 
+.brief-info {
+  text-align: center;
+
+  margin: 1em 0;
+
+  font-size: 1.1em;
+
+  b {
+    font-size: 1.2em;
+  }
+
+  div {
+    margin: 0.25em 0;
+  }
+}
+
 .stock-list {
   flex-grow: 3;
 
   width: 100%;
 
   &_buttons {
-    margin-bottom: 0.5em;
+    display: flex;
+
+    span {
+      flex-grow: 2;
+    }
+
     button {
       font-size: 0.9em;
       padding: 0.4em 0.55em;
-      margin-right: 0.5em;
+      margin: 0 0.5em 1em 0;
+
+      &:nth-child(5) {
+        margin-right: 0;
+      }
 
       &:focus {
         color: $accentColor;
@@ -411,6 +507,9 @@ export default defineComponent({
 
   ul {
     margin-top: 1em;
+
+    max-height: 500px;
+    overflow: auto;
   }
 
   ul li {
@@ -426,19 +525,35 @@ export default defineComponent({
       color: $accentColor;
     }
 
+    &:hover .item-content {
+      color: $accentColor;
+    }
+
     display: flex;
     align-items: center;
     justify-content: space-between;
 
     .item-content {
-      /* background: whitesmoke; */
+      display: flex;
+      flex-wrap: wrap;
+
       color: white;
       font-weight: 700;
-      margin: 1em 0;
+      margin: 0.5em 0;
 
-      margin-right: 0.5em;
+      transition: color 100ms;
 
-      /* max-width: 200px; */
+      span {
+        padding: 0.5em;
+        margin-right: 0.25em;
+        margin-top: 0.25em;
+      }
+
+      @media screen and (max-width: 800px) {
+        span {
+          padding: 0.25em;
+        }
+      }
     }
 
     .item-actions {
@@ -470,6 +585,41 @@ export default defineComponent({
         margin: 0 0.25em;
       }
     }
+  }
+}
+
+.stock {
+  &__type {
+    background-color: #222;
+
+    &.supporter {
+      background-color: #ff887b;
+    }
+  }
+
+  &__cargo {
+    background-color: #333;
+  }
+
+  &__length,
+  &__mass,
+  &__speed {
+    background-color: #555;
+  }
+}
+
+.card-anim {
+  &-enter {
+    opacity: 0;
+  }
+
+  &-enter-active,
+  &-leave-active {
+    transition: opacity 300ms;
+  }
+
+  &-leave-to {
+    opacity: 0;
   }
 }
 </style>

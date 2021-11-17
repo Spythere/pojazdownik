@@ -142,7 +142,6 @@ export const carDataList = computed(() => Object.keys(vehicleDataJSON).reduce(
                         id: cargo.split(":")[0],
                         totalMass: Number(cargo.split(":")[1]),
                     })) : [],
-
                 mass: carPropsData?.mass || 0,
                 length: carPropsData?.length || 0,
             });
@@ -271,6 +270,18 @@ export const warnings = {
         if (!isTrainPassenger.value && headingLoco.type.startsWith("ET") && totalMass.value > 4000) return true;
 
         if (headingLoco.type.startsWith("SM") && totalMass.value > 2400) return true;
+
+        return false;
+    }),
+
+    tooManyLocos: computed(() => {
+        if (Store.stockList.reduce((acc, stock) => {
+            if (!stock.isLoco) return acc;
+
+            acc += stock.count;
+
+            return acc;
+        }, 0) > 2) return true;
 
         return false;
     })

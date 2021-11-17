@@ -55,6 +55,7 @@ export default defineComponent({
       if (this.store.vehiclePreviewSrc == '') return;
 
       if (ev.key.toLowerCase() == 'escape') this.store.vehiclePreviewSrc = '';
+      // if(ev.key.toLowerCase() == 'enter')
     });
 
     // window.focus();

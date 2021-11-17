@@ -125,91 +125,20 @@ export default defineComponent({
   },
 
   mounted() {
-    document.addEventListener('wheel', (ev) => {
-      if (!ev.target) return;
-
-      const selectAttr = (ev.target as Element).attributes.getNamedItem('data-select');
-
-      if (!selectAttr) return;
-
-      if (selectAttr.value == 'loco') {
-        const chosenLoco = this.store.chosenLoco;
-
-        if (!chosenLoco) {
-          this.store.chosenLoco = this.locoOptions[0];
-          this.onLocoTypeChange();
-          return;
-        }
-
-        if (ev.deltaY > 0) {
-          const nextOptionIndex = this.locoOptions.findIndex((opt) => opt.type == chosenLoco.type) + 1;
-
-          if (nextOptionIndex >= this.locoOptions.length) return;
-
-          this.store.chosenLoco = this.locoOptions[nextOptionIndex];
-          this.onLocoTypeChange();
-        } else {
-          const prevOptionIndex = this.locoOptions.findIndex((opt) => opt.type == chosenLoco.type) - 1;
-
-          if (prevOptionIndex < 0) return;
-
-          this.store.chosenLoco = this.locoOptions[prevOptionIndex];
-          this.onLocoTypeChange();
-        }
+    document.addEventListener('keydown', (ev) => {
+      const keyName = ev.key.toLowerCase();
+      if (keyName == 'enter') {
+        ev.preventDefault();
+        this.addVehicle();
       }
 
-      if (selectAttr.value == 'car') {
-        const chosenCar = this.store.chosenCar;
+      if (keyName == 'backspace') {
+        if (this.store.stockList.length == 0) return;
 
-        if (!chosenCar) {
-          this.store.chosenCar = this.carOptions[0];
-          this.onCarTypeChange();
+        const lastStock = this.store.stockList.slice(-1)[0];
 
-          return;
-        }
-
-        if (ev.deltaY > 0) {
-          const nextOptionIndex = this.carOptions.findIndex((opt) => opt.type == chosenCar.type) + 1;
-
-          if (nextOptionIndex >= this.carOptions.length) return;
-
-          this.store.chosenCar = this.carOptions[nextOptionIndex];
-          this.onCarTypeChange();
-        } else {
-          const prevOptionIndex = this.carOptions.findIndex((opt) => opt.type == chosenCar.type) - 1;
-
-          if (prevOptionIndex < 0) return;
-
-          this.store.chosenCar = this.carOptions[prevOptionIndex];
-          this.onCarTypeChange();
-        }
-      }
-
-      if (selectAttr.value == 'cargo') {
-        if (!this.store.chosenCar) return;
-
-        if (!this.store.chosenCar.cargoList || this.store.chosenCar.cargoList.length == 0) return;
-
-        const chosenCargoList = this.store.chosenCar.cargoList;
-
-        if (!this.store.chosenCargo) {
-          this.store.chosenCargo = chosenCargoList[0];
-          return;
-        }
-
-        if (ev.deltaY > 0) {
-          const nextOptionIndex = chosenCargoList.findIndex((cargo) => cargo.id == this.store.chosenCargo?.id) + 1;
-
-          if (nextOptionIndex >= chosenCargoList.length) return;
-
-          this.store.chosenCargo = chosenCargoList[nextOptionIndex];
-        } else {
-          const prevOptionIndex = chosenCargoList.findIndex((cargo) => cargo.id == this.store.chosenCargo?.id) - 1;
-
-          if (prevOptionIndex < 0) return;
-
-          this.store.chosenCargo = chosenCargoList[prevOptionIndex];
-        }
+        if (lastStock.count > 1) lastStock.count--;
+        else this.store.stockList.splice(-1);
       }
     });
 
