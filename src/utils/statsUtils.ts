@@ -11,7 +11,6 @@ export const verifyTrainSpec = (stockList: IStock[], vehicleMass: number, vehicl
     const headLoco = stockList[0];
     const carList = stockList.filter(stock => !stock.isLoco);
 
-    console.log(carList, vehicleUseType);
 
 
     const isTrainPassenger = carList.length != 0
@@ -19,6 +18,5 @@ export const verifyTrainSpec = (stockList: IStock[], vehicleMass: number, vehicl
         && vehicleUseType == EVehicleUseType.CAR_PASSENGER
         : false;
 
-    console.log("Skład pasażerski: " + isTrainPassenger);
-    console.log("Skład towarowy: " + !isTrainPassenger);
+
 }

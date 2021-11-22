@@ -12,9 +12,9 @@ export interface IStore {
   stockList: IStock[];
   cargoOptions: any[][];
 
-  // locoOptions: ILocomotive[];
-  // carOptions: ICarWagon[];
+  chosenStockListIndex: number;
 
+  swapVehicles: boolean;
   vehiclePreviewSrc: string;
 }
 

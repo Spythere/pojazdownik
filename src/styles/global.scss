@@ -75,14 +75,20 @@ button.btn {
     outline: none;
     background: none;
 
-
     transition: all 250ms;
 
     &:hover {
         color: $accentColor;
         border-color: $accentColor;
     }
+
+    &--text {
+        font-weight: bold;
+        transition: all 250ms;
+    }
 }
+
+
 
 button.btn-rect {
     width: 1.5em;
@@ -116,7 +122,7 @@ select {
     color: white;
     font-size: 1em;
 
-    width: 20em;
+    width: 18em;
 }
 
 option {

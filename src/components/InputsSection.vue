@@ -29,9 +29,13 @@
             </option>
           </select>
 
-          <button class="btn--add" @click="addVehicle">
+          <button class="btn--add" @click="addVehicle" title="Dodaj pojazd">
             <img :src="icons.add" alt="add vehicle" />
           </button>
+
+          <!-- <button class="btn--swap" @click="prepareSwapVehicles" title="Zamień pojazdy">
+            <img :src="icons.swap" alt="swap vehicle" />
+          </button> -->
         </div>
 
         <div class="input_checkbox">
@@ -41,6 +45,8 @@
         </div>
       </div>
     </div>
+
+    <div class="spacer"></div>
 
     <div class="input inputs_car">
       <div class="input_container">
@@ -71,9 +77,13 @@
             </option>
           </select>
 
-          <button class="btn--add" @click="addVehicle">
+          <button class="btn--add" @click="addVehicle" title="Dodaj pojazd">
             <img :src="icons.add" alt="add vehicle" />
           </button>
+
+          <!-- <button class="btn--swap" @click="prepareSwapVehicles" title="Zamień pojazdy">
+            <img :src="icons.swap" alt="swap vehicle" />
+          </button> -->
         </div>
 
         <div class="input_list cargo">
@@ -88,8 +98,8 @@
             v-model="store.chosenCargo"
           >
             <option :value="null" v-if="!store.chosenCar || !store.chosenCar.loadable">brak dostępnych ładunków</option>
-
             <option :value="null" v-else>próżny</option>
+
             <option v-for="cargo in store.chosenCar?.cargoList" :value="cargo" :key="cargo.id">
               {{ cargo.id }}
             </option>
@@ -104,10 +114,6 @@
 import { ICarWagon, ILocomotive, IStore } from '@/types';
 import { defineComponent, inject } from 'vue';
 
-function isLocomotive(vehicle: ILocomotive | ICarWagon): vehicle is ILocomotive {
-  return (vehicle as ILocomotive).power !== undefined;
-}
-
 export default defineComponent({
   setup() {
     const store = inject('Store') as IStore;
@@ -121,6 +127,7 @@ export default defineComponent({
       totalMass: inject('totalMass') as number,
       maxStockSpeed: inject('maxStockSpeed') as number,
       maxAllowedSpeed: inject('maxAllowedSpeed') as number,
+      isLocomotive: inject('isLocomotive') as (vehicle: ILocomotive | ICarWagon) => vehicle is ILocomotive,
     };
   },
 
@@ -158,6 +165,7 @@ export default defineComponent({
   data: () => ({
     icons: {
       add: require('@/assets/add-icon.svg'),
+      swap: require('@/assets/swap-icon.svg'),
     },
     locoLabels: [
       {
@@ -207,10 +215,12 @@ export default defineComponent({
   },
 
   methods: {
+    prepareSwapVehicles() {
+      this.store.swapVehicles = true;
+    },
+
     onShowSupporterChange() {
       this.store.showSupporter = !this.store.showSupporter;
-
-      console.log(this.store.showSupporter);
 
       if (this.store.showSupporter) {
         const chosenVehicle = this.store.chosenCar || this.store.chosenLoco;
@@ -229,6 +239,7 @@ export default defineComponent({
       this.store.imageLoading = false;
 
       this.store.chosenLocoPower = inputId;
+      this.store.chosenStockListIndex = -1;
 
       (this.$refs['loco-select'] as HTMLElement).focus();
     },
@@ -238,6 +249,7 @@ export default defineComponent({
       this.store.imageLoading = false;
 
       this.store.chosenCarUseType = inputId;
+      this.store.chosenStockListIndex = -1;
 
       if (inputId == 'car-passenger') this.store.chosenCargo = null;
     },
@@ -245,6 +257,7 @@ export default defineComponent({
     onCarTypeChange() {
       this.store.chosenCargo = null;
       this.store.chosenLoco = null;
+      this.store.chosenStockListIndex = -1;
 
       this.store.imageLoading = true;
     },
@@ -252,6 +265,7 @@ export default defineComponent({
     onLocoTypeChange() {
       this.store.chosenCargo = null;
       this.store.chosenCar = null;
+      this.store.chosenStockListIndex = -1;
 
       this.store.imageLoading = true;
     },
@@ -264,13 +278,13 @@ export default defineComponent({
       const previousStock =
         this.store.stockList.length > 0 ? this.store.stockList[this.store.stockList.length - 1] : null;
 
-      if (isLocomotive(vehicle) && previousStock && previousStock.type == vehicle.type) {
+      if (this.isLocomotive(vehicle) && previousStock && previousStock.type == vehicle.type) {
         this.store.stockList[this.store.stockList.length - 1].count++;
         return;
       }
 
       if (
-        !isLocomotive(vehicle) &&
+        !this.isLocomotive(vehicle) &&
         previousStock &&
         previousStock.type == vehicle.type &&
         previousStock.cargo?.id == this.store.chosenCargo?.id
@@ -285,16 +299,18 @@ export default defineComponent({
         length: vehicle.length,
         mass: vehicle.mass,
         maxSpeed: vehicle.maxSpeed,
-        isLoco: isLocomotive(vehicle),
+        isLoco: this.isLocomotive(vehicle),
         cargo:
-          !isLocomotive(vehicle) && vehicle.loadable && this.store.chosenCargo ? this.store.chosenCargo : undefined,
+          !this.isLocomotive(vehicle) && vehicle.loadable && this.store.chosenCargo
+            ? this.store.chosenCargo
+            : undefined,
         count: 1,
         imgSrc: vehicle.imageSrc,
-        useType: isLocomotive(vehicle) ? vehicle.power : vehicle.useType,
+        useType: this.isLocomotive(vehicle) ? vehicle.power : vehicle.useType,
         supportersOnly: vehicle.supportersOnly,
       };
 
-      if (isLocomotive(vehicle) && this.store.stockList.length > 0 && !this.store.stockList[0].isLoco)
+      if (this.isLocomotive(vehicle) && this.store.stockList.length > 0 && !this.store.stockList[0].isLoco)
         this.store.stockList.unshift(stockObj);
       else this.store.stockList.push(stockObj);
     },

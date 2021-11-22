@@ -20,12 +20,19 @@ export const Store: IStore = reactive({
 
     stockList: [] as IStock[],
     cargoOptions: [] as any[][],
+
+    swapVehicles: false,
+
+    chosenStockListIndex: -1,
     // locoOptions: [] as ILocomotive[],
     // carOptions: [] as ICarWagon[],
 
     vehiclePreviewSrc: ""
 })
 
+export function isLocomotive(vehicle: ILocomotive | ICarWagon): vehicle is ILocomotive {
+    return (vehicle as ILocomotive).power !== undefined;
+}
 
 export const locoDataList = computed(() => Object.keys(vehicleDataJSON).reduce(
     (acc, vehicleTypeKey) => {

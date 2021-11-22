@@ -3,12 +3,12 @@
     <!-- <button class="btn" @click="closeCard">X</button> -->
 
     <div class="wrapper">
-      <h1>LOSUJ SKŁAD TOWAROWY <img :src="icons.randomize" alt="losuj skład" /></h1>
+      <!-- <h1>LOSUJ SKŁAD <img :src="icons.randomize" alt="losuj skład" /></h1>
 
       <h3>
         Skład zostanie dołączony do dodanej na liście lokomotywy czołowej bądź wygenerowany z losową w przypadku jej
         braku
-      </h3>
+      </h3> -->
 
       <div class="car-preview">
         <div class="image-wrapper">
@@ -20,7 +20,7 @@
         </b>
         <b v-else>Podgląd typu wagonu</b>
 
-        <div v-if="focusedCar">{{ cargoUsage[focusedCar.type.split('_')[0]] }}</div>
+        <div v-if="focusedCar">{{ carUsage[focusedCar.type.split('_')[0]] }}</div>
         <div v-else>Najedź na rodzaj wagonu aby wyświetlić informacje</div>
       </div>
 
@@ -29,7 +29,20 @@
         <div>
           <button
             class="btn choice-btn"
-            v-for="carType in cargoTypeList"
+            v-for="carType in carTypeList.filter((_, i) => i < 15)"
+            :key="carType"
+            @click="toggleCarType(carType)"
+            @mouseenter="displayPreview(carType)"
+            :class="{ chosen: chosenCarTypes.includes(carType) }"
+          >
+            {{ carType }}
+          </button>
+        </div>
+
+        <div style="margin-top: 0.5em">
+          <button
+            class="btn choice-btn"
+            v-for="carType in carTypeList.filter((_, i) => i >= 15)"
             :key="carType"
             @click="toggleCarType(carType)"
             @mouseenter="displayPreview(carType)"
@@ -99,11 +112,11 @@ export default defineComponent({
       locoDataList: inject('locoDataList') as ILocomotive[],
       chosenLength: inject('chosenLength') as number,
       chosenMass: inject('chosenMass') as number,
-      cargoCarList: carDataList.value.filter((car) => car.useType == 'car-cargo'),
-      cargoTypeList: carDataList.value.reduce((list, car) => {
+      carDataList,
+      carTypeList: carDataList.value.reduce((list, car) => {
         const type = car.type.split('_')[0];
 
-        if (car.useType != 'car-cargo' || list.includes(type)) return list;
+        if (list.includes(type)) return list;
 
         list.push(type);
 
@@ -125,7 +138,22 @@ export default defineComponent({
     focusedCar: null as ICarWagon | null,
     isPreviewLoading: false,
 
-    cargoUsage: {
+    carUsage: {
+      Gor89: 'wagon pasażerski',
+      Gor77: 'wagon pasażerski',
+      Bau84: 'wagon pasażerski',
+      '612a': 'wagon pasażerski',
+      '504a': 'wagon pasażerski',
+      '304c': 'wagon pasażerski',
+      '159a': 'wagon pasażerski',
+      '158a': 'wagon pasażerski',
+      '154a': 'wagon pasażerski',
+      '120a': 'wagon pasażerski',
+      '113a': 'wagon pasażerski',
+      '112a': 'wagon pasażerski',
+      '111a': 'wagon pasażerski',
+      '110a': 'wagon pasażerski',
+      '101a': 'wagon pasażerski',
       '203V': 'kruszywo, kamień wapienny, odpady kopalniane',
       '208Kf': 'drobnica, ładunki sypkie',
       '209c': 'wagon techniczny',
@@ -150,7 +178,7 @@ export default defineComponent({
     },
 
     displayPreview(carType: string) {
-      const list = this.cargoCarList.filter((car) => car.type.includes(carType));
+      const list = this.carDataList.filter((car) => car.type.includes(carType));
       const randIndex = Math.floor(Math.random() * list.length);
 
       if (this.focusedCar?.type == list[randIndex].type) return;
@@ -196,7 +224,7 @@ export default defineComponent({
         this.store.stockList.length = 0;
 
         const locoSet = this.locoDataList
-          .filter((loco) => !loco.type.startsWith('EP') && (loco.power == 'loco-e' || loco.power == 'loco-s'))
+          .filter((loco) => loco.power == 'loco-e' || loco.power == 'loco-s')
           .filter((loco) => (!this.includeSupporterVehicles && loco.supportersOnly ? false : true));
 
         const randLoco = locoSet[Math.floor(Math.random() * locoSet.length)];
@@ -207,7 +235,7 @@ export default defineComponent({
       totalStockLength += this.store.stockList[0].length;
       totalStockMass += this.store.stockList[0].mass;
 
-      let availableCarsSet = this.cargoCarList.filter((cargoCar) => {
+      let availableCarsSet = this.carDataList.filter((cargoCar) => {
         if (!this.includeSupporterVehicles && cargoCar.supportersOnly) return false;
 
         if (this.chosenCarTypes.find((carType) => cargoCar.type.includes(carType))) return true;
@@ -363,6 +391,19 @@ input {
 
 input {
   font-size: 1.2em;
+}
+
+.car-choice div {
+  display: grid;
+
+  grid-template-columns: repeat(5, 1fr);
+  justify-content: center;
+
+  @media screen and (max-width: 800px) {
+    /* display: flex; */
+    /* flex-wrap: wrap; */
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 button.choice-btn {

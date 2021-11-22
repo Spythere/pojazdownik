@@ -46,10 +46,17 @@
         <button class="btn" @click="shuffleCars">TASUJ WAGONY</button>
         <button class="btn" @click="openRandomizerCard">LOSUJ SKŁAD</button>
       </div>
+
       <div class="stock-list_specs">
         Masa: <span class="text--accent">{{ totalMass }}t</span> | Długość:
         <span class="text--accent">{{ totalLength }}m</span>
         | Vmax pociągu: <span class="text--accent">{{ maxStockSpeed }} km/h</span>
+      </div>
+
+      <div class="stock-list_string">
+        <button class="btn--text" v-if="store.stockList.length > 0" @click="copyToClipboard">
+          Skopiuj pociąg w formie tekstowej do schowka
+        </button>
       </div>
 
       <div class="warnings">
@@ -64,7 +71,7 @@
         <div class="warning" v-if="warnings.tooManyLocos.value">Ten skład posiada za dużo pojazdów trakcyjnych!</div>
       </div>
 
-      <ul>
+      <ul ref="stock-list">
         <li v-if="store.stockList.length == 0" class="list-empty">
           <div class="item-content">Lista pojazdów jest pusta!</div>
         </li>
@@ -72,7 +79,7 @@
         <li
           v-for="(stock, i) in store.stockList"
           :key="stock.type + i"
-          :class="{ loco: stock.isLoco }"
+          :class="{ loco: stock.isLoco, selected: store.chosenStockListIndex == i }"
           :data-id="i"
           tabindex="0"
           @focus="onListItemFocus(i)"
@@ -127,6 +134,7 @@ import RandomizerCard from './RandomizerCard.vue';
 
 export default defineComponent({
   components: { RandomizerCard },
+
   setup() {
     const store = inject('Store') as IStore;
 
@@ -185,9 +193,32 @@ export default defineComponent({
     } as { [key: string]: string },
   }),
 
+  computed: {
+    stockString() {
+      return this.store.stockList
+        .map((stock) => {
+          let s = stock.isLoco || !stock.cargo ? stock.type : `${stock.type}:${stock.cargo.id}`;
+
+          let final = s;
+          for (let i = 0; i < stock.count - 1; i++) final += `;${s}`;
+
+          return final;
+        })
+        .join(';');
+    },
+  },
+
   methods: {
+    copyToClipboard() {
+      navigator.clipboard.writeText(this.stockString);
+
+      alert('Pociąg został skopiowany do schowka!');
+    },
+
     onListItemFocus(vehicleID: number) {
       const vehicle = this.store.stockList[vehicleID];
+
+      this.store.chosenStockListIndex = vehicleID;
 
       if ((this.store.chosenCar || this.store.chosenLoco)?.imageSrc != vehicle.imgSrc) this.store.imageLoading = true;
 
@@ -202,15 +233,17 @@ export default defineComponent({
 
         this.store.chosenCar = null;
         this.store.chosenCargo = null;
+      } else {
+        this.store.chosenCarUseType = vehicle.useType;
 
-        return;
+        this.store.chosenLoco = null;
+        this.store.chosenCar = this.carDataList.find((v) => v.type == vehicle.type) || null;
+        this.store.chosenCargo = vehicle.cargo || null;
       }
 
-      this.store.chosenCarUseType = vehicle.useType;
-
-      this.store.chosenLoco = null;
-      this.store.chosenCar = this.carDataList.find((v) => v.type == vehicle.type) || null;
-      this.store.chosenCargo = vehicle.cargo || null;
+      if (this.store.swapVehicles) {
+        this.store.swapVehicles = false;
+      }
     },
 
     getCarSpecFromType(typeStr: string) {
@@ -299,18 +332,7 @@ export default defineComponent({
 
       if (!fileName) return;
 
-      const stockString = this.store.stockList
-        .map((stock) => {
-          let s = stock.isLoco || !stock.cargo ? stock.type : `${stock.type}:${stock.cargo.id}`;
-
-          let final = s;
-          for (let i = 0; i < stock.count - 1; i++) final += `;${s}`;
-
-          return final;
-        })
-        .join(';');
-
-      const blob = new Blob([stockString]);
+      const blob = new Blob([this.stockString]);
       const file = fileName + '.con';
 
       var e = document.createEvent('MouseEvents'),
@@ -482,6 +504,11 @@ export default defineComponent({
 
   width: 100%;
 
+  &_string {
+    margin-top: 1em;
+    font-weight: bold;
+  }
+
   &_buttons {
     display: flex;
 
@@ -519,6 +546,10 @@ export default defineComponent({
     &.list-empty {
       border: 1px solid whitesmoke;
       padding: 0 0.5em;
+    }
+
+    &.selected .item-content {
+      color: $accentColor;
     }
 
     &:focus .item-content {
