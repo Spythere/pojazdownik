@@ -9,6 +9,7 @@
             :key="label.id"
             @click="onLocoPowerChange(label.id)"
             :class="{ checked: store.chosenLocoPower == label.id }"
+            data-ignore-outside="1"
           >
             {{ label.title }}
           </button>
@@ -21,6 +22,7 @@
             v-model="store.chosenLoco"
             @change="onLocoTypeChange"
             data-select="loco"
+            data-ignore-outside="1"
           >
             <option :value="null" disabled>Wybierz pojazd z listy</option>
             <option v-for="loco in locoOptions" :value="loco" :key="loco.type">
@@ -30,7 +32,7 @@
           </select>
 
           <button class="btn--add" @click="addVehicle" title="Dodaj pojazd">
-            <img :src="icons.add" alt="add vehicle" />
+            <img :src="icons.add" alt="add vehicle" data-ignore-outside="1" />
           </button>
 
           <!-- <button class="btn--swap" @click="prepareSwapVehicles" title="Zamień pojazdy">
@@ -39,7 +41,7 @@
         </div>
 
         <div class="input_checkbox">
-          <button @click="onShowSupporterChange" :class="{ checked: this.store.showSupporter }">
+          <button @click="onShowSupporterChange" :class="{ checked: this.store.showSupporter }" data-ignore-outside="1">
             Pokaż tylko pojazdy dla supporterów
           </button>
         </div>
@@ -57,6 +59,7 @@
             :key="label.id"
             @click="onCarUseTypeChange(label.id)"
             :class="{ checked: store.chosenCarUseType == label.id }"
+            data-ignore-outside="1"
           >
             {{ label.title }}
           </button>
@@ -69,6 +72,7 @@
             v-model="store.chosenCar"
             @change="onCarTypeChange"
             data-select="car"
+            data-ignore-outside="1"
           >
             <option :value="null" disabled>Wybierz wagon z listy</option>
             <option v-for="car in carOptions" :value="car" :key="car.type">
@@ -78,7 +82,7 @@
           </select>
 
           <button class="btn--add" @click="addVehicle" title="Dodaj pojazd">
-            <img :src="icons.add" alt="add vehicle" />
+            <img :src="icons.add" alt="add vehicle" data-ignore-outside="1" />
           </button>
 
           <!-- <button class="btn--swap" @click="prepareSwapVehicles" title="Zamień pojazdy">
@@ -95,6 +99,7 @@
               !store.chosenCar
             "
             data-select="cargo"
+            data-ignore-outside="1"
             v-model="store.chosenCargo"
           >
             <option :value="null" v-if="!store.chosenCar || !store.chosenCar.loadable">brak dostępnych ładunków</option>
@@ -239,7 +244,7 @@ export default defineComponent({
       this.store.imageLoading = false;
 
       this.store.chosenLocoPower = inputId;
-      this.store.chosenStockListIndex = -1;
+      // this.store.chosenStockListIndex = -1;
 
       (this.$refs['loco-select'] as HTMLElement).focus();
     },
@@ -249,7 +254,7 @@ export default defineComponent({
       this.store.imageLoading = false;
 
       this.store.chosenCarUseType = inputId;
-      this.store.chosenStockListIndex = -1;
+      // this.store.chosenStockListIndex = -1;
 
       if (inputId == 'car-passenger') this.store.chosenCargo = null;
     },
@@ -257,7 +262,7 @@ export default defineComponent({
     onCarTypeChange() {
       this.store.chosenCargo = null;
       this.store.chosenLoco = null;
-      this.store.chosenStockListIndex = -1;
+      // this.store.chosenStockListIndex = -1;
 
       this.store.imageLoading = true;
     },
@@ -265,7 +270,7 @@ export default defineComponent({
     onLocoTypeChange() {
       this.store.chosenCargo = null;
       this.store.chosenCar = null;
-      this.store.chosenStockListIndex = -1;
+      // this.store.chosenStockListIndex = -1
 
       this.store.imageLoading = true;
     },
@@ -274,6 +279,45 @@ export default defineComponent({
       const vehicle = this.store.chosenCar || this.store.chosenLoco;
 
       if (!vehicle) return;
+
+      const stockObj = {
+        type: vehicle.type,
+        length: vehicle.length,
+        mass: vehicle.mass,
+        maxSpeed: vehicle.maxSpeed,
+        isLoco: this.isLocomotive(vehicle),
+        cargo:
+          !this.isLocomotive(vehicle) && vehicle.loadable && this.store.chosenCargo
+            ? this.store.chosenCargo
+            : undefined,
+        count: 1,
+        imgSrc: vehicle.imageSrc,
+        useType: this.isLocomotive(vehicle) ? vehicle.power : vehicle.useType,
+        supportersOnly: vehicle.supportersOnly,
+      };
+
+      if (this.store.chosenStockListIndex != -1) {
+        let currentStock = this.store.stockList[this.store.chosenStockListIndex];
+
+        if (this.isLocomotive(vehicle) && currentStock && currentStock.type == vehicle.type) {
+          this.store.stockList[this.store.chosenStockListIndex].count++;
+          return;
+        }
+
+        if (
+          !this.isLocomotive(vehicle) &&
+          currentStock &&
+          currentStock.type == vehicle.type &&
+          currentStock.cargo?.id == this.store.chosenCargo?.id
+        ) {
+          this.store.stockList[this.store.chosenStockListIndex].count++;
+
+          return;
+        }
+
+        this.store.stockList[this.store.chosenStockListIndex] = stockObj;
+        return;
+      }
 
       const previousStock =
         this.store.stockList.length > 0 ? this.store.stockList[this.store.stockList.length - 1] : null;
@@ -293,22 +337,6 @@ export default defineComponent({
 
         return;
       }
-
-      const stockObj = {
-        type: vehicle.type,
-        length: vehicle.length,
-        mass: vehicle.mass,
-        maxSpeed: vehicle.maxSpeed,
-        isLoco: this.isLocomotive(vehicle),
-        cargo:
-          !this.isLocomotive(vehicle) && vehicle.loadable && this.store.chosenCargo
-            ? this.store.chosenCargo
-            : undefined,
-        count: 1,
-        imgSrc: vehicle.imageSrc,
-        useType: this.isLocomotive(vehicle) ? vehicle.power : vehicle.useType,
-        supportersOnly: vehicle.supportersOnly,
-      };
 
       if (this.isLocomotive(vehicle) && this.store.stockList.length > 0 && !this.store.stockList[0].isLoco)
         this.store.stockList.unshift(stockObj);

@@ -85,7 +85,11 @@
             }
           "
         >
-          DOŁĄCZ POJAZDY DLA SUPPORTERÓW
+          POJAZDY DLA SUPPORTERÓW
+        </button>
+
+        <button class="btn choice-btn" :class="{ chosen: loadableByDefault }" @click="changeLoadableByDefault">
+          DOMYŚLNIE ŁADOWNE
         </button>
       </div>
 
@@ -98,6 +102,8 @@
 <script lang="ts">
 import { ICargo, ICarWagon, ILocomotive, IStore } from '@/types';
 import { ComputedRef, defineComponent, inject } from 'vue';
+
+import carUsage from '@/data/carUsage.json';
 
 export default defineComponent({
   setup() {
@@ -137,39 +143,9 @@ export default defineComponent({
 
     focusedCar: null as ICarWagon | null,
     isPreviewLoading: false,
+    loadableByDefault: false,
 
-    carUsage: {
-      Gor89: 'wagon pasażerski',
-      Gor77: 'wagon pasażerski',
-      Bau84: 'wagon pasażerski',
-      '612a': 'wagon pasażerski',
-      '504a': 'wagon pasażerski',
-      '304c': 'wagon pasażerski',
-      '159a': 'wagon pasażerski',
-      '158a': 'wagon pasażerski',
-      '154a': 'wagon pasażerski',
-      '120a': 'wagon pasażerski',
-      '113a': 'wagon pasażerski',
-      '112a': 'wagon pasażerski',
-      '111a': 'wagon pasażerski',
-      '110a': 'wagon pasażerski',
-      '101a': 'wagon pasażerski',
-      '203V': 'kruszywo, kamień wapienny, odpady kopalniane',
-      '208Kf': 'drobnica, ładunki sypkie',
-      '209c': 'wagon techniczny',
-      '29R': 'produkty naftowe',
-      '304Ca': 'pojazd specjalny',
-      '401Ka': 'drobnica, ładunki sypkie',
-      '401Zb': 'ładunki sypkie o dużej masie usypowej',
-      '408S': 'cement, wapno, popioły lotne, żużel',
-      '412W': 'drobnica, kruszywo, węgiel',
-      '412Z': 'kontenery',
-      '424Z': 'ładunki skupione, pojazdy, dłużyca',
-      '426S': 'drobnica',
-      '429W': 'towary masowe odporne na warunki atmosferyczne (węgiel, ruda)',
-      '441V': 'węgiel kamienny, żwir',
-      '627Z': 'kontenery',
-    } as { [key: string]: string },
+    carUsage: carUsage as { [key: string]: string },
   }),
 
   methods: {
@@ -189,6 +165,10 @@ export default defineComponent({
 
     onPreviewLoaded() {
       this.isPreviewLoading = false;
+    },
+
+    changeLoadableByDefault() {
+      this.loadableByDefault = !this.loadableByDefault;
     },
 
     randomize() {
@@ -254,7 +234,7 @@ export default defineComponent({
         if (randCar.length * count + totalStockLength >= this.chosenLength) break;
 
         let randCargo = undefined;
-        let randNum = Math.random();
+        let randNum = this.loadableByDefault ? 1 : Math.random();
         if (randCar.cargoList.length != 0 && randNum >= 0.6)
           randCargo = randCar.cargoList[Math.floor(Math.random() * randCar.cargoList.length)];
 

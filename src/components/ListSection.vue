@@ -33,6 +33,8 @@
           {{ (store.chosenCar || store.chosenLoco)?.length }}m | {{ (store.chosenCar || store.chosenLoco)?.mass }}t |
           {{ (store.chosenCar || store.chosenLoco)?.maxSpeed }} km/h
         </div>
+        <div v-if="store.chosenLoco">Typ kabiny: {{ store.chosenLoco.cabinType }}</div>
+        <div v-if="store.chosenCar">{{ carUsage[store.chosenCar.constructionType] }}</div>
       </div>
     </section>
 
@@ -71,7 +73,7 @@
         <div class="warning" v-if="warnings.tooManyLocos.value">Ten skład posiada za dużo pojazdów trakcyjnych!</div>
       </div>
 
-      <ul ref="stock-list">
+      <ul ref="list" data-ignore-outside="1">
         <li v-if="store.stockList.length == 0" class="list-empty">
           <div class="item-content">Lista pojazdów jest pusta!</div>
         </li>
@@ -132,6 +134,8 @@ import { computed, ComputedRef, defineComponent, inject, provide, reactive, ref 
 import { ICarWagon, ILocomotive, IStore } from '@/types';
 import RandomizerCard from './RandomizerCard.vue';
 
+import carUsage from '@/data/carUsage.json';
+
 export default defineComponent({
   components: { RandomizerCard },
 
@@ -170,6 +174,20 @@ export default defineComponent({
     };
   },
 
+  mounted() {
+    document.addEventListener('click', (event: Event) => {
+      if (!event.target) return;
+
+      event.stopPropagation();
+
+      const targetNode = event.target as HTMLElement;
+
+      const attr = targetNode.attributes.getNamedItem('data-ignore-outside');
+
+      if (!attr && !(this.$refs['list'] as Node).contains(targetNode)) this.store.chosenStockListIndex = -1;
+    });
+  },
+
   data: () => ({
     icons: {
       add: require('@/assets/add-icon.svg'),
@@ -191,6 +209,8 @@ export default defineComponent({
       'car-passenger': 'WAGON PASAŻERSKI',
       'car-cargo': 'WAGON TOWAROWY',
     } as { [key: string]: string },
+
+    carUsage: carUsage as { [key: string]: string },
   }),
 
   computed: {
@@ -260,6 +280,7 @@ export default defineComponent({
 
     resetStock() {
       this.store.stockList.length = 0;
+      this.store.chosenStockListIndex = -1;
     },
 
     addStock(index: number) {

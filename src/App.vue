@@ -108,6 +108,8 @@ h2 {
 .header-bottom {
   margin: 0;
   font-size: 1.5em;
+
+  color: #d1d1d1;
 }
 
 .image-preview {
