@@ -28,13 +28,25 @@
 
       <div class="brief-info" v-if="store.chosenLoco || store.chosenCar">
         <b class="text--accent">{{ (store.chosenLoco || store.chosenCar)?.type }}</b>
-        <div>{{ vehicleTypes[store.chosenLoco?.power || store.chosenCar?.useType || 'loco-e'] }}</div>
-        <div>
-          {{ (store.chosenCar || store.chosenLoco)?.length }}m | {{ (store.chosenCar || store.chosenLoco)?.mass }}t |
-          {{ (store.chosenCar || store.chosenLoco)?.maxSpeed }} km/h
+        <div style="color: #ccc">
+          <b>
+            {{ vehicleTypes[store.chosenLoco?.power || store.chosenCar?.useType || 'loco-e'] }}
+          </b>
+          <div>
+            {{ (store.chosenCar || store.chosenLoco)?.length }}m | {{ (store.chosenCar || store.chosenLoco)?.mass }}t |
+            {{ (store.chosenCar || store.chosenLoco)?.maxSpeed }} km/h
+          </div>
+
+          <div v-if="store.chosenLoco">Typ kabiny: {{ store.chosenLoco.cabinType }}</div>
+
+          <div v-if="store.chosenCar">
+            {{
+              store.chosenCar.useType == 'car-cargo'
+                ? carUsage[store.chosenCar.constructionType]
+                : 'Typ konstrukcji: ' + store.chosenCar.constructionType
+            }}
+          </div>
         </div>
-        <div v-if="store.chosenLoco">Typ kabiny: {{ store.chosenLoco.cabinType }}</div>
-        <div v-if="store.chosenCar">{{ carUsage[store.chosenCar.constructionType] }}</div>
       </div>
     </section>
 
@@ -184,7 +196,13 @@ export default defineComponent({
 
       const attr = targetNode.attributes.getNamedItem('data-ignore-outside');
 
-      if (!attr && !(this.$refs['list'] as Node).contains(targetNode)) this.store.chosenStockListIndex = -1;
+      if (
+        !attr &&
+        !(this.$refs['list'] as Node).contains(targetNode) &&
+        targetNode.tagName.toLowerCase() != 'select' &&
+        targetNode.tagName.toLowerCase() != 'option'
+      )
+        this.store.chosenStockListIndex = -1;
     });
   },
 
@@ -230,6 +248,11 @@ export default defineComponent({
 
   methods: {
     copyToClipboard() {
+      if (Object.values(this.warnings).some((v) => v.value == true)) {
+        alert('Jazda tym pociągiem jest niezgodna z regulaminem symulatora! Zmień parametry zestawienia!');
+        return;
+      }
+
       navigator.clipboard.writeText(this.stockString);
 
       alert('Pociąg został skopiowany do schowka!');
@@ -341,12 +364,8 @@ export default defineComponent({
 
     downloadStock() {
       if (Object.values(this.warnings).some((v) => v.value == true)) {
-        ``;
-        const allowDownload = confirm(
-          'Jazda tym pociągiem może być niezgodna z regulaminem symulatora! Czy na pewno chcesz kontynuować?'
-        );
-
-        if (!allowDownload) return;
+        alert('Jazda tym pociągiem może być niezgodna z regulaminem symulatora! Zmień parametry zestawienia!');
+        return;
       }
 
       const fileName = prompt('Nazwij plik:', 'pociag');
@@ -512,7 +531,7 @@ export default defineComponent({
   font-size: 1.1em;
 
   b {
-    font-size: 1.2em;
+    font-size: 1.1em;
   }
 
   div {

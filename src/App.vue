@@ -43,8 +43,12 @@ export default defineComponent({
     logoSVG: require('@/assets/logo.svg'),
   }),
 
-  setup() {
+  async setup() {
     const store = inject('Store') as IStore;
+
+    const readyStockJSON = await (await fetch('https://spythere.github.io/api/readyStock.json')).json();
+
+    
 
     return {
       store,

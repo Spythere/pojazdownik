@@ -145,6 +145,27 @@ export default defineComponent({
     isPreviewLoading: false,
     loadableByDefault: false,
 
+    cargoTypes: [
+      '203V',
+      '208Kf',
+      '209c',
+      '29R',
+      '304C',
+      '304Ca',
+      '401Ka',
+      '401Zb',
+      '408S',
+      '412W',
+      '412Z',
+      '424Z',
+      '426S',
+      '429W',
+      '441V',
+      '504a',
+      '612a',
+      '627Z',
+    ],
+
     carUsage: carUsage as { [key: string]: string },
   }),
 
@@ -187,11 +208,6 @@ export default defineComponent({
         return;
       }
 
-      if (this.chosenMass > 2500) {
-        alert('Masa składu nie powinna przekraczać 2500t!');
-        return;
-      }
-
       if (this.chosenLength > 650) {
         alert('Długość składu nie może przekraczać 650m dla pociągów towarowych!');
         return;
@@ -203,9 +219,12 @@ export default defineComponent({
       if (this.store.stockList.length == 0 || !this.store.stockList[0].isLoco) {
         this.store.stockList.length = 0;
 
-        const locoSet = this.locoDataList
+        let locoSet = this.locoDataList
           .filter((loco) => loco.power == 'loco-e' || loco.power == 'loco-s')
           .filter((loco) => (!this.includeSupporterVehicles && loco.supportersOnly ? false : true));
+
+        if (this.chosenCarTypes.some((car) => this.cargoTypes.includes(car)))
+          locoSet = locoSet.filter((loco) => !loco.type.startsWith('EP'));
 
         const randLoco = locoSet[Math.floor(Math.random() * locoSet.length)];
 
