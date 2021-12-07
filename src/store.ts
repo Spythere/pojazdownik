@@ -24,6 +24,7 @@ export const Store: IStore = reactive({
     swapVehicles: false,
 
     chosenStockListIndex: -1,
+    chosenRealStockName: null,
     // locoOptions: [] as ILocomotive[],
     // carOptions: [] as ICarWagon[],
 

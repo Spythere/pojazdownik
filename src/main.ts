@@ -14,6 +14,7 @@ const clickOutsideDirective: Directive = {
 
         document.addEventListener("click", el.clickOutsideEvent);
     },
+
 }
 
 

@@ -61,6 +61,10 @@
         <button class="btn" @click="openRandomizerCard">LOSUJ SKŁAD</button>
       </div>
 
+      <!-- <b style="font-size: 1.15em; color: gold">
+        REALNE ZESTAWIENIE: <b>{{ store.chosenRealStockName?.toLocaleUpperCase() }}</b>
+      </b> -->
+
       <div class="stock-list_specs">
         Masa: <span class="text--accent">{{ totalMass }}t</span> | Długość:
         <span class="text--accent">{{ totalLength }}m</span>

@@ -1,4 +1,6 @@
 <template>
+  <ready-stock-list />
+
   <section class="inputs">
     <div class="input inputs_loco">
       <div class="input_container">
@@ -38,6 +40,10 @@
           <!-- <button class="btn--swap" @click="prepareSwapVehicles" title="Zamień pojazdy">
             <img :src="icons.swap" alt="swap vehicle" />
           </button> -->
+        </div>
+
+        <div>
+          <button class="btn" @click="setReadyStockList(true)"><b>REALNE ZESTAWIENIA</b></button>
         </div>
 
         <div class="input_checkbox">
@@ -117,14 +123,24 @@
 
 <script lang="ts">
 import { ICarWagon, ILocomotive, IStore } from '@/types';
-import { defineComponent, inject } from 'vue';
+import { defineComponent, inject, provide, ref } from 'vue';
+
+import ReadyStockList from '@/components/ReadyStockList.vue';
 
 export default defineComponent({
+  components: {
+    ReadyStockList,
+  },
   setup() {
     const store = inject('Store') as IStore;
 
+    const isReadyStockListOpen = ref(false);
+
+    provide('isReadyStockListOpen', isReadyStockListOpen);
+
     return {
       store,
+      isReadyStockListOpen,
       locoDataList: inject('locoDataList') as ILocomotive[],
       carDataList: inject('carDataList') as ICarWagon[],
       isTrainPassenger: inject('isTrainPassenger') as boolean,
@@ -222,6 +238,10 @@ export default defineComponent({
   methods: {
     prepareSwapVehicles() {
       this.store.swapVehicles = true;
+    },
+
+    setReadyStockList(bool = false) {
+      this.isReadyStockListOpen = bool;
     },
 
     onShowSupporterChange() {

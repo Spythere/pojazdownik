@@ -13,6 +13,7 @@ export interface IStore {
   cargoOptions: any[][];
 
   chosenStockListIndex: number;
+  chosenRealStockName: string | null;
 
   swapVehicles: boolean;
   vehiclePreviewSrc: string;
