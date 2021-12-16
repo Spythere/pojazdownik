@@ -42,7 +42,7 @@
           </button> -->
         </div>
 
-        <div>
+        <div class="input_ready-stock">
           <button class="btn" @click="setReadyStockList(true)"><b>REALNE ZESTAWIENIA</b></button>
         </div>
 
@@ -489,9 +489,7 @@ export default defineComponent({
       text-align: center;
     }
 
-    &_radio,
-    &_list,
-    &_checkbox {
+    &_container > * {
       display: flex;
       justify-content: center;
     }

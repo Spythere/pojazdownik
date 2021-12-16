@@ -1,7 +1,6 @@
 <template>
   <header>
     <img :src="logoSVG" alt="logo pojazdownik" />
-    <p class="header-bottom"><span>EDYTOR POCIĄGÓW ONLINE</span></p>
   </header>
 
   <main>
