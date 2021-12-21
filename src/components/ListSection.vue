@@ -259,7 +259,9 @@ export default defineComponent({
 
       navigator.clipboard.writeText(this.stockString);
 
-      alert('Pociąg został skopiowany do schowka!');
+      setTimeout(() => {
+        alert('Pociąg został skopiowany do schowka!');
+      }, 20);
     },
 
     onListItemFocus(vehicleID: number) {
