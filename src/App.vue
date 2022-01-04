@@ -18,7 +18,7 @@
     </div>
     &copy;
     <a href="https://td2.info.pl/profile/?u=20777" target="_blank">Spythere</a>
-    2021 | v{{ VERSION }}
+    {{ new Date().getUTCFullYear() }} | v{{ VERSION }}
   </footer>
 </template>
 
