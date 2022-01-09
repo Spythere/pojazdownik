@@ -1,6 +1,4 @@
 <template>
-  <ready-stock-list />
-
   <section class="inputs">
     <div class="input inputs_loco">
       <div class="input_container">
@@ -44,6 +42,7 @@
 
         <div class="input_ready-stock">
           <button class="btn" @click="setReadyStockList(true)"><b>REALNE ZESTAWIENIA</b></button>
+          <ready-stock-list />
         </div>
 
         <div class="input_checkbox">
@@ -123,7 +122,7 @@
 
 <script lang="ts">
 import { ICarWagon, ILocomotive, IStore } from '@/types';
-import { defineComponent, inject, provide, ref } from 'vue';
+import { defineComponent, inject, provide, Ref, ref } from 'vue';
 
 import ReadyStockList from '@/components/ReadyStockList.vue';
 

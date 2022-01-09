@@ -61,14 +61,16 @@
         <button class="btn" @click="openRandomizerCard">LOSUJ SKŁAD</button>
       </div>
 
-      <!-- <b style="font-size: 1.15em; color: gold">
-        REALNE ZESTAWIENIE: <b>{{ store.chosenRealStockName?.toLocaleUpperCase() }}</b>
-      </b> -->
-
       <div class="stock-list_specs">
-        Masa: <span class="text--accent">{{ totalMass }}t</span> | Długość:
-        <span class="text--accent">{{ totalLength }}m</span>
-        | Vmax pociągu: <span class="text--accent">{{ maxStockSpeed }} km/h</span>
+        <div>
+          Masa: <span class="text--accent">{{ totalMass }}t</span> | Długość:
+          <span class="text--accent">{{ totalLength }}m</span>
+          | Vmax pociągu: <span class="text--accent">{{ maxStockSpeed }} km/h</span>
+        </div>
+
+        <div v-if="store.chosenRealStockName" style="margin-top: 0.25rem">
+          <b>{{ store.chosenRealStockName.toLocaleUpperCase() }}</b>
+        </div>
       </div>
 
       <div class="stock-list_string">

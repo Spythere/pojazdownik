@@ -82,9 +82,14 @@ button.btn {
         border-color: $accentColor;
     }
 
+    &:focus {
+        color: $accentColor;
+    }
+
     &--text {
         font-weight: bold;
         transition: all 250ms;
+        border: none;
     }
 }
 

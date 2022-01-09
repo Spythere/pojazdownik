@@ -1,6 +1,6 @@
 <template>
   <div class="ready-stock-list" v-if="isOpen">
-    <button class="btn--text exit" @click="exit">POWRÓT</button>
+    <button class="btn btn--text exit" @click="exit">&lt; POWRÓT</button>
     <div class="header">
       <h1>
         REALNE ZESTAWIENIA
@@ -11,21 +11,24 @@
         na stronie <i>vagonweb.cz</i>
       </p>
 
-      <input type="text" v-model="chosenStock" placeholder="Szukaj zestawienia..." />
+      <input type="text" tabindex="0" v-model="searchedReadyStockName" placeholder="Szukaj zestawienia..." />
     </div>
 
     <ul v-if="responseStatus == 'loaded'">
       <li
-        v-for="(v, k) in computedList"
-        :key="k"
-        @contextmenu="openPreview($event, v.type, v.number)"
-        @click="choseStock(v.name, v.type, v.number, v.stockString)"
+        v-for="(stock, key) in computedReadyStockList"
+        :key="key"
+        tabindex="0"
+        @contextmenu="openPreview($event, stock.type, stock.number)"
+        @click="choseStock(stock.name, stock.type, stock.number, stock.stockString)"
+        @keydown.space="openPreview($event, stock.type, stock.number)"
+        @keydown.enter="choseStock(stock.name, stock.type, stock.number, stock.stockString)"
       >
-        <img v-if="v.type != 'iR' && v.type != 'RE'" :src="icons[v.type]" alt="" />
-        <span v-else>{{ v.type }}</span>
+        <img v-if="stock.type != 'iR' && stock.type != 'RE'" :src="icons[stock.type]" alt="" />
+        <span v-else>{{ stock.type }}</span>
 
-        <b class="text--accent"> {{ v.name }}</b>
-        <div>{{ v.number }}</div>
+        <b class="text--accent"> {{ stock.name }}</b>
+        <div>{{ stock.number }}</div>
       </li>
     </ul>
   </div>
@@ -35,11 +38,11 @@
 import { ICarWagon, ILocomotive, IStore } from '@/types';
 import { defineComponent, inject } from 'vue';
 
-interface List {
+interface ReadyStockList {
   [key: string]: { stockString: string; type: string; number: string; name: string };
 }
 
-interface Response {
+interface ResponseJSONData {
   [key: string]: string;
 }
 
@@ -56,10 +59,10 @@ export default defineComponent({
 
   data: () => ({
     responseStatus: 'loading',
-    chosenStock: '',
     isMobile: 'ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/) ? true : false,
 
-    readyStockList: {} as List,
+    readyStockList: {} as ReadyStockList,
+    searchedReadyStockName: '',
 
     icons: {
       EIC: require('@/assets/EIC.png'),
@@ -69,13 +72,13 @@ export default defineComponent({
   }),
 
   computed: {
-    computedList() {
-      if (this.chosenStock == '') return this.readyStockList;
+    computedReadyStockList() {
+      if (this.searchedReadyStockName == null) return this.readyStockList;
 
-      let filtered: List = {};
+      let filtered: ReadyStockList = {};
 
       for (let key in this.readyStockList) {
-        if (key.toLocaleLowerCase().includes(this.chosenStock.toLocaleLowerCase()))
+        if (key.toLocaleLowerCase().includes(this.searchedReadyStockName.toLocaleLowerCase()))
           filtered[key] = this.readyStockList[key];
       }
 
@@ -95,9 +98,8 @@ export default defineComponent({
 
       const zeme = isRegio ? 'PREG' : 'PKPIC';
       const rok = isRegio ? '&rok=2013' : '';
-      const cislo = number.replace(/_/g, '/');
 
-      const url = `https://www.vagonweb.cz/razeni/vlak.php?zeme=${zeme}&kategorie=${type}&cislo=${cislo}${rok}`;
+      const url = `https://www.vagonweb.cz/razeni/vlak.php?zeme=${zeme}&kategorie=${type}&cislo=${number}${rok}`;
 
       window.open(url);
     },
@@ -154,26 +156,26 @@ export default defineComponent({
   },
 
   async mounted() {
-    const response: Response = await (await fetch('https://spythere.github.io/api/readyStockTest.json')).json();
+    const readyStockJSONData: ResponseJSONData = await (await fetch('https://spythere.github.io/api/readyStockTest.json')).json();
 
-    if (!response) {
+    if (!readyStockJSONData) {
       this.responseStatus = 'error';
       return;
     }
 
-    for (let key in response) {
-      const splittedKey = key.split(' ');
+    for (let stockKey in readyStockJSONData) {
+      const splittedKey = stockKey.split(' ');
 
       let name = '';
       for (let i = 2; i < splittedKey.length; i++) {
         name += ' ' + splittedKey[i];
       }
 
-      this.readyStockList[key] = {
+      this.readyStockList[stockKey] = {
         type: splittedKey[0],
         number: splittedKey[1].replace(/_/g, '/'),
         name,
-        stockString: response[key],
+        stockString: readyStockJSONData[stockKey],
       };
     }
 
@@ -279,6 +281,10 @@ input {
 
     &:hover {
       background: #222;
+    }
+
+    &:focus {
+      outline: 1px solid white;
     }
   }
 }
