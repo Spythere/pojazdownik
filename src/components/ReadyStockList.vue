@@ -21,7 +21,9 @@
         @contextmenu="openPreview($event, v.type, v.number)"
         @click="choseStock(v.name, v.type, v.number, v.stockString)"
       >
-        <img :src="icons[v.type]" alt="" />
+        <img v-if="v.type != 'iR' && v.type != 'RE'" :src="icons[v.type]" alt="" />
+        <span v-else>{{ v.type }}</span>
+
         <b class="text--accent"> {{ v.name }}</b>
         <div>{{ v.number }}</div>
       </li>
@@ -57,7 +59,7 @@ export default defineComponent({
     chosenStock: '',
     isMobile: 'ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/) ? true : false,
 
-    list: {} as List,
+    readyStockList: {} as List,
 
     icons: {
       EIC: require('@/assets/EIC.png'),
@@ -68,12 +70,13 @@ export default defineComponent({
 
   computed: {
     computedList() {
-      if (this.chosenStock == '') return this.list;
+      if (this.chosenStock == '') return this.readyStockList;
 
       let filtered: List = {};
 
-      for (let key in this.list) {
-        if (key.toLocaleLowerCase().includes(this.chosenStock.toLocaleLowerCase())) filtered[key] = this.list[key];
+      for (let key in this.readyStockList) {
+        if (key.toLocaleLowerCase().includes(this.chosenStock.toLocaleLowerCase()))
+          filtered[key] = this.readyStockList[key];
       }
 
       return filtered;
@@ -88,10 +91,13 @@ export default defineComponent({
     openPreview(e: Event, type: string, number: string) {
       e.preventDefault();
 
-      const url = `https://www.vagonweb.cz/razeni/vlak.php?zeme=PKPIC&kategorie=${type}&cislo=${number.replace(
-        /_/g,
-        '/'
-      )}`;
+      const isRegio = type == 'RE' || type == 'iR';
+
+      const zeme = isRegio ? 'PREG' : 'PKPIC';
+      const rok = isRegio ? '&rok=2013' : '';
+      const cislo = number.replace(/_/g, '/');
+
+      const url = `https://www.vagonweb.cz/razeni/vlak.php?zeme=${zeme}&kategorie=${type}&cislo=${cislo}${rok}`;
 
       window.open(url);
     },
@@ -148,7 +154,7 @@ export default defineComponent({
   },
 
   async mounted() {
-    const response: Response = await (await fetch('https://spythere.github.io/api/readyStock.json')).json();
+    const response: Response = await (await fetch('https://spythere.github.io/api/readyStockTest.json')).json();
 
     if (!response) {
       this.responseStatus = 'error';
@@ -163,7 +169,7 @@ export default defineComponent({
         name += ' ' + splittedKey[i];
       }
 
-      this.list[key] = {
+      this.readyStockList[key] = {
         type: splittedKey[0],
         number: splittedKey[1].replace(/_/g, '/'),
         name,
@@ -264,6 +270,11 @@ input {
 
     img {
       max-width: 1.5em;
+    }
+
+    span {
+      color: #999;
+      font-weight: bold;
     }
 
     &:hover {
