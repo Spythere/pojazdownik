@@ -9,9 +9,10 @@
           <div>by <a href="https://td2.info.pl/profile/?u=17708" target="_blank">Railtrains997</a></div>
         </h1>
         <p>
-          {{ isMobile ? 'Przytrzymaj zestawienie' : 'Kliknij na zestawienie prawym przyciskiem myszy' }}, aby zobaczyć je
-          na stronie <i>vagonweb.cz</i>
+          {{ isMobile ? 'Przytrzymaj zestawienie' : 'Kliknij na zestawienie prawym przyciskiem myszy' }}, aby zobaczyć
+          je na stronie <i>vagonweb.cz</i>
         </p>
+
         <input type="text" tabindex="0" v-model="searchedReadyStockName" placeholder="Szukaj zestawienia..." />
       </div>
     </div>
@@ -158,7 +159,9 @@ export default defineComponent({
   },
 
   async mounted() {
-    const readyStockJSONData: ResponseJSONData = await (await fetch('https://spythere.github.io/api/readyStockTest.json')).json();
+    const readyStockJSONData: ResponseJSONData = await (
+      await fetch('https://spythere.github.io/api/readyStock.json')
+    ).json();
 
     if (!readyStockJSONData) {
       this.responseStatus = 'error';
