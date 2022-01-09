@@ -1,17 +1,19 @@
 <template>
   <div class="ready-stock-list" v-if="isOpen">
-    <button class="btn btn--text exit" @click="exit">&lt; POWRÓT</button>
-    <div class="header">
-      <h1>
-        REALNE ZESTAWIENIA
-        <div>by <a href="https://td2.info.pl/profile/?u=17708" target="_blank">Railtrains997</a></div>
-      </h1>
-      <p>
-        {{ isMobile ? 'Przytrzymaj zestawienie' : 'Kliknij na zestawienie prawym przyciskiem myszy' }}, aby zobaczyć je
-        na stronie <i>vagonweb.cz</i>
-      </p>
+    <div class="top-sticky">
+      <button class="btn btn--text exit" @click="exit">&lt; POWRÓT</button>
 
-      <input type="text" tabindex="0" v-model="searchedReadyStockName" placeholder="Szukaj zestawienia..." />
+      <div class="header">
+        <h1>
+          REALNE ZESTAWIENIA
+          <div>by <a href="https://td2.info.pl/profile/?u=17708" target="_blank">Railtrains997</a></div>
+        </h1>
+        <p>
+          {{ isMobile ? 'Przytrzymaj zestawienie' : 'Kliknij na zestawienie prawym przyciskiem myszy' }}, aby zobaczyć je
+          na stronie <i>vagonweb.cz</i>
+        </p>
+        <input type="text" tabindex="0" v-model="searchedReadyStockName" placeholder="Szukaj zestawienia..." />
+      </div>
     </div>
 
     <ul v-if="responseStatus == 'loaded'">
@@ -219,11 +221,13 @@ input {
 
   overflow-y: auto;
 
-  .header {
+  .top-sticky {
     position: sticky;
     top: 0;
-
     background: #333;
+  }
+
+  .header {
     padding-bottom: 1.5em;
     padding-top: 0.5em;
 

@@ -68,9 +68,9 @@
           | Vmax pociągu: <span class="text--accent">{{ maxStockSpeed }} km/h</span>
         </div>
 
-        <div v-if="store.chosenRealStockName" style="margin-top: 0.25rem">
+        <!-- <div v-if="store.chosenRealStockName" style="margin-top: 0.25rem">
           <b>{{ store.chosenRealStockName.toLocaleUpperCase() }}</b>
-        </div>
+        </div> -->
       </div>
 
       <div class="stock-list_string">
