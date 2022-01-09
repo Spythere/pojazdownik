@@ -2,10 +2,6 @@
   <div class="bottom">
     <div class="bg-dimmer" v-if="isRandomizerCardOpen"></div>
 
-    <transition name="card-anim">
-      <randomizer-card v-if="isRandomizerCardOpen" />
-    </transition>
-
     <section class="image">
       <div class="image__wrapper">
         <div
@@ -59,6 +55,10 @@
         <span></span>
         <button class="btn" @click="shuffleCars">TASUJ WAGONY</button>
         <button class="btn" @click="openRandomizerCard">LOSUJ SKŁAD</button>
+
+        <transition name="card-anim">
+          <randomizer-card v-if="isRandomizerCardOpen" />
+        </transition>
       </div>
 
       <div class="stock-list_specs">
@@ -126,17 +126,22 @@
               <button class="action-btn" @click="subStock(i)">
                 <img :src="icons.sub" alt="subtract vehicle count" />
               </button>
+
               <span>{{ stock.count }} </span>
+
               <button class="action-btn" @click="addStock(i)">
                 <img :src="icons.add" alt="add vehicle count" />
               </button>
             </div>
+
             <button class="action-btn" @click="moveUpStock(i)">
               <img :src="icons.higher" alt="move up vehicle" />
             </button>
+
             <button class="action-btn" @click="moveDownStock(i)">
               <img :src="icons.lower" alt="move down vehicle" />
             </button>
+
             <button class="action-btn" @click="removeStock(i)">
               <img :src="icons.remove" alt="remove vehicle" />
             </button>
@@ -662,6 +667,10 @@ export default defineComponent({
 
       button {
         margin: 0 0.25em;
+
+        &:focus {
+          outline: 1px solid white;
+        }
       }
     }
   }
