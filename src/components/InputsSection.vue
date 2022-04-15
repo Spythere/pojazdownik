@@ -26,7 +26,7 @@
           >
             <option :value="null" disabled>Wybierz pojazd z listy</option>
             <option v-for="loco in locoOptions" :value="loco" :key="loco.type">
-              {{ loco.supportersOnly ? '*S*' : '' }}
+              {{ loco.supportersOnly ? '*W*' : '' }}
               {{ loco.type }}
             </option>
           </select>
@@ -47,7 +47,7 @@
 
         <div class="input_checkbox">
           <button @click="onShowSupporterChange" :class="{ checked: this.store.showSupporter }" data-ignore-outside="1">
-            Pokaż tylko pojazdy dla supporterów
+            Pokaż tylko pojazdy dla weteranów
           </button>
         </div>
       </div>
@@ -81,7 +81,7 @@
           >
             <option :value="null" disabled>Wybierz wagon z listy</option>
             <option v-for="car in carOptions" :value="car" :key="car.type">
-              {{ car.supportersOnly ? '*S*' : '' }}
+              {{ car.supportersOnly ? '*W*' : '' }}
               {{ car.type }}
             </option>
           </select>
@@ -109,7 +109,7 @@
           >
             <option :value="null" v-if="!store.chosenCar || !store.chosenCar.loadable">brak dostępnych ładunków</option>
             <option :value="null" v-else>próżny</option>
-
+            
             <option v-for="cargo in store.chosenCar?.cargoList" :value="cargo" :key="cargo.id">
               {{ cargo.id }}
             </option>

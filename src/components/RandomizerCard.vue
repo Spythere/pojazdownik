@@ -85,7 +85,7 @@
             }
           "
         >
-          POJAZDY DLA SUPPORTERÓW
+          POJAZDY DLA WETERANÓW
         </button>
 
         <button class="btn choice-btn" :class="{ chosen: loadableByDefault }" @click="changeLoadableByDefault">
@@ -409,7 +409,6 @@ button.choice-btn {
   color: gray;
   border-color: gray;
 
-  &:hover,
   *:focus {
     color: white;
     border-color: white;
