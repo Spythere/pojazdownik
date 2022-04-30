@@ -4,6 +4,21 @@ $bgColor: #2C3149;
 $textColor: #fff;
 $accentColor: #FFD600;
 
+::-webkit-scrollbar {
+    width: 0.5rem;
+    height: 0.5rem;
+
+    &-track {
+        background: #222;
+        border-radius: 0.5rem;
+    }
+
+    &-thumb {
+        border-radius: 1rem;
+        background: #777;
+    }
+}
+
 body,
 html {
     margin: 0;

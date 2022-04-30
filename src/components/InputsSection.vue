@@ -122,7 +122,7 @@
 
 <script lang="ts">
 import { ICarWagon, ILocomotive, IStore } from '@/types';
-import { defineComponent, inject, provide, Ref, ref } from 'vue';
+import { defineComponent, inject, provide, ref } from 'vue';
 
 import ReadyStockList from '@/components/ReadyStockList.vue';
 
