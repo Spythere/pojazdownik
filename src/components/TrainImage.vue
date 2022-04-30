@@ -20,11 +20,11 @@
     </div>
 
     <div class="image__info" v-if="store.chosenLoco || store.chosenCar">
-      <b class="text--accent">{{ (store.chosenLoco || store.chosenCar)?.type }} </b> 
-      <b>&nbsp;|&nbsp;</b>
-      <b style="color: #ccc">{{ vehicleTypes[store.chosenLoco?.power || store.chosenCar?.useType || 'loco-e'] }}</b>
-      
+      <b class="text--accent">{{ (store.chosenLoco || store.chosenCar)?.type }} </b>
+
       <div style="color: #ccc">
+        <b>{{ vehicleTypes[store.chosenLoco?.power || store.chosenCar?.useType || 'loco-e'] }}</b>
+        
         <div>
           {{ (store.chosenCar || store.chosenLoco)?.length }}m | {{ (store.chosenCar || store.chosenLoco)?.mass }}t |
           {{ (store.chosenCar || store.chosenLoco)?.maxSpeed }} km/h
