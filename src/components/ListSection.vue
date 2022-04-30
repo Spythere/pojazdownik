@@ -2,49 +2,7 @@
   <div class="bottom">
     <div class="bg-dimmer" v-if="isRandomizerCardOpen"></div>
 
-    <section class="image">
-      <div class="image__wrapper">
-        <div
-          class="image__content"
-          :class="{
-            supporter: (store.chosenLoco || store.chosenCar)?.supportersOnly,
-          }"
-        >
-          <div class="no-img" v-if="!store.chosenCar && !store.chosenLoco">PODGLĄD WYBRANEGO POJAZDU</div>
-          <div class="empty-message" v-if="store.imageLoading">ŁADOWANIE OBRAZU...</div>
-          <img
-            v-if="store.chosenLoco || store.chosenCar"
-            :src="store.chosenLoco?.imageSrc || store.chosenCar?.imageSrc"
-            :alt="store.chosenLoco?.type || store.chosenCar?.type"
-            @load="onImageLoad"
-            @click="onImageClick"
-          />
-        </div>
-      </div>
-
-      <div class="brief-info" v-if="store.chosenLoco || store.chosenCar">
-        <b class="text--accent">{{ (store.chosenLoco || store.chosenCar)?.type }}</b>
-        <div style="color: #ccc">
-          <b>
-            {{ vehicleTypes[store.chosenLoco?.power || store.chosenCar?.useType || 'loco-e'] }}
-          </b>
-          <div>
-            {{ (store.chosenCar || store.chosenLoco)?.length }}m | {{ (store.chosenCar || store.chosenLoco)?.mass }}t |
-            {{ (store.chosenCar || store.chosenLoco)?.maxSpeed }} km/h
-          </div>
-
-          <div v-if="store.chosenLoco">Typ kabiny: {{ store.chosenLoco.cabinType }}</div>
-
-          <div v-if="store.chosenCar">
-            {{
-              store.chosenCar.useType == 'car-cargo'
-                ? carUsage[store.chosenCar.constructionType]
-                : 'Typ konstrukcji: ' + store.chosenCar.constructionType
-            }}
-          </div>
-        </div>
-      </div>
-    </section>
+    <train-image />
 
     <section class="spacer"></section>
 
@@ -157,10 +115,10 @@ import { computed, ComputedRef, defineComponent, inject, provide, reactive, ref 
 import { ICarWagon, ILocomotive, IStore } from '@/types';
 import RandomizerCard from './RandomizerCard.vue';
 
-import carUsage from '@/data/carUsage.json';
+import TrainImage from './TrainImage.vue';
 
 export default defineComponent({
-  components: { RandomizerCard },
+  components: { RandomizerCard, TrainImage },
 
   setup() {
     const store = inject('Store') as IStore;
@@ -229,17 +187,6 @@ export default defineComponent({
     imageOffsetY: 0,
 
     draggedVehicleID: -1,
-
-    vehicleTypes: {
-      'loco-e': 'ELEKTROWÓZ',
-      'loco-s': 'SPALINOWÓZ',
-      'loco-ezt': 'ELEKTRYCZNY ZESP. TRAKCYJNY',
-      'loco-szt': 'SPALINOWY ZESP. TRAKCYJNY',
-      'car-passenger': 'WAGON PASAŻERSKI',
-      'car-cargo': 'WAGON TOWAROWY',
-    } as { [key: string]: string },
-
-    carUsage: carUsage as { [key: string]: string },
   }),
 
   computed: {
@@ -421,18 +368,6 @@ export default defineComponent({
     allowDrop(e: DragEvent) {
       e.preventDefault();
     },
-
-    onImageLoad() {
-      this.store.imageLoading = false;
-    },
-
-    onImageClick() {
-      const chosenVehicle = this.store.chosenCar || this.store.chosenLoco;
-
-      if (!chosenVehicle) return;
-
-      this.store.vehiclePreviewSrc = chosenVehicle.imageSrc.replace('300', '800');
-    },
   },
 });
 </script>
@@ -457,7 +392,7 @@ export default defineComponent({
 
   margin-top: 2.5em;
 
-  @media screen and (max-width: 800px) {
+  @media screen and (max-width: 1150px) {
     flex-direction: column;
     align-items: center;
 
@@ -483,73 +418,6 @@ export default defineComponent({
 
 .spacer {
   flex: 2 1 10%;
-}
-
-.image {
-  flex-grow: 2;
-  padding: 0 1em 0 0;
-
-  display: flex;
-  flex-direction: column;
-
-  &__wrapper {
-    max-width: 380px;
-    width: 22em;
-    height: 13em;
-  }
-
-  &__content {
-    border: 1px solid white;
-    position: relative;
-
-    height: 100%;
-
-    &.supporter {
-      border: 1px solid salmon;
-    }
-
-    img {
-      width: 100%;
-      height: 100%;
-
-      cursor: pointer;
-    }
-
-    .empty-message,
-    .no-img {
-      position: absolute;
-      left: 0;
-      top: 0;
-
-      display: flex;
-      justify-content: center;
-      align-items: flex-end;
-
-      width: 100%;
-      height: 100%;
-      padding: 0.3em 0;
-    }
-
-    .empty-message {
-      background: rgba(#000, 0.75);
-    }
-  }
-}
-
-.brief-info {
-  text-align: center;
-
-  margin: 1em 0;
-
-  font-size: 1.1em;
-
-  b {
-    font-size: 1.1em;
-  }
-
-  div {
-    margin: 0.25em 0;
-  }
 }
 
 .stock-list {
