@@ -1,5 +1,6 @@
 [
     { "type": "101a", "length":  25, "mass": 40, "cargo": ""},
+    { "type": "102a", "length":  25, "mass": 40, "cargo": ""},
     { "type": "111a", "length":  25, "mass": 40, "cargo": ""},
     { "type": "110a", "length":  25, "mass": 45, "cargo": ""},
     { "type": "112a", "length":  25, "mass": 40, "cargo": ""},
@@ -19,6 +20,7 @@
     { "type": "408S", "length":  14, "mass": 24, "cargo": "mass_20:44;mass_30:54;mass_40:64"},
     { "type": "412W", "length":  14, "mass": 20, "cargo": "coal_01:74;ore_01:55;sand_01:50;sand_02:45;scrap_01:65;scrap_02:65;stone_01:78;stone_50:75"},
     { "type": "412Z", "length":  20, "mass": 22, "cargo": "sc_1a_01:47;sc_1a_02:47;sc_1a_03:47;sc_1a_04:47;sc_1a_05:47;sc_1c_01:56;sc_1c_02:56;sc_1c_03:56;sc_1c_04:56;sc_1c_05:56"},
+    { "type": "413S", "length":  14, "mass": 25, "cargo": "coal_Fas:69;sand_Fas:79;chalk_Fas:79"},
     { "type": "424Z", "length":  20, "mass": 23, "cargo": "wheels_01:39;woods_01:33;woods_2:43;rails_01:53;cables_01:36"},
     { "type": "426S", "length":  20, "mass": 29, "cargo": "mass_20:49;mass_30:59;mass_40:69"},
     { "type": "429W", "length":  14, "mass": 20, "cargo": "coal_01:74;ore_01:55;sand_01:50;sand_02:45;scrap_01:65;scrap_02:65;stone_01:78;stone_50:75"},

@@ -42,9 +42,16 @@
           Lokomotywy EP07 i EP08 są przeznaczone jedynie do ruchu pasażerskiego!
         </div>
 
-        <div class="warning" v-if="warnings.trainTooLong.value">Ten skład jest za długi!</div>
+        <div class="warning" v-if="warnings.trainTooLong.value">
+          Ten skład jest za długi (pasażerskie max. 350m, towarowe max. 650m)!
+        </div>
 
-        <div class="warning" v-if="warnings.trainTooHeavy.value">Ten skład jest za ciężki!</div>
+        <div class="warning" v-if="warnings.trainTooHeavy.value">
+          Ten skład jest za ciężki! Sprawdź
+          <a target="_blank" href="https://docs.google.com/spreadsheets/d/1bFXUsHsAu4youmNz-46Q1HslZaaoklvfoBDS553TnNk/edit">
+            dopuszczalne masy składów
+          </a>
+        </div>
 
         <div class="warning" v-if="warnings.tooManyLocos.value">Ten skład posiada za dużo pojazdów trakcyjnych!</div>
       </div>
@@ -414,6 +421,11 @@ export default defineComponent({
   color: black;
 
   font-weight: bold;
+
+  a {
+    color: black;
+    text-decoration: underline;
+  }
 }
 
 .spacer {

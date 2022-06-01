@@ -68,7 +68,7 @@
           type="number"
           v-model="chosenMass"
           name="length"
-          max="2500"
+          max="4000"
           min="100"
           step="100"
           title="Masa składu (t)"
@@ -76,18 +76,6 @@
       </div>
 
       <div style="margin: 1em 0">
-        <button
-          class="btn choice-btn"
-          :class="{ chosen: includeSupporterVehicles }"
-          @click="
-            () => {
-              includeSupporterVehicles = !includeSupporterVehicles;
-            }
-          "
-        >
-          POJAZDY DLA WETERANÓW
-        </button>
-
         <button class="btn choice-btn" :class="{ chosen: loadableByDefault }" @click="changeLoadableByDefault">
           DOMYŚLNIE ŁADOWNE
         </button>
