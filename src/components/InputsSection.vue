@@ -46,9 +46,9 @@
         </div>
 
         <div class="input_checkbox">
-          <button @click="onShowSupporterChange" :class="{ checked: this.store.showSupporter }" data-ignore-outside="1">
+          <!-- <button @click="onShowSupporterChange" :class="{ checked: this.store.showSupporter }" data-ignore-outside="1">
             Pokaż tylko pojazdy dla weteranów
-          </button>
+          </button> -->
         </div>
       </div>
     </div>
@@ -109,7 +109,7 @@
           >
             <option :value="null" v-if="!store.chosenCar || !store.chosenCar.loadable">brak dostępnych ładunków</option>
             <option :value="null" v-else>próżny</option>
-            
+
             <option v-for="cargo in store.chosenCar?.cargoList" :value="cargo" :key="cargo.id">
               {{ cargo.id }}
             </option>
