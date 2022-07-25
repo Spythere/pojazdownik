@@ -17,6 +17,8 @@ export interface IStore {
 
   swapVehicles: boolean;
   vehiclePreviewSrc: string;
+
+  isRandomizerCardOpen: boolean;
 }
 
 export interface IVehicleData {

@@ -1,6 +1,6 @@
 <template>
   <div class="bottom">
-    <div class="bg-dimmer" v-if="isRandomizerCardOpen"></div>
+    <div class="bg-dimmer" v-if="store.isRandomizerCardOpen"></div>
 
     <train-image />
 
@@ -12,18 +12,18 @@
         <button class="btn" @click="resetStock">ZRESETUJ LISTĘ</button>
         <span></span>
         <button class="btn" @click="shuffleCars">TASUJ WAGONY</button>
-        <button class="btn" @click="openRandomizerCard">LOSUJ SKŁAD</button>
+        <button class="btn" @click="store.isRandomizerCardOpen = true">LOSUJ SKŁAD</button>
 
         <transition name="card-anim">
-          <randomizer-card v-if="isRandomizerCardOpen" />
+          <randomizer-card v-if="store.isRandomizerCardOpen" />
         </transition>
       </div>
 
       <div class="stock-list_specs">
         <div>
-          Masa: <span class="text--accent">{{ totalMass }}t</span> | Długość:
-          <span class="text--accent">{{ totalLength }}m</span>
-          | Vmax pociągu: <span class="text--accent">{{ maxStockSpeed }} km/h</span>
+          Masa: <span class="text--accent">{{ store.totalMass }}t</span> | Długość:
+          <span class="text--accent">{{ store.totalLength }}m</span>
+          | Vmax pociągu: <span class="text--accent">{{ store.maxStockSpeed }} km/h</span>
         </div>
 
         <!-- <div v-if="store.chosenRealStockName" style="margin-top: 0.25rem">
@@ -37,7 +37,7 @@
         </button>
       </div>
 
-      <div class="warnings">
+      <!-- <div class="warnings">
         <div class="warning" v-if="warnings.locoNotSuitable.value">
           Lokomotywy EP07 i EP08 są przeznaczone jedynie do ruchu pasażerskiego!
         </div>
@@ -57,7 +57,7 @@
         </div>
 
         <div class="warning" v-if="warnings.tooManyLocos.value">Ten skład posiada za dużo pojazdów trakcyjnych!</div>
-      </div>
+      </div> -->
 
       <ul ref="list" data-ignore-outside="1">
         <li v-if="store.stockList.length == 0" class="list-empty">
@@ -131,42 +131,16 @@ import subIcon from '../assets/sub-icon.svg';
 import removeIcon from '../assets/remove-icon.svg';
 import lowerIcon from '../assets/lower-icon.svg';
 import higherIcon from '../assets/higher-icon.svg';
+import { useStore } from '../store';
 
 export default defineComponent({
   components: { RandomizerCard, TrainImage },
 
   setup() {
-    const store = inject('Store') as IStore;
-
-    const isRandomizerCardOpen = ref(false);
-
-    provide('isCardOpen', isRandomizerCardOpen);
-    provide('chosenLength', ref(350));
-    provide('chosenMass', ref(1000));
-    provide('chosenLocoType', ref('loco-e'));
-    provide('chosenCarTypes', reactive([]));
-    provide('includeSupporterVehicles', ref(false));
+    const store = useStore();
 
     return {
       store,
-      locoDataList: inject('locoDataList') as ILocomotive[],
-      carDataList: inject('carDataList') as ICarWagon[],
-      isTrainPassenger: inject('isTrainPassenger') as boolean,
-      totalLength: inject('totalLength') as number,
-      totalMass: inject('totalMass') as number,
-      maxStockSpeed: inject('maxStockSpeed') as number,
-      maxAllowedSpeed: inject('maxAllowedSpeed') as number,
-
-      warnings: inject('warnings') as {
-        locoNotSuitable: ComputedRef<boolean>;
-        trainTooLong: ComputedRef<boolean>;
-        trainTooHeavy: ComputedRef<boolean>;
-        tooManyLocos: ComputedRef<boolean>;
-      },
-
-      isRandomizerCardOpen,
-
-      hasSupporterOnlyVehicle: computed(() => store.stockList.some((stock) => stock.supportersOnly)),
     };
   },
 
@@ -221,10 +195,10 @@ export default defineComponent({
 
   methods: {
     copyToClipboard() {
-      if (Object.values(this.warnings).some((v) => v.value == true)) {
-        alert('Jazda tym pociągiem jest niezgodna z regulaminem symulatora! Zmień parametry zestawienia!');
-        return;
-      }
+      // if (Object.values(this.warnings).some((v) => v.value == true)) {
+      //   alert('Jazda tym pociągiem jest niezgodna z regulaminem symulatora! Zmień parametry zestawienia!');
+      //   return;
+      // }
 
       navigator.clipboard.writeText(this.stockString);
 
@@ -247,7 +221,7 @@ export default defineComponent({
       if (vehicle.isLoco) {
         this.store.chosenLocoPower = vehicle.useType;
 
-        this.store.chosenLoco = this.locoDataList.find((v) => v.type == vehicle.type) || null;
+        this.store.chosenLoco = this.store.locoDataList.find((v) => v.type == vehicle.type) || null;
 
         this.store.chosenCar = null;
         this.store.chosenCargo = null;
@@ -255,7 +229,7 @@ export default defineComponent({
         this.store.chosenCarUseType = vehicle.useType;
 
         this.store.chosenLoco = null;
-        this.store.chosenCar = this.carDataList.find((v) => v.type == vehicle.type) || null;
+        this.store.chosenCar = this.store.carDataList.find((v) => v.type == vehicle.type) || null;
         this.store.chosenCargo = vehicle.cargo || null;
       }
 
@@ -333,15 +307,11 @@ export default defineComponent({
       }
     },
 
-    openRandomizerCard() {
-      this.isRandomizerCardOpen = true;
-    },
-
     downloadStock() {
-      if (Object.values(this.warnings).some((v) => v.value == true)) {
-        alert('Jazda tym pociągiem może być niezgodna z regulaminem symulatora! Zmień parametry zestawienia!');
-        return;
-      }
+      // if (Object.values(this.warnings).some((v) => v.value == true)) {
+      //   alert('Jazda tym pociągiem może być niezgodna z regulaminem symulatora! Zmień parametry zestawienia!');
+      //   return;
+      // }
 
       const fileName = prompt('Nazwij plik:', 'pociag');
 

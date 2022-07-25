@@ -57,7 +57,7 @@
         <p>Wybierz preferowaną długość składu (m) i (opcjonalnie) max. masę (t)</p>
         <input
           type="number"
-          v-model="chosenLength"
+          v-model="randomStockLength"
           name="length"
           max="650"
           min="20"
@@ -66,8 +66,8 @@
         />
         <input
           type="number"
-          v-model="chosenMass"
-          name="length"
+          v-model="randomStockMass"
+          name="mass"
           max="4000"
           min="100"
           step="100"
@@ -82,34 +82,30 @@
       </div>
 
       <button class="btn" style="font-size: 1.15em; margin-top: 2em" @click="randomize">LOSUJ SKŁAD!</button>
-      <button class="btn" style="font-size: 1.15em; margin-top: 2em" @click="closeCard">ZAMKNIJ</button>
+      <button class="btn" style="font-size: 1.15em; margin-top: 2em" @click="store.isRandomizerCardOpen = false">
+        ZAMKNIJ
+      </button>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { ComputedRef, defineComponent, inject } from 'vue';
+import { defineComponent, inject } from 'vue';
 
 import carUsage from '../data/carUsage.json';
-import { IStore, ICarWagon, ILocomotive, ICargo } from '../types';
+import { ICarWagon, ILocomotive, ICargo } from '../types';
 
 import randomizeIcon from '../assets/randomize-icon.svg';
+import { useStore } from '../store';
 
 export default defineComponent({
   setup() {
-    const isCardOpen = inject('isCardOpen') as boolean;
-    const store = inject('Store') as IStore;
-
-    const carDataList = inject('carDataList') as ComputedRef<ICarWagon[]>;
+    const store = useStore();
 
     return {
-      isCardOpen,
       store,
-      locoDataList: inject('locoDataList') as ILocomotive[],
-      chosenLength: inject('chosenLength') as number,
-      chosenMass: inject('chosenMass') as number,
-      carDataList,
-      carTypeList: carDataList.value.reduce((list, car) => {
+
+      carTypeList: store.carDataList.reduce((list, car) => {
         const type = car.type.split('_')[0];
 
         if (list.includes(type)) return list;
@@ -119,14 +115,15 @@ export default defineComponent({
         return list;
       }, [] as string[]),
 
-      chosenLocoType: inject('chosenLocoType') as string,
-      chosenCarTypes: inject('chosenCarTypes') as string[],
-
       includeSupporterVehicles: inject('includeSupporterVehicles') as boolean,
     };
   },
 
   data: () => ({
+    randomStockMass: 1500,
+    randomStockLength: 650,
+    chosenCarTypes: [] as string[],
+
     icons: {
       randomize: randomizeIcon,
     },
@@ -160,12 +157,8 @@ export default defineComponent({
   }),
 
   methods: {
-    closeCard() {
-      this.isCardOpen = false;
-    },
-
     displayPreview(carType: string) {
-      const list = this.carDataList.filter((car) => car.type.includes(carType));
+      const list = this.store.carDataList.filter((car) => car.type.includes(carType));
       const randIndex = Math.floor(Math.random() * list.length);
 
       if (this.focusedCar?.type == list[randIndex].type) return;
@@ -188,17 +181,17 @@ export default defineComponent({
         return;
       }
 
-      if (this.chosenLength <= 20) {
+      if (this.randomStockLength <= 20) {
         alert('Długość składu musi być większa niż 20m!');
         return;
       }
 
-      if (this.chosenMass <= 100) {
+      if (this.randomStockMass <= 100) {
         alert('Masa składu musi być większa niż 100t!');
         return;
       }
 
-      if (this.chosenLength > 650) {
+      if (this.randomStockLength > 650) {
         alert('Długość składu nie może przekraczać 650m dla pociągów towarowych!');
         return;
       }
@@ -209,7 +202,7 @@ export default defineComponent({
       if (this.store.stockList.length == 0 || !this.store.stockList[0].isLoco) {
         this.store.stockList.length = 0;
 
-        let locoSet = this.locoDataList
+        let locoSet = this.store.locoDataList
           .filter((loco) => loco.power == 'loco-e' || loco.power == 'loco-s')
           .filter((loco) => (!this.includeSupporterVehicles && loco.supportersOnly ? false : true));
 
@@ -224,7 +217,7 @@ export default defineComponent({
       totalStockLength += this.store.stockList[0].length;
       totalStockMass += this.store.stockList[0].mass;
 
-      let availableCarsSet = this.carDataList.filter((cargoCar) => {
+      let availableCarsSet = this.store.carDataList.filter((cargoCar) => {
         if (!this.includeSupporterVehicles && cargoCar.supportersOnly) return false;
 
         if (this.chosenCarTypes.find((carType) => cargoCar.type.includes(carType))) return true;
@@ -232,7 +225,7 @@ export default defineComponent({
         return false;
       });
 
-      while (totalStockLength < this.chosenLength && totalStockMass < this.chosenMass) {
+      while (totalStockLength < this.randomStockLength && totalStockMass < this.randomStockMass) {
         const randCarIndex = Math.floor(Math.random() * availableCarsSet.length);
 
         const randCar = availableCarsSet[randCarIndex];
@@ -240,14 +233,14 @@ export default defineComponent({
         // const count = Math.random() < 0.25 ? Math.floor(Math.random() * 2) + 1 : 1;
         const count = 1;
 
-        if (randCar.length * count + totalStockLength >= this.chosenLength) break;
+        if (randCar.length * count + totalStockLength >= this.randomStockLength) break;
 
         let randCargo = undefined;
         let randNum = this.loadableByDefault ? 1 : Math.random();
         if (randCar.cargoList.length != 0 && randNum >= 0.6)
           randCargo = randCar.cargoList[Math.floor(Math.random() * randCar.cargoList.length)];
 
-        if ((randCargo?.totalMass || randCar.mass) * count + totalStockMass >= this.chosenMass) break;
+        if ((randCargo?.totalMass || randCar.mass) * count + totalStockMass >= this.randomStockMass) break;
 
         for (let i = 0; i < count; i++) this.addCar(randCar, randCargo);
 
@@ -255,7 +248,7 @@ export default defineComponent({
         totalStockMass += randCargo?.totalMass || randCar.mass;
       }
 
-      this.isCardOpen = false;
+      this.store.isRandomizerCardOpen = false;
     },
 
     toggleCarType(carType: string) {

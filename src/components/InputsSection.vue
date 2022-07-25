@@ -38,8 +38,10 @@
 import { defineComponent, inject, provide, ref } from 'vue';
 
 import ReadyStockList from './ReadyStockList.vue';
-import { IStore, ILocomotive, ICarWagon } from '../types';
+import { IStore, ILocomotive, ICarWagon, IStock } from '../types';
 import imageMixin from '../mixins/imageMixin';
+import { useStore } from '../store';
+import { isLocomotive } from '../utils/vehicleUtils';
 
 export default defineComponent({
   components: {
@@ -54,7 +56,7 @@ export default defineComponent({
   }),
 
   setup() {
-    const store = inject('Store') as IStore;
+    const store = useStore();
 
     const isReadyStockListOpen = ref(false);
 
@@ -63,14 +65,6 @@ export default defineComponent({
     return {
       store,
       isReadyStockListOpen,
-      locoDataList: inject('locoDataList') as ILocomotive[],
-      carDataList: inject('carDataList') as ICarWagon[],
-      isTrainPassenger: inject('isTrainPassenger') as boolean,
-      totalLength: inject('totalLength') as number,
-      totalMass: inject('totalMass') as number,
-      maxStockSpeed: inject('maxStockSpeed') as number,
-      maxAllowedSpeed: inject('maxAllowedSpeed') as number,
-      isLocomotive: inject('isLocomotive') as (vehicle: ILocomotive | ICarWagon) => vehicle is ILocomotive,
     };
   },
 
@@ -95,11 +89,13 @@ export default defineComponent({
 
   computed: {
     locoOptions() {
-      return this.locoDataList.sort((a, b) => (a.type > b.type ? 1 : -1)).sort((a) => (a.supportersOnly ? 1 : -1));
+      return this.store.locoDataList
+        .sort((a, b) => (a.type > b.type ? 1 : -1))
+        .sort((a) => (a.supportersOnly ? 1 : -1));
     },
 
     carOptions() {
-      return this.carDataList.sort((a, b) => (a.type > b.type ? 1 : -1)).sort((a) => (a.supportersOnly ? 1 : -1));
+      return this.store.carDataList.sort((a, b) => (a.type > b.type ? 1 : -1)).sort((a) => (a.supportersOnly ? 1 : -1));
     },
   },
 
@@ -117,32 +113,30 @@ export default defineComponent({
 
       if (!vehicle) return;
 
-      const stockObj = {
+      const stockObj: IStock = {
+        useType: isLocomotive(vehicle) ? vehicle.power : vehicle.useType,
         type: vehicle.type,
         length: vehicle.length,
         mass: vehicle.mass,
         maxSpeed: vehicle.maxSpeed,
-        isLoco: this.isLocomotive(vehicle),
+        isLoco: isLocomotive(vehicle),
         cargo:
-          !this.isLocomotive(vehicle) && vehicle.loadable && this.store.chosenCargo
-            ? this.store.chosenCargo
-            : undefined,
+          !isLocomotive(vehicle) && vehicle.loadable && this.store.chosenCargo ? this.store.chosenCargo : undefined,
         count: 1,
         imgSrc: vehicle.imageSrc,
-        useType: this.isLocomotive(vehicle) ? vehicle.power : vehicle.useType,
         supportersOnly: vehicle.supportersOnly,
       };
 
       if (this.store.chosenStockListIndex != -1) {
         let currentStock = this.store.stockList[this.store.chosenStockListIndex];
 
-        if (this.isLocomotive(vehicle) && currentStock && currentStock.type == vehicle.type) {
+        if (isLocomotive(vehicle) && currentStock && currentStock.type == vehicle.type) {
           this.store.stockList[this.store.chosenStockListIndex].count++;
           return;
         }
 
         if (
-          !this.isLocomotive(vehicle) &&
+          !isLocomotive(vehicle) &&
           currentStock &&
           currentStock.type == vehicle.type &&
           currentStock.cargo?.id == this.store.chosenCargo?.id
@@ -159,13 +153,13 @@ export default defineComponent({
       const previousStock =
         this.store.stockList.length > 0 ? this.store.stockList[this.store.stockList.length - 1] : null;
 
-      if (this.isLocomotive(vehicle) && previousStock && previousStock.type == vehicle.type) {
+      if (isLocomotive(vehicle) && previousStock && previousStock.type == vehicle.type) {
         this.store.stockList[this.store.stockList.length - 1].count++;
         return;
       }
 
       if (
-        !this.isLocomotive(vehicle) &&
+        !isLocomotive(vehicle) &&
         previousStock &&
         previousStock.type == vehicle.type &&
         previousStock.cargo?.id == this.store.chosenCargo?.id
@@ -175,7 +169,7 @@ export default defineComponent({
         return;
       }
 
-      if (this.isLocomotive(vehicle) && this.store.stockList.length > 0 && !this.store.stockList[0].isLoco)
+      if (isLocomotive(vehicle) && this.store.stockList.length > 0 && !this.store.stockList[0].isLoco)
         this.store.stockList.unshift(stockObj);
       else this.store.stockList.push(stockObj);
     },

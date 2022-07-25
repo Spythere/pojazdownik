@@ -32,6 +32,7 @@ import InputsSection from './components/InputsSection.vue';
 import ListSection from './components/ListSection.vue';
 
 import logoImage from './assets/logo.svg';
+import { useStore } from './store';
 
 export default defineComponent({
   components: {
@@ -46,7 +47,7 @@ export default defineComponent({
   }),
 
   setup() {
-    const store = inject('Store') as IStore;
+    const store = useStore();
 
     return {
       store,

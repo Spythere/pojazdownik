@@ -24,7 +24,7 @@
 
       <div style="color: #ccc">
         <b>{{ vehicleTypes[store.chosenLoco?.power || store.chosenCar?.useType || 'loco-e'] }}</b>
-        
+
         <div>
           {{ (store.chosenCar || store.chosenLoco)?.length }}m | {{ (store.chosenCar || store.chosenLoco)?.mass }}t |
           {{ (store.chosenCar || store.chosenLoco)?.maxSpeed }} km/h
@@ -48,12 +48,12 @@
 
 <script lang="ts">
 import carUsage from '../data/carUsage.json';
-import { defineComponent, inject } from 'vue';
-import { IStore } from '../types';
+import { defineComponent } from 'vue';
+import { useStore } from '../store';
 
 export default defineComponent({
   setup() {
-    const store = inject('Store') as IStore;
+    const store = useStore();
 
     return {
       store,
@@ -161,3 +161,4 @@ export default defineComponent({
   }
 }
 </style>
+

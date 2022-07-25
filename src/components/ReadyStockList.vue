@@ -44,6 +44,8 @@ import { IStore, ILocomotive, ICarWagon } from '../types';
 import iconEIC from '../assets/EIC.png';
 import iconIC from '../assets/IC.svg';
 import iconTLK from '../assets/TLK.png';
+import { useStore } from '../store';
+import { isLocomotive } from '../utils/vehicleUtils';
 
 interface ReadyStockList {
   [key: string]: { stockString: string; type: string; number: string; name: string };
@@ -56,17 +58,14 @@ interface ResponseJSONData {
 export default defineComponent({
   setup() {
     return {
-      isOpen: inject('isReadyStockListOpen'),
-      store: inject('Store') as IStore,
-      locoDataList: inject('locoDataList') as ILocomotive[],
-      carDataList: inject('carDataList') as ICarWagon[],
-      isLocomotive: inject('isLocomotive') as (vehicle: ILocomotive | ICarWagon) => vehicle is ILocomotive,
+      store: useStore(),
     };
   },
 
   data: () => ({
     responseStatus: 'loading',
     isMobile: 'ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/) ? true : false,
+    isOpen: false,
 
     readyStockList: {} as ReadyStockList,
     searchedReadyStockName: '',
@@ -129,8 +128,8 @@ export default defineComponent({
 
       stockArray.forEach((type, i) => {
         let vehicle;
-        if (i == 0) vehicle = this.locoDataList.find((loco) => loco.type == stockArray[0]);
-        else vehicle = this.carDataList.find((car) => car.type == type);
+        if (i == 0) vehicle = this.store.locoDataList.find((loco) => loco.type == stockArray[0]);
+        else vehicle = this.store.carDataList.find((car) => car.type == type);
 
         this.addVehicle(vehicle);
       });
@@ -146,11 +145,11 @@ export default defineComponent({
         length: vehicle.length,
         mass: vehicle.mass,
         maxSpeed: vehicle.maxSpeed,
-        isLoco: this.isLocomotive(vehicle),
+        isLoco: isLocomotive(vehicle),
         cargo: undefined,
         count: 1,
         imgSrc: vehicle.imageSrc,
-        useType: this.isLocomotive(vehicle) ? vehicle.power : vehicle.useType,
+        useType: isLocomotive(vehicle) ? vehicle.power : vehicle.useType,
         supportersOnly: vehicle.supportersOnly,
       };
 
