@@ -1,6 +1,6 @@
 <template>
   <header>
-    <img :src="logoSVG" alt="logo pojazdownik" />
+    <img :src="logoImage" alt="logo pojazdownik" />
   </header>
 
   <main>
@@ -8,8 +8,8 @@
       <img :src="store.vehiclePreviewSrc" alt="preview" />
     </div>
 
-    <inputs-section />
-    <list-section />
+    <InputsSection />
+    <ListSection />
   </main>
   <footer>
     <div class="text--grayed" style="margin-bottom: 0.25em">
@@ -27,25 +27,26 @@ import packageInfo from '.././package.json';
 
 import { defineComponent, inject } from 'vue';
 
-import ListSection from '@/components/ListSection.vue';
-import InputsSection from '@/components/InputsSection.vue';
 import { IStore } from './types';
+import InputsSection from './components/InputsSection.vue';
+import ListSection from './components/ListSection.vue';
+
+import logoImage from './assets/logo.svg';
 
 export default defineComponent({
   components: {
     ListSection,
     InputsSection,
   },
+
   data: () => ({
     VERSION: packageInfo.version,
 
-    logoSVG: require('@/assets/logo.svg'),
+    logoImage,
   }),
 
   setup() {
     const store = inject('Store') as IStore;
-
-    // const readyStockJSON = await (await fetch('https://spythere.github.io/api/readyStock.json')).json();
 
     return {
       store,
@@ -173,3 +174,4 @@ footer {
   }
 }
 </style>
+

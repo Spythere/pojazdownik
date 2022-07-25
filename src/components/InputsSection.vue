@@ -2,118 +2,32 @@
   <section class="inputs">
     <div class="input inputs_loco">
       <div class="input_container">
-        <h2 class="input_header">LOKOMOTYWA / ZESP. TRAKCYJNY</h2>
-        <div class="input_radio">
-          <button
-            v-for="label in locoLabels"
-            :key="label.id"
-            @click="onLocoPowerChange(label.id)"
-            :class="{ checked: store.chosenLocoPower == label.id }"
-            data-ignore-outside="1"
-          >
-            {{ label.title }}
-          </button>
-        </div>
+        <h2 class="input_header">WYBIERZ POJAZDY / WAGONY</h2>
 
         <div class="input_list type">
-          <select
-            id="loco-select"
-            ref="loco-select"
-            v-model="store.chosenLoco"
-            @change="onLocoTypeChange"
-            data-select="loco"
-            data-ignore-outside="1"
-          >
-            <option :value="null" disabled>Wybierz pojazd z listy</option>
+          <select id="locomotives-list" v-model="store.chosenLoco">
+            <option :value="null" disabled>Wybierz pojazd trakcyjny</option>
             <option v-for="loco in locoOptions" :value="loco" :key="loco.type">
-              {{ loco.supportersOnly ? '*W*' : '' }}
               {{ loco.type }}
             </option>
           </select>
 
-          <button class="btn--add" @click="addVehicle" title="Dodaj pojazd">
-            <img :src="icons.add" alt="add vehicle" data-ignore-outside="1" />
-          </button>
+          <button class="btn" @click="addVehicle" title="Dodaj pojazd">DODAJ</button>
+        </div>
 
-          <!-- <button class="btn--swap" @click="prepareSwapVehicles" title="Zamień pojazdy">
-            <img :src="icons.swap" alt="swap vehicle" />
-          </button> -->
+        <div class="input_list type">
+          <select id="carwagons-list" v-model="store.chosenCar">
+            <option :value="null" disabled>Wybierz wagon</option>
+
+            <option v-for="car in carOptions" :value="car" :key="car.type">
+              {{ car.type }}
+            </option>
+          </select>
         </div>
 
         <div class="input_ready-stock">
           <button class="btn" @click="setReadyStockList(true)"><b>REALNE ZESTAWIENIA</b></button>
           <ready-stock-list />
-        </div>
-
-        <div class="input_checkbox">
-          <!-- <button @click="onShowSupporterChange" :class="{ checked: this.store.showSupporter }" data-ignore-outside="1">
-            Pokaż tylko pojazdy dla weteranów
-          </button> -->
-        </div>
-      </div>
-    </div>
-
-    <div class="spacer"></div>
-
-    <div class="input inputs_car">
-      <div class="input_container">
-        <h2 class="input_header">RODZAJ WAGONU</h2>
-        <div class="input_radio">
-          <button
-            v-for="label in carLabels"
-            :key="label.id"
-            @click="onCarUseTypeChange(label.id)"
-            :class="{ checked: store.chosenCarUseType == label.id }"
-            data-ignore-outside="1"
-          >
-            {{ label.title }}
-          </button>
-        </div>
-
-        <div class="input_list type">
-          <select
-            id="car-select"
-            ref="car-select"
-            v-model="store.chosenCar"
-            @change="onCarTypeChange"
-            data-select="car"
-            data-ignore-outside="1"
-          >
-            <option :value="null" disabled>Wybierz wagon z listy</option>
-            <option v-for="car in carOptions" :value="car" :key="car.type">
-              {{ car.supportersOnly ? '*W*' : '' }}
-              {{ car.type }}
-            </option>
-          </select>
-
-          <button class="btn--add" @click="addVehicle" title="Dodaj pojazd">
-            <img :src="icons.add" alt="add vehicle" data-ignore-outside="1" />
-          </button>
-
-          <!-- <button class="btn--swap" @click="prepareSwapVehicles" title="Zamień pojazdy">
-            <img :src="icons.swap" alt="swap vehicle" />
-          </button> -->
-        </div>
-
-        <div class="input_list cargo">
-          <select
-            id="cargo-select"
-            :disabled="
-              (store.chosenCar && !store.chosenCar.loadable) ||
-              (store.chosenCar && store.chosenCar.useType == 'car-passenger') ||
-              !store.chosenCar
-            "
-            data-select="cargo"
-            data-ignore-outside="1"
-            v-model="store.chosenCargo"
-          >
-            <option :value="null" v-if="!store.chosenCar || !store.chosenCar.loadable">brak dostępnych ładunków</option>
-            <option :value="null" v-else>próżny</option>
-
-            <option v-for="cargo in store.chosenCar?.cargoList" :value="cargo" :key="cargo.id">
-              {{ cargo.id }}
-            </option>
-          </select>
         </div>
       </div>
     </div>
@@ -121,15 +35,24 @@
 </template>
 
 <script lang="ts">
-import { ICarWagon, ILocomotive, IStore } from '@/types';
 import { defineComponent, inject, provide, ref } from 'vue';
 
-import ReadyStockList from '@/components/ReadyStockList.vue';
+import ReadyStockList from './ReadyStockList.vue';
+import { IStore, ILocomotive, ICarWagon } from '../types';
+import imageMixin from '../mixins/imageMixin';
 
 export default defineComponent({
   components: {
     ReadyStockList,
   },
+
+  mixins: [imageMixin],
+
+  data: () => ({
+    chosenLocomotiveType: '',
+    chosenCarWagonType: '',
+  }),
+
   setup() {
     const store = inject('Store') as IStore;
 
@@ -167,70 +90,16 @@ export default defineComponent({
         if (lastStock.count > 1) lastStock.count--;
         else this.store.stockList.splice(-1);
       }
-
-      // if (keyName == 'arrowdown') {
-      //   const chosenVehicle = this.store.chosenCar || this.store.chosenLoco;
-
-      //   if(!chosenVehicle) return;
-
-      //   ev.preventDefault();
-
-      // }
     });
-
-    this.onLocoPowerChange('loco-e');
-    this.onCarUseTypeChange('car-passenger');
   },
-
-  data: () => ({
-    icons: {
-      add: require('@/assets/add-icon.svg'),
-      swap: require('@/assets/swap-icon.svg'),
-    },
-    locoLabels: [
-      {
-        id: 'loco-e',
-        title: 'ELEKTROWÓZ',
-      },
-      {
-        id: 'loco-s',
-        title: 'SPALINOWÓZ',
-      },
-      {
-        id: 'loco-ezt',
-        title: 'EZT',
-      },
-      {
-        id: 'loco-szt',
-        title: 'SZT',
-      },
-    ],
-
-    carLabels: [
-      {
-        id: 'car-passenger',
-        title: 'PASAŻERSKI',
-      },
-      {
-        id: 'car-cargo',
-        title: 'TOWAROWY',
-      },
-    ],
-  }),
 
   computed: {
     locoOptions() {
-      return this.locoDataList
-        .filter((loco) => loco.power == this.store.chosenLocoPower)
-        .sort((a, b) => (a.type > b.type ? 1 : -1))
-        .sort((a) => (a.supportersOnly ? 1 : -1));
+      return this.locoDataList.sort((a, b) => (a.type > b.type ? 1 : -1)).sort((a) => (a.supportersOnly ? 1 : -1));
     },
 
     carOptions() {
-      return this.carDataList
-        .filter((car) => car.useType == this.store.chosenCarUseType)
-        .sort((a, b) => (a.type > b.type ? 1 : -1))
-        .sort((a) => (a.supportersOnly ? 1 : -1));
+      return this.carDataList.sort((a, b) => (a.type > b.type ? 1 : -1)).sort((a) => (a.supportersOnly ? 1 : -1));
     },
   },
 
@@ -241,57 +110,6 @@ export default defineComponent({
 
     setReadyStockList(bool = false) {
       this.isReadyStockListOpen = bool;
-    },
-
-    onShowSupporterChange() {
-      this.store.showSupporter = !this.store.showSupporter;
-
-      if (this.store.showSupporter) {
-        const chosenVehicle = this.store.chosenCar || this.store.chosenLoco;
-
-        if (!chosenVehicle) return;
-
-        if (!chosenVehicle.supportersOnly) {
-          this.store.chosenCar = null;
-          this.store.chosenLoco = null;
-        }
-      }
-    },
-
-    onLocoPowerChange(inputId: string) {
-      this.store.chosenLoco = null;
-      this.store.imageLoading = false;
-
-      this.store.chosenLocoPower = inputId;
-      // this.store.chosenStockListIndex = -1;
-
-      (this.$refs['loco-select'] as HTMLElement).focus();
-    },
-
-    onCarUseTypeChange(inputId: string) {
-      this.store.chosenCar = null;
-      this.store.imageLoading = false;
-
-      this.store.chosenCarUseType = inputId;
-      // this.store.chosenStockListIndex = -1;
-
-      if (inputId == 'car-passenger') this.store.chosenCargo = null;
-    },
-
-    onCarTypeChange() {
-      this.store.chosenCargo = null;
-      this.store.chosenLoco = null;
-      // this.store.chosenStockListIndex = -1;
-
-      this.store.imageLoading = true;
-    },
-
-    onLocoTypeChange() {
-      this.store.chosenCargo = null;
-      this.store.chosenCar = null;
-      // this.store.chosenStockListIndex = -1
-
-      this.store.imageLoading = true;
     },
 
     addVehicle() {
@@ -495,3 +313,4 @@ export default defineComponent({
   }
 }
 </style>
+

@@ -1,5 +1,5 @@
-import { EVehicleUseType } from "@/enums/EVehicleUseType";
-import { ICarWagon, ILocomotive, IStock } from "@/types";
+import { EVehicleUseType } from "../enums/EVehicleUseType";
+import { IStock } from "../types";
 
 export const verifyTrainSpec = (stockList: IStock[], vehicleMass: number, vehicleUseType: string) => {
     const hasHeadLoco = stockList.length > 0

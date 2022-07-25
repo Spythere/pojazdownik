@@ -17,7 +17,6 @@ const clickOutsideDirective: Directive = {
 
 }
 
-
 createApp(App)
     .provide('Store', Store)
     .provide('isLocomotive', isLocomotive)

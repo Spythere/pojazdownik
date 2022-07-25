@@ -88,10 +88,12 @@
 </template>
 
 <script lang="ts">
-import { ICargo, ICarWagon, ILocomotive, IStore } from '@/types';
 import { ComputedRef, defineComponent, inject } from 'vue';
 
-import carUsage from '@/data/carUsage.json';
+import carUsage from '../data/carUsage.json';
+import { IStore, ICarWagon, ILocomotive, ICargo } from '../types';
+
+import randomizeIcon from '../assets/randomize-icon.svg';
 
 export default defineComponent({
   setup() {
@@ -126,7 +128,7 @@ export default defineComponent({
 
   data: () => ({
     icons: {
-      randomize: require('@/assets/randomize-icon.svg'),
+      randomize: randomizeIcon,
     },
 
     focusedCar: null as ICarWagon | null,
@@ -456,3 +458,4 @@ button.chosen {
   }
 }
 </style>
+

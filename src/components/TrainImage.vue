@@ -47,9 +47,9 @@
 </template>
 
 <script lang="ts">
-import carUsage from '@/data/carUsage.json';
-import { IStore } from '@/types';
+import carUsage from '../data/carUsage.json';
 import { defineComponent, inject } from 'vue';
+import { IStore } from '../types';
 
 export default defineComponent({
   setup() {

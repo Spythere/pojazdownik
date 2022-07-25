@@ -2,8 +2,8 @@
 import { ICargo, ICarWagon, ILocomotive, IStock, IStore, IVehicleData } from "./types";
 import { reactive } from "@vue/reactivity";
 
-import vehicleDataJSON from "@/data/vehicleData.json";
-import vehiclePropsJSON from "@/data/vehicleProps.json";
+import vehicleDataJSON from "./data/vehicleData.json";
+import vehiclePropsJSON from "./data/vehicleProps.json";
 import { EVehicleUseType } from "./enums/EVehicleUseType";
 import { computed } from "vue";
 

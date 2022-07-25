@@ -38,8 +38,12 @@
 </template>
 
 <script lang="ts">
-import { ICarWagon, ILocomotive, IStore } from '@/types';
 import { defineComponent, inject } from 'vue';
+import { IStore, ILocomotive, ICarWagon } from '../types';
+
+import iconEIC from '../assets/EIC.png';
+import iconIC from '../assets/IC.svg';
+import iconTLK from '../assets/TLK.png';
 
 interface ReadyStockList {
   [key: string]: { stockString: string; type: string; number: string; name: string };
@@ -68,9 +72,9 @@ export default defineComponent({
     searchedReadyStockName: '',
 
     icons: {
-      EIC: require('@/assets/EIC.png'),
-      IC: require('@/assets/IC.svg'),
-      TLK: require('@/assets/TLK.png'),
+      EIC: iconEIC,
+      IC: iconIC,
+      TLK: iconTLK,
     } as { [key: string]: string },
   }),
 
@@ -90,6 +94,10 @@ export default defineComponent({
   },
 
   methods: {
+    getImageUrl(name: string) {
+      return new URL(`./dir/${name}.png`, import.meta.url).href;
+    },
+
     exit() {
       this.isOpen = false;
     },
@@ -296,3 +304,4 @@ input {
   }
 }
 </style>
+

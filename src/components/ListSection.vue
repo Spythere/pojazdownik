@@ -48,7 +48,10 @@
 
         <div class="warning" v-if="warnings.trainTooHeavy.value">
           Ten skład jest za ciężki! Sprawdź
-          <a target="_blank" href="https://docs.google.com/spreadsheets/d/1bFXUsHsAu4youmNz-46Q1HslZaaoklvfoBDS553TnNk/edit">
+          <a
+            target="_blank"
+            href="https://docs.google.com/spreadsheets/d/1bFXUsHsAu4youmNz-46Q1HslZaaoklvfoBDS553TnNk/edit"
+          >
             dopuszczalne masy składów
           </a>
         </div>
@@ -119,10 +122,15 @@
 
 <script lang="ts">
 import { computed, ComputedRef, defineComponent, inject, provide, reactive, ref } from 'vue';
-import { ICarWagon, ILocomotive, IStore } from '@/types';
+import { IStore, ILocomotive, ICarWagon } from '../types';
 import RandomizerCard from './RandomizerCard.vue';
-
 import TrainImage from './TrainImage.vue';
+
+import addIcon from '../assets/add-icon.svg';
+import subIcon from '../assets/sub-icon.svg';
+import removeIcon from '../assets/remove-icon.svg';
+import lowerIcon from '../assets/lower-icon.svg';
+import higherIcon from '../assets/higher-icon.svg';
 
 export default defineComponent({
   components: { RandomizerCard, TrainImage },
@@ -184,11 +192,11 @@ export default defineComponent({
 
   data: () => ({
     icons: {
-      add: require('@/assets/add-icon.svg'),
-      sub: require('@/assets/sub-icon.svg'),
-      remove: require('@/assets/remove-icon.svg'),
-      lower: require('@/assets/lower-icon.svg'),
-      higher: require('@/assets/higher-icon.svg'),
+      add: addIcon,
+      sub: subIcon,
+      remove: removeIcon,
+      lower: lowerIcon,
+      higher: higherIcon,
     },
 
     imageOffsetY: 0,
@@ -591,3 +599,4 @@ export default defineComponent({
   }
 }
 </style>
+
