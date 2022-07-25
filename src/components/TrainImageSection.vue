@@ -1,55 +1,55 @@
 <template>
-  <div class="image">
-    <div class="image__wrapper">
-      <div
-        class="image__content"
-        :class="{
-          supporter: (store.chosenLoco || store.chosenCar)?.supportersOnly,
-        }"
-      >
-        <div class="no-img" v-if="!store.chosenCar && !store.chosenLoco">PODGLĄD WYBRANEGO POJAZDU</div>
+  <section class="train-image">
+    <div class="train-image__wrapper">
+      <div class="train-image__content">
+        <div class="no-img" v-if="!store.chosenVehicle">PODGLĄD WYBRANEGO POJAZDU</div>
         <div class="empty-message" v-if="store.imageLoading">ŁADOWANIE OBRAZU...</div>
         <img
-          v-if="store.chosenLoco || store.chosenCar"
-          :src="store.chosenLoco?.imageSrc || store.chosenCar?.imageSrc"
-          :alt="store.chosenLoco?.type || store.chosenCar?.type"
+          v-if="store.chosenVehicle"
+          :src="store.chosenVehicle.imageSrc"
+          :alt="store.chosenVehicle.type"
           @load="onImageLoad"
           @click="onImageClick"
         />
       </div>
     </div>
 
-    <div class="image__info" v-if="store.chosenLoco || store.chosenCar">
-      <b class="text--accent">{{ (store.chosenLoco || store.chosenCar)?.type }} </b>
+    <div class="image__info" v-if="store.chosenVehicle">
+      <b class="text--accent">{{ store.chosenVehicle.type }} </b>
 
       <div style="color: #ccc">
-        <b>{{ vehicleTypes[store.chosenLoco?.power || store.chosenCar?.useType || 'loco-e'] }}</b>
+        <b>{{
+          vehicleTypes[
+            isLocomotive(store.chosenVehicle) ? store.chosenVehicle.power : store.chosenVehicle.useType || 'loco-e'
+          ]
+        }}</b>
 
         <div>
-          {{ (store.chosenCar || store.chosenLoco)?.length }}m | {{ (store.chosenCar || store.chosenLoco)?.mass }}t |
-          {{ (store.chosenCar || store.chosenLoco)?.maxSpeed }} km/h
+          {{ store.chosenVehicle.length }}m | {{ store.chosenVehicle.mass }}t | {{ store.chosenVehicle.maxSpeed }} km/h
         </div>
 
-        <div v-if="store.chosenLoco">Typ kabiny: {{ store.chosenLoco.cabinType }}</div>
+        <div v-if="isLocomotive(store.chosenVehicle)">Typ kabiny: {{ store.chosenVehicle.cabinType }}</div>
 
-        <div v-if="store.chosenCar">
+        <div v-else>
           {{
-            store.chosenCar.useType == 'car-cargo'
-              ? carUsage[store.chosenCar.constructionType]
-              : 'Typ konstrukcji: ' + store.chosenCar.constructionType
+            store.chosenVehicle.useType == 'car-cargo'
+              ? carUsage[store.chosenVehicle.constructionType]
+              : 'Typ konstrukcji: ' + store.chosenVehicle.constructionType
           }}
         </div>
       </div>
     </div>
 
     <div class="image__info" v-else>Wybierz pojazd lub wagon, aby zobaczyć jego podgląd powyżej</div>
-  </div>
+  </section>
 </template>
 
 <script lang="ts">
 import carUsage from '../data/carUsage.json';
 import { defineComponent } from 'vue';
 import { useStore } from '../store';
+import { isLocomotive } from '../utils/vehicleUtils';
+import { ILocomotive, Vehicle } from '../types';
 
 export default defineComponent({
   setup() {
@@ -80,8 +80,12 @@ export default defineComponent({
       this.store.imageLoading = false;
     },
 
+    isLocomotive(vehicle: Vehicle): vehicle is ILocomotive {
+      return isLocomotive(vehicle);
+    },
+
     onImageClick() {
-      const chosenVehicle = this.store.chosenCar || this.store.chosenLoco;
+      const chosenVehicle = this.store.chosenVehicle;
 
       if (!chosenVehicle) return;
 
@@ -92,15 +96,16 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.image {
-  flex-grow: 2;
-
+.train-image {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
+
+  margin-top: 2.5em;
 }
 
-.image {
+.train-image {
   &__wrapper {
     max-width: 380px;
     width: 22em;

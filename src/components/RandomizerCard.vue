@@ -114,8 +114,6 @@ export default defineComponent({
 
         return list;
       }, [] as string[]),
-
-      includeSupporterVehicles: inject('includeSupporterVehicles') as boolean,
     };
   },
 
@@ -204,7 +202,7 @@ export default defineComponent({
 
         let locoSet = this.store.locoDataList
           .filter((loco) => loco.power == 'loco-e' || loco.power == 'loco-s')
-          .filter((loco) => (!this.includeSupporterVehicles && loco.supportersOnly ? false : true));
+          .filter((loco) => (loco.supportersOnly ? false : true));
 
         if (this.chosenCarTypes.some((car) => this.cargoTypes.includes(car)))
           locoSet = locoSet.filter((loco) => !loco.type.startsWith('EP'));
@@ -218,7 +216,7 @@ export default defineComponent({
       totalStockMass += this.store.stockList[0].mass;
 
       let availableCarsSet = this.store.carDataList.filter((cargoCar) => {
-        if (!this.includeSupporterVehicles && cargoCar.supportersOnly) return false;
+        if (cargoCar.supportersOnly) return false;
 
         if (this.chosenCarTypes.find((carType) => cargoCar.type.includes(carType))) return true;
 

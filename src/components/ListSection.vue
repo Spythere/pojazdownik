@@ -1,11 +1,5 @@
 <template>
   <div class="bottom">
-    <div class="bg-dimmer" v-if="store.isRandomizerCardOpen"></div>
-
-    <train-image />
-
-    <section class="spacer"></section>
-
     <section class="stock-list">
       <div class="stock-list_buttons">
         <button class="btn" @click="downloadStock">POBIERZ POCIĄG</button>
@@ -121,10 +115,9 @@
 </template>
 
 <script lang="ts">
-import { computed, ComputedRef, defineComponent, inject, provide, reactive, ref } from 'vue';
-import { IStore, ILocomotive, ICarWagon } from '../types';
+import { defineComponent } from 'vue';
 import RandomizerCard from './RandomizerCard.vue';
-import TrainImage from './TrainImage.vue';
+import TrainImage from './TrainImageSection.vue';
 
 import addIcon from '../assets/add-icon.svg';
 import subIcon from '../assets/sub-icon.svg';
@@ -154,12 +147,7 @@ export default defineComponent({
 
       const attr = targetNode.attributes.getNamedItem('data-ignore-outside');
 
-      if (
-        !attr &&
-        !(this.$refs['list'] as Node).contains(targetNode) &&
-        targetNode.tagName.toLowerCase() != 'select' &&
-        targetNode.tagName.toLowerCase() != 'option'
-      )
+      if (!attr && targetNode.tagName.toLowerCase() != 'select' && targetNode.tagName.toLowerCase() != 'option')
         this.store.chosenStockListIndex = -1;
     });
   },
@@ -212,24 +200,23 @@ export default defineComponent({
 
       this.store.chosenStockListIndex = vehicleID;
 
-      if ((this.store.chosenCar || this.store.chosenLoco)?.imageSrc != vehicle.imgSrc) this.store.imageLoading = true;
+      if (this.store.chosenVehicle?.imageSrc != vehicle.imgSrc) this.store.imageLoading = true;
 
       if (this.store.showSupporter && !vehicle.supportersOnly) {
         this.store.showSupporter = false;
       }
 
       if (vehicle.isLoco) {
-        this.store.chosenLocoPower = vehicle.useType;
+        const chosenLoco = this.store.locoDataList.find((v) => v.type == vehicle.type) || null;
+        this.store.chosenVehicle = chosenLoco;
+        this.store.chosenLoco = chosenLoco;
 
-        this.store.chosenLoco = this.store.locoDataList.find((v) => v.type == vehicle.type) || null;
-
-        this.store.chosenCar = null;
         this.store.chosenCargo = null;
       } else {
-        this.store.chosenCarUseType = vehicle.useType;
+        const chosenCar = this.store.carDataList.find((v) => v.type == vehicle.type) || null;
+        this.store.chosenVehicle = chosenCar;
+        this.store.chosenCar = chosenCar;
 
-        this.store.chosenLoco = null;
-        this.store.chosenCar = this.store.carDataList.find((v) => v.type == vehicle.type) || null;
         this.store.chosenCargo = vehicle.cargo || null;
       }
 

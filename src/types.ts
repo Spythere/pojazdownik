@@ -1,7 +1,11 @@
+export type Vehicle = ILocomotive | ICarWagon;
+
 export interface IStore {
   chosenCar: ICarWagon | null;
   chosenLoco: ILocomotive | null;
   chosenCargo: ICargo | null;
+
+  chosenVehicle: Vehicle | null;
 
   showSupporter: boolean;
   imageLoading: boolean;
@@ -70,3 +74,4 @@ export interface IStock {
   count: number;
   imgSrc: string;
 }
+

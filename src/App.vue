@@ -1,43 +1,54 @@
 <template>
-  <header>
-    <img :src="logoImage" alt="logo pojazdownik" />
-  </header>
+  <div class="image-preview" v-if="store.vehiclePreviewSrc != ''" @click="() => (store.vehiclePreviewSrc = '')">
+    <img :src="store.vehiclePreviewSrc" alt="preview" />
+  </div>
 
-  <main>
-    <div class="image-preview" v-if="store.vehiclePreviewSrc != ''" @click="() => (store.vehiclePreviewSrc = '')">
-      <img :src="store.vehiclePreviewSrc" alt="preview" />
-    </div>
+  <div class="app_container">
+    <header>
+      <img :src="logoImage" alt="logo pojazdownik" />
+    </header>
+    <main>
+      <div id="inputs-area">
+        <InputsSection />
+      </div>
 
-    <InputsSection />
-    <ListSection />
-  </main>
-  <footer>
-    <div class="text--grayed" style="margin-bottom: 0.25em">
-      Ta strona ma charakter informacyjny. Autor nie ponosi odpowiedzialności za tworzenie pociągów niezgodnych z
-      regulaminem symulatora Train Driver 2!
-    </div>
-    &copy;
-    <a href="https://td2.info.pl/profile/?u=20777" target="_blank">Spythere</a>
-    {{ new Date().getUTCFullYear() }} | v{{ VERSION }}
-  </footer>
+      <div id="list-area">
+        <ListSection />
+      </div>
+
+      <div id="image-area">
+        <TrainImage />
+      </div>
+    </main>
+    <footer>
+      <div class="text--grayed" style="margin-bottom: 0.25em">
+        Ta strona ma charakter informacyjny. Autor nie ponosi odpowiedzialności za tworzenie pociągów niezgodnych z
+        regulaminem symulatora Train Driver 2!
+      </div>
+      &copy;
+      <a href="https://td2.info.pl/profile/?u=20777" target="_blank">Spythere</a>
+      {{ new Date().getUTCFullYear() }} | v{{ VERSION }}
+    </footer>
+  </div>
 </template>
 
 <script lang="ts">
 import packageInfo from '.././package.json';
 
-import { defineComponent, inject } from 'vue';
+import { defineComponent } from 'vue';
 
-import { IStore } from './types';
 import InputsSection from './components/InputsSection.vue';
 import ListSection from './components/ListSection.vue';
 
 import logoImage from './assets/logo.svg';
 import { useStore } from './store';
+import TrainImage from './components/TrainImageSection.vue';
 
 export default defineComponent({
   components: {
     ListSection,
     InputsSection,
+    TrainImage,
   },
 
   data: () => ({
@@ -69,23 +80,22 @@ export default defineComponent({
 <style lang="scss">
 @import './styles/global';
 
+.app_container {
+  min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  padding: 1em;
+}
+
 /* APP */
 #app {
   margin: 0 auto;
 
   color: $textColor;
 
-  min-height: 100vh;
-
-  padding: 0.5em 1em;
-
-  overflow: hidden;
-
-  display: grid;
+  display: flex;
   justify-content: center;
-
-  grid-template-columns: minmax(200px, 1200px);
-  grid-template-rows: 5.5em 1fr auto;
 }
 
 /* HEADER SECTION */
@@ -93,12 +103,11 @@ export default defineComponent({
 header {
   text-align: center;
 
-  margin-top: 1em;
-
   img {
     width: 35em;
   }
 }
+
 h2 {
   margin: 0;
   margin-bottom: 0.5em;
@@ -139,13 +148,38 @@ h2 {
 /* MAIN SECTION */
 
 main {
-  margin-top: 8em;
+  margin-top: 2em;
+  display: grid;
+  gap: 1em 3em;
+
+  width: 100%;
+  max-width: 1200px;
+
+  grid-template-columns: 1fr 2fr;
+
+  grid-template-areas: 'inputs list' 'image list';
+
+  #inputs-area {
+    grid-area: inputs;
+  }
+
+  #list-area {
+    grid-area: list;
+  }
+
+  #image-area {
+    grid-area: image;
+  }
 }
 
+/* FOOTER SECTION */
+
 footer {
-  margin-top: 1.5em;
+  margin-top: auto;
   text-align: center;
 }
+
+/* MOBILE VIEWS */
 
 @media screen and (max-width: 800px) {
   #app {

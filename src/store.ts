@@ -1,6 +1,7 @@
-import { IStore } from './types';
+import { ICarWagon, ILocomotive, IStore } from './types';
 import { defineStore } from 'pinia';
 import { carDataList, isTrainPassenger, locoDataList, maxStockSpeed, totalLength, totalMass } from './utils/vehicleUtils';
+
 
 export const useStore = defineStore({
   id: 'store',
@@ -9,6 +10,7 @@ export const useStore = defineStore({
       chosenCar: null,
       chosenLoco: null,
       chosenCargo: null,
+      chosenVehicle: null,
 
       showSupporter: false,
       imageLoading: false,

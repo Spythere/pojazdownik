@@ -5,7 +5,12 @@
         <h2 class="input_header">WYBIERZ POJAZDY / WAGONY</h2>
 
         <div class="input_list type">
-          <select id="locomotives-list" v-model="store.chosenLoco">
+          <select
+            id="locomotives-list"
+            v-model="store.chosenLoco"
+            @focus="onVehicleSelect('loco')"
+            @input="onVehicleSelect('loco')"
+          >
             <option :value="null" disabled>Wybierz pojazd trakcyjny</option>
             <option v-for="loco in locoOptions" :value="loco" :key="loco.type">
               {{ loco.type }}
@@ -16,7 +21,12 @@
         </div>
 
         <div class="input_list type">
-          <select id="carwagons-list" v-model="store.chosenCar">
+          <select
+            id="carwagons-list"
+            v-model="store.chosenCar"
+            @focus="onVehicleSelect('car')"
+            @input="onVehicleSelect('car')"
+          >
             <option :value="null" disabled>Wybierz wagon</option>
 
             <option v-for="car in carOptions" :value="car" :key="car.type">
@@ -108,8 +118,16 @@ export default defineComponent({
       this.isReadyStockListOpen = bool;
     },
 
+    onVehicleSelect(type: 'loco' | 'car') {
+      this.$nextTick(() => {
+        if (!this.store.chosenLoco && !this.store.chosenCar) return;
+
+        this.store.chosenVehicle = type == 'loco' ? this.store.chosenLoco : this.store.chosenCar;
+      });
+    },
+
     addVehicle() {
-      const vehicle = this.store.chosenCar || this.store.chosenLoco;
+      const vehicle = this.store.chosenVehicle;
 
       if (!vehicle) return;
 
@@ -201,64 +219,6 @@ export default defineComponent({
     margin-bottom: 1em;
   }
 
-  &_radio {
-    button {
-      padding: 0.25em 0.55em;
-      margin-right: 0.5em;
-      border: 2px solid white;
-      color: white;
-      font-size: 1em;
-    }
-
-    button:focus {
-      color: $accentColor;
-    }
-
-    button.checked {
-      border-color: $accentColor;
-      color: $accentColor;
-      font-weight: bold;
-    }
-  }
-
-  &_checkbox {
-    margin: 1em 0;
-
-    padding: 0 1.5em;
-
-    button {
-      position: relative;
-      color: #999;
-
-      &::before {
-        content: '';
-        width: 1.5ch;
-        height: 1.5ch;
-
-        display: block;
-
-        position: absolute;
-        bottom: 0.2ch;
-        left: -1.5em;
-
-        background-color: #999;
-      }
-
-      &.checked {
-        color: white;
-        font-weight: bold;
-
-        &::before {
-          background-color: $accentColor;
-        }
-      }
-
-      &:focus {
-        outline: 1px solid $accentColor;
-      }
-    }
-  }
-
   &_list {
     margin: 0.5em 0;
 
@@ -271,7 +231,7 @@ export default defineComponent({
 
   &_list button {
     margin-left: 0.5em;
-    font-size: 0.8em;
+    font-weight: bold;
 
     &:hover img {
       border-color: $accentColor;

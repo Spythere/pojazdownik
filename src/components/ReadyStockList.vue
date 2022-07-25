@@ -39,7 +39,7 @@
 
 <script lang="ts">
 import { defineComponent, inject } from 'vue';
-import { IStore, ILocomotive, ICarWagon } from '../types';
+import { IStore, ILocomotive, ICarWagon, Vehicle } from '../types';
 
 import iconEIC from '../assets/EIC.png';
 import iconIC from '../assets/IC.svg';
@@ -127,9 +127,9 @@ export default defineComponent({
       this.store.chosenRealStockName = `${type} ${number} ${name}`;
 
       stockArray.forEach((type, i) => {
-        let vehicle;
-        if (i == 0) vehicle = this.store.locoDataList.find((loco) => loco.type == stockArray[0]);
-        else vehicle = this.store.carDataList.find((car) => car.type == type);
+        let vehicle: Vehicle | null = null;
+        if (i == 0) vehicle = this.store.locoDataList.find((loco) => loco.type == stockArray[0]) || null;
+        else vehicle = this.store.carDataList.find((car) => car.type == type) || null;
 
         this.addVehicle(vehicle);
       });
@@ -137,7 +137,7 @@ export default defineComponent({
       this.exit();
     },
 
-    addVehicle(vehicle: ILocomotive | ICarWagon | undefined) {
+    addVehicle(vehicle: Vehicle | null) {
       if (!vehicle) return;
 
       const stockObj = {
