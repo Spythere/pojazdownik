@@ -1,7 +1,7 @@
 <template>
-  <div class="ready-stock-list" v-if="isOpen">
+  <div class="ready-stock-list" v-if="store.isRealStockListCardOpen">
     <div class="top-sticky">
-      <button class="btn btn--text exit" @click="exit">&lt; POWRÓT</button>
+      <button class="btn btn--text exit" @click="store.isRealStockListCardOpen = false">&lt; POWRÓT</button>
 
       <div class="header">
         <h1>
@@ -65,7 +65,6 @@ export default defineComponent({
   data: () => ({
     responseStatus: 'loading',
     isMobile: 'ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/) ? true : false,
-    isOpen: false,
 
     readyStockList: {} as ReadyStockList,
     searchedReadyStockName: '',
@@ -95,10 +94,6 @@ export default defineComponent({
   methods: {
     getImageUrl(name: string) {
       return new URL(`./dir/${name}.png`, import.meta.url).href;
-    },
-
-    exit() {
-      this.isOpen = false;
     },
 
     openPreview(e: Event, type: string, number: string) {
@@ -134,7 +129,7 @@ export default defineComponent({
         this.addVehicle(vehicle);
       });
 
-      this.exit();
+      this.store.isRealStockListCardOpen = false;
     },
 
     addVehicle(vehicle: Vehicle | null) {

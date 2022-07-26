@@ -53,7 +53,7 @@
         <div class="warning" v-if="warnings.tooManyLocos.value">Ten skład posiada za dużo pojazdów trakcyjnych!</div>
       </div> -->
 
-      <ul ref="list" data-ignore-outside="1">
+      <ul ref="list"  >
         <li v-if="store.stockList.length == 0" class="list-empty">
           <div class="item-content">Lista pojazdów jest pusta!</div>
         </li>
@@ -65,7 +65,7 @@
           :data-id="i"
           tabindex="0"
           @focus="onListItemFocus(i)"
-          :ref="`item-${i}`"
+          ref="itemRefs"
         >
           <div
             class="item-content"
@@ -147,8 +147,10 @@ export default defineComponent({
 
       const attr = targetNode.attributes.getNamedItem('data-ignore-outside');
 
-      if (!attr && targetNode.tagName.toLowerCase() != 'select' && targetNode.tagName.toLowerCase() != 'option')
+      if (!attr && !/select|option/i.test(targetNode.tagName)) {
+        console.log(targetNode.tagName);
         this.store.chosenStockListIndex = -1;
+      }
     });
   },
 
@@ -198,7 +200,7 @@ export default defineComponent({
     onListItemFocus(vehicleID: number) {
       const vehicle = this.store.stockList[vehicleID];
 
-      this.store.chosenStockListIndex = vehicleID;
+      // this.store.chosenStockListIndex = vehicleID;
 
       if (this.store.chosenVehicle?.imageSrc != vehicle.imgSrc) this.store.imageLoading = true;
 
@@ -323,17 +325,13 @@ export default defineComponent({
     onDrop(e: DragEvent, vehicleIndex: number) {
       e.preventDefault();
 
-      let targetEl: Element | null = this.$refs[`item-${vehicleIndex}`] as Element;
+      let targetEl = (this.$refs['itemRefs'] as Element[])[vehicleIndex];
 
       if (!targetEl) return;
 
-      const dataID = targetEl.attributes.getNamedItem('data-id')?.textContent;
+      const tempVehicle = this.store.stockList[vehicleIndex];
 
-      if (!dataID) return;
-
-      const tempVehicle = this.store.stockList[Number(dataID)];
-
-      this.store.stockList[Number(dataID)] = this.store.stockList[this.draggedVehicleID];
+      this.store.stockList[vehicleIndex] = this.store.stockList[this.draggedVehicleID];
       this.store.stockList[this.draggedVehicleID] = tempVehicle;
     },
 

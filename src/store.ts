@@ -29,6 +29,7 @@ export const useStore = defineStore({
       vehiclePreviewSrc: '',
 
       isRandomizerCardOpen: false,
+      isRealStockListCardOpen: false,
 
 
     } as IStore),

@@ -35,6 +35,19 @@
           </select>
         </div>
 
+        <div class="input_list type">
+          <select
+            id="cargo-list"
+            v-model="store.cargoOptions"
+          >
+            <option :value="null" disabled>Wybierz wagon</option>
+
+            <option v-for="cargo in store.cargoOptions" >
+              {{ cargo }}
+            </option>
+          </select>
+        </div>
+
         <div class="input_ready-stock">
           <button class="btn" @click="setReadyStockList(true)"><b>REALNE ZESTAWIENIA</b></button>
           <ready-stock-list />
@@ -68,13 +81,8 @@ export default defineComponent({
   setup() {
     const store = useStore();
 
-    const isReadyStockListOpen = ref(false);
-
-    provide('isReadyStockListOpen', isReadyStockListOpen);
-
     return {
       store,
-      isReadyStockListOpen,
     };
   },
 
@@ -115,7 +123,7 @@ export default defineComponent({
     },
 
     setReadyStockList(bool = false) {
-      this.isReadyStockListOpen = bool;
+      this.store.isRealStockListCardOpen = bool;
     },
 
     onVehicleSelect(type: 'loco' | 'car') {

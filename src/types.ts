@@ -23,6 +23,7 @@ export interface IStore {
   vehiclePreviewSrc: string;
 
   isRandomizerCardOpen: boolean;
+  isRealStockListCardOpen: boolean;
 }
 
 export interface IVehicleData {
@@ -74,4 +75,5 @@ export interface IStock {
   count: number;
   imgSrc: string;
 }
+
 
