@@ -53,7 +53,7 @@
         <div class="warning" v-if="warnings.tooManyLocos.value">Ten skład posiada za dużo pojazdów trakcyjnych!</div>
       </div> -->
 
-      <ul ref="list"  >
+      <ul ref="list">
         <li v-if="store.stockList.length == 0" class="list-empty">
           <div class="item-content">Lista pojazdów jest pusta!</div>
         </li>
@@ -61,22 +61,23 @@
         <li
           v-for="(stock, i) in store.stockList"
           :key="stock.type + i"
-          :class="{ loco: stock.isLoco, selected: store.chosenStockListIndex == i }"
-          :data-id="i"
+          :class="{ loco: stock.isLoco }"
           tabindex="0"
-          @focus="onListItemFocus(i)"
           ref="itemRefs"
         >
           <div
             class="item-content"
+            @click="onListItemClick(i)"
             @dragstart="onDragStart(i)"
             @drop="onDrop($event, i)"
             @dragover="allowDrop"
             draggable="true"
           >
-            <span class="stock__type" :class="{ supporter: stock.supportersOnly }">
+            <span class="stock__type">
+              <span v-if="i == store.chosenStockListIndex">&bull;</span>
               {{ stock.isLoco ? stock.type : getCarSpecFromType(stock.type) }}
             </span>
+
             <span class="stock__cargo" v-if="stock.cargo"> {{ stock.cargo.id }} </span>
             <span class="stock__length"> {{ stock.length }}m </span>
             <span class="stock__mass">{{ stock.cargo ? stock.cargo.totalMass : stock.mass }}t </span>
@@ -137,23 +138,6 @@ export default defineComponent({
     };
   },
 
-  mounted() {
-    document.addEventListener('click', (event: Event) => {
-      if (!event.target) return;
-
-      event.stopPropagation();
-
-      const targetNode = event.target as HTMLElement;
-
-      const attr = targetNode.attributes.getNamedItem('data-ignore-outside');
-
-      if (!attr && !/select|option/i.test(targetNode.tagName)) {
-        console.log(targetNode.tagName);
-        this.store.chosenStockListIndex = -1;
-      }
-    });
-  },
-
   data: () => ({
     icons: {
       add: addIcon,
@@ -197,10 +181,16 @@ export default defineComponent({
       }, 20);
     },
 
-    onListItemFocus(vehicleID: number) {
+    onListItemClick(vehicleID: number) {
       const vehicle = this.store.stockList[vehicleID];
 
-      // this.store.chosenStockListIndex = vehicleID;
+      this.store.chosenStockListIndex =
+        this.store.chosenStockListIndex == vehicleID && this.store.chosenVehicle?.type == vehicle.type ? -1 : vehicleID;
+
+      if (this.store.chosenStockListIndex == -1) {
+        this.store.chosenVehicle = null;
+        return;
+      }
 
       if (this.store.chosenVehicle?.imageSrc != vehicle.imgSrc) this.store.imageLoading = true;
 
@@ -448,7 +438,7 @@ export default defineComponent({
       color: $accentColor;
     }
 
-    &:focus .item-content {
+    &:focus-visible .item-content {
       color: $accentColor;
     }
 
@@ -470,7 +460,7 @@ export default defineComponent({
 
       transition: color 100ms;
 
-      span {
+      > span {
         padding: 0.5em;
         margin-right: 0.25em;
         margin-top: 0.25em;
@@ -511,7 +501,7 @@ export default defineComponent({
       button {
         margin: 0 0.25em;
 
-        &:focus {
+        &:focus-visible {
           outline: 1px solid white;
         }
       }

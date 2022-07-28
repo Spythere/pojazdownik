@@ -152,12 +152,13 @@ main {
   display: grid;
   gap: 1em 3em;
 
-  width: 100%;
-  max-width: 1200px;
+  width: 100vw;
+  max-width: 1300px;
 
   grid-template-columns: 1fr 2fr;
-
   grid-template-areas: 'inputs list' 'image list';
+
+  padding: 0.5em;
 
   #inputs-area {
     grid-area: inputs;
@@ -181,13 +182,17 @@ footer {
 
 /* MOBILE VIEWS */
 
+@media screen and (max-width: 1100px) {
+  main {
+    grid-template-columns: 1fr;
+    grid-template-areas: 'inputs' 'image' 'list';
+    justify-items: center;
+  }
+}
+
 @media screen and (max-width: 800px) {
   #app {
     font-size: calc(0.75vw + 0.6rem);
-  }
-
-  main {
-    margin-top: 3.5em;
   }
 
   header {

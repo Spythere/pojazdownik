@@ -17,7 +17,7 @@
             </option>
           </select>
 
-          <button class="btn" @click="addVehicle" title="Dodaj pojazd">DODAJ</button>
+          <button class="btn" @click="addVehicle">DODAJ</button>
         </div>
 
         <div class="input_list type">
@@ -33,17 +33,34 @@
               {{ car.type }}
             </option>
           </select>
+
+          <button
+            class="btn"
+            @click="switchVehicles"
+            :disabled="store.chosenStockListIndex == -1"
+            :data-disabled="store.chosenStockListIndex == -1"
+          >
+            ZAMIEŃ
+          </button>
         </div>
 
-        <div class="input_list type">
+        <div class="input_list cargo">
           <select
-            id="cargo-list"
-            v-model="store.cargoOptions"
+            id="cargo-select"
+            :disabled="
+              (store.chosenCar && !store.chosenCar.loadable) ||
+              (store.chosenCar && store.chosenCar.useType == 'car-passenger') ||
+              !store.chosenCar
+            "
+            data-select="cargo"
+            data-ignore-outside="1"
+            v-model="store.chosenCargo"
           >
-            <option :value="null" disabled>Wybierz wagon</option>
+            <option :value="null" v-if="!store.chosenCar || !store.chosenCar.loadable">brak dostępnych ładunków</option>
+            <option :value="null" v-else>próżny</option>
 
-            <option v-for="cargo in store.cargoOptions" >
-              {{ cargo }}
+            <option v-for="cargo in store.chosenCar?.cargoList" :value="cargo" :key="cargo.id">
+              {{ cargo.id }}
             </option>
           </select>
         </div>
@@ -107,13 +124,11 @@ export default defineComponent({
 
   computed: {
     locoOptions() {
-      return this.store.locoDataList
-        .sort((a, b) => (a.type > b.type ? 1 : -1))
-        .sort((a) => (a.supportersOnly ? 1 : -1));
+      return this.store.locoDataList.sort((a, b) => (a.type > b.type ? 1 : -1));
     },
 
     carOptions() {
-      return this.store.carDataList.sort((a, b) => (a.type > b.type ? 1 : -1)).sort((a) => (a.supportersOnly ? 1 : -1));
+      return this.store.carDataList.sort((a, b) => (a.type > b.type ? 1 : -1));
     },
   },
 
@@ -134,7 +149,9 @@ export default defineComponent({
       });
     },
 
-    addVehicle() {
+    switchVehicles() {
+      if (this.store.chosenStockListIndex == -1) return;
+
       const vehicle = this.store.chosenVehicle;
 
       if (!vehicle) return;
@@ -153,28 +170,45 @@ export default defineComponent({
         supportersOnly: vehicle.supportersOnly,
       };
 
-      if (this.store.chosenStockListIndex != -1) {
-        let currentStock = this.store.stockList[this.store.chosenStockListIndex];
+      let currentStock = this.store.stockList[this.store.chosenStockListIndex];
 
-        if (isLocomotive(vehicle) && currentStock && currentStock.type == vehicle.type) {
-          this.store.stockList[this.store.chosenStockListIndex].count++;
-          return;
-        }
+      // if (isLocomotive(vehicle) && currentStock && currentStock.type == vehicle.type) {
+      //   this.store.stockList[this.store.chosenStockListIndex].count++;
+      //   return;
+      // }
 
-        if (
-          !isLocomotive(vehicle) &&
-          currentStock &&
-          currentStock.type == vehicle.type &&
-          currentStock.cargo?.id == this.store.chosenCargo?.id
-        ) {
-          this.store.stockList[this.store.chosenStockListIndex].count++;
+      // if (
+      //   !isLocomotive(vehicle) &&
+      //   currentStock &&
+      //   currentStock.type == vehicle.type &&
+      //   currentStock.cargo?.id == this.store.chosenCargo?.id
+      // ) {
+      //   this.store.stockList[this.store.chosenStockListIndex].count++;
 
-          return;
-        }
+      //   return;
+      // }
 
-        this.store.stockList[this.store.chosenStockListIndex] = stockObj;
-        return;
-      }
+      this.store.stockList[this.store.chosenStockListIndex] = stockObj;
+    },
+
+    addVehicle() {
+      const vehicle = this.store.chosenVehicle;
+
+      if (!vehicle) return;
+
+      const stockObj: IStock = {
+        useType: isLocomotive(vehicle) ? vehicle.power : vehicle.useType,
+        type: vehicle.type,
+        length: vehicle.length,
+        mass: vehicle.mass,
+        maxSpeed: vehicle.maxSpeed,
+        isLoco: isLocomotive(vehicle),
+        cargo:
+          !isLocomotive(vehicle) && vehicle.loadable && this.store.chosenCargo ? this.store.chosenCargo : undefined,
+        count: 1,
+        imgSrc: vehicle.imageSrc,
+        supportersOnly: vehicle.supportersOnly,
+      };
 
       const previousStock =
         this.store.stockList.length > 0 ? this.store.stockList[this.store.stockList.length - 1] : null;

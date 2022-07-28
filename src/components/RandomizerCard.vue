@@ -1,6 +1,6 @@
 <template>
+  <div class="g-card-dimmer" v-if="store.isRandomizerCardOpen" @click="store.isRandomizerCardOpen = false"></div>
   <div class="card">
-    <!-- <button class="btn" @click="closeCard">X</button> -->
 
     <div class="wrapper">
       <!-- <h1>LOSUJ SKŁAD <img :src="icons.randomize" alt="losuj skład" /></h1>
