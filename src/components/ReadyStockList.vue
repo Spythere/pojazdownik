@@ -1,5 +1,4 @@
 <template>
-  <div class="g-card-dimmer" v-if="store.isRealStockListCardOpen" @click="store.isRealStockListCardOpen = false"></div>
   <div class="ready-stock-list" v-if="store.isRealStockListCardOpen">
     <div class="top-sticky">
       <button class="btn btn--text exit" @click="store.isRealStockListCardOpen = false">&lt; POWRÓT</button>

@@ -46,7 +46,7 @@ export interface ILocomotive {
 export interface ICarWagon {
   //"203V_PKPC_Fll_01","203V",true,false,"100",img
   type: string;
-  useType: string;
+  useType: 'car-passenger' | 'car-cargo';
   constructionType: string;
   loadable: boolean;
   supportersOnly: boolean;

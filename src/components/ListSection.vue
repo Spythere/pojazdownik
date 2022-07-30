@@ -7,10 +7,6 @@
         <span></span>
         <button class="btn" @click="shuffleCars">TASUJ WAGONY</button>
         <button class="btn" @click="store.isRandomizerCardOpen = true">LOSUJ SKŁAD</button>
-
-        <transition name="card-anim">
-          <randomizer-card v-if="store.isRandomizerCardOpen" />
-        </transition>
       </div>
 
       <div class="stock-list_specs">
@@ -31,16 +27,20 @@
         </button>
       </div>
 
-      <!-- <div class="warnings">
-        <div class="warning" v-if="warnings.locoNotSuitable.value">
+      <div class="warnings">
+        <div class="warning" v-if="locoNotSuitable">
           Lokomotywy EP07 i EP08 są przeznaczone jedynie do ruchu pasażerskiego!
         </div>
 
-        <div class="warning" v-if="warnings.trainTooLong.value">
-          Ten skład jest za długi (pasażerskie max. 350m, towarowe max. 650m)!
+        <div class="warning" v-if="trainTooLong && store.isTrainPassenger">
+          Maksymalna długość składów pasażerskich nie może przekraczać 350m!
         </div>
 
-        <div class="warning" v-if="warnings.trainTooHeavy.value">
+        <div class="warning" v-if="trainTooLong && !store.isTrainPassenger">
+          Maksymalna długość składów innych niż pasażerskie nie może przekraczać 650m!
+        </div>
+
+        <div class="warning" v-if="trainTooHeavy">
           Ten skład jest za ciężki! Sprawdź
           <a
             target="_blank"
@@ -50,8 +50,8 @@
           </a>
         </div>
 
-        <div class="warning" v-if="warnings.tooManyLocos.value">Ten skład posiada za dużo pojazdów trakcyjnych!</div>
-      </div> -->
+        <div class="warning" v-if="tooManyLocomotives">Ten skład posiada za dużo pojazdów trakcyjnych!</div>
+      </div>
 
       <ul ref="list">
         <li v-if="store.stockList.length == 0" class="list-empty">
@@ -126,9 +126,12 @@ import removeIcon from '../assets/remove-icon.svg';
 import lowerIcon from '../assets/lower-icon.svg';
 import higherIcon from '../assets/higher-icon.svg';
 import { useStore } from '../store';
+import warningsMixin from '../mixins/warningsMixin';
 
 export default defineComponent({
   components: { RandomizerCard, TrainImage },
+
+  mixins: [warningsMixin],
 
   setup() {
     const store = useStore();

@@ -93,12 +93,7 @@ button.btn {
 
   transition: all 250ms;
 
-  &:hover {
-    color: $accentColor;
-    border-color: $accentColor;
-  }
-
-  &:focus {
+  &:focus-visible {
     color: $accentColor;
   }
 
@@ -174,14 +169,40 @@ ul {
 }
 
 .g-card-dimmer {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
 
+  cursor: pointer;
+
+  background-color: #000000aa;
+  z-index: 99;
+}
+
+.g-choice {
+  input {
+    display: none;
+  }
+
+  span {
+    padding: 0.25em 1em;
+    border-radius: 0.25em;
+    border: 2px solid white;
+    margin: 0.25em;
     cursor: pointer;
 
-    background-color: #000000aa;
-    z-index: 99;
+    transition: all 100ms ease;
+  }
+
+  span:focus {
+    color: $accentColor;
+    outline: none;
+  }
+
+  label > input:checked + span {
+    color: $accentColor;
+    border-color: $accentColor;
+  }
 }

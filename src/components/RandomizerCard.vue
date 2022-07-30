@@ -1,8 +1,6 @@
 <template>
-  <div class="g-card-dimmer" v-if="store.isRandomizerCardOpen" @click="store.isRandomizerCardOpen = false"></div>
   <div class="card">
-
-    <div class="wrapper">
+    <div class="wrapper" ref="cardWrapper" tabindex="0">
       <!-- <h1>LOSUJ SKŁAD <img :src="icons.randomize" alt="losuj skład" /></h1>
 
       <h3>
@@ -13,7 +11,7 @@
       <div class="car-preview">
         <div class="image-wrapper">
           <div v-if="isPreviewLoading" class="loading">ŁADOWANIE...</div>
-          <img v-if="focusedCar" :src="focusedCar?.imageSrc" :alt="focusedCar.type" @load="onPreviewLoaded" />
+          <img v-if="focusedCar" :src="focusedCar?.imageSrc" :alt="focusedCar.type" />
         </div>
         <b class="text--accent" v-if="focusedCar">
           {{ focusedCar.type.split('_')[0] }} {{ focusedCar.type.split('_')[2] }}
@@ -29,11 +27,12 @@
         <div>
           <button
             class="btn choice-btn"
-            v-for="carType in carTypeList.filter((_, i) => i < 15)"
+            v-for="carType in passengerCarTypeList"
             :key="carType"
             @click="toggleCarType(carType)"
             @mouseenter="displayPreview(carType)"
-            :class="{ chosen: chosenCarTypes.includes(carType) }"
+            @focus="displayPreview(carType)"
+            :data-selected="chosenCarTypes.includes(carType)"
           >
             {{ carType }}
           </button>
@@ -42,11 +41,12 @@
         <div style="margin-top: 0.5em">
           <button
             class="btn choice-btn"
-            v-for="carType in carTypeList.filter((_, i) => i >= 15)"
+            v-for="carType in cargoCarTypeList"
             :key="carType"
             @click="toggleCarType(carType)"
             @mouseenter="displayPreview(carType)"
-            :class="{ chosen: chosenCarTypes.includes(carType) }"
+            @focus="displayPreview(carType)"
+            :data-selected="chosenCarTypes.includes(carType)"
           >
             {{ carType }}
           </button>
@@ -75,9 +75,14 @@
         />
       </div>
 
-      <div style="margin: 1em 0">
-        <button class="btn choice-btn" :class="{ chosen: loadableByDefault }" @click="changeLoadableByDefault">
-          DOMYŚLNIE ŁADOWNE
+      <div class="cargo-filling g-choice" style="margin: 1em 0">
+        <button
+          class="btn choice-btn"
+          v-for="mode in cargoFillModeList"
+          :data-selected="mode.id == chosenCargoFillMode"
+          @click="changeCargoFillMode(mode.id)"
+        >
+          {{ mode.value }}
         </button>
       </div>
 
@@ -90,13 +95,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject } from 'vue';
+import { defineComponent } from 'vue';
 
 import carUsage from '../data/carUsage.json';
 import { ICarWagon, ILocomotive, ICargo } from '../types';
 
 import randomizeIcon from '../assets/randomize-icon.svg';
 import { useStore } from '../store';
+
+type CargoFillModeType = 'cargo-random' | 'cargo-filled' | 'cargo-empty';
 
 export default defineComponent({
   setup() {
@@ -105,16 +112,50 @@ export default defineComponent({
     return {
       store,
 
-      carTypeList: store.carDataList.reduce((list, car) => {
-        const type = car.type.split('_')[0];
+      carTypeList: store.carDataList
+        .sort((a, b) => (b.useType == 'car-passenger' ? 1 : -1))
+        .reduce((list, car) => {
+          const type = car.type.split('_')[0];
 
-        if (list.includes(type)) return list;
+          if (list.includes(type)) return list;
 
-        list.push(type);
+          list.push(type);
 
-        return list;
-      }, [] as string[]),
+          return list;
+        }, [] as string[]),
     };
+  },
+
+  activated() {
+    (this.$refs['cardWrapper'] as any).focus();
+  },
+
+  computed: {
+    passengerCarTypeList() {
+      return this.store.carDataList
+        .reduce((list, car) => {
+          if (car.useType != 'car-passenger') return list;
+
+          const type = car.type.split('_')[0];
+          if (!list.includes(type)) list.push(type);
+
+          return list;
+        }, [] as string[])
+        .sort((a, b) => (a > b ? 1 : -1));
+    },
+
+    cargoCarTypeList() {
+      return this.store.carDataList
+        .reduce((list, car) => {
+          if (car.useType != 'car-cargo') return list;
+
+          const type = car.type.split('_')[0];
+          if (!list.includes(type)) list.push(type);
+
+          return list;
+        }, [] as string[])
+        .sort((a, b) => (a > b ? 1 : -1));
+    },
   },
 
   data: () => ({
@@ -122,13 +163,29 @@ export default defineComponent({
     randomStockLength: 650,
     chosenCarTypes: [] as string[],
 
+    cargoFillModeList: [
+      {
+        id: 'cargo-random',
+        value: 'LOSOWO',
+      },
+      {
+        id: 'cargo-filled',
+        value: 'ŁADOWNE',
+      },
+      {
+        id: 'cargo-empty',
+        value: 'PRÓŻNE',
+      },
+    ] as { id: CargoFillModeType; value: string }[],
+
+    chosenCargoFillMode: 'cargo-random' as CargoFillModeType,
+
     icons: {
       randomize: randomizeIcon,
     },
 
     focusedCar: null as ICarWagon | null,
     isPreviewLoading: false,
-    loadableByDefault: false,
 
     cargoTypes: [
       '203V',
@@ -162,15 +219,10 @@ export default defineComponent({
       if (this.focusedCar?.type == list[randIndex].type) return;
 
       this.focusedCar = list[randIndex];
-      this.isPreviewLoading = true;
     },
 
-    onPreviewLoaded() {
-      this.isPreviewLoading = false;
-    },
-
-    changeLoadableByDefault() {
-      this.loadableByDefault = !this.loadableByDefault;
+    changeCargoFillMode(mode: CargoFillModeType) {
+      this.chosenCargoFillMode = mode;
     },
 
     randomize() {
@@ -234,7 +286,12 @@ export default defineComponent({
         if (randCar.length * count + totalStockLength >= this.randomStockLength) break;
 
         let randCargo = undefined;
-        let randNum = this.loadableByDefault ? 1 : Math.random();
+        let randNum =
+          this.chosenCargoFillMode == 'cargo-filled'
+            ? 1
+            : this.chosenCargoFillMode == 'cargo-empty'
+            ? 0
+            : Math.random();
         if (randCar.cargoList.length != 0 && randNum >= 0.6)
           randCargo = randCar.cargoList[Math.floor(Math.random() * randCar.cargoList.length)];
 
@@ -310,7 +367,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-/* @import url('../styles/global.scss'); */
+@import '../styles/global.scss';
 
 .card {
   position: fixed;
@@ -376,12 +433,10 @@ input {
 .car-choice div {
   display: grid;
 
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   justify-content: center;
 
   @media screen and (max-width: 800px) {
-    /* display: flex; */
-    /* flex-wrap: wrap; */
     grid-template-columns: repeat(4, 1fr);
   }
 }
@@ -390,17 +445,16 @@ button.choice-btn {
   color: gray;
   border-color: gray;
 
-  *:focus {
-    color: white;
+  &[data-selected='true'] {
+    color: $accentColor;
+    border-color: $accentColor;
+  }
+
+  &:focus-visible {
     border-color: white;
   }
 
   user-select: none;
-}
-
-button.chosen {
-  border-color: gold;
-  color: gold;
 }
 
 .car-preview {

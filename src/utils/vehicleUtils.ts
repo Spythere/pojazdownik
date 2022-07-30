@@ -103,7 +103,7 @@ export function carDataList(state: IStore) {
       const carPropsData = vehiclePropsJSON.find((v) => car[0].toString().includes(v.type));
 
       acc.push({
-        useType: vehicleTypeKey,
+        useType: vehicleTypeKey as 'car-passenger' | 'car-cargo',
         type: car[0] as string,
         constructionType: car[1] as string,
         loadable: car[2] as boolean,

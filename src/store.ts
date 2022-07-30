@@ -1,4 +1,4 @@
-import { ICarWagon, ILocomotive, IStore } from './types';
+import { IStore } from './types';
 import { defineStore } from 'pinia';
 import { carDataList, isTrainPassenger, locoDataList, maxStockSpeed, totalLength, totalMass } from './utils/vehicleUtils';
 

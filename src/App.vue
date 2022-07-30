@@ -3,6 +3,13 @@
     <img :src="store.vehiclePreviewSrc" alt="preview" />
   </div>
 
+  <div class="g-card-dimmer" v-if="store.isRandomizerCardOpen" @click="store.isRandomizerCardOpen = false"></div>
+  <div class="g-card-dimmer" v-if="store.isRealStockListCardOpen" @click="store.isRealStockListCardOpen = false"></div>
+
+  <keep-alive>
+    <RandomizerCard v-if="store.isRandomizerCardOpen" />
+  </keep-alive>
+
   <div class="app_container">
     <header>
       <img :src="logoImage" alt="logo pojazdownik" />
@@ -43,12 +50,14 @@ import ListSection from './components/ListSection.vue';
 import logoImage from './assets/logo.svg';
 import { useStore } from './store';
 import TrainImage from './components/TrainImageSection.vue';
+import RandomizerCard from './components/RandomizerCard.vue';
 
 export default defineComponent({
   components: {
     ListSection,
     InputsSection,
     TrainImage,
+    RandomizerCard,
   },
 
   data: () => ({
