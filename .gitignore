@@ -22,8 +22,3 @@ pnpm-debug.log*
 *.sln
 *.sw?
 node_modules
-
-firebase/
-
-firebase.json
-.firebase
