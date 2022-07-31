@@ -252,9 +252,7 @@ export default defineComponent({
       if (this.store.stockList.length == 0 || !this.store.stockList[0].isLoco) {
         this.store.stockList.length = 0;
 
-        let locoSet = this.store.locoDataList
-          .filter((loco) => loco.power == 'loco-e' || loco.power == 'loco-s')
-          .filter((loco) => (loco.supportersOnly ? false : true));
+        let locoSet = this.store.locoDataList.filter((loco) => loco.power == 'loco-e' || loco.power == 'loco-s');
 
         if (this.chosenCarTypes.some((car) => this.cargoTypes.includes(car)))
           locoSet = locoSet.filter((loco) => !loco.type.startsWith('EP'));
@@ -302,6 +300,9 @@ export default defineComponent({
         totalStockLength += randCar.length * count;
         totalStockMass += randCargo?.totalMass || randCar.mass;
       }
+
+      this.store.chosenStockListIndex = -1;
+      this.store.chosenVehicle = null;
 
       this.store.isRandomizerCardOpen = false;
     },

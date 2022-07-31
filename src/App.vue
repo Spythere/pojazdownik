@@ -15,17 +15,11 @@
       <img :src="logoImage" alt="logo pojazdownik" />
     </header>
     <main>
-      <div id="inputs-area">
-        <InputsSection />
-      </div>
+      <InputsSection />
 
-      <div id="list-area">
-        <ListSection />
-      </div>
+      <TrainImageSection />
 
-      <div id="image-area">
-        <TrainImage />
-      </div>
+      <ListSection />
     </main>
     <footer>
       <div class="text--grayed" style="margin-bottom: 0.25em">
@@ -49,14 +43,14 @@ import ListSection from './components/ListSection.vue';
 
 import logoImage from './assets/logo.svg';
 import { useStore } from './store';
-import TrainImage from './components/TrainImageSection.vue';
+import TrainImageSection from './components/TrainImageSection.vue';
 import RandomizerCard from './components/RandomizerCard.vue';
 
 export default defineComponent({
   components: {
     ListSection,
     InputsSection,
-    TrainImage,
+    TrainImageSection,
     RandomizerCard,
   },
 
@@ -72,16 +66,6 @@ export default defineComponent({
     return {
       store,
     };
-  },
-  mounted() {
-    window.addEventListener('keydown', (ev) => {
-      if (this.store.vehiclePreviewSrc == '') return;
-
-      if (ev.key.toLowerCase() == 'escape') this.store.vehiclePreviewSrc = '';
-      // if(ev.key.toLowerCase() == 'enter')
-    });
-
-    // window.focus();
   },
 });
 </script>
@@ -162,24 +146,13 @@ main {
   gap: 1em 3em;
 
   width: 100vw;
-  max-width: 1300px;
+  max-width: 1200px;
+  min-height: 75vh;
 
-  grid-template-columns: 1fr 2fr;
-  grid-template-areas: 'inputs list' 'image list';
+  grid-template-columns: 1fr 3fr;
+  grid-template-rows: 250px auto;
 
   padding: 0.5em;
-
-  #inputs-area {
-    grid-area: inputs;
-  }
-
-  #list-area {
-    grid-area: list;
-  }
-
-  #image-area {
-    grid-area: image;
-  }
 }
 
 /* FOOTER SECTION */
@@ -191,15 +164,14 @@ footer {
 
 /* MOBILE VIEWS */
 
-@media screen and (max-width: 1100px) {
+@media screen and (max-width: $breakpointMd) {
   main {
+    display: flex;
+    flex-direction: column;
     grid-template-columns: 1fr;
-    grid-template-areas: 'inputs' 'image' 'list';
-    justify-items: center;
+    grid-template-rows: 1fr;
   }
-}
 
-@media screen and (max-width: 800px) {
   #app {
     font-size: calc(0.75vw + 0.6rem);
   }
@@ -213,7 +185,7 @@ footer {
   }
 }
 
-@media screen and (max-width: 650px) {
+@media screen and (max-width: $breakpointSm) {
   header {
     font-size: 0.75em;
 

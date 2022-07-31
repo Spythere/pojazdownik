@@ -1,5 +1,5 @@
 <template>
-  <section class="train-image">
+  <section class="train-image-section">
     <div class="train-image__wrapper">
       <div class="train-image__content">
         <div class="no-img" v-if="!store.chosenVehicle">PODGLĄD WYBRANEGO POJAZDU</div>
@@ -12,35 +12,36 @@
           @click="onImageClick"
         />
       </div>
-    </div>
 
-    <div class="image__info" v-if="store.chosenVehicle">
-      <b class="text--accent">{{ store.chosenVehicle.type }} </b>
+      <div class="train-image__info" v-if="store.chosenVehicle">
+        <b class="text--accent">{{ store.chosenVehicle.type }} </b>
 
-      <div style="color: #ccc">
-        <b>{{
-          vehicleTypes[
-            isLocomotive(store.chosenVehicle) ? store.chosenVehicle.power : store.chosenVehicle.useType || 'loco-e'
-          ]
-        }}</b>
+        <div style="color: #ccc">
+          <b>{{
+            vehicleTypes[
+              isLocomotive(store.chosenVehicle) ? store.chosenVehicle.power : store.chosenVehicle.useType || 'loco-e'
+            ]
+          }}</b>
 
-        <div>
-          {{ store.chosenVehicle.length }}m | {{ store.chosenVehicle.mass }}t | {{ store.chosenVehicle.maxSpeed }} km/h
-        </div>
+          <div>
+            {{ store.chosenVehicle.length }}m | {{ store.chosenVehicle.mass }}t |
+            {{ store.chosenVehicle.maxSpeed }} km/h
+          </div>
 
-        <div v-if="isLocomotive(store.chosenVehicle)">Typ kabiny: {{ store.chosenVehicle.cabinType }}</div>
+          <div v-if="isLocomotive(store.chosenVehicle)">Typ kabiny: {{ store.chosenVehicle.cabinType }}</div>
 
-        <div v-else>
-          {{
-            store.chosenVehicle.useType == 'car-cargo'
-              ? carUsage[store.chosenVehicle.constructionType]
-              : 'Typ konstrukcji: ' + store.chosenVehicle.constructionType
-          }}
+          <div v-else>
+            {{
+              store.chosenVehicle.useType == 'car-cargo'
+                ? carUsage[store.chosenVehicle.constructionType]
+                : 'Typ konstrukcji: ' + store.chosenVehicle.constructionType
+            }}
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="image__info" v-else>Wybierz pojazd lub wagon, aby zobaczyć jego podgląd powyżej</div>
+      <div class="train-image__info" v-else>Wybierz pojazd lub wagon, aby zobaczyć jego podgląd powyżej</div>
+    </div>
   </section>
 </template>
 
@@ -96,27 +97,29 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.train-image {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
+@import '../styles/global.scss';
 
-  margin-top: 2.5em;
+.train-image-section {
+  grid-row: 2;
+  grid-column: 1;
+
+  display: flex;
 }
 
 .train-image {
   &__wrapper {
-    max-width: 380px;
-    width: 22em;
-    height: 13em;
+    text-align: center;
+    
   }
 
   &__content {
     border: 1px solid white;
     position: relative;
 
-    height: 100%;
+    width: 22em;
+    height: 13em;
+
+    margin: 0 auto;
 
     &.supporter {
       border: 1px solid salmon;
@@ -150,11 +153,8 @@ export default defineComponent({
   }
 }
 
-.image__info {
-  text-align: center;
-
+.train-image__info {
   margin: 1em 0;
-
   font-size: 1.1em;
 
   b {
@@ -163,6 +163,12 @@ export default defineComponent({
 
   div {
     margin: 0.25em 0;
+  }
+}
+
+@media screen and (max-width: $breakpointMd) {
+  .train-image-section {
+    justify-content: center;
   }
 }
 </style>

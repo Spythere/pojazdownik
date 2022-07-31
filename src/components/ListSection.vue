@@ -1,118 +1,139 @@
 <template>
-  <div class="bottom">
-    <section class="stock-list">
-      <div class="stock-list_buttons">
-        <button class="btn" @click="downloadStock">POBIERZ POCIĄG</button>
-        <button class="btn" @click="resetStock">ZRESETUJ LISTĘ</button>
-        <span></span>
-        <button class="btn" @click="shuffleCars">TASUJ WAGONY</button>
-        <button class="btn" @click="store.isRandomizerCardOpen = true">LOSUJ SKŁAD</button>
-      </div>
+  <section class="stock-list-section">
+    <div class="list_actions">
+      <button class="btn" @click="downloadStock">POBIERZ POCIĄG</button>
+      <button class="btn" @click="resetStock">ZRESETUJ LISTĘ</button>
+      <span class="spacer"></span>
+      <button class="btn" @click="shuffleCars">TASUJ WAGONY</button>
+      <button class="btn" @click="store.isRandomizerCardOpen = true">LOSUJ SKŁAD</button>
+    </div>
 
-      <div class="stock-list_specs">
-        <div>
-          Masa: <span class="text--accent">{{ store.totalMass }}t</span> | Długość:
-          <span class="text--accent">{{ store.totalLength }}m</span>
-          | Vmax pociągu: <span class="text--accent">{{ store.maxStockSpeed }} km/h</span>
-        </div>
+    <div class="stock_actions" v-if="chosenStockVehicle">
+      <b class="no">
+        POJAZD NR <span class="text--accent">{{ store.chosenStockListIndex + 1 }}</span> &nbsp;
+      </b>
 
-        <!-- <div v-if="store.chosenRealStockName" style="margin-top: 0.25rem">
-          <b>{{ store.chosenRealStockName.toLocaleUpperCase() }}</b>
-        </div> -->
-      </div>
+      <div class="count">
+        <button class="action-btn" @click="subStock(store.chosenStockListIndex)">
+          <img :src="icons.sub" alt="subtract vehicle count" />
+          1
+        </button>
 
-      <div class="stock-list_string">
-        <button class="btn--text" v-if="store.stockList.length > 0" @click="copyToClipboard">
-          Skopiuj pociąg w formie tekstowej do schowka
+        <input type="number" name="stock-count" id="stock-count" v-model="chosenStockVehicle.count" />
+
+        <button class="action-btn" @click="addStock(store.chosenStockListIndex)">
+          <img :src="icons.add" alt="add vehicle count" />
+          1
         </button>
       </div>
 
-      <div class="warnings">
-        <div class="warning" v-if="locoNotSuitable">
-          Lokomotywy EP07 i EP08 są przeznaczone jedynie do ruchu pasażerskiego!
-        </div>
+      <button class="action-btn" @click="moveUpStock(store.chosenStockListIndex)">
+        <img :src="icons.higher" alt="move up vehicle" />
+        Przenieś wyżej
+      </button>
 
-        <div class="warning" v-if="trainTooLong && store.isTrainPassenger">
-          Maksymalna długość składów pasażerskich nie może przekraczać 350m!
-        </div>
+      <button class="action-btn" @click="moveDownStock(store.chosenStockListIndex)">
+        <img :src="icons.lower" alt="move down vehicle" />
+        Przenieś niżej
+      </button>
 
-        <div class="warning" v-if="trainTooLong && !store.isTrainPassenger">
-          Maksymalna długość składów innych niż pasażerskie nie może przekraczać 650m!
-        </div>
+      <button class="action-btn" @click="removeStock(store.chosenStockListIndex)">
+        <img :src="icons.remove" alt="remove vehicle" />
+        Usuń
+      </button>
+    </div>
 
-        <div class="warning" v-if="trainTooHeavy">
-          Ten skład jest za ciężki! Sprawdź
-          <a
-            target="_blank"
-            href="https://docs.google.com/spreadsheets/d/1bFXUsHsAu4youmNz-46Q1HslZaaoklvfoBDS553TnNk/edit"
-          >
-            dopuszczalne masy składów
-          </a>
-        </div>
+    <div class="stock_actions no-chosen-vehicle" v-else>Wybierz pojazd z listy poniżej, aby pokazać opcje</div>
 
-        <div class="warning" v-if="tooManyLocomotives">Ten skład posiada za dużo pojazdów trakcyjnych!</div>
+    <div class="stock_specs">
+      <div>
+        Masa: <span class="text--accent">{{ store.totalMass }}t</span> | Długość:
+        <span class="text--accent">{{ store.totalLength }}m</span>
+        | Vmax pociągu: <span class="text--accent">{{ store.maxStockSpeed }} km/h</span>
       </div>
 
-      <ul ref="list">
-        <li v-if="store.stockList.length == 0" class="list-empty">
-          <div class="item-content">Lista pojazdów jest pusta!</div>
-        </li>
+      <!-- <div v-if="store.chosenRealStockName" style="margin-top: 0.25rem">
+          <b>{{ store.chosenRealStockName.toLocaleUpperCase() }}</b>
+        </div> -->
+    </div>
 
-        <li
-          v-for="(stock, i) in store.stockList"
-          :key="stock.type + i"
-          :class="{ loco: stock.isLoco }"
-          tabindex="0"
-          ref="itemRefs"
+    <div class="stock_clipboard-text">
+      <button class="btn--text" v-if="store.stockList.length > 0" @click="copyToClipboard">
+        Skopiuj pociąg w formie tekstowej do schowka
+      </button>
+    </div>
+
+    <div class="stock_warnings">
+      <div class="warning" v-if="locoNotSuitable">
+        Lokomotywy EP07 i EP08 są przeznaczone jedynie do ruchu pasażerskiego!
+      </div>
+
+      <div class="warning" v-if="trainTooLong && store.isTrainPassenger">
+        Maksymalna długość składów pasażerskich nie może przekraczać 350m!
+      </div>
+
+      <div class="warning" v-if="trainTooLong && !store.isTrainPassenger">
+        Maksymalna długość składów innych niż pasażerskie nie może przekraczać 650m!
+      </div>
+
+      <div class="warning" v-if="trainTooHeavy">
+        Ten skład jest za ciężki! Sprawdź
+        <a
+          target="_blank"
+          href="https://docs.google.com/spreadsheets/d/1bFXUsHsAu4youmNz-46Q1HslZaaoklvfoBDS553TnNk/edit"
         >
-          <div
-            class="item-content"
-            @click="onListItemClick(i)"
-            @dragstart="onDragStart(i)"
-            @drop="onDrop($event, i)"
-            @dragover="allowDrop"
-            draggable="true"
-          >
-            <span class="stock__type">
-              <span v-if="i == store.chosenStockListIndex">&bull;</span>
-              {{ stock.isLoco ? stock.type : getCarSpecFromType(stock.type) }}
-            </span>
+          dopuszczalne masy składów
+        </a>
+      </div>
 
-            <span class="stock__cargo" v-if="stock.cargo"> {{ stock.cargo.id }} </span>
-            <span class="stock__length"> {{ stock.length }}m </span>
-            <span class="stock__mass">{{ stock.cargo ? stock.cargo.totalMass : stock.mass }}t </span>
-            <span class="stock__speed"> {{ stock.maxSpeed }}km/h </span>
-          </div>
+      <div class="warning" v-if="tooManyLocomotives">Ten skład posiada za dużo pojazdów trakcyjnych!</div>
+    </div>
 
-          <div class="item-actions">
-            <div class="count">
-              <button class="action-btn" @click="subStock(i)">
-                <img :src="icons.sub" alt="subtract vehicle count" />
-              </button>
+    <ul ref="list">
+      <li v-if="store.stockList.length == 0" class="list-empty">
+        <div class="stock-info">Lista pojazdów jest pusta!</div>
+      </li>
 
-              <span>{{ stock.count }} </span>
+      <li
+        v-for="(stock, i) in store.stockList"
+        :key="stock.type + i"
+        :class="{ loco: stock.isLoco }"
+        tabindex="0"
+        @click="onListItemClick(i)"
 
-              <button class="action-btn" @click="addStock(i)">
-                <img :src="icons.add" alt="add vehicle count" />
-              </button>
-            </div>
+        @keydown.enter="onListItemClick(i)"
+        @keydown.w="moveUpStock(i)"
+        @keydown.s="moveDownStock(i)"
+        @keydown.backspace="removeStock(i)"
 
-            <button class="action-btn" @click="moveUpStock(i)">
-              <img :src="icons.higher" alt="move up vehicle" />
-            </button>
+        ref="itemRefs"
+      >
+        <div
+          class="stock-info"
+          @dragstart="onDragStart(i)"
+          @drop="onDrop($event, i)"
+          @dragover="allowDrop"
+          draggable="true"
+        >
+          <span class="stock-info__no" :data-selected="i == store.chosenStockListIndex">
+            <span v-if="i == store.chosenStockListIndex">&bull;&nbsp;</span>
+            {{ i + 1 }}.
+          </span>
 
-            <button class="action-btn" @click="moveDownStock(i)">
-              <img :src="icons.lower" alt="move down vehicle" />
-            </button>
+          <span class="stock-info__type">
+            {{ stock.isLoco ? stock.type : getCarSpecFromType(stock.type) }}
+          </span>
 
-            <button class="action-btn" @click="removeStock(i)">
-              <img :src="icons.remove" alt="remove vehicle" />
-            </button>
-          </div>
-        </li>
-      </ul>
-    </section>
-  </div>
+          <span class="stock-info__cargo" v-if="stock.cargo"> {{ stock.cargo.id }} </span>
+          <span class="stock-info__length"> {{ stock.length }}m </span>
+          <span class="stock-info__mass">{{ stock.cargo ? stock.cargo.totalMass : stock.mass }}t </span>
+          <span class="stock-info__speed"> {{ stock.maxSpeed }}km/h </span>
+
+          <span class="stock-info__count"> x{{ stock.count }} </span>
+        </div>
+      </li>
+    </ul>
+  </section>
 </template>
 
 <script lang="ts">
@@ -168,14 +189,22 @@ export default defineComponent({
         })
         .join(';');
     },
+
+    chosenStockVehicle() {
+      return this.store.chosenStockListIndex == -1 ? undefined : this.store.stockList[this.store.chosenStockListIndex];
+    },
   },
 
   methods: {
+    stockHasWarnings() {
+      return this.tooManyLocomotives || this.trainTooHeavy || this.trainTooLong || this.locoNotSuitable;
+    },
+
     copyToClipboard() {
-      // if (Object.values(this.warnings).some((v) => v.value == true)) {
-      //   alert('Jazda tym pociągiem jest niezgodna z regulaminem symulatora! Zmień parametry zestawienia!');
-      //   return;
-      // }
+      if (this.stockHasWarnings()) {
+        alert('Jazda tym pociągiem jest niezgodna z regulaminem symulatora! Zmień parametry zestawienia!');
+        return;
+      }
 
       navigator.clipboard.writeText(this.stockString);
 
@@ -206,7 +235,7 @@ export default defineComponent({
         this.store.chosenVehicle = chosenLoco;
         this.store.chosenLoco = chosenLoco;
 
-        this.store.chosenCargo = null;
+        // this.store.chosenCargo = null;
       } else {
         const chosenCar = this.store.carDataList.find((v) => v.type == vehicle.type) || null;
         this.store.chosenVehicle = chosenCar;
@@ -238,16 +267,22 @@ export default defineComponent({
     },
 
     addStock(index: number) {
+      if (index == -1) return;
+
       this.store.stockList[index].count++;
     },
 
     subStock(index: number) {
+      if (index == -1) return;
+
       if (this.store.stockList[index].count < 2) return;
 
       this.store.stockList[index].count--;
     },
 
     removeStock(index: number) {
+      if (index == -1) return;
+
       this.store.stockList = this.store.stockList.filter((stock, i) => i != index);
     },
 
@@ -258,15 +293,20 @@ export default defineComponent({
 
       this.store.stockList[index] = this.store.stockList[index - 1];
       this.store.stockList[index - 1] = tempStock;
+
+      this.store.chosenStockListIndex = index - 1;
     },
 
     moveDownStock(index: number) {
+      if (index == -1) return;
       if (index > this.store.stockList.length - 2) return;
 
       const tempStock = this.store.stockList[index];
 
       this.store.stockList[index] = this.store.stockList[index + 1];
       this.store.stockList[index + 1] = tempStock;
+
+      this.store.chosenStockListIndex = index + 1;
     },
 
     shuffleCars() {
@@ -290,10 +330,10 @@ export default defineComponent({
     },
 
     downloadStock() {
-      // if (Object.values(this.warnings).some((v) => v.value == true)) {
-      //   alert('Jazda tym pociągiem może być niezgodna z regulaminem symulatora! Zmień parametry zestawienia!');
-      //   return;
-      // }
+      if (this.stockHasWarnings()) {
+        alert('Jazda tym pociągiem jest niezgodna z regulaminem symulatora! Zmień parametry zestawienia!');
+        return;
+      }
 
       const fileName = prompt('Nazwij plik:', 'pociag');
 
@@ -326,6 +366,8 @@ export default defineComponent({
 
       this.store.stockList[vehicleIndex] = this.store.stockList[this.draggedVehicleID];
       this.store.stockList[this.draggedVehicleID] = tempVehicle;
+
+      this.store.chosenStockListIndex = vehicleIndex;
     },
 
     allowDrop(e: DragEvent) {
@@ -337,34 +379,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @import '../styles/global';
-
-.bg-dimmer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-
-  background: rgba(black, 0.85);
-  z-index: 100;
-}
-
-.bottom {
-  display: flex;
-  justify-content: space-between;
-
-  margin-top: 2.5em;
-
-  @media screen and (max-width: 1150px) {
-    flex-direction: column;
-    align-items: center;
-
-    .image {
-      display: flex;
-      padding: 0 0 2em 0;
-    }
-  }
-}
 
 .warnings {
   margin-top: 0.5em;
@@ -384,140 +398,146 @@ export default defineComponent({
   }
 }
 
-.spacer {
-  flex: 2 1 10%;
+.stock-list-section {
+  grid-row: 1 / 3;
+  grid-column: 2;
 }
 
-.stock-list {
-  flex-grow: 3;
+.list_actions {
+  display: flex;
 
-  width: 100%;
-
-  &_string {
-    margin-top: 1em;
-    font-weight: bold;
+  .spacer {
+    flex-grow: 2;
   }
 
-  &_buttons {
-    display: flex;
+  button {
+    font-size: 0.9em;
+    padding: 0.4em 0.55em;
+    margin-right: 0.5em;
 
-    span {
-      flex-grow: 2;
+    &:nth-child(5) {
+      margin-right: 0;
     }
 
-    button {
-      font-size: 0.9em;
-      padding: 0.4em 0.55em;
-      margin: 0 0.5em 1em 0;
-
-      &:nth-child(5) {
-        margin-right: 0;
-      }
-
-      &:focus {
-        color: $accentColor;
-        border-color: $accentColor;
-      }
+    &:focus-visible {
+      color: $accentColor;
+      border-color: $accentColor;
     }
   }
+}
 
-  ul {
-    margin-top: 1em;
+.stock_actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-    max-height: 500px;
-    overflow: auto;
+  flex-wrap: wrap;
+
+  margin: 1em 0;
+
+  &.no-chosen-vehicle {
+    font-size: 1.05em;
+    padding: 0.5em;
   }
 
-  ul li {
+  input#stock-count {
+    width: 3em;
+
+    margin: 0;
+    padding: 0.25em;
     outline: none;
-    cursor: pointer;
+    border: none;
+  }
 
-    &.list-empty {
-      border: 1px solid whitesmoke;
-      padding: 0 0.5em;
+  button {
+    margin: 0.25em;
+    padding: 0.25em;
+
+    border: 2px solid gray;
+    border-radius: 0.25em;
+
+    &:focus-visible {
+      outline: 1px solid white;
     }
 
-    &.selected .item-content {
-      color: $accentColor;
-    }
+    img {
+      vertical-align: text-bottom;
+      margin-right: 0.5em;
 
-    &:focus-visible .item-content {
-      color: $accentColor;
-    }
-
-    &:hover .item-content {
-      color: $accentColor;
-    }
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    .item-content {
-      display: flex;
-      flex-wrap: wrap;
-
-      color: white;
-      font-weight: 700;
-      margin: 0.5em 0;
-
-      transition: color 100ms;
-
-      > span {
-        padding: 0.5em;
-        margin-right: 0.25em;
-        margin-top: 0.25em;
-      }
-
-      @media screen and (max-width: 800px) {
-        span {
-          padding: 0.25em;
-        }
-      }
-    }
-
-    .item-actions {
-      display: flex;
-      align-items: center;
-
-      .count {
-        display: flex;
-        align-items: center;
-
-        margin-right: 0.5em;
-
-        span {
-          margin: 0 0.5em;
-          /* font-size: 1.25em; */
-
-          color: $accentColor;
-        }
-      }
-
-      img {
-        vertical-align: middle;
-
-        width: 1.3em;
-        height: 1.3em;
-      }
-
-      button {
-        margin: 0 0.25em;
-
-        &:focus-visible {
-          outline: 1px solid white;
-        }
-      }
+      width: 1.1em;
+      height: 1.1em;
     }
   }
 }
 
-.stock {
+.stock_clipboard-text {
+  margin-top: 1em;
+  font-weight: bold;
+}
+
+ul {
+  margin-top: 1em;
+
+  max-height: 500px;
+  overflow: auto;
+
+  padding: 0.25em;
+
+  border: 2px solid gray;
+}
+
+ul > li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  outline: none;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 1px solid white;
+  }
+
+  &:hover .item-content {
+    color: $accentColor;
+  }
+}
+
+li > .stock-info {
+  display: flex;
+
+  color: white;
+  font-weight: 700;
+  margin: 0.25em 0;
+
+  transition: color 100ms;
+
+  & > span {
+    padding: 0.5em;
+    margin-right: 0.25em;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.stock-info {
+  &__no,
   &__type {
     background-color: #222;
+  }
 
-    &.supporter {
-      background-color: #ff887b;
+  &__count {
+    background-color: #e04e3e;
+  }
+
+  &__no {
+    min-width: 3.5em;
+    text-align: right;
+
+    &[data-selected='true'] {
+      color: $accentColor;
     }
   }
 
@@ -532,18 +552,9 @@ export default defineComponent({
   }
 }
 
-.card-anim {
-  &-enter {
-    opacity: 0;
-  }
-
-  &-enter-active,
-  &-leave-active {
-    transition: opacity 300ms;
-  }
-
-  &-leave-to {
-    opacity: 0;
+@media screen and (max-width: $breakpointMd) {
+  li > .stock-info {
+    font-size: 0.9em;
   }
 }
 </style>

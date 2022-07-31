@@ -129,6 +129,9 @@ export default defineComponent({
         this.addVehicle(vehicle);
       });
 
+      this.store.chosenStockListIndex = -1;
+      this.store.chosenVehicle = null;
+      
       this.store.isRealStockListCardOpen = false;
     },
 
