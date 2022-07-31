@@ -159,8 +159,8 @@ export default defineComponent({
   },
 
   data: () => ({
-    randomStockMass: 1500,
-    randomStockLength: 650,
+    randomStockMass: 650,
+    randomStockLength: 350,
     chosenCarTypes: [] as string[],
 
     cargoFillModeList: [

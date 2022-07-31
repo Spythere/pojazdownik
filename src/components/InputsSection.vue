@@ -10,7 +10,7 @@
           v-model="store.chosenLoco"
           @focus="onVehicleSelect('loco')"
           @input="onVehicleSelect('loco')"
-          @keydown.enter="addVehicle"
+          @keydown.enter="addOrSwitchVehicle"
           @keydown.backspace="removeVehicle"
         >
           <option :value="null" disabled>Wybierz pojazd trakcyjny</option>
@@ -28,7 +28,7 @@
           v-model="store.chosenCar"
           @focus="onVehicleSelect('car')"
           @input="onVehicleSelect('car')"
-          @keydown.enter="addVehicle"
+          @keydown.enter="addOrSwitchVehicle"
           @keydown.backspace="removeVehicle"
         >
           <option :value="null" disabled>Wybierz wagon</option>
@@ -53,7 +53,7 @@
           v-model="store.chosenCargo"
           @focus="onVehicleSelect('car')"
           @input="onVehicleSelect('car')"
-          @keydown.enter="addVehicle"
+          @keydown.enter="addOrSwitchVehicle"
           @keydown.backspace="removeVehicle"
         >
           <option :value="null" v-if="!store.chosenCar || !store.chosenCar.loadable">brak dostępnych ładunków</option>
@@ -159,6 +159,11 @@ export default defineComponent({
 
         this.store.chosenVehicle = type == 'loco' ? this.store.chosenLoco : this.store.chosenCar;
       });
+    },
+
+    addOrSwitchVehicle() {
+      if (this.store.chosenStockListIndex == -1) this.addVehicle();
+      else this.switchVehicles();
     },
 
     removeVehicle() {

@@ -434,6 +434,7 @@ export default defineComponent({
   flex-wrap: wrap;
 
   margin: 1em 0;
+  outline: 1px solid white;
 
   &.no-chosen-vehicle {
     font-size: 1.05em;
@@ -499,6 +500,11 @@ ul > li {
 
   &:focus-visible {
     outline: 1px solid white;
+  }
+
+  &.list-empty {
+    outline: 1px solid white;
+    padding: 0.5em;
   }
 }
 
