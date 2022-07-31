@@ -39,7 +39,7 @@
 
 <script lang="ts">
 import { defineComponent, inject } from 'vue';
-import { IStore, ILocomotive, ICarWagon, Vehicle } from '../types';
+import { IStore, ILocomotive, ICarWagon, Vehicle, IStock } from '../types';
 
 import iconEIC from '../assets/EIC.png';
 import iconIC from '../assets/IC.svg';
@@ -131,14 +131,15 @@ export default defineComponent({
 
       this.store.chosenStockListIndex = -1;
       this.store.chosenVehicle = null;
-      
+
       this.store.isRealStockListCardOpen = false;
     },
 
     addVehicle(vehicle: Vehicle | null) {
       if (!vehicle) return;
 
-      const stockObj = {
+      const stockObj: IStock = {
+        id: `${Date.now() + this.store.stockList.length}`,
         type: vehicle.type,
         length: vehicle.length,
         mass: vehicle.mass,

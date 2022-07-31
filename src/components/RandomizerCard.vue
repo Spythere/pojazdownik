@@ -98,7 +98,7 @@
 import { defineComponent } from 'vue';
 
 import carUsage from '../data/carUsage.json';
-import { ICarWagon, ILocomotive, ICargo } from '../types';
+import { ICarWagon, ILocomotive, ICargo, IStock } from '../types';
 
 import randomizeIcon from '../assets/randomize-icon.svg';
 import { useStore } from '../store';
@@ -321,7 +321,8 @@ export default defineComponent({
         return;
       }
 
-      const stockObj = {
+      const stockObj: IStock = {
+        id: `${Date.now()+this.store.stockList.length}`,
         type: loco.type,
         length: loco.length,
         mass: loco.mass,
@@ -348,7 +349,8 @@ export default defineComponent({
         return;
       }
 
-      const stockObj = {
+      const stockObj: IStock = {
+        id: `${Date.now()+this.store.stockList.length}`,
         type: car.type,
         length: car.length,
         mass: car.mass,

@@ -1,84 +1,86 @@
 <template>
   <section class="inputs-section">
-    <div class="input inputs_loco">
-      <div class="input_container">
-        <h2 class="input_header">WYBIERZ POJAZDY / WAGONY</h2>
+    <div class="input_container">
+      <h2 class="input_header">WYBIERZ POJAZDY / WAGONY</h2>
 
-        <div class="input_list type">
-          <select
-            id="locomotives-list"
-            v-model="store.chosenLoco"
-            @focus="onVehicleSelect('loco')"
-            @input="onVehicleSelect('loco')"
-            @keydown.enter="addVehicle"
-            @keydown.backspace="removeVehicle"
-          >
-            <option :value="null" disabled>Wybierz pojazd trakcyjny</option>
-            <option v-for="loco in locoOptions" :value="loco" :key="loco.type">
-              {{ loco.type }}
-            </option>
-          </select>
-        </div>
+      <div class="input_list type">
+        <label for="locomotives-list">Pojazdy trakcyjne</label>
+        <select
+          id="locomotives-list"
+          v-model="store.chosenLoco"
+          @focus="onVehicleSelect('loco')"
+          @input="onVehicleSelect('loco')"
+          @keydown.enter="addVehicle"
+          @keydown.backspace="removeVehicle"
+        >
+          <option :value="null" disabled>Wybierz pojazd trakcyjny</option>
+          <option v-for="loco in locoOptions" :value="loco" :key="loco.type">
+            {{ loco.type }}
+          </option>
+        </select>
+      </div>
 
-        <div class="input_list type">
-          <select
-            id="carwagons-list"
-            v-model="store.chosenCar"
-            @focus="onVehicleSelect('car')"
-            @input="onVehicleSelect('car')"
-            @keydown.enter="addVehicle"
-            @keydown.backspace="removeVehicle"
-          >
-            <option :value="null" disabled>Wybierz wagon</option>
+      <div class="input_list type">
+        <label for="locomotives-list">Wagony</label>
 
-            <option v-for="car in carOptions" :value="car" :key="car.type">
-              {{ car.type }}
-            </option>
-          </select>
-        </div>
+        <select
+          id="carwagons-list"
+          v-model="store.chosenCar"
+          @focus="onVehicleSelect('car')"
+          @input="onVehicleSelect('car')"
+          @keydown.enter="addVehicle"
+          @keydown.backspace="removeVehicle"
+        >
+          <option :value="null" disabled>Wybierz wagon</option>
 
-        <div class="input_list cargo">
-          <select
-            id="cargo-select"
-            :disabled="
-              (store.chosenCar && !store.chosenCar.loadable) ||
-              (store.chosenCar && store.chosenCar.useType == 'car-passenger') ||
-              !store.chosenCar
-            "
-            data-select="cargo"
-            data-ignore-outside="1"
-            v-model="store.chosenCargo"
-            @focus="onVehicleSelect('car')"
-            @input="onVehicleSelect('car')"
-            @keydown.enter="addVehicle"
-            @keydown.backspace="removeVehicle"
-          >
-            <option :value="null" v-if="!store.chosenCar || !store.chosenCar.loadable">brak dostępnych ładunków</option>
-            <option :value="null" v-else>próżny</option>
+          <option v-for="car in carOptions" :value="car" :key="car.type">
+            {{ car.type }}
+          </option>
+        </select>
+      </div>
 
-            <option v-for="cargo in store.chosenCar?.cargoList" :value="cargo" :key="cargo.id">
-              {{ cargo.id }}
-            </option>
-          </select>
-        </div>
+      <div class="input_list cargo">
+        <label for="cargo-select">Ładunek (tylko wybrane towarowe)</label>
+        <select
+          id="cargo-select"
+          :disabled="
+            (store.chosenCar && !store.chosenCar.loadable) ||
+            (store.chosenCar && store.chosenCar.useType == 'car-passenger') ||
+            !store.chosenCar
+          "
+          data-select="cargo"
+          data-ignore-outside="1"
+          v-model="store.chosenCargo"
+          @focus="onVehicleSelect('car')"
+          @input="onVehicleSelect('car')"
+          @keydown.enter="addVehicle"
+          @keydown.backspace="removeVehicle"
+        >
+          <option :value="null" v-if="!store.chosenCar || !store.chosenCar.loadable">brak dostępnych ładunków</option>
+          <option :value="null" v-else>próżny</option>
 
-        <div class="input_actions">
-          <button class="btn" @click="addVehicle">DODAJ NOWY</button>
-          <button
-            class="btn"
-            @click="switchVehicles"
-            :disabled="store.chosenStockListIndex == -1"
-            :data-disabled="store.chosenStockListIndex == -1"
-          >
-            ZAMIEŃ ZA
-            <b class="text--accent">
-              {{ store.chosenStockListIndex == -1 ? '' : `${store.chosenStockListIndex + 1}.` }}
-            </b>
-          </button>
+          <option v-for="cargo in store.chosenCar?.cargoList" :value="cargo" :key="cargo.id">
+            {{ cargo.id }}
+          </option>
+        </select>
+      </div>
 
-          <button class="btn" @click="setReadyStockList(true)"><b>REALNE ZESTAWIENIA</b></button>
-          <ready-stock-list />
-        </div>
+      <div class="input_actions">
+        <button class="btn" @click="addVehicle">DODAJ NOWY</button>
+        <button
+          class="btn"
+          @click="switchVehicles"
+          :disabled="store.chosenStockListIndex == -1"
+          :data-disabled="store.chosenStockListIndex == -1"
+        >
+          ZAMIEŃ ZA
+          <b class="text--accent">
+            {{ store.chosenStockListIndex == -1 ? '' : `${store.chosenStockListIndex + 1}.` }}
+          </b>
+        </button>
+
+        <button class="btn" @click="setReadyStockList(true)"><b>REALNE ZESTAWIENIA</b></button>
+        <ready-stock-list />
       </div>
     </div>
   </section>
@@ -176,6 +178,7 @@ export default defineComponent({
       if (!vehicle) return;
 
       const stockObj: IStock = {
+        id: `${Date.now()}`,
         useType: isLocomotive(vehicle) ? vehicle.power : vehicle.useType,
         type: vehicle.type,
         length: vehicle.length,
@@ -198,6 +201,7 @@ export default defineComponent({
       if (!vehicle) return;
 
       const stockObj: IStock = {
+        id: `${Date.now()}`,
         useType: isLocomotive(vehicle) ? vehicle.power : vehicle.useType,
         type: vehicle.type,
         length: vehicle.length,
@@ -263,7 +267,14 @@ export default defineComponent({
 
   &_list {
     margin: 0.5em 0;
-    display: flex;
+
+    label {
+      display: block;
+
+      font-weight: bold;
+      color: $accentColor;
+      margin-bottom: 0.3em;
+    }
 
     select:focus {
       border-color: $accentColor;
@@ -304,22 +315,12 @@ export default defineComponent({
 
 @media screen and (max-width: $breakpointMd) {
   .inputs-section {
-    flex-direction: column;
+    justify-content: center;
+    text-align: center;
   }
 
-  .input {
+  .input_actions {
     justify-content: center;
-
-    margin: 1em 0;
-
-    _header {
-      text-align: center;
-    }
-
-    &_container > * {
-      display: flex;
-      justify-content: center;
-    }
   }
 }
 </style>

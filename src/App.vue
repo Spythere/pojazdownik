@@ -146,11 +146,11 @@ main {
   gap: 1em 3em;
 
   width: 100vw;
-  max-width: 1200px;
+  max-width: 1300px;
   min-height: 75vh;
 
-  grid-template-columns: 1fr 3fr;
-  grid-template-rows: 250px auto;
+  grid-template-columns: 1fr 2fr;
+  grid-template-rows: 350px auto;
 
   padding: 0.5em;
 }

@@ -19,7 +19,7 @@
           1
         </button>
 
-        <input type="number" name="stock-count" id="stock-count" v-model="chosenStockVehicle.count" />
+        <input type="number" min="1" name="stock-count" id="stock-count" v-model="chosenStockVehicle.count" />
 
         <button class="action-btn" @click="addStock(store.chosenStockListIndex)">
           <img :src="icons.add" alt="add vehicle count" />
@@ -94,44 +94,44 @@
         <div class="stock-info">Lista pojazdów jest pusta!</div>
       </li>
 
-      <li
-        v-for="(stock, i) in store.stockList"
-        :key="stock.type + i"
-        :class="{ loco: stock.isLoco }"
-        tabindex="0"
-        @click="onListItemClick(i)"
-
-        @keydown.enter="onListItemClick(i)"
-        @keydown.w="moveUpStock(i)"
-        @keydown.s="moveDownStock(i)"
-        @keydown.backspace="removeStock(i)"
-
-        ref="itemRefs"
-      >
-        <div
-          class="stock-info"
-          @dragstart="onDragStart(i)"
-          @drop="onDrop($event, i)"
-          @dragover="allowDrop"
-          draggable="true"
+      <transition-group name="stock-list-anim">
+        <li
+          v-for="(stock, i) in store.stockList"
+          :key="stock.id"
+          :class="{ loco: stock.isLoco }"
+          tabindex="0"
+          @click="onListItemClick(i)"
+          @keydown.enter="onListItemClick(i)"
+          @keydown.w="moveUpStock(i)"
+          @keydown.s="moveDownStock(i)"
+          @keydown.backspace="removeStock(i)"
+          ref="itemRefs"
         >
-          <span class="stock-info__no" :data-selected="i == store.chosenStockListIndex">
-            <span v-if="i == store.chosenStockListIndex">&bull;&nbsp;</span>
-            {{ i + 1 }}.
-          </span>
+          <div
+            class="stock-info"
+            @dragstart="onDragStart(i)"
+            @drop="onDrop($event, i)"
+            @dragover="allowDrop"
+            draggable="true"
+          >
+            <span class="stock-info__no" :data-selected="i == store.chosenStockListIndex">
+              <span v-if="i == store.chosenStockListIndex">&bull;&nbsp;</span>
+              {{ i + 1 }}.
+            </span>
 
-          <span class="stock-info__type">
-            {{ stock.isLoco ? stock.type : getCarSpecFromType(stock.type) }}
-          </span>
+            <span class="stock-info__type">
+              {{ stock.isLoco ? stock.type : getCarSpecFromType(stock.type) }}
+            </span>
 
-          <span class="stock-info__cargo" v-if="stock.cargo"> {{ stock.cargo.id }} </span>
-          <span class="stock-info__length"> {{ stock.length }}m </span>
-          <span class="stock-info__mass">{{ stock.cargo ? stock.cargo.totalMass : stock.mass }}t </span>
-          <span class="stock-info__speed"> {{ stock.maxSpeed }}km/h </span>
+            <span class="stock-info__cargo" v-if="stock.cargo"> {{ stock.cargo.id }} </span>
+            <span class="stock-info__length"> {{ stock.length }}m </span>
+            <span class="stock-info__mass">{{ stock.cargo ? stock.cargo.totalMass : stock.mass }}t </span>
+            <span class="stock-info__speed"> {{ stock.maxSpeed }}km/h </span>
 
-          <span class="stock-info__count"> x{{ stock.count }} </span>
-        </div>
-      </li>
+            <span class="stock-info__count"> x{{ stock.count }} </span>
+          </div>
+        </li>
+      </transition-group>
     </ul>
   </section>
 </template>
@@ -476,14 +476,15 @@ export default defineComponent({
 }
 
 ul {
+  position: relative;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  height: 50vh;
+  min-height: 500px;
   margin-top: 1em;
-
-  max-height: 500px;
-  overflow: auto;
-
   padding: 0.25em;
-
-  border: 2px solid gray;
 }
 
 ul > li {
@@ -491,15 +492,13 @@ ul > li {
   align-items: center;
   justify-content: space-between;
 
+  margin: 0.25em 0;
+
   outline: none;
   cursor: pointer;
 
   &:focus-visible {
     outline: 1px solid white;
-  }
-
-  &:hover .item-content {
-    color: $accentColor;
   }
 }
 
@@ -508,7 +507,6 @@ li > .stock-info {
 
   color: white;
   font-weight: 700;
-  margin: 0.25em 0;
 
   transition: color 100ms;
 
@@ -552,7 +550,31 @@ li > .stock-info {
   }
 }
 
+.stock-list-anim {
+  &-move, /* apply transition to moving elements */
+  &-enter-active,
+  &-leave-active {
+    transition: all 250ms ease;
+  }
+
+  &-enter-from {
+    opacity: 0;
+    transform: translateY(-25px);
+  }
+
+  &-leave-to {
+    opacity: 0;
+  }
+
+  &-leave-active {
+    position: absolute;
+  }
+}
+
 @media screen and (max-width: $breakpointMd) {
+  ul {
+    min-height: auto;
+  }
   li > .stock-info {
     font-size: 0.9em;
   }

@@ -64,6 +64,7 @@ export interface ICargo {
 }
 
 export interface IStock {
+  id: string;
   useType: string;
   type: string;
   length: number;
