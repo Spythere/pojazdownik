@@ -4,7 +4,17 @@
       <h2 class="input_header">WYBIERZ POJAZDY / WAGONY</h2>
 
       <div class="input_list type">
-        <label for="locomotives-list">Pojazdy trakcyjne</label>
+        <div class="vehicle-types locos">
+          <button
+            v-for="locoType in locomotiveTypeList"
+            class="btn--choice"
+            :data-selected="locoType.id == store.chosenLocoPower"
+            @click="selectLocoType(locoType.id)"
+          >
+            {{ locoType.value }}
+          </button>
+        </div>
+
         <select
           id="locomotives-list"
           v-model="store.chosenLoco"
@@ -21,7 +31,16 @@
       </div>
 
       <div class="input_list type">
-        <label for="locomotives-list">Wagony</label>
+        <div class="vehicle-types carwagons">
+          <button
+            v-for="carType in carTypeList"
+            class="btn--choice"
+            :data-selected="carType.id == store.chosenCarUseType"
+            @click="selectCarWagonType(carType.id)"
+          >
+            {{ carType.value }}
+          </button>
+        </div>
 
         <select
           id="carwagons-list"
@@ -95,6 +114,12 @@ import imageMixin from '../mixins/imageMixin';
 import { useStore } from '../store';
 import { isLocomotive } from '../utils/vehicleUtils';
 
+interface ILocoType {
+  id: string;
+  value: string;
+  desc: string;
+}
+
 export default defineComponent({
   components: {
     ReadyStockList,
@@ -103,8 +128,41 @@ export default defineComponent({
   mixins: [imageMixin],
 
   data: () => ({
-    chosenLocomotiveType: '',
-    chosenCarWagonType: '',
+    locomotiveTypeList: [
+      {
+        id: 'loco-e',
+        value: 'ELEKTR',
+        desc: 'ELEKTRYCZNE',
+      },
+      {
+        id: 'loco-s',
+        value: 'SPAL',
+        desc: 'SPALINOWE',
+      },
+      {
+        id: 'loco-ezt',
+        value: 'EZT',
+        desc: 'ELEKTR. ZESPOŁY TRAKCYJNE',
+      },
+      {
+        id: 'loco-szt',
+        value: 'SZT',
+        desc: 'SPAL. ZESPOŁY TRAKCYJNE',
+      },
+    ] as ILocoType[],
+
+    carTypeList: [
+      {
+        id: 'car-passenger',
+        value: 'PAS',
+        desc: 'PASAŻERSKIE',
+      },
+      {
+        id: 'car-cargo',
+        value: 'TOW',
+        desc: 'TOWAROWE',
+      },
+    ],
   }),
 
   setup() {
@@ -115,36 +173,34 @@ export default defineComponent({
     };
   },
 
-  // mounted() {
-  //   document.addEventListener('keydown', (ev) => {
-  //     const keyName = ev.key.toLowerCase();
-  //     if (keyName == 'enter') {
-  //       ev.preventDefault();
-  //       this.addVehicle();
-  //     }
-
-  //     if (keyName == 'backspace') {
-  //       if (this.store.stockList.length == 0) return;
-
-  //       const lastStock = this.store.stockList.slice(-1)[0];
-
-  //       if (lastStock.count > 1) lastStock.count--;
-  //       else this.store.stockList.splice(-1);
-  //     }
-  //   });
-  // },
-
   computed: {
     locoOptions() {
-      return this.store.locoDataList.sort((a, b) => (a.type > b.type ? 1 : -1));
+      return this.store.locoDataList
+        .sort((a, b) => (a.type > b.type ? 1 : -1))
+        .filter((loco) => loco.power == this.store.chosenLocoPower);
     },
 
     carOptions() {
-      return this.store.carDataList.sort((a, b) => (a.type > b.type ? 1 : -1));
+      return this.store.carDataList
+        .sort((a, b) => (a.type > b.type ? 1 : -1))
+        .filter((car) => car.useType == this.store.chosenCarUseType);
     },
   },
 
   methods: {
+    selectLocoType(locoTypeId: string) {
+      this.store.chosenLocoPower = locoTypeId;
+      this.store.chosenVehicle = this.locoOptions[0];
+      this.store.chosenLoco = this.locoOptions[0];
+    },
+
+    selectCarWagonType(carWagonTypeId: string) {
+      this.store.chosenCarUseType = carWagonTypeId;
+      this.store.chosenVehicle = this.carOptions[0];
+      this.store.chosenCar = this.carOptions[0];
+      this.store.chosenCargo = null;
+    },
+
     prepareSwapVehicles() {
       this.store.swapVehicles = true;
     },
@@ -256,66 +312,53 @@ export default defineComponent({
 
   grid-row: 1;
   grid-column: 1;
+}
 
-  &_car {
-    &.disabled {
-      opacity: 0.75;
-      pointer-events: none;
-    }
+.input_header {
+  margin-bottom: 1em;
+}
+
+.btn--choice {
+  margin-right: 0.5em;
+  font-weight: bold;
+
+  background-color: #444;
+
+  &[data-selected='true'] {
+    background-color: $accentColor;
+    color: black;
+  }
+
+  transition: all 120ms ease;
+}
+
+.input_list {
+  margin: 0.5em 0;
+
+  label {
+    display: block;
+
+    font-weight: bold;
+    color: $accentColor;
+    margin-bottom: 0.3em;
+  }
+
+  select:focus {
+    border-color: $accentColor;
   }
 }
 
-.input {
-  &_header {
-    margin-bottom: 1em;
+.input_actions {
+  display: flex;
+  flex-wrap: wrap;
+
+  button {
+    margin: 0.5em 0.5em 0 0;
   }
+}
 
-  &_list {
-    margin: 0.5em 0;
-
-    label {
-      display: block;
-
-      font-weight: bold;
-      color: $accentColor;
-      margin-bottom: 0.3em;
-    }
-
-    select:focus {
-      border-color: $accentColor;
-    }
-  }
-
-  &_list button {
-    margin-left: 0.5em;
-    font-weight: bold;
-
-    &:hover img {
-      border-color: $accentColor;
-    }
-
-    &:focus img {
-      border-color: $accentColor;
-    }
-
-    img {
-      border: 2px solid white;
-      padding: 0.25em;
-
-      height: 2.35em;
-
-      vertical-align: middle;
-    }
-  }
-
-  &_actions {
-    display: flex;
-    flex-wrap: wrap;
-
-    button {
-      margin: 0.5em 0.5em 0 0;
-    }
-  }
+.vehicle-types {
+  margin-bottom: 0.5em;
 }
 
 @media screen and (max-width: $breakpointMd) {

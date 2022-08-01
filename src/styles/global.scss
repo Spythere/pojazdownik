@@ -113,6 +113,18 @@ button.btn {
     font-weight: bold;
     transition: all 250ms;
     border: none;
+
+    &:focus-visible {
+      outline: 1px solid white;
+    }
+  }
+
+  &--choice {
+    padding: 0.25em 0.3em;
+
+    &:focus-visible {
+      outline: 1px solid white;
+    }
   }
 }
 

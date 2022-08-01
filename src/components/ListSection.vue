@@ -8,42 +8,69 @@
       <button class="btn" @click="store.isRandomizerCardOpen = true">LOSUJ SKŁAD</button>
     </div>
 
-    <div class="stock_actions" v-if="chosenStockVehicle">
+    <div class="stock_actions" :data-disabled="store.chosenStockListIndex == -1">
       <b class="no">
         POJAZD NR <span class="text--accent">{{ store.chosenStockListIndex + 1 }}</span> &nbsp;
       </b>
 
       <div class="count">
-        <button class="action-btn" @click="subStock(store.chosenStockListIndex)">
+        <button
+          class="action-btn"
+          :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
+          @click="subStock(store.chosenStockListIndex)"
+        >
           <img :src="icons.sub" alt="subtract vehicle count" />
           1
         </button>
 
-        <input type="number" min="1" name="stock-count" id="stock-count" v-model="chosenStockVehicle.count" />
+        <input
+          v-if="chosenStockVehicle"
+          v-model="chosenStockVehicle.count"
+          type="number"
+          min="1"
+          name="stock-count"
+          id="stock-count"
+        />
 
-        <button class="action-btn" @click="addStock(store.chosenStockListIndex)">
+        <input v-else id="stock-count" type="number" value="0" :tabindex="store.chosenStockListIndex == -1 ? -1 : 0" />
+
+        <button
+          class="action-btn"
+          :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
+          @click="addStock(store.chosenStockListIndex)"
+        >
           <img :src="icons.add" alt="add vehicle count" />
           1
         </button>
       </div>
 
-      <button class="action-btn" @click="moveUpStock(store.chosenStockListIndex)">
+      <button
+        class="action-btn"
+        :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
+        @click="moveUpStock(store.chosenStockListIndex)"
+      >
         <img :src="icons.higher" alt="move up vehicle" />
         Przenieś wyżej
       </button>
 
-      <button class="action-btn" @click="moveDownStock(store.chosenStockListIndex)">
+      <button
+        class="action-btn"
+        :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
+        @click="moveDownStock(store.chosenStockListIndex)"
+      >
         <img :src="icons.lower" alt="move down vehicle" />
         Przenieś niżej
       </button>
 
-      <button class="action-btn" @click="removeStock(store.chosenStockListIndex)">
+      <button
+        class="action-btn"
+        :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
+        @click="removeStock(store.chosenStockListIndex)"
+      >
         <img :src="icons.remove" alt="remove vehicle" />
         Usuń
       </button>
     </div>
-
-    <div class="stock_actions no-chosen-vehicle" v-else>Wybierz pojazd z listy poniżej, aby pokazać opcje</div>
 
     <div class="stock_specs">
       <div>
@@ -234,14 +261,15 @@ export default defineComponent({
         const chosenLoco = this.store.locoDataList.find((v) => v.type == vehicle.type) || null;
         this.store.chosenVehicle = chosenLoco;
         this.store.chosenLoco = chosenLoco;
-
         // this.store.chosenCargo = null;
+        this.store.chosenLocoPower = vehicle.useType;
       } else {
         const chosenCar = this.store.carDataList.find((v) => v.type == vehicle.type) || null;
         this.store.chosenVehicle = chosenCar;
         this.store.chosenCar = chosenCar;
 
         this.store.chosenCargo = vehicle.cargo || null;
+        this.store.chosenCarUseType = vehicle.useType;
       }
 
       if (this.store.swapVehicles) {
@@ -436,6 +464,16 @@ export default defineComponent({
   margin: 1em 0;
   outline: 1px solid white;
 
+  &[data-disabled='true'] {
+    opacity: 0.8;
+
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+
+    pointer-events: none;
+  }
+
   &.no-chosen-vehicle {
     font-size: 1.05em;
     padding: 0.5em;
@@ -454,16 +492,13 @@ export default defineComponent({
     margin: 0.25em;
     padding: 0.25em;
 
-    border: 2px solid gray;
-    border-radius: 0.25em;
-
     &:focus-visible {
       outline: 1px solid white;
     }
 
     img {
       vertical-align: text-bottom;
-      margin-right: 0.5em;
+      margin-right: 0.25em;
 
       width: 1.1em;
       height: 1.1em;
@@ -479,13 +514,11 @@ export default defineComponent({
 ul {
   position: relative;
 
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: auto;
 
   height: 50vh;
   min-height: 500px;
   margin-top: 1em;
-  padding: 0.25em;
 }
 
 ul > li {
@@ -503,7 +536,7 @@ ul > li {
   }
 
   &.list-empty {
-    outline: 1px solid white;
+    border: 1px solid white;
     padding: 0.5em;
   }
 }

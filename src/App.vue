@@ -150,7 +150,7 @@ main {
   min-height: 75vh;
 
   grid-template-columns: 1fr 2fr;
-  grid-template-rows: 350px auto;
+  grid-template-rows: 330px minmax(400px, 1fr);
 
   padding: 0.5em;
 }

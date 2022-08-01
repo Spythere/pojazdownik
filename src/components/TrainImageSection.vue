@@ -14,15 +14,14 @@
       </div>
 
       <div class="train-image__info" v-if="store.chosenVehicle">
-        <b class="text--accent">{{ store.chosenVehicle.type }} </b>
+        <b class="text--accent">{{ store.chosenVehicle.type }}</b> &bull;
+        <b style="color: #ccc">{{
+          vehicleTypes[
+            isLocomotive(store.chosenVehicle) ? store.chosenVehicle.power : store.chosenVehicle.useType || 'loco-e'
+          ]
+        }}</b>
 
         <div style="color: #ccc">
-          <b>{{
-            vehicleTypes[
-              isLocomotive(store.chosenVehicle) ? store.chosenVehicle.power : store.chosenVehicle.useType || 'loco-e'
-            ]
-          }}</b>
-
           <div>
             {{ store.chosenVehicle.length }}m | {{ store.chosenVehicle.mass }}t |
             {{ store.chosenVehicle.maxSpeed }} km/h
@@ -103,13 +102,12 @@ export default defineComponent({
   grid-row: 2;
   grid-column: 1;
 
-  display: flex;
+  margin-top: 2em;
 }
 
 .train-image {
   &__wrapper {
     text-align: center;
-    
   }
 
   &__content {
@@ -156,6 +154,7 @@ export default defineComponent({
 .train-image__info {
   margin: 1em 0;
   font-size: 1.1em;
+  padding: 0 1em;
 
   b {
     font-size: 1.1em;
