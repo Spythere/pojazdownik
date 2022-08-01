@@ -1,7 +1,7 @@
 <template>
-  <div class="ready-stock-list" v-if="isOpen">
+  <div class="ready-stock-list" v-if="store.isRealStockListCardOpen">
     <div class="top-sticky">
-      <button class="btn btn--text exit" @click="exit">&lt; POWRÓT</button>
+      <button class="btn btn--text exit" @click="store.isRealStockListCardOpen = false">&lt; POWRÓT</button>
 
       <div class="header">
         <h1>
@@ -38,8 +38,14 @@
 </template>
 
 <script lang="ts">
-import { ICarWagon, ILocomotive, IStore } from '@/types';
 import { defineComponent, inject } from 'vue';
+import { IStore, ILocomotive, ICarWagon, Vehicle, IStock } from '../types';
+
+import iconEIC from '../assets/EIC.png';
+import iconIC from '../assets/IC.svg';
+import iconTLK from '../assets/TLK.png';
+import { useStore } from '../store';
+import { isLocomotive } from '../utils/vehicleUtils';
 
 interface ReadyStockList {
   [key: string]: { stockString: string; type: string; number: string; name: string };
@@ -52,11 +58,7 @@ interface ResponseJSONData {
 export default defineComponent({
   setup() {
     return {
-      isOpen: inject('isReadyStockListOpen'),
-      store: inject('Store') as IStore,
-      locoDataList: inject('locoDataList') as ILocomotive[],
-      carDataList: inject('carDataList') as ICarWagon[],
-      isLocomotive: inject('isLocomotive') as (vehicle: ILocomotive | ICarWagon) => vehicle is ILocomotive,
+      store: useStore(),
     };
   },
 
@@ -68,9 +70,9 @@ export default defineComponent({
     searchedReadyStockName: '',
 
     icons: {
-      EIC: require('@/assets/EIC.png'),
-      IC: require('@/assets/IC.svg'),
-      TLK: require('@/assets/TLK.png'),
+      EIC: iconEIC,
+      IC: iconIC,
+      TLK: iconTLK,
     } as { [key: string]: string },
   }),
 
@@ -90,8 +92,8 @@ export default defineComponent({
   },
 
   methods: {
-    exit() {
-      this.isOpen = false;
+    getImageUrl(name: string) {
+      return new URL(`./dir/${name}.png`, import.meta.url).href;
     },
 
     openPreview(e: Event, type: string, number: string) {
@@ -120,29 +122,33 @@ export default defineComponent({
       this.store.chosenRealStockName = `${type} ${number} ${name}`;
 
       stockArray.forEach((type, i) => {
-        let vehicle;
-        if (i == 0) vehicle = this.locoDataList.find((loco) => loco.type == stockArray[0]);
-        else vehicle = this.carDataList.find((car) => car.type == type);
+        let vehicle: Vehicle | null = null;
+        if (i == 0) vehicle = this.store.locoDataList.find((loco) => loco.type == stockArray[0]) || null;
+        else vehicle = this.store.carDataList.find((car) => car.type == type) || null;
 
         this.addVehicle(vehicle);
       });
 
-      this.exit();
+      this.store.chosenStockListIndex = -1;
+      this.store.chosenVehicle = null;
+
+      this.store.isRealStockListCardOpen = false;
     },
 
-    addVehicle(vehicle: ILocomotive | ICarWagon | undefined) {
+    addVehicle(vehicle: Vehicle | null) {
       if (!vehicle) return;
 
-      const stockObj = {
+      const stockObj: IStock = {
+        id: `${Date.now() + this.store.stockList.length}`,
         type: vehicle.type,
         length: vehicle.length,
         mass: vehicle.mass,
         maxSpeed: vehicle.maxSpeed,
-        isLoco: this.isLocomotive(vehicle),
+        isLoco: isLocomotive(vehicle),
         cargo: undefined,
         count: 1,
         imgSrc: vehicle.imageSrc,
-        useType: this.isLocomotive(vehicle) ? vehicle.power : vehicle.useType,
+        useType: isLocomotive(vehicle) ? vehicle.power : vehicle.useType,
         supportersOnly: vehicle.supportersOnly,
       };
 
@@ -296,3 +302,4 @@ input {
   }
 }
 </style>
+
