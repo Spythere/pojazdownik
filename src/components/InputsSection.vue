@@ -19,7 +19,7 @@
           id="locomotives-list"
           v-model="store.chosenLoco"
           @focus="onVehicleSelect('loco')"
-          @input="onVehicleSelect('loco')"
+          @change="onVehicleSelect('loco')"
           @keydown.enter="addOrSwitchVehicle"
           @keydown.backspace="removeVehicle"
         >
@@ -46,7 +46,7 @@
           id="carwagons-list"
           v-model="store.chosenCar"
           @focus="onVehicleSelect('car')"
-          @input="onVehicleSelect('car')"
+          @change="onVehicleSelect('car')"
           @keydown.enter="addOrSwitchVehicle"
           @keydown.backspace="removeVehicle"
         >
@@ -71,7 +71,7 @@
           data-ignore-outside="1"
           v-model="store.chosenCargo"
           @focus="onVehicleSelect('car')"
-          @input="onVehicleSelect('car')"
+          @change="onVehicleSelect('car')"
           @keydown.enter="addOrSwitchVehicle"
           @keydown.backspace="removeVehicle"
         >

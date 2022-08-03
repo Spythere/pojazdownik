@@ -1,89 +1,51 @@
 <template>
   <div class="card">
-    <div class="wrapper" ref="cardWrapper" tabindex="0">
-      <!-- <h1>LOSUJ SKŁAD <img :src="icons.randomize" alt="losuj skład" /></h1>
-
-      <h3>
-        Skład zostanie dołączony do dodanej na liście lokomotywy czołowej bądź wygenerowany z losową w przypadku jej
-        braku
-      </h3> -->
+    <div class="card_wrapper" ref="cardWrapper" tabindex="0">
+      <h1>LOSUJ SKŁAD</h1>
 
       <div class="car-preview">
         <div class="image-wrapper">
           <div v-if="isPreviewLoading" class="loading">ŁADOWANIE...</div>
           <img v-if="focusedCar" :src="focusedCar?.imageSrc" :alt="focusedCar.type" />
+
+          <span class="preview-message" v-else>WYBIERZ POJAZD LUB WAGON, BY ZOBACZYĆ JEGO PODGLĄD</span>
         </div>
+
         <b class="text--accent" v-if="focusedCar">
           {{ focusedCar.type.split('_')[0] }} {{ focusedCar.type.split('_')[2] }}
         </b>
-        <b v-else>Podgląd typu wagonu</b>
-
-        <div v-if="focusedCar">{{ carUsage[focusedCar.type.split('_')[0]] }}</div>
-        <div v-else>Najedź na rodzaj wagonu aby wyświetlić informacje</div>
       </div>
 
-      <div class="car-choice">
-        <p>Dobierz rodzaje wagonów</p>
-        <div>
-          <button
-            class="btn choice-btn"
-            v-for="carType in passengerCarTypeList"
-            :key="carType"
-            @click="toggleCarType(carType)"
-            @mouseenter="displayPreview(carType)"
-            @focus="displayPreview(carType)"
-            :data-selected="chosenCarTypes.includes(carType)"
-          >
-            {{ carType }}
-          </button>
+      <div class="random-stock-selections">
+        <div class="select-box locos">
+          <h3>LOKOMOTYWA</h3>
+
+          <select>
+            <option value="test">Test</option>
+          </select>
         </div>
 
-        <div style="margin-top: 0.5em">
-          <button
-            class="btn choice-btn"
-            v-for="carType in cargoCarTypeList"
-            :key="carType"
-            @click="toggleCarType(carType)"
-            @mouseenter="displayPreview(carType)"
-            @focus="displayPreview(carType)"
-            :data-selected="chosenCarTypes.includes(carType)"
-          >
-            {{ carType }}
-          </button>
+        <div class="select-box carwagons">
+          <h3>WAGONY</h3>
+
+          <ul class="carwagons-list">
+            <li>
+              <select class="select-type">
+                <option value="test">Test</option>
+              </select>
+
+              <select class="select-paint">
+                <option value="test">Test</option>
+              </select>
+
+              <select class="select-cargo">
+                <option value="test">Test</option>
+              </select>
+              
+              <input class="carwagon-chance" type="number" value="5" max="100" min="1" />
+            </li>
+          </ul>
         </div>
-      </div>
-
-      <div class="length-choice">
-        <p>Wybierz preferowaną długość składu (m) i (opcjonalnie) max. masę (t)</p>
-        <input
-          type="number"
-          v-model="randomStockLength"
-          name="length"
-          max="650"
-          min="20"
-          step="10"
-          title="Długość składu (m)"
-        />
-        <input
-          type="number"
-          v-model="randomStockMass"
-          name="mass"
-          max="4000"
-          min="100"
-          step="100"
-          title="Masa składu (t)"
-        />
-      </div>
-
-      <div class="cargo-filling g-choice" style="margin: 1em 0">
-        <button
-          class="btn choice-btn"
-          v-for="mode in cargoFillModeList"
-          :data-selected="mode.id == chosenCargoFillMode"
-          @click="changeCargoFillMode(mode.id)"
-        >
-          {{ mode.value }}
-        </button>
       </div>
 
       <button class="btn" style="font-size: 1.15em; margin-top: 2em" @click="randomize">LOSUJ SKŁAD!</button>
@@ -322,7 +284,7 @@ export default defineComponent({
       }
 
       const stockObj: IStock = {
-        id: `${Date.now()+this.store.stockList.length}`,
+        id: `${Date.now() + this.store.stockList.length}`,
         type: loco.type,
         length: loco.length,
         mass: loco.mass,
@@ -350,7 +312,7 @@ export default defineComponent({
       }
 
       const stockObj: IStock = {
-        id: `${Date.now()+this.store.stockList.length}`,
+        id: `${Date.now() + this.store.stockList.length}`,
         type: car.type,
         length: car.length,
         mass: car.mass,
@@ -383,17 +345,15 @@ export default defineComponent({
 
   z-index: 100;
 
-  display: flex;
-  justify-content: center;
-
-  text-align: center;
-
   border: 2px solid white;
 
   width: 700px;
-  padding: 2em 1em;
+  padding: 0.5em 1em;
 
-  background: rgba(black, 0.95);
+  height: 90vh;
+  max-height: 900px;
+
+  background: #242424;
 
   @media screen and (max-width: 700px) {
     width: 95%;
@@ -407,30 +367,13 @@ p {
 }
 
 h1 {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-
-  margin: 0;
-
-  img {
-    margin-left: 0.5em;
-    width: 2em;
-  }
+  text-align: center;
+  color: $accentColor;
 }
 
 h3 {
-  margin: 0 0 2em 0;
-  color: #999;
-}
-
-button,
-input {
-  margin: 0.25em;
-}
-
-input {
-  font-size: 1.2em;
+  color: $accentColor;
+  margin: 0 0 0.5em 0;
 }
 
 .car-choice div {
@@ -442,22 +385,6 @@ input {
   @media screen and (max-width: 800px) {
     grid-template-columns: repeat(4, 1fr);
   }
-}
-
-button.choice-btn {
-  color: gray;
-  border-color: gray;
-
-  &[data-selected='true'] {
-    color: $accentColor;
-    border-color: $accentColor;
-  }
-
-  &:focus-visible {
-    border-color: white;
-  }
-
-  user-select: none;
 }
 
 .car-preview {
@@ -492,11 +419,51 @@ button.choice-btn {
       background-color: rgba(black, 0.75);
     }
 
+    .preview-message {
+      font-weight: bold;
+      text-align: center;
+      position: absolute;
+      bottom: 0.5em;
+      left: 50%;
+      transform: translateX(-50%);
+
+      width: 100%;
+    }
+
     img {
       width: 100%;
       height: 100%;
     }
   }
+}
+
+.random-stock-selections {
+  text-align: left;
+
+  .select-box {
+    padding: 0.5em 0;
+  }
+}
+
+ul.carwagons-list li select {
+  margin: 0.5em 0.5em 0 0;
+  &.select-type {
+    width: 80px;
+  }
+
+  &.select-paint {
+    width: 150px;
+  }
+
+  &.select-cargo {
+    width: 100px;
+  }
+}
+
+input.carwagon-chance {
+    background-color: $accentColor;
+    border: none;
+    font-weight: bold;
 }
 
 @media screen and (max-width: 600px) {

@@ -46,10 +46,10 @@
 
 <script lang="ts">
 import carUsage from '../data/carUsage.json';
-import { defineComponent } from 'vue';
+import { computed, defineComponent } from 'vue';
 import { useStore } from '../store';
 import { isLocomotive } from '../utils/vehicleUtils';
-import { ILocomotive, Vehicle } from '../types';
+import { ILocomotive, IVehicleData, Vehicle } from '../types';
 
 export default defineComponent({
   setup() {
@@ -57,6 +57,7 @@ export default defineComponent({
 
     return {
       store,
+      chosenVehicle: computed(() => store.chosenVehicle),
     };
   },
 
@@ -73,6 +74,14 @@ export default defineComponent({
 
       carUsage: carUsage as { [key: string]: string },
     };
+  },
+
+  watch: {
+    chosenVehicle(vehicle: Vehicle, prevVehicle: Vehicle) {
+      if (vehicle?.type != prevVehicle?.type) {
+        this.store.imageLoading = true;
+      }
+    },
   },
 
   methods: {
