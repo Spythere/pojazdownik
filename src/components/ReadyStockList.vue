@@ -9,8 +9,8 @@
           <div>by <a href="https://td2.info.pl/profile/?u=17708" target="_blank">Railtrains997</a></div>
         </h1>
         <p>
-          {{ isMobile ? 'Przytrzymaj zestawienie' : 'Kliknij na zestawienie prawym przyciskiem myszy' }}, aby zobaczyć
-          je na stronie <i>vagonweb.cz</i>
+          Pełne informacje o zestawieniach dostępne na stronie
+          <a href="http://bocznica.eu/files/archiwum/2021r_2021-11-04.html" target="_blank">bocznica.eu</a> (stan na listopad 2021r.)
         </p>
 
         <input type="text" tabindex="0" v-model="searchedReadyStockName" placeholder="Szukaj zestawienia..." />
@@ -22,9 +22,7 @@
         v-for="(stock, key) in computedReadyStockList"
         :key="key"
         tabindex="0"
-        @contextmenu="openPreview($event, stock.type, stock.number)"
         @click="choseStock(stock.name, stock.type, stock.number, stock.stockString)"
-        @keydown.space="openPreview($event, stock.type, stock.number)"
         @keydown.enter="choseStock(stock.name, stock.type, stock.number, stock.stockString)"
       >
         <img v-if="stock.type != 'iR' && stock.type != 'RE'" :src="icons[stock.type]" alt="" />
@@ -38,8 +36,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject } from 'vue';
-import { IStore, ILocomotive, ICarWagon, Vehicle, IStock } from '../types';
+import { defineComponent } from 'vue';
+import { Vehicle, IStock } from '../types';
 
 import iconEIC from '../assets/EIC.png';
 import iconIC from '../assets/IC.svg';
@@ -94,19 +92,6 @@ export default defineComponent({
   methods: {
     getImageUrl(name: string) {
       return new URL(`./dir/${name}.png`, import.meta.url).href;
-    },
-
-    openPreview(e: Event, type: string, number: string) {
-      e.preventDefault();
-
-      const isRegio = type == 'RE' || type == 'iR';
-
-      const zeme = isRegio ? 'PREG' : 'PKPIC';
-      const rok = isRegio ? '&rok=2013' : '';
-
-      const url = `https://www.vagonweb.cz/razeni/vlak.php?zeme=${zeme}&kategorie=${type}&cislo=${number}${rok}`;
-
-      window.open(url);
     },
 
     choseStock(name: string, type: string, number: string, stockString: string) {
