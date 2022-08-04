@@ -2,8 +2,12 @@
   <section class="train-image-section">
     <div class="train-image__wrapper">
       <div class="train-image__content">
+        <transition name="img-message-anim">
+          <div class="empty-message" v-if="store.imageLoading">ŁADOWANIE OBRAZU...</div>
+        </transition>
+
         <div class="no-img" v-if="!store.chosenVehicle">PODGLĄD WYBRANEGO POJAZDU</div>
-        <div class="empty-message" v-if="store.imageLoading">ŁADOWANIE OBRAZU...</div>
+
         <img
           v-if="store.chosenVehicle"
           :src="store.chosenVehicle.imageSrc"
@@ -78,7 +82,7 @@ export default defineComponent({
 
   watch: {
     chosenVehicle(vehicle: Vehicle, prevVehicle: Vehicle) {
-      if (vehicle?.type != prevVehicle?.type) {
+      if (vehicle && vehicle.type != prevVehicle?.type) {
         this.store.imageLoading = true;
       }
     },
@@ -122,6 +126,7 @@ export default defineComponent({
   &__content {
     border: 1px solid white;
     position: relative;
+    overflow: hidden;
 
     width: 22em;
     height: 13em;
@@ -143,15 +148,10 @@ export default defineComponent({
     .no-img {
       position: absolute;
       left: 0;
-      top: 0;
+      bottom: 0;
 
-      display: flex;
-      justify-content: center;
-      align-items: flex-end;
-
-      width: 100%;
-      height: 100%;
       padding: 0.3em 0;
+      width: 100%;
     }
 
     .empty-message {
@@ -171,6 +171,19 @@ export default defineComponent({
 
   div {
     margin: 0.25em 0;
+  }
+}
+
+// Transition animations
+.img-message-anim {
+  &-enter-from,
+  &-leave-to {
+    opacity: 0;
+  }
+
+  &-enter-active,
+  &-leave-active {
+    transition: opacity 75ms ease-in 100ms;
   }
 }
 
