@@ -20,7 +20,8 @@
         <div class="select-box locos">
           <h3>LOKOMOTYWA</h3>
 
-          <select>
+          <select v-model="chosenLocomotive">
+            <option :value="undefined">Wybierz lokomotywę</option>
             <option v-for="loco in store.locoDataList.filter((l) => !l.type.includes('EN'))" :value="loco">
               {{ loco.type }}
             </option>
@@ -30,30 +31,70 @@
         <div class="select-box carwagons">
           <h3>WAGONY</h3>
 
-          <ul class="carwagons-list">
-            <li v-for="stockWagon in chosenCarWagonList">
-              <select class="select-type" v-model="stockWagon.wagon">
-                <option :value="car" v-for="car in store.carDataList">{{ car.type }}</option>
-              </select>
+          <div class="rules">
+            <button v-if="showRules" class="btn btn--outline" style="margin-bottom: 0.5em" @click="showRules = false">
+              Ukryj zasady dodawania wagonów
+            </button>
 
-              <select class="select-cargo">
-                <option value="empty" v-if="stockWagon.wagon.cargoList.length > 0">próżny</option>
-                <option value="empty" v-if="stockWagon.wagon.cargoList.length > 0">ładowny</option>
-                <option value="empty" v-if="stockWagon.wagon.cargoList.length > 0">losowo</option>
-                <option value="test" v-for="cargo in stockWagon.wagon.cargoList">{{ cargo.id }}</option>
+            <button v-else class="btn btn--outline" @click="showRules = true">Pokaż zasady dodawania wagonów</button>
+
+            <ul v-if="showRules" class="rules-list">
+              <li>
+                nazwy wagonów w pierwszym polu muszą zaczynać się typem konstrukcyjnym (np. <i>111a</i> lub
+                <i>203V</i>), wariantem np. <i>111a Grafitti 1</i> lub jego początkiem, np. <i>111a PKPIC</i> (wtedy
+                losowanie obejmuje wszystkie dostępne wagony o takim początku)
+              </li>
+              <li>
+                ładunki w drugim polu można wybrać po uprzednim wpisaniu typu konstrukcyjnego wagonu towarowego
+                (zakładając, że je posiada)
+              </li>
+              <li>
+                liczba na trzecim polu - domyślnie 10 - to waga (szansa) wylosowania wagonu. Im większa waga, tym
+                większe prawdopodobieństwo
+              </li>
+              <li>liczba wariantów obejmująca losowanie danego wagonu pokazana jest na końcu rzędu</li>
+            </ul>
+          </div>
+
+          <ul class="carwagon-list">
+            <li v-for="(stockWagon, i) in chosenCarWagonList">
+              <input
+                class="carwagon-type g-input"
+                type="text"
+                list="types-datalist"
+                v-model="stockWagon.stockString"
+                @input="onCarWagonTypeInput(stockWagon)"
+              />
+
+              <datalist id="types-datalist">
+                <option v-for="carOptionType in allCarOptionsList" :value="carOptionType">{{ carOptionType }}</option>
+              </datalist>
+
+              <select class="carwagon-cargo" v-model="stockWagon.chosenCargo">
+                <option :value="undefined">bez ładunku</option>
+
+                <option value="random" v-if="stockWagon.availableCargo && stockWagon.availableCargo.length > 0">
+                  losowo
+                </option>
+
+                <option v-for="cargo in stockWagon.availableCargo" :value="cargo">
+                  {{ cargo.id }}
+                </option>
               </select>
 
               <span class="carwagon-chance">
                 <input type="number" v-model="stockWagon.chance" max="100" min="1" />
               </span>
+
+              <div>Warianty: {{ stockWagon.availableCars.length }}</div>
             </li>
           </ul>
 
-          <button class="btn" @click="addCarWagon">+ DODAJ NOWY WAGON</button>
+          <button class="btn btn--outline" @click="addCarWagon">+ DODAJ NOWY WAGON</button>
         </div>
       </div>
 
-      <button class="btn" style="font-size: 1.15em; margin-top: 2em" @click="() => {}">LOSUJ SKŁAD!</button>
+      <button class="btn" style="font-size: 1.15em; margin-top: 2em" @click="generateRandomStock">LOSUJ SKŁAD!</button>
       <button class="btn" style="font-size: 1.15em; margin-top: 2em" @click="store.isRandomizerCardOpen = false">
         ZAMKNIJ
       </button>
@@ -64,13 +105,18 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
-import { ICarWagon, ILocomotive, ICargo, IStock } from '../types';
+import { ICargo, ICarWagon, ILocomotive, IStock, IVehicleData } from '../types';
 
 import { useStore } from '../store';
+import stockMixin from '../mixins/stockMixin';
 
 interface RandomStockCarWagon {
-  wagon: ICarWagon;
+  stockString: string;
   chance: number;
+
+  availableCars: ICarWagon[];
+  availableCargo?: ICargo[];
+  chosenCargo?: ICargo;
 }
 
 export default defineComponent({
@@ -81,6 +127,8 @@ export default defineComponent({
       store,
     };
   },
+
+  mixins: [stockMixin],
 
   activated() {
     (this.$refs['cardWrapper'] as any).focus();
@@ -93,65 +141,127 @@ export default defineComponent({
     chosenCarWagonList: [] as RandomStockCarWagon[],
     chosenLocomotive: undefined as ILocomotive | undefined,
 
-    // chosenCarTypes: [] as string[],
-
-    // cargoFillModeList: [
-    //   {
-    //     id: 'cargo-random',
-    //     value: 'LOSOWO',
-    //   },
-    //   {
-    //     id: 'cargo-filled',
-    //     value: 'ŁADOWNE',
-    //   },
-    //   {
-    //     id: 'cargo-empty',
-    //     value: 'PRÓŻNE',
-    //   },
-    // ] as { id: CargoFillModeType; value: string }[],
-
-    // chosenCargoFillMode: 'cargo-random' as CargoFillModeType,
-
-    // icons: {
-    //   randomize: randomizeIcon,
-    // },
-
-    // focusedCar: null as ICarWagon | null,
+    showRules: false,
     // isPreviewLoading: false,
-
-    // cargoTypes: [
-    //   '203V',
-    //   '208Kf',
-    //   '209c',
-    //   '29R',
-    //   '304C',
-    //   '304Ca',
-    //   '401Ka',
-    //   '401Zb',
-    //   '408S',
-    //   '412W',
-    //   '412Z',
-    //   '424Z',
-    //   '426S',
-    //   '429W',
-    //   '441V',
-    //   '504a',
-    //   '612a',
-    //   '627Z',
-    // ],
-
-    // carUsage: carUsage as { [key: string]: string },
   }),
 
+  computed: {
+    allCarOptionsList() {
+      const list: string[] = [];
+
+      this.store.carDataList.forEach((carData) => {
+        const splittedTypeList = carData.type.split('_');
+
+        for (let i = 0; i < splittedTypeList.length; i++) {
+          const typeToCheck = carData.type
+            .split('_', i + 1)
+            .join('_')
+            .replace(/_/g, ' ');
+
+          if (!list.includes(typeToCheck)) list.push(typeToCheck);
+        }
+      });
+
+      return list.sort((a, b) => a > b ? 1 : -1);
+    },
+  },
+
   methods: {
+    onCarWagonTypeInput(carWagon: RandomStockCarWagon) {
+      const constructionType = carWagon.stockString.split(' ')[0];
+
+      const carWagonObj = this.store.carDataList.find((car) => car.constructionType == constructionType);
+
+      const allAvailableCars = this.store.carDataList.filter((car) =>
+        car.type.startsWith(carWagon.stockString.replace(/ /g, '_'))
+      );
+
+      carWagon.availableCars = allAvailableCars;
+      carWagon.availableCargo = carWagonObj?.cargoList || undefined;
+
+      if (!carWagonObj?.cargoList) {
+        carWagon.chosenCargo = undefined;
+      }
+    },
+
     addCarWagon() {
       const randomStockCarWagon: RandomStockCarWagon = {
-        chance: 100,
-        wagon: this.store.carDataList[0],
+        stockString: '111a PKPIC',
+        chance: 10,
+        chosenCargo: undefined,
+        availableCargo: undefined,
+        availableCars: this.store.carDataList.filter((car) => car.type.startsWith('111a_PKPIC')),
       };
 
       this.chosenCarWagonList.push(randomStockCarWagon);
     },
+
+    generateRandomStock() {
+      let totalLength = 0;
+      let totalMass = 0;
+
+      let generatedStockList: IStock[] = [];
+
+      // if (!this.chosenLocomotive) return;
+      if (this.chosenCarWagonList.length == 0) return;
+
+      // generatedStockList.push(this.getStockObject(this.chosenLocomotive));
+      // totalLength += this.chosenLocomotive.length;
+      // totalMass += this.chosenLocomotive.mass;
+
+      while (generatedStockList.length < 25) {
+        const randCarWagon = this.getRandomCarWagon();
+
+        generatedStockList.push(this.getStockObject(randCarWagon));
+
+        totalLength += randCarWagon.length;
+        totalMass += randCarWagon.mass;
+      }
+
+      console.log(generatedStockList);
+    },
+
+    getRandomCarWagon(): ICarWagon {
+      const totalChancePot = this.chosenCarWagonList.reduce((total, car) => {
+        total += car.chance;
+        return total;
+      }, 0);
+
+      let rand = Math.random() * totalChancePot;
+      let randCarWagon: ICarWagon | undefined = undefined;
+
+      for (let wagonItem of this.chosenCarWagonList) {
+        if (rand < wagonItem.chance) {
+          randCarWagon = { ...wagonItem.availableCars[Math.floor(Math.random() * wagonItem.availableCars.length)] };
+          break;
+        }
+
+        rand -= wagonItem.chance;
+      }
+
+      return randCarWagon!;
+    },
+
+    // getRandomStockItem() {
+    //   const totalChancePot = this.chosenCarWagonList.reduce((total, car) => {
+    //     total += car.chance;
+    //     return total;
+    //   }, 0);
+
+    //   let rand = Math.random() * totalChancePot;
+    //   let randomCarWagon: RandomStockCarWagon | undefined = undefined;
+
+    //   for (let wagonItem of this.chosenCarWagonList) {
+    //     if (rand < wagonItem.chance) {
+    //       randomCarWagon = { ...wagonItem };
+    //       break;
+    //     }
+
+    //     rand -= wagonItem.chance;
+    //   }
+
+    //   return randomCarWagon!;
+    // },
 
     // randomize() {
     //   if (this.chosenCarTypes.length == 0) {
@@ -234,60 +344,6 @@ export default defineComponent({
 
     //   this.store.isRandomizerCardOpen = false;
     // },
-
-    // addLocomotive() {
-    //   const previousStock =
-    //     this.store.stockList.length > 0 ? this.store.stockList[this.store.stockList.length - 1] : null;
-
-    //   if (previousStock && previousStock.type == loco.type) {
-    //     this.store.stockList[this.store.stockList.length - 1].count++;
-    //     return;
-    //   }
-
-    //   const stockObj: IStock = {
-    //     id: `${Date.now() + this.store.stockList.length}`,
-    //     type: loco.type,
-    //     length: loco.length,
-    //     mass: loco.mass,
-    //     maxSpeed: loco.maxSpeed,
-    //     isLoco: true,
-    //     cargo: undefined,
-    //     count: 1,
-    //     imgSrc: loco.imageSrc,
-    //     useType: loco.power,
-    //     supportersOnly: loco.supportersOnly,
-    //   };
-
-    //   if (this.store.stockList.length > 0 && !this.store.stockList[0].isLoco) this.store.stockList.unshift(stockObj);
-    //   else this.store.stockList.push(stockObj);
-    // },
-
-    addCar(car: ICarWagon, cargo?: ICargo) {
-      const previousStock =
-        this.store.stockList.length > 0 ? this.store.stockList[this.store.stockList.length - 1] : null;
-
-      if (previousStock && previousStock.type == car.type && previousStock.cargo?.id == cargo?.id) {
-        this.store.stockList[this.store.stockList.length - 1].count++;
-
-        return;
-      }
-
-      const stockObj: IStock = {
-        id: `${Date.now() + this.store.stockList.length}`,
-        type: car.type,
-        length: car.length,
-        mass: car.mass,
-        maxSpeed: car.maxSpeed,
-        isLoco: false,
-        cargo: car.loadable && cargo ? cargo : undefined,
-        count: 1,
-        imgSrc: car.imageSrc,
-        useType: car.useType,
-        supportersOnly: car.supportersOnly,
-      };
-
-      this.store.stockList.push(stockObj);
-    },
   },
 });
 </script>
@@ -314,17 +370,13 @@ export default defineComponent({
   height: 90vh;
   max-height: 900px;
 
-  background: #242424;
+  background: #111;
 
   @media screen and (max-width: 700px) {
     width: 95%;
   }
 
   border-radius: 1em;
-}
-
-p {
-  font-size: 1.2em;
 }
 
 h1 {
@@ -337,14 +389,13 @@ h3 {
   margin: 0 0 0.5em 0;
 }
 
-.car-choice div {
-  display: grid;
+.rules {
+  margin: 0.5em 0;
 
-  grid-template-columns: repeat(6, 1fr);
-  justify-content: center;
-
-  @media screen and (max-width: 800px) {
-    grid-template-columns: repeat(4, 1fr);
+  ul {
+    list-style: inside;
+    border: 1px solid $accentColor;
+    padding: 0.5em;
   }
 }
 
@@ -398,42 +449,36 @@ h3 {
   }
 }
 
+.carwagon-list li {
+  margin: 0.5em 0;
+
+  display: flex;
+  align-items: center;
+
+  > * {
+    margin-right: 0.5em;
+  }
+
+  input.carwagon-type {
+    width: auto;
+  }
+
+  select.carwagon-cargo {
+    max-width: 150px;
+  }
+  .carwagon-chance {
+    input {
+      font-weight: bold;
+      width: auto;
+    }
+  }
+}
+
 .random-stock-selections {
   text-align: left;
 
   .select-box {
     padding: 0.5em 0;
-  }
-}
-
-ul.carwagons-list li select {
-  margin: 0.5em 0.5em 0 0;
-  &.select-type {
-    width: 250px;
-  }
-
-  &.select-cargo {
-    width: 120px;
-  }
-}
-
-.carwagon-chance {
-  position: relative;
-  font-size: 1.2em;
-  font-weight: bold;
-
-  input {
-    background-color: white;
-    height: 1.6em;
-    border: none;
-    width: 3em;
-  }
-
-  &::after {
-    content: '%';
-    top: 0;
-    right: -1em;
-    position: absolute;
   }
 }
 

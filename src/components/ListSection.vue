@@ -439,17 +439,10 @@ export default defineComponent({
   }
 
   button {
-    font-size: 0.9em;
-    padding: 0.4em 0.55em;
     margin-right: 0.5em;
 
     &:nth-child(5) {
       margin-right: 0;
-    }
-
-    &:focus-visible {
-      color: $accentColor;
-      border-color: $accentColor;
     }
   }
 }
