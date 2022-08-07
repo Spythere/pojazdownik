@@ -3,42 +3,70 @@
     <div class="card_wrapper" ref="cardWrapper" tabindex="0">
       <h1>LOSUJ SKŁAD</h1>
 
-      <!-- <div class="car-preview">
-        <div class="image-wrapper">
-          <div v-if="isPreviewLoading" class="loading">ŁADOWANIE...</div>
-          <img v-if="focusedCar" :src="focusedCar?.imageSrc" :alt="focusedCar.type" />
+      <div class="random-stock-selections">
+        <h3>WŁAŚCIWOŚCI SKŁADU</h3>
 
-          <span class="preview-message" v-else>WYBIERZ POJAZD LUB WAGON, BY ZOBACZYĆ JEGO PODGLĄD</span>
+        <div class="max-values">
+          <span>
+            <label for="stock-mass">Maks. masa (t)</label>
+            <input type="number" id="stock-mass" v-model="maxStockMass" />
+          </span>
+
+          <span>
+            <label for="stock-mass">Maks. długość (m)</label>
+            <input type="number" id="stock-mass" v-model="maxStockLength" />
+          </span>
+
+          <span>
+            <label for="stock-count">Maks. liczba wagonów</label>
+            <input type="number" id="stock-count" v-model="maxStockCount" />
+          </span>
         </div>
 
-        <b class="text--accent" v-if="focusedCar">
-          {{ focusedCar.type.split('_')[0] }} {{ focusedCar.type.split('_')[2] }}
-        </b>
-      </div> -->
+        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-top: 1em">
+          <div class="select-box locos">
+            <h3>LOKOMOTYWA</h3>
 
-      <div class="random-stock-selections">
-        <div class="select-box locos">
-          <h3>LOKOMOTYWA</h3>
+            <select v-model="chosenLocomotive">
+              <option :value="undefined">Wybierz lokomotywę</option>
+              <option v-for="loco in store.locoDataList.filter((l) => !l.type.includes('EN'))" :value="loco">
+                {{ loco.type }}
+              </option>
+            </select>
+          </div>
 
-          <select v-model="chosenLocomotive">
-            <option :value="undefined">Wybierz lokomotywę</option>
-            <option v-for="loco in store.locoDataList.filter((l) => !l.type.includes('EN'))" :value="loco">
-              {{ loco.type }}
-            </option>
-          </select>
+          <div class="car-preview">
+            <div class="image-wrapper">
+              <div v-if="isPreviewLoading" class="loading">ŁADOWANIE...</div>
+              <img
+                v-if="randomFocusedWagonVariant"
+                :src="randomFocusedWagonVariant.imageSrc"
+                :alt="randomFocusedWagonVariant.type"
+              />
+
+              <span class="preview-message" v-if="!randomFocusedWagonVariant"
+                >WYBIERZ POJAZD LUB WAGON, BY ZOBACZYĆ JEGO PODGLĄD</span
+              >
+              <span class="preview-message info" v-else
+                >{{ randomFocusedWagonVariant.type }} (1 z {{ focusedCarWagon!.availableCars.length }})</span
+              >
+            </div>
+
+            <!-- <b class="text--accent" v-if="focusedCar">
+              {{ focusedCar.type.split('_')[0] }} {{ focusedCar.type.split('_')[2] }}
+            </b> -->
+          </div>
         </div>
 
         <div class="select-box carwagons">
-          <h3>WAGONY</h3>
+          <h3>
+            WAGONY
 
-          <div class="rules">
-            <button v-if="showRules" class="btn btn--outline" style="margin-bottom: 0.5em" @click="showRules = false">
-              Ukryj zasady dodawania wagonów
-            </button>
+            <button class="btn btn--text" @click="showRules = !showRules">[ zasady dodawania wagonów ]</button>
+          </h3>
 
-            <button v-else class="btn btn--outline" @click="showRules = true">Pokaż zasady dodawania wagonów</button>
-
-            <ul v-if="showRules" class="rules-list">
+          <div class="rules" v-if="showRules">
+            <ul>
               <li>
                 nazwy wagonów w pierwszym polu muszą zaczynać się typem konstrukcyjnym (np. <i>111a</i> lub
                 <i>203V</i>), wariantem np. <i>111a Grafitti 1</i> lub jego początkiem, np. <i>111a PKPIC</i> (wtedy
@@ -57,40 +85,61 @@
           </div>
 
           <ul class="carwagon-list">
+            <li class="text--accent" style="font-weight: bold">
+              <div>Typ wagonu</div>
+              <div>Ładunek</div>
+              <div>Szansa (waga)</div>
+              <div>Warianty</div>
+              <div>Usuń</div>
+            </li>
+
             <li v-for="(stockWagon, i) in chosenCarWagonList">
-              <input
-                class="carwagon-type g-input"
-                type="text"
-                list="types-datalist"
-                v-model="stockWagon.stockString"
-                @input="onCarWagonTypeInput(stockWagon)"
-              />
+              <div>
+                <input
+                  class="carwagon-type g-input"
+                  type="text"
+                  list="types-datalist"
+                  v-model="stockWagon.stockString"
+                  @input="onCarWagonTypeInput(stockWagon)"
+                  @focus="onCarWagonTypeFocus(stockWagon)"
+                />
 
-              <datalist id="types-datalist">
-                <option v-for="carOptionType in allCarOptionsList" :value="carOptionType">{{ carOptionType }}</option>
-              </datalist>
+                <datalist id="types-datalist">
+                  <option v-for="carOptionType in allCarOptionsList" :value="carOptionType">{{ carOptionType }}</option>
+                </datalist>
+              </div>
 
-              <select class="carwagon-cargo" v-model="stockWagon.chosenCargo">
-                <option :value="undefined">bez ładunku</option>
+              <div>
+                <select class="carwagon-cargo" v-model="stockWagon.chosenCargo">
+                  <option :value="undefined">brak</option>
 
-                <option value="random" v-if="stockWagon.availableCargo && stockWagon.availableCargo.length > 0">
-                  losowo
-                </option>
+                  <option value="random" v-if="stockWagon.availableCargo && stockWagon.availableCargo.length > 0">
+                    losowo
+                  </option>
 
-                <option v-for="cargo in stockWagon.availableCargo" :value="cargo">
-                  {{ cargo.id }}
-                </option>
-              </select>
+                  <option v-for="cargo in stockWagon.availableCargo" :value="cargo">
+                    {{ cargo.id }}
+                  </option>
+                </select>
+              </div>
 
-              <span class="carwagon-chance">
-                <input type="number" v-model="stockWagon.chance" max="100" min="1" />
-              </span>
+              <div>
+                <span class="carwagon-chance">
+                  <input type="number" v-model="stockWagon.chance" max="100" min="1" />
+                </span>
+              </div>
 
-              <div>Warianty: {{ stockWagon.availableCars.length }}</div>
+              <div class="variant-count">{{ stockWagon.availableCars.length }}</div>
+
+              <div class="carwagon-remove">
+                <button @click="removeFromRandomStockList(i)">
+                  <img :src="getIcon('remove-icon')" alt="remove" />
+                </button>
+              </div>
             </li>
           </ul>
 
-          <button class="btn btn--outline" @click="addCarWagon">+ DODAJ NOWY WAGON</button>
+          <button class="btn btn--outline" @click="addToRandomStockList">+ DODAJ NOWY WAGON</button>
         </div>
       </div>
 
@@ -135,14 +184,17 @@ export default defineComponent({
   },
 
   data: () => ({
-    randomStockMass: 650,
-    randomStockLength: 350,
+    maxStockMass: 650,
+    maxStockLength: 350,
+    maxStockCount: 30,
 
     chosenCarWagonList: [] as RandomStockCarWagon[],
     chosenLocomotive: undefined as ILocomotive | undefined,
 
     showRules: false,
-    // isPreviewLoading: false,
+    isPreviewLoading: false,
+    focusedCarWagon: undefined as RandomStockCarWagon | undefined,
+    randomFocusedWagonVariant: undefined as ICarWagon | undefined,
   }),
 
   computed: {
@@ -162,7 +214,7 @@ export default defineComponent({
         }
       });
 
-      return list.sort((a, b) => a > b ? 1 : -1);
+      return list.sort((a, b) => (a > b ? 1 : -1));
     },
   },
 
@@ -182,18 +234,42 @@ export default defineComponent({
       if (!carWagonObj?.cargoList) {
         carWagon.chosenCargo = undefined;
       }
+
+      this.onCarWagonTypeFocus(carWagon);
     },
 
-    addCarWagon() {
+    onCarWagonTypeFocus(carWagon: RandomStockCarWagon) {
+      const prevVariantsCount = this.focusedCarWagon?.availableCars.length || 0;
+
+      console.log(prevVariantsCount);
+      
+
+      this.focusedCarWagon = carWagon;
+
+      if (prevVariantsCount != carWagon.availableCars.length)
+        this.randomFocusedWagonVariant =
+          this.focusedCarWagon.availableCars[~~(Math.random() * this.focusedCarWagon.availableCars.length)];
+    },
+
+    addToRandomStockList() {
+      const randTypeList = this.allCarOptionsList.filter((carOption) =>
+        /1|2/g.test(carOption.split(' ').length.toString())
+      );
+      const randType = randTypeList[Math.floor(Math.random() * randTypeList.length)];
+
       const randomStockCarWagon: RandomStockCarWagon = {
-        stockString: '111a PKPIC',
+        stockString: randType,
         chance: 10,
         chosenCargo: undefined,
         availableCargo: undefined,
-        availableCars: this.store.carDataList.filter((car) => car.type.startsWith('111a_PKPIC')),
+        availableCars: this.store.carDataList.filter((car) => car.type.startsWith(randType.replace(/ /g, '_'))),
       };
 
       this.chosenCarWagonList.push(randomStockCarWagon);
+    },
+
+    removeFromRandomStockList(index: number) {
+      this.chosenCarWagonList.splice(index, 1);
     },
 
     generateRandomStock() {
@@ -242,108 +318,9 @@ export default defineComponent({
       return randCarWagon!;
     },
 
-    // getRandomStockItem() {
-    //   const totalChancePot = this.chosenCarWagonList.reduce((total, car) => {
-    //     total += car.chance;
-    //     return total;
-    //   }, 0);
-
-    //   let rand = Math.random() * totalChancePot;
-    //   let randomCarWagon: RandomStockCarWagon | undefined = undefined;
-
-    //   for (let wagonItem of this.chosenCarWagonList) {
-    //     if (rand < wagonItem.chance) {
-    //       randomCarWagon = { ...wagonItem };
-    //       break;
-    //     }
-
-    //     rand -= wagonItem.chance;
-    //   }
-
-    //   return randomCarWagon!;
-    // },
-
-    // randomize() {
-    //   if (this.chosenCarTypes.length == 0) {
-    //     alert('Wybierz przynajmniej jeden rodzaj wagonów!');
-    //     return;
-    //   }
-
-    //   if (this.randomStockLength <= 20) {
-    //     alert('Długość składu musi być większa niż 20m!');
-    //     return;
-    //   }
-
-    //   if (this.randomStockMass <= 100) {
-    //     alert('Masa składu musi być większa niż 100t!');
-    //     return;
-    //   }
-
-    //   if (this.randomStockLength > 650) {
-    //     alert('Długość składu nie może przekraczać 650m dla pociągów towarowych!');
-    //     return;
-    //   }
-
-    //   let totalStockLength = 0;
-    //   let totalStockMass = 0;
-
-    //   if (this.store.stockList.length == 0 || !this.store.stockList[0].isLoco) {
-    //     this.store.stockList.length = 0;
-
-    //     let locoSet = this.store.locoDataList.filter((loco) => loco.power == 'loco-e' || loco.power == 'loco-s');
-
-    //     if (this.chosenCarTypes.some((car) => this.cargoTypes.includes(car)))
-    //       locoSet = locoSet.filter((loco) => !loco.type.startsWith('EP'));
-
-    //     const randLoco = locoSet[Math.floor(Math.random() * locoSet.length)];
-
-    //     this.addLoco(randLoco);
-    //   } else this.store.stockList.length = 1;
-
-    //   totalStockLength += this.store.stockList[0].length;
-    //   totalStockMass += this.store.stockList[0].mass;
-
-    //   let availableCarsSet = this.store.carDataList.filter((cargoCar) => {
-    //     if (cargoCar.supportersOnly) return false;
-
-    //     if (this.chosenCarTypes.find((carType) => cargoCar.type.includes(carType))) return true;
-
-    //     return false;
-    //   });
-
-    //   while (totalStockLength < this.randomStockLength && totalStockMass < this.randomStockMass) {
-    //     const randCarIndex = Math.floor(Math.random() * availableCarsSet.length);
-
-    //     const randCar = availableCarsSet[randCarIndex];
-
-    //     // const count = Math.random() < 0.25 ? Math.floor(Math.random() * 2) + 1 : 1;
-    //     const count = 1;
-
-    //     if (randCar.length * count + totalStockLength >= this.randomStockLength) break;
-
-    //     let randCargo = undefined;
-    //     let randNum =
-    //       this.chosenCargoFillMode == 'cargo-filled'
-    //         ? 1
-    //         : this.chosenCargoFillMode == 'cargo-empty'
-    //         ? 0
-    //         : Math.random();
-    //     if (randCar.cargoList.length != 0 && randNum >= 0.6)
-    //       randCargo = randCar.cargoList[Math.floor(Math.random() * randCar.cargoList.length)];
-
-    //     if ((randCargo?.totalMass || randCar.mass) * count + totalStockMass >= this.randomStockMass) break;
-
-    //     for (let i = 0; i < count; i++) this.addCar(randCar, randCargo);
-
-    //     totalStockLength += randCar.length * count;
-    //     totalStockMass += randCargo?.totalMass || randCar.mass;
-    //   }
-
-    //   this.store.chosenStockListIndex = -1;
-    //   this.store.chosenVehicle = null;
-
-    //   this.store.isRandomizerCardOpen = false;
-    // },
+    getIcon(name: string) {
+      return new URL(`../assets/${name}.svg`, import.meta.url).href;
+    },
   },
 });
 </script>
@@ -400,77 +377,80 @@ h3 {
 }
 
 .car-preview {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  position: relative;
+  width: 300px;
+  height: 200px;
 
-  flex-direction: column;
+  border: 1px solid white;
 
-  b {
-    font-size: 1.3em;
+  .loading {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+
+    width: 100%;
+    padding: 0.5em 0;
+
+    z-index: 102;
+
+    background-color: rgba(black, 0.75);
   }
 
-  .image-wrapper {
-    position: relative;
-    width: 300px;
-    height: 180px;
+  .preview-message {
+    font-weight: bold;
+    text-align: center;
+    position: absolute;
+    bottom: 0.5em;
+    left: 50%;
+    transform: translateX(-50%);
 
-    border: 1px solid white;
-    margin-bottom: 1em;
+    width: 100%;
 
-    .loading {
-      position: absolute;
-      left: 0;
-      bottom: 0;
-
-      width: 100%;
-      padding: 0.5em 0;
-
-      z-index: 102;
-
-      background-color: rgba(black, 0.75);
+    &.info {
+      background-color: #111111dd;
     }
+  }
 
-    .preview-message {
-      font-weight: bold;
-      text-align: center;
-      position: absolute;
-      bottom: 0.5em;
-      left: 50%;
-      transform: translateX(-50%);
-
-      width: 100%;
-    }
-
-    img {
-      width: 100%;
-      height: 100%;
-    }
+  img {
+    width: 100%;
+    height: auto;
   }
 }
 
 .carwagon-list li {
   margin: 0.5em 0;
 
-  display: flex;
+  display: grid;
+  grid-template-columns: 3fr 2fr 1fr 1fr 2em;
+  gap: 0 0.5em;
   align-items: center;
 
-  > * {
-    margin-right: 0.5em;
+  input,
+  select,
+  .variant-count {
+    width: 100%;
+    height: 35px;
   }
 
-  input.carwagon-type {
-    width: auto;
+  .carwagon-chance input {
+    font-weight: bold;
   }
 
-  select.carwagon-cargo {
-    max-width: 150px;
-  }
-  .carwagon-chance {
-    input {
-      font-weight: bold;
-      width: auto;
+  .carwagon-remove {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    button img {
+      width: 1.15em;
+      vertical-align: middle;
     }
+  }
+
+  .variant-count {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
   }
 }
 
@@ -479,6 +459,21 @@ h3 {
 
   .select-box {
     padding: 0.5em 0;
+  }
+}
+
+.max-values {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  label {
+    display: block;
+  }
+
+  input {
+    width: auto;
+    margin: 0.25em 0.5em 0 0;
   }
 }
 
