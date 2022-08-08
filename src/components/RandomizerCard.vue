@@ -47,14 +47,10 @@
               <span class="preview-message" v-if="!randomFocusedWagonVariant"
                 >WYBIERZ POJAZD LUB WAGON, BY ZOBACZYĆ JEGO PODGLĄD</span
               >
-              <span class="preview-message info" v-else
-                >{{ randomFocusedWagonVariant.type }} (1 z {{ focusedCarWagon!.availableCars.length }})</span
-              >
+              <span class="preview-message info" v-else>
+                {{ randomFocusedWagonVariant.type }} (1 z {{ focusedCarWagon!.availableCars.length }})
+              </span>
             </div>
-
-            <!-- <b class="text--accent" v-if="focusedCar">
-              {{ focusedCar.type.split('_')[0] }} {{ focusedCar.type.split('_')[2] }}
-            </b> -->
           </div>
         </div>
 
@@ -197,6 +193,20 @@ export default defineComponent({
     randomFocusedWagonVariant: undefined as ICarWagon | undefined,
   }),
 
+  watch: {
+    'focusedCarWagon.availableCars': {
+      handler(cars?: RandomStockCarWagon['availableCars'], prevCars?: RandomStockCarWagon['availableCars']) {
+        const prevAvailableCarsStr = prevCars?.map((car) => car.type).join(',') || '';
+        const availableCarsStr = cars?.map((car) => car.type).join(',') || '';
+
+        if (prevAvailableCarsStr != availableCarsStr) {
+          this.randomFocusedWagonVariant =
+            this.focusedCarWagon?.availableCars[~~(Math.random() * this.focusedCarWagon.availableCars.length)];
+        }
+      },
+    },
+  },
+
   computed: {
     allCarOptionsList() {
       const list: string[] = [];
@@ -235,14 +245,11 @@ export default defineComponent({
         carWagon.chosenCargo = undefined;
       }
 
-      this.onCarWagonTypeFocus(carWagon);
+      // this.onCarWagonTypeFocus(carWagon);
     },
 
     onCarWagonTypeFocus(carWagon: RandomStockCarWagon) {
       const prevVariantsCount = this.focusedCarWagon?.availableCars.length || 0;
-
-      console.log(prevVariantsCount);
-      
 
       this.focusedCarWagon = carWagon;
 
