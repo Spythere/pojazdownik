@@ -6,9 +6,9 @@
   <div class="g-card-dimmer" v-if="store.isRandomizerCardOpen" @click="store.isRandomizerCardOpen = false"></div>
   <div class="g-card-dimmer" v-if="store.isRealStockListCardOpen" @click="store.isRealStockListCardOpen = false"></div>
 
-  <!-- <keep-alive> -->
+  <keep-alive>
     <RandomizerCard v-if="store.isRandomizerCardOpen" />
-  <!-- </keep-alive> -->
+  </keep-alive>
 
   <div class="app_container">
     <header>

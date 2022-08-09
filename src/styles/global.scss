@@ -205,3 +205,16 @@ ul {
     border-color: $accentColor;
   }
 }
+
+// Vue Transition anims
+.slide-top {
+  &-enter-from,
+  &-leave-to {
+    transform: translateY(-100%);
+  }
+
+  &-enter-active,
+  &-leave-active {
+    transition: transform 100ms ease-in-out;
+  }
+}

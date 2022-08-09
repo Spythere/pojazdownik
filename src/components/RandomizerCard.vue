@@ -1,5 +1,9 @@
 <template>
   <div class="card">
+    <transition name="slide-top">
+      <div class="warning-message" v-if="warningMessage">{{ warningMessage }}</div>
+    </transition>
+
     <div class="card_wrapper" ref="cardWrapper" tabindex="0">
       <h1>LOSUJ SKŁAD</h1>
 
@@ -27,7 +31,11 @@
           <div class="select-box locos">
             <h3>LOKOMOTYWA</h3>
 
-            <select v-model="chosenLocomotive">
+            <select
+              v-model="chosenLocomotive"
+              @change="onLocomotivePreviewSelect()"
+              @focus="onLocomotivePreviewSelect()"
+            >
               <option :value="undefined">Wybierz lokomotywę</option>
               <option v-for="loco in store.locoDataList.filter((l) => !l.type.includes('EN'))" :value="loco">
                 {{ loco.type }}
@@ -36,21 +44,26 @@
           </div>
 
           <div class="car-preview">
-            <div class="image-wrapper">
-              <div v-if="isPreviewLoading" class="loading">ŁADOWANIE...</div>
-              <img
-                v-if="randomFocusedWagonVariant"
-                :src="randomFocusedWagonVariant.imageSrc"
-                :alt="randomFocusedWagonVariant.type"
-              />
+            <div v-if="isPreviewLoading" class="loading">ŁADOWANIE...</div>
 
-              <span class="preview-message" v-if="!randomFocusedWagonVariant"
-                >WYBIERZ POJAZD LUB WAGON, BY ZOBACZYĆ JEGO PODGLĄD</span
-              >
-              <span class="preview-message info" v-else>
-                {{ randomFocusedWagonVariant.type }} (1 z {{ focusedCarWagon!.availableCars.length }})
+            <span class="preview-message" v-if="!previewVehicle">
+              WYBIERZ POJAZD LUB WAGON, BY ZOBACZYĆ JEGO PODGLĄD
+            </span>
+
+            <img v-else :src="previewVehicle.imageSrc" :alt="previewVehicle.type" />
+
+            <span class="preview-message info" v-if="previewVehicle">
+              <button @click="prevPreviewIndex">&lt;</button>
+
+              <span>
+                {{ previewVehicle.type }}
+                {{
+                  isLocomotive(previewVehicle) ? '' : `(${previewIndex + 1} z ${focusedCarWagon?.availableCars.length})`
+                }}
               </span>
-            </div>
+
+              <button @click="nextPreviewIndex">&gt;</button>
+            </span>
           </div>
         </div>
 
@@ -98,9 +111,11 @@
                   v-model="stockWagon.stockString"
                   @input="onCarWagonTypeInput(stockWagon)"
                   @focus="onCarWagonTypeFocus(stockWagon)"
+                  placeholder="Kliknij, aby dodać wagon..."
                 />
 
                 <datalist id="types-datalist">
+                  <option value="">Wybierz wagon</option>
                   <option v-for="carOptionType in allCarOptionsList" :value="carOptionType">{{ carOptionType }}</option>
                 </datalist>
               </div>
@@ -109,8 +124,11 @@
                 <select class="carwagon-cargo" v-model="stockWagon.chosenCargo">
                   <option :value="undefined">brak</option>
 
-                  <option value="random" v-if="stockWagon.availableCargo && stockWagon.availableCargo.length > 0">
-                    losowo
+                  <option
+                    :value="{ id: 'random', totalMass: 0 }"
+                    v-if="stockWagon.availableCargo && stockWagon.availableCargo.length > 0"
+                  >
+                    losowy
                   </option>
 
                   <option v-for="cargo in stockWagon.availableCargo" :value="cargo">
@@ -135,14 +153,18 @@
             </li>
           </ul>
 
-          <button class="btn btn--outline" @click="addToRandomStockList">+ DODAJ NOWY WAGON</button>
+          <button class="btn btn--outline" @click="addToRandomStockList">+ NOWY WAGON</button>
         </div>
       </div>
 
-      <button class="btn" style="font-size: 1.15em; margin-top: 2em" @click="generateRandomStock">LOSUJ SKŁAD!</button>
-      <button class="btn" style="font-size: 1.15em; margin-top: 2em" @click="store.isRandomizerCardOpen = false">
-        ZAMKNIJ
-      </button>
+      <div class="stock-actions">
+        <button class="btn" style="font-size: 1.15em; margin-top: 2em" @click="generateRandomStock">
+          LOSUJ SKŁAD!
+        </button>
+        <button class="btn" style="font-size: 1.15em; margin-top: 2em" @click="store.isRandomizerCardOpen = false">
+          ZAMKNIJ
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -150,10 +172,11 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
-import { ICargo, ICarWagon, ILocomotive, IStock, IVehicleData } from '../types';
+import { ICargo, ICarWagon, ILocomotive, IStock, IVehicleData, Vehicle } from '../types';
 
 import { useStore } from '../store';
 import stockMixin from '../mixins/stockMixin';
+import { isLocomotive } from '../utils/vehicleUtils';
 
 interface RandomStockCarWagon {
   stockString: string;
@@ -173,7 +196,7 @@ export default defineComponent({
     };
   },
 
-  mixins: [stockMixin],
+  mixins: [stockMixin, stockMixin],
 
   activated() {
     (this.$refs['cardWrapper'] as any).focus();
@@ -187,10 +210,16 @@ export default defineComponent({
     chosenCarWagonList: [] as RandomStockCarWagon[],
     chosenLocomotive: undefined as ILocomotive | undefined,
 
+    warningMessage: '',
+
     showRules: false,
     isPreviewLoading: false,
+
     focusedCarWagon: undefined as RandomStockCarWagon | undefined,
     randomFocusedWagonVariant: undefined as ICarWagon | undefined,
+
+    previewVehicle: undefined as Vehicle | undefined,
+    previewIndex: 0,
   }),
 
   watch: {
@@ -199,9 +228,12 @@ export default defineComponent({
         const prevAvailableCarsStr = prevCars?.map((car) => car.type).join(',') || '';
         const availableCarsStr = cars?.map((car) => car.type).join(',') || '';
 
-        if (prevAvailableCarsStr != availableCarsStr) {
-          this.randomFocusedWagonVariant =
-            this.focusedCarWagon?.availableCars[~~(Math.random() * this.focusedCarWagon.availableCars.length)];
+        if (prevAvailableCarsStr != availableCarsStr || (this.previewVehicle && isLocomotive(this.previewVehicle))) {
+          this.previewIndex = 0;
+          this.randomFocusedWagonVariant = this.focusedCarWagon?.availableCars[this.previewIndex];
+          //~~(Math.random() * this.focusedCarWagon.availableCars.length)
+
+          this.previewVehicle = this.randomFocusedWagonVariant;
         }
       },
     },
@@ -229,13 +261,35 @@ export default defineComponent({
   },
 
   methods: {
+    isLocomotive,
+
+    nextPreviewIndex() {
+      if (!this.focusedCarWagon || (this.previewVehicle && isLocomotive(this.previewVehicle))) return;
+      if (this.previewIndex > this.focusedCarWagon.availableCars.length - 2) return;
+
+      this.randomFocusedWagonVariant = this.focusedCarWagon.availableCars[++this.previewIndex];
+      this.previewVehicle = this.randomFocusedWagonVariant;
+    },
+
+    prevPreviewIndex() {
+      if (!this.focusedCarWagon || (this.previewVehicle && isLocomotive(this.previewVehicle))) return;
+      if (this.previewIndex == 0) return;
+
+      this.randomFocusedWagonVariant = this.focusedCarWagon.availableCars[--this.previewIndex];
+      this.previewVehicle = this.randomFocusedWagonVariant;
+    },
+
+    onLocomotivePreviewSelect() {
+      this.previewVehicle = this.chosenLocomotive;
+    },
+
     onCarWagonTypeInput(carWagon: RandomStockCarWagon) {
       const constructionType = carWagon.stockString.split(' ')[0];
 
       const carWagonObj = this.store.carDataList.find((car) => car.constructionType == constructionType);
 
-      const allAvailableCars = this.store.carDataList.filter((car) =>
-        car.type.startsWith(carWagon.stockString.replace(/ /g, '_'))
+      const allAvailableCars = this.store.carDataList.filter(
+        (car) => car.type.startsWith(carWagon.stockString.replace(/ /g, '_')) && carWagon.stockString.length != 0
       );
 
       carWagon.availableCars = allAvailableCars;
@@ -244,18 +298,11 @@ export default defineComponent({
       if (!carWagonObj?.cargoList) {
         carWagon.chosenCargo = undefined;
       }
-
-      // this.onCarWagonTypeFocus(carWagon);
     },
 
     onCarWagonTypeFocus(carWagon: RandomStockCarWagon) {
-      const prevVariantsCount = this.focusedCarWagon?.availableCars.length || 0;
-
       this.focusedCarWagon = carWagon;
-
-      if (prevVariantsCount != carWagon.availableCars.length)
-        this.randomFocusedWagonVariant =
-          this.focusedCarWagon.availableCars[~~(Math.random() * this.focusedCarWagon.availableCars.length)];
+      this.previewVehicle = this.randomFocusedWagonVariant;
     },
 
     addToRandomStockList() {
@@ -265,11 +312,11 @@ export default defineComponent({
       const randType = randTypeList[Math.floor(Math.random() * randTypeList.length)];
 
       const randomStockCarWagon: RandomStockCarWagon = {
-        stockString: randType,
+        stockString: '',
         chance: 10,
         chosenCargo: undefined,
         availableCargo: undefined,
-        availableCars: this.store.carDataList.filter((car) => car.type.startsWith(randType.replace(/ /g, '_'))),
+        availableCars: [],
       };
 
       this.chosenCarWagonList.push(randomStockCarWagon);
@@ -279,32 +326,54 @@ export default defineComponent({
       this.chosenCarWagonList.splice(index, 1);
     },
 
+    validateCarWagonList() {
+      return (
+        this.chosenCarWagonList.length > 0 &&
+        this.chosenCarWagonList.every((carWagon) => carWagon.availableCars.length > 0)
+      );
+    },
+
     generateRandomStock() {
       let totalLength = 0;
       let totalMass = 0;
 
-      let generatedStockList: IStock[] = [];
-
-      // if (!this.chosenLocomotive) return;
-      if (this.chosenCarWagonList.length == 0) return;
-
-      // generatedStockList.push(this.getStockObject(this.chosenLocomotive));
-      // totalLength += this.chosenLocomotive.length;
-      // totalMass += this.chosenLocomotive.mass;
-
-      while (generatedStockList.length < 25) {
-        const randCarWagon = this.getRandomCarWagon();
-
-        generatedStockList.push(this.getStockObject(randCarWagon));
-
-        totalLength += randCarWagon.length;
-        totalMass += randCarWagon.mass;
+      if (!this.chosenLocomotive) {
+        this.warningMessage = 'Nie wybrano lokomotywy!';
+        return;
       }
 
-      console.log(generatedStockList);
+      if (!this.validateCarWagonList()) {
+        this.warningMessage = 'Wpisano niepoprawne wartości w liście wagonów!';
+        return;
+      }
+
+      this.store.stockList.length = 0;
+      this.addLocomotive(this.chosenLocomotive);
+      totalLength += this.chosenLocomotive.length;
+      totalMass += this.chosenLocomotive.mass;
+
+      while (true) {
+        const { carWagon, cargo } = this.getRandomStock();
+        const totalMassAfter = totalMass + (cargo?.totalMass || carWagon.mass);
+        const totalLengthAfter = totalLength + carWagon.length;
+
+        if (
+          this.store.stockList.length > this.maxStockCount ||
+          totalLengthAfter > this.maxStockLength ||
+          totalMassAfter > this.maxStockMass
+        )
+          break;
+
+        this.addCarWagon(carWagon, cargo);
+
+        totalLength = totalLengthAfter;
+        totalMass = totalMassAfter;
+      }
+
+      this.store.isRandomizerCardOpen = false;
     },
 
-    getRandomCarWagon(): ICarWagon {
+    getRandomStock(): { carWagon: ICarWagon; cargo?: ICargo } {
       const totalChancePot = this.chosenCarWagonList.reduce((total, car) => {
         total += car.chance;
         return total;
@@ -312,17 +381,23 @@ export default defineComponent({
 
       let rand = Math.random() * totalChancePot;
       let randCarWagon: ICarWagon | undefined = undefined;
+      let randCargo: ICargo | undefined = undefined;
 
       for (let wagonItem of this.chosenCarWagonList) {
         if (rand < wagonItem.chance) {
           randCarWagon = { ...wagonItem.availableCars[Math.floor(Math.random() * wagonItem.availableCars.length)] };
+          randCargo =
+            wagonItem.chosenCargo?.id == 'random'
+              ? { ...wagonItem.availableCargo![~~(Math.random() * wagonItem.availableCargo!.length)] }
+              : wagonItem.chosenCargo;
+
           break;
         }
 
         rand -= wagonItem.chance;
       }
 
-      return randCarWagon!;
+      return { carWagon: randCarWagon!, cargo: randCargo };
     },
 
     getIcon(name: string) {
@@ -341,26 +416,47 @@ export default defineComponent({
   left: 50%;
   transform: translate(-50%, -50%);
 
-  overflow: auto;
-  max-height: 95vh;
-
   z-index: 100;
+  overflow: hidden;
 
   border: 2px solid white;
 
-  width: 700px;
-  padding: 0.5em 1em;
+  width: 95vw;
+  max-width: 750px;
 
   height: 90vh;
   max-height: 900px;
 
   background: #111;
 
-  @media screen and (max-width: 700px) {
-    width: 95%;
-  }
-
   border-radius: 1em;
+}
+
+.card_wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: auto;
+
+  padding: 0.5em 1em;
+}
+
+.warning-message {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+
+  z-index: 101;
+
+  font-size: 1.2em;
+
+  text-align: center;
+  padding: 0.25em;
+
+  border-radius: 1em 1em 0 0;
+
+  background-color: #b2222288;
 }
 
 h1 {
@@ -386,7 +482,8 @@ h3 {
 .car-preview {
   position: relative;
   width: 300px;
-  height: 200px;
+  height: 180px;
+  margin: 0 auto;
 
   border: 1px solid white;
 
@@ -407,20 +504,30 @@ h3 {
     font-weight: bold;
     text-align: center;
     position: absolute;
-    bottom: 0.5em;
+    bottom: 0;
     left: 50%;
     transform: translateX(-50%);
 
     width: 100%;
 
+    padding: 0.5em;
+
     &.info {
+      button {
+        font-size: 1.2em;
+      }
+
       background-color: #111111dd;
+
+      display: flex;
+      justify-content: space-between;
+      text-align: center;
     }
   }
 
   img {
     width: 100%;
-    height: auto;
+    height: 100%;
   }
 }
 
@@ -428,7 +535,7 @@ h3 {
   margin: 0.5em 0;
 
   display: grid;
-  grid-template-columns: 3fr 2fr 1fr 1fr 2em;
+  grid-template-columns: 3fr 2fr 1fr 1fr 3em;
   gap: 0 0.5em;
   align-items: center;
 
@@ -484,8 +591,20 @@ h3 {
   }
 }
 
+.stock-actions {
+  display: flex;
+  justify-content: center;
+
+  margin-top: auto;
+  padding: 1em 0;
+
+  .btn {
+    margin-right: 0.5em;
+  }
+}
+
 @media screen and (max-width: 600px) {
-  .car-preview .image-wrapper {
+  .car-preview {
     width: 20em;
     height: 13em;
   }
