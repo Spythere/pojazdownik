@@ -5,29 +5,29 @@
     </transition>
 
     <div class="card_wrapper" ref="cardWrapper" tabindex="0">
-      <h1>LOSUJ SKŁAD</h1>
+      <h1><img :src="getIcon('randomize-icon')" alt="ikona losowania" /> LOSUJ SKŁAD</h1>
 
       <div class="random-stock-selections">
-        <h3>WŁAŚCIWOŚCI SKŁADU</h3>
+        <div class="first-row">
+          <h3>WŁAŚCIWOŚCI SKŁADU</h3>
 
-        <div class="max-values">
-          <span>
-            <label for="stock-mass">Maks. masa (t)</label>
-            <input type="number" id="stock-mass" v-model="maxStockMass" />
-          </span>
-
-          <span>
-            <label for="stock-mass">Maks. długość (m)</label>
-            <input type="number" id="stock-mass" v-model="maxStockLength" />
-          </span>
-
-          <span>
-            <label for="stock-count">Maks. liczba wagonów</label>
-            <input type="number" id="stock-count" v-model="maxStockCount" />
-          </span>
+          <div class="max-values">
+            <span>
+              <label for="stock-mass">Maks. masa (t)</label>
+              <input type="number" id="stock-mass" v-model="maxStockMass" />
+            </span>
+            <span>
+              <label for="stock-mass">Maks. długość (m)</label>
+              <input type="number" id="stock-mass" v-model="maxStockLength" />
+            </span>
+            <span>
+              <label for="stock-count">Maks. liczba wagonów</label>
+              <input type="number" id="stock-count" v-model="maxStockCount" />
+            </span>
+          </div>
         </div>
 
-        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-top: 1em">
+        <div class="second-row">
           <div class="select-box locos">
             <h3>LOKOMOTYWA</h3>
 
@@ -77,81 +77,80 @@
           <div class="rules" v-if="showRules">
             <ul>
               <li>
-                nazwy wagonów w pierwszym polu muszą zaczynać się typem konstrukcyjnym (np. <i>111a</i> lub
+                <b class="text--accent">Typ wagonu</b> musi zaczynać się typem konstrukcyjnym (np. <i>111a</i> lub
                 <i>203V</i>), wariantem np. <i>111a Grafitti 1</i> lub jego początkiem, np. <i>111a PKPIC</i> (wtedy
-                losowanie obejmuje wszystkie dostępne wagony o takim początku)
+                losowanie obejmuje wszystkie dostępne warianty typu o takim początku)
               </li>
               <li>
-                ładunki w drugim polu można wybrać po uprzednim wpisaniu typu konstrukcyjnego wagonu towarowego
-                (zakładając, że je posiada)
+                <b class="text--accent">Ładunek</b> można wybrać po uprzednim wpisaniu typu konstrukcyjnego wagonu
+                towarowego (zakładając, że je posiada)
               </li>
               <li>
-                liczba na trzecim polu - domyślnie 10 - to waga (szansa) wylosowania wagonu. Im większa waga, tym
-                większe prawdopodobieństwo
+                <b class="text--accent">Szansa</b> (waga) określa prawdopodobieństwo wylosowania danego typu wagonu. Im
+                większa liczba względem reszty wag, tym bardziej prawdopodobne, że zostanie on wybrany
               </li>
-              <li>liczba wariantów obejmująca losowanie danego wagonu pokazana jest na końcu rzędu</li>
+              <li>
+                <b class="text--accent">Warianty</b> pokazują liczbę możliwych wagonów w puli w ramach losowania danego
+                typu
+              </li>
             </ul>
           </div>
 
-          <ul class="carwagon-list">
-            <li class="text--accent" style="font-weight: bold">
-              <div>Typ wagonu</div>
-              <div>Ładunek</div>
-              <div>Szansa (waga)</div>
-              <div>Warianty</div>
-              <div>Usuń</div>
-            </li>
-
-            <li v-for="(stockWagon, i) in chosenCarWagonList">
-              <div>
-                <input
-                  class="carwagon-type g-input"
-                  type="text"
-                  list="types-datalist"
-                  v-model="stockWagon.stockString"
-                  @input="onCarWagonTypeInput(stockWagon)"
-                  @focus="onCarWagonTypeFocus(stockWagon)"
-                  placeholder="Kliknij, aby dodać wagon..."
-                />
-
-                <datalist id="types-datalist">
-                  <option value="">Wybierz wagon</option>
-                  <option v-for="carOptionType in allCarOptionsList" :value="carOptionType">{{ carOptionType }}</option>
-                </datalist>
-              </div>
-
-              <div>
-                <select class="carwagon-cargo" v-model="stockWagon.chosenCargo">
-                  <option :value="undefined">brak</option>
-
-                  <option
-                    :value="{ id: 'random', totalMass: 0 }"
-                    v-if="stockWagon.availableCargo && stockWagon.availableCargo.length > 0"
-                  >
-                    losowy
-                  </option>
-
-                  <option v-for="cargo in stockWagon.availableCargo" :value="cargo">
-                    {{ cargo.id }}
-                  </option>
-                </select>
-              </div>
-
-              <div>
-                <span class="carwagon-chance">
-                  <input type="number" v-model="stockWagon.chance" max="100" min="1" />
-                </span>
-              </div>
-
-              <div class="variant-count">{{ stockWagon.availableCars.length }}</div>
-
-              <div class="carwagon-remove">
-                <button @click="removeFromRandomStockList(i)">
-                  <img :src="getIcon('remove-icon')" alt="remove" />
-                </button>
-              </div>
-            </li>
-          </ul>
+          <div class="list-wrapper">
+            <ul class="carwagon-list">
+              <li class="text--accent" style="font-weight: bold">
+                <div>Typ wagonu</div>
+                <div>Ładunek</div>
+                <div>Szansa</div>
+                <div>Warianty</div>
+                <div>Usuń</div>
+              </li>
+              <li v-for="(stockWagon, i) in chosenCarWagonList">
+                <div>
+                  <input
+                    class="carwagon-type g-input"
+                    type="text"
+                    list="types-datalist"
+                    v-model="stockWagon.stockString"
+                    @input="onCarWagonTypeInput(stockWagon)"
+                    @focus="onCarWagonTypeFocus(stockWagon)"
+                    placeholder="Kliknij, aby dodać wagon..."
+                  />
+                  <datalist id="types-datalist">
+                    <option value="">Wybierz wagon</option>
+                    <option v-for="carOptionType in allCarOptionsList" :value="carOptionType">
+                      {{ carOptionType }}
+                    </option>
+                  </datalist>
+                </div>
+                <div>
+                  <select class="carwagon-cargo" v-model="stockWagon.chosenCargo">
+                    <option :value="undefined">brak</option>
+                    <option
+                      :value="{ id: 'random', totalMass: 0 }"
+                      v-if="stockWagon.availableCargo && stockWagon.availableCargo.length > 0"
+                    >
+                      losowy
+                    </option>
+                    <option v-for="cargo in stockWagon.availableCargo" :value="cargo">
+                      {{ cargo.id }}
+                    </option>
+                  </select>
+                </div>
+                <div>
+                  <span class="carwagon-chance">
+                    <input type="number" v-model="stockWagon.chance" max="100" min="1" />
+                  </span>
+                </div>
+                <div class="variant-count">{{ stockWagon.availableCars.length }}</div>
+                <div class="carwagon-remove">
+                  <button @click="removeFromRandomStockList(i)">
+                    <img :src="getIcon('remove-icon')" alt="remove" />
+                  </button>
+                </div>
+              </li>
+            </ul>
+          </div>
 
           <button class="btn btn--outline" @click="addToRandomStockList">+ NOWY WAGON</button>
         </div>
@@ -309,7 +308,7 @@ export default defineComponent({
       const randTypeList = this.allCarOptionsList.filter((carOption) =>
         /1|2/g.test(carOption.split(' ').length.toString())
       );
-      const randType = randTypeList[Math.floor(Math.random() * randTypeList.length)];
+      // const randType = randTypeList[Math.floor(Math.random() * randTypeList.length)];
 
       const randomStockCarWagon: RandomStockCarWagon = {
         stockString: '',
@@ -371,6 +370,7 @@ export default defineComponent({
       }
 
       this.store.isRandomizerCardOpen = false;
+      this.warningMessage = '';
     },
 
     getRandomStock(): { carWagon: ICarWagon; cargo?: ICargo } {
@@ -410,6 +410,25 @@ export default defineComponent({
 <style lang="scss" scoped>
 @import '../styles/global.scss';
 
+h1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 2.5em;
+  text-align: center;
+
+  img {
+    width: 1.75em;
+    margin-right: 0.25em;
+  }
+}
+
+h3 {
+  color: $accentColor;
+  margin: 0 0 0.5em 0;
+}
+
 .card {
   position: fixed;
   top: 50%;
@@ -417,7 +436,7 @@ export default defineComponent({
   transform: translate(-50%, -50%);
 
   z-index: 100;
-  overflow: hidden;
+  overflow-y: hidden;
 
   border: 2px solid white;
 
@@ -430,15 +449,16 @@ export default defineComponent({
   background: #111;
 
   border-radius: 1em;
-}
 
-.card_wrapper {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow: auto;
+  .card_wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
 
-  padding: 0.5em 1em;
+    padding: 0.5em 1em;
+  }
 }
 
 .warning-message {
@@ -459,14 +479,86 @@ export default defineComponent({
   background-color: #b2222288;
 }
 
-h1 {
-  text-align: center;
-  color: $accentColor;
+.random-stock-selections {
+  text-align: left;
+
+  .select-box {
+    padding: 0.5em 0;
+  }
 }
 
-h3 {
-  color: $accentColor;
-  margin: 0 0 0.5em 0;
+.first-row > .max-values {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  label {
+    display: block;
+  }
+
+  input {
+    width: auto;
+    margin: 0.25em 0.5em 0 0;
+  }
+}
+
+.second-row {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-top: 1em;
+
+  .car-preview {
+    position: relative;
+    width: 300px;
+    height: 180px;
+    margin: 0 auto;
+
+    border: 1px solid white;
+
+    .loading {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+
+      width: 100%;
+      padding: 0.5em 0;
+
+      z-index: 102;
+
+      background-color: rgba(black, 0.75);
+    }
+
+    .preview-message {
+      font-weight: bold;
+      text-align: center;
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+
+      width: 100%;
+
+      padding: 0.5em;
+
+      &.info {
+        button {
+          font-size: 1.2em;
+        }
+
+        background-color: #111111dd;
+
+        display: flex;
+        justify-content: space-between;
+        text-align: center;
+      }
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
 }
 
 .rules {
@@ -479,60 +571,13 @@ h3 {
   }
 }
 
-.car-preview {
-  position: relative;
-  width: 300px;
-  height: 180px;
-  margin: 0 auto;
-
-  border: 1px solid white;
-
-  .loading {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-
-    width: 100%;
-    padding: 0.5em 0;
-
-    z-index: 102;
-
-    background-color: rgba(black, 0.75);
-  }
-
-  .preview-message {
-    font-weight: bold;
-    text-align: center;
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-
-    width: 100%;
-
-    padding: 0.5em;
-
-    &.info {
-      button {
-        font-size: 1.2em;
-      }
-
-      background-color: #111111dd;
-
-      display: flex;
-      justify-content: space-between;
-      text-align: center;
-    }
-  }
-
-  img {
-    width: 100%;
-    height: 100%;
-  }
+.list-wrapper {
+  overflow: auto;
 }
 
 .carwagon-list li {
   margin: 0.5em 0;
+  min-width: 450px;
 
   display: grid;
   grid-template-columns: 3fr 2fr 1fr 1fr 3em;
@@ -568,29 +613,6 @@ h3 {
   }
 }
 
-.random-stock-selections {
-  text-align: left;
-
-  .select-box {
-    padding: 0.5em 0;
-  }
-}
-
-.max-values {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-
-  label {
-    display: block;
-  }
-
-  input {
-    width: auto;
-    margin: 0.25em 0.5em 0 0;
-  }
-}
-
 .stock-actions {
   display: flex;
   justify-content: center;
@@ -607,6 +629,22 @@ h3 {
   .car-preview {
     width: 20em;
     height: 13em;
+  }
+
+  h3 {
+    text-align: center;
+  }
+
+  .select-box {
+    margin: 0.5em auto;
+  }
+
+  .max-values {
+    justify-content: center;
+
+    span {
+      margin: 0.25em;
+    }
   }
 }
 </style>
