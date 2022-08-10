@@ -24,7 +24,13 @@
     <footer>
       <div class="text--grayed" style="margin-bottom: 0.25em">
         Ta strona ma charakter informacyjny. Autor nie ponosi odpowiedzialności za tworzenie pociągów niezgodnych z
-        regulaminem symulatora Train Driver 2!
+        <a
+          style="color: #ccc"
+          href="https://docs.google.com/document/d/1UAAPUtN0d_RoS4RgOzEzllJZJhA0VcizzCzKW4QylbY/edit"
+          target="_blank"
+        >
+          regulaminem symulatora Train Driver 2</a
+        >!
       </div>
       &copy;
       <a href="https://td2.info.pl/profile/?u=20777" target="_blank">Spythere</a>
