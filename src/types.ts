@@ -14,6 +14,7 @@ export interface IStore {
   chosenCarUseType: string;
 
   stockList: IStock[];
+  readyStockList: IReadyStockList;
   cargoOptions: any[][];
 
   chosenStockListIndex: number;
@@ -77,4 +78,6 @@ export interface IStock {
   imgSrc: string;
 }
 
-
+export interface IReadyStockList {
+  [key: string]: { stockString: string; type: string; number: string; name: string };
+}

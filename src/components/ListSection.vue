@@ -72,22 +72,25 @@
       </button>
     </div>
 
+    <div class="stock_clipboard-text">
+      <button class="btn" v-if="store.stockList.length > 0" @click="copyToClipboard">
+        Skopiuj pociąg w formie tekstowej do schowka
+      </button>
+    </div>
+
     <div class="stock_specs">
+      <b class="real-stock-info" v-if="store.chosenRealStock">
+        <span class="text--accent">
+          <img :src="icons[store.chosenRealStock.type]" :alt="store.chosenRealStock.type" />
+          {{ store.chosenRealStock.number }} {{ store.chosenRealStock.name }}</span
+        >
+      </b>
+
       <div>
         Masa: <span class="text--accent">{{ store.totalMass }}t</span> | Długość:
         <span class="text--accent">{{ store.totalLength }}m</span>
         | Vmax pociągu: <span class="text--accent">{{ store.maxStockSpeed }} km/h</span>
       </div>
-
-      <!-- <div v-if="store.chosenRealStockName" style="margin-top: 0.25rem">
-          <b>{{ store.chosenRealStockName.toLocaleUpperCase() }}</b>
-        </div> -->
-    </div>
-
-    <div class="stock_clipboard-text">
-      <button class="btn--text" v-if="store.stockList.length > 0" @click="copyToClipboard">
-        Skopiuj pociąg w formie tekstowej do schowka
-      </button>
     </div>
 
     <div class="stock_warnings">
@@ -173,6 +176,10 @@ import subIcon from '../assets/sub-icon.svg';
 import removeIcon from '../assets/remove-icon.svg';
 import lowerIcon from '../assets/lower-icon.svg';
 import higherIcon from '../assets/higher-icon.svg';
+import TLKIcon from '../assets/TLK.png';
+import EICIcon from '../assets/EIC.png';
+import ICIcon from '../assets/IC.svg';
+
 import { useStore } from '../store';
 import warningsMixin from '../mixins/warningsMixin';
 
@@ -196,7 +203,10 @@ export default defineComponent({
       remove: removeIcon,
       lower: lowerIcon,
       higher: higherIcon,
-    },
+      TLK: TLKIcon,
+      EIC: EICIcon,
+      IC: ICIcon,
+    } as { [key: string]: string },
 
     imageOffsetY: 0,
 
@@ -455,7 +465,9 @@ export default defineComponent({
   flex-wrap: wrap;
 
   margin: 1em 0;
-  outline: 1px solid white;
+  border: 1px solid white;
+
+  padding: 0 0.3em;
 
   &[data-disabled='true'] {
     opacity: 0.8;
@@ -465,11 +477,6 @@ export default defineComponent({
     -webkit-user-select: none;
 
     pointer-events: none;
-  }
-
-  &.no-chosen-vehicle {
-    font-size: 1.05em;
-    padding: 0.5em;
   }
 
   input#stock-count {
@@ -500,8 +507,16 @@ export default defineComponent({
 }
 
 .stock_clipboard-text {
-  margin-top: 1em;
+  margin: 0.5em 0;
   font-weight: bold;
+}
+
+.real-stock-info {
+  font-size: 1.15em;
+
+  img {
+    width: 1.75em;
+  }
 }
 
 ul {

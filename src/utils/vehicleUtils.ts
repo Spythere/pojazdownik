@@ -1,6 +1,6 @@
-import { computed } from "vue";
-import { EVehicleUseType } from "../enums/EVehicleUseType";
-import { ICarWagon, ILocomotive, IStore, IVehicleData } from "../types";
+import { computed } from 'vue';
+import { EVehicleUseType } from '../enums/EVehicleUseType';
+import { ICarWagon, ILocomotive, IStore, IVehicleData } from '../types';
 
 import vehicleDataJSON from '../data/vehicleData.json';
 import vehiclePropsJSON from '../data/vehicleProps.json';
@@ -10,7 +10,7 @@ export function isLocomotive(vehicle: ILocomotive | ICarWagon): vehicle is ILoco
 }
 
 export function locoDataList(state: IStore) {
-    return Object.keys(vehicleDataJSON).reduce((acc, vehicleTypeKey) => {
+  return Object.keys(vehicleDataJSON).reduce((acc, vehicleTypeKey) => {
     if (!vehicleTypeKey.startsWith('loco')) return acc;
 
     const locoVehiclesData = (vehicleDataJSON as IVehicleData)[vehicleTypeKey];
@@ -88,11 +88,11 @@ export function locoDataList(state: IStore) {
     });
 
     return acc;
-  }, [] as ILocomotive[])
+  }, [] as ILocomotive[]);
 }
 
 export function carDataList(state: IStore) {
-    return Object.keys(vehicleDataJSON).reduce((acc, vehicleTypeKey) => {
+  return Object.keys(vehicleDataJSON).reduce((acc, vehicleTypeKey) => {
     if (!vehicleTypeKey.startsWith('car')) return acc;
 
     const carVehiclesData = (vehicleDataJSON as IVehicleData)[vehicleTypeKey];
@@ -122,7 +122,7 @@ export function carDataList(state: IStore) {
     });
 
     return acc;
-  }, [] as ICarWagon[])
+  }, [] as ICarWagon[]);
 }
 
 export function totalMass(state: IStore) {
@@ -130,15 +130,15 @@ export function totalMass(state: IStore) {
     (acc, stock) => acc + (stock.cargo ? stock.cargo.totalMass : stock.mass) * stock.count,
     0
   );
-};
+}
 
 export function totalLength(state: IStore) {
   return state.stockList.reduce((acc, stock) => acc + stock.length * stock.count, 0);
-};
+}
 
 export function maxStockSpeed(state: IStore) {
   return state.stockList.reduce((acc, stock) => (stock.maxSpeed < acc || acc == 0 ? stock.maxSpeed : acc), 0);
-};
+}
 
 export function isTrainPassenger(state: IStore) {
   if (state.stockList.length == 0) return false;
@@ -147,7 +147,18 @@ export function isTrainPassenger(state: IStore) {
   return state.stockList
     .filter((stock) => !stock.isLoco)
     .every((stock) => stock.useType === EVehicleUseType.CAR_PASSENGER);
-};
+}
+
+export function chosenRealStock(state: IStore) {
+  const currentStockString = state.stockList
+    .reduce((acc, stock) => {
+      for (let i = 0; i < stock.count; i++) acc.push(stock.type);
+      return acc;
+    }, [] as string[])
+    .join(';');
+
+  return Object.values(state.readyStockList).find((readyStock) => readyStock.stockString == currentStockString);
+}
 
 // export function maxAllowedSpeed(state: IStore) {
 //   if (state.stockList.length < 1) return -1;

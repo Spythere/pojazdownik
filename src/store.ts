@@ -1,6 +1,6 @@
 import { IStore } from './types';
 import { defineStore } from 'pinia';
-import { carDataList, isTrainPassenger, locoDataList, maxStockSpeed, totalLength, totalMass } from './utils/vehicleUtils';
+import { carDataList, chosenRealStock, isTrainPassenger, locoDataList, maxStockSpeed, totalLength, totalMass } from './utils/vehicleUtils';
 
 
 export const useStore = defineStore({
@@ -20,6 +20,8 @@ export const useStore = defineStore({
 
       stockList: [],
       cargoOptions: [],
+
+      readyStockList: {},
 
       swapVehicles: false,
 
@@ -41,6 +43,7 @@ export const useStore = defineStore({
     totalLength: (state) => totalLength(state),
     maxStockSpeed: (state) => maxStockSpeed(state),
     isTrainPassenger: (state) => isTrainPassenger(state),
+    chosenRealStock: (state) => chosenRealStock(state)
   },
 });
 

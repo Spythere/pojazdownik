@@ -10,7 +10,8 @@
         </h1>
         <p>
           Pełne informacje o zestawieniach dostępne na stronie
-          <a href="http://bocznica.eu/files/archiwum/2021r_2021-11-04.html" target="_blank">bocznica.eu</a> (stan na listopad 2021r.)
+          <a href="http://bocznica.eu/files/archiwum/2021r_2021-11-04.html" target="_blank">bocznica.eu</a> (stan na
+          listopad 2021r.)
         </p>
 
         <input type="text" tabindex="0" v-model="searchedReadyStockName" placeholder="Szukaj zestawienia..." />
@@ -37,17 +38,13 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { Vehicle, IStock } from '../types';
+import { Vehicle, IStock, IReadyStockList } from '../types';
 
 import iconEIC from '../assets/EIC.png';
 import iconIC from '../assets/IC.svg';
 import iconTLK from '../assets/TLK.png';
 import { useStore } from '../store';
 import { isLocomotive } from '../utils/vehicleUtils';
-
-interface ReadyStockList {
-  [key: string]: { stockString: string; type: string; number: string; name: string };
-}
 
 interface ResponseJSONData {
   [key: string]: string;
@@ -64,7 +61,6 @@ export default defineComponent({
     responseStatus: 'loading',
     isMobile: 'ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/) ? true : false,
 
-    readyStockList: {} as ReadyStockList,
     searchedReadyStockName: '',
 
     icons: {
@@ -76,13 +72,13 @@ export default defineComponent({
 
   computed: {
     computedReadyStockList() {
-      if (this.searchedReadyStockName == null) return this.readyStockList;
+      if (this.searchedReadyStockName == null) return this.store.readyStockList;
 
-      let filtered: ReadyStockList = {};
+      let filtered: IReadyStockList = {};
 
-      for (let key in this.readyStockList) {
+      for (let key in this.store.readyStockList) {
         if (key.toLocaleLowerCase().includes(this.searchedReadyStockName.toLocaleLowerCase()))
-          filtered[key] = this.readyStockList[key];
+          filtered[key] = this.store.readyStockList[key];
       }
 
       return filtered;
@@ -167,7 +163,7 @@ export default defineComponent({
         name += ' ' + splittedKey[i];
       }
 
-      this.readyStockList[stockKey] = {
+      this.store.readyStockList[stockKey] = {
         type: splittedKey[0],
         number: splittedKey[1].replace(/_/g, '/'),
         name,
