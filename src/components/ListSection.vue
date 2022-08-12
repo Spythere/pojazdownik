@@ -495,7 +495,7 @@ export default defineComponent({
   font-size: 1.15em;
 
   img {
-    width: 1.75em;
+    height: 1.5ch;
   }
 }
 
