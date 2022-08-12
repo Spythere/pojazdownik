@@ -167,17 +167,31 @@ ul {
   }
 }
 
-.g-card-dimmer {
+.g-card {
   position: fixed;
   top: 0;
   left: 0;
+
   width: 100vw;
   height: 100vh;
 
-  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-  background-color: #000000aa;
-  z-index: 99;
+  z-index: 200;
+
+  &_bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    background-color: #000000aa;
+    z-index: 10;
+  }
 }
 
 .g-choice {
@@ -216,5 +230,17 @@ ul {
   &-enter-active,
   &-leave-active {
     transition: transform 100ms ease-in-out;
+  }
+}
+
+.card-appear {
+  &-enter-from,
+  &-leave-to {
+    opacity: 0;
+  }
+
+  &-enter-active,
+  &-leave-active {
+    transition: all 100ms ease-in-out;
   }
 }

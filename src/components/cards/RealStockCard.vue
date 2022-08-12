@@ -1,56 +1,59 @@
 <template>
-  <div class="ready-stock-list" v-if="store.isRealStockListCardOpen">
-    <div class="top-sticky">
-      <button class="btn btn--text exit" @click="store.isRealStockListCardOpen = false">&lt; POWRÓT</button>
+  <div class="real-stock-card g-card" v-if="store.isRealStockListCardOpen">
+    <div class="g-card_bg" @click="store.isRealStockListCardOpen = false"></div>
 
-      <div class="header">
-        <h1>
-          REALNE ZESTAWIENIA
-          <div>by <a href="https://td2.info.pl/profile/?u=17708" target="_blank">Railtrains997</a></div>
-        </h1>
-        <p>
-          Pełne informacje o zestawieniach dostępne na stronie
-          <a href="http://bocznica.eu/files/archiwum/2021r_2021-11-04.html" target="_blank">bocznica.eu</a> (stan na
-          listopad 2021r.)
-        </p>
+    <div class="card_content">
+      <div class="top-sticky">
+        <button class="btn btn--text exit" @click="store.isRealStockListCardOpen = false">&lt; POWRÓT</button>
 
-        <input type="text" tabindex="0" v-model="searchedReadyStockName" placeholder="Szukaj zestawienia..." />
+        <div class="header">
+          <h1>
+            REALNE ZESTAWIENIA
+            <div>by <a href="https://td2.info.pl/profile/?u=17708" target="_blank">Railtrains997</a></div>
+          </h1>
+          <p>
+            Pełne informacje o zestawieniach dostępne na stronie
+            <a href="http://bocznica.eu/files/archiwum/2021r_2021-11-04.html" target="_blank">bocznica.eu</a> (stan na
+            listopad 2021r.)
+          </p>
+
+          <input type="text" tabindex="0" v-model="searchedReadyStockName" placeholder="Szukaj zestawienia..." />
+        </div>
       </div>
+
+      <ul v-if="responseStatus == 'loaded'">
+        <li
+          v-for="(stock, key) in computedReadyStockList"
+          :key="key"
+          tabindex="0"
+          @click="choseStock(stock.name, stock.type, stock.number, stock.stockString)"
+          @keydown.enter="choseStock(stock.name, stock.type, stock.number, stock.stockString)"
+        >
+          <img :src="getIconURL(stock.type)" :alt="stock.type" />
+
+          <b class="text--accent"> {{ stock.name }}</b>
+          <div>{{ stock.number }}</div>
+        </li>
+      </ul>
     </div>
-
-    <ul v-if="responseStatus == 'loaded'">
-      <li
-        v-for="(stock, key) in computedReadyStockList"
-        :key="key"
-        tabindex="0"
-        @click="choseStock(stock.name, stock.type, stock.number, stock.stockString)"
-        @keydown.enter="choseStock(stock.name, stock.type, stock.number, stock.stockString)"
-      >
-        <img v-if="stock.type != 'iR' && stock.type != 'RE'" :src="icons[stock.type]" alt="" />
-        <span v-else>{{ stock.type }}</span>
-
-        <b class="text--accent"> {{ stock.name }}</b>
-        <div>{{ stock.number }}</div>
-      </li>
-    </ul>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { Vehicle, IStock, IReadyStockList } from '../types';
+import { Vehicle, IStock, IReadyStockList } from '../../types';
 
-import iconEIC from '../assets/EIC.png';
-import iconIC from '../assets/IC.svg';
-import iconTLK from '../assets/TLK.png';
-import { useStore } from '../store';
-import { isLocomotive } from '../utils/vehicleUtils';
+import { useStore } from '../../store';
+import { isLocomotive } from '../../utils/vehicleUtils';
+import imageMixin from '../../mixins/imageMixin';
 
 interface ResponseJSONData {
   [key: string]: string;
 }
 
 export default defineComponent({
+  mixins: [imageMixin],
+
   setup() {
     return {
       store: useStore(),
@@ -62,12 +65,6 @@ export default defineComponent({
     isMobile: 'ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/) ? true : false,
 
     searchedReadyStockName: '',
-
-    icons: {
-      EIC: iconEIC,
-      IC: iconIC,
-      TLK: iconTLK,
-    } as { [key: string]: string },
   }),
 
   computed: {
@@ -177,8 +174,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import '../../styles/global.scss';
+
 .exit {
-  padding: 1em 0;
   font-size: 1.2em;
 }
 
@@ -191,16 +189,8 @@ input {
   }
 }
 
-.ready-stock-list {
-  position: fixed;
-  z-index: 101;
-
-  top: 50%;
-  left: 50%;
-
-  transform: translate(-50%, -50%);
-
-  background: #333;
+.card_content {
+  background-color: #1c1c1c;
   border-radius: 1em;
 
   height: 85vh;
@@ -210,11 +200,12 @@ input {
   padding: 0 1em;
 
   overflow-y: auto;
+  z-index: 100;
 
   .top-sticky {
     position: sticky;
     top: 0;
-    background: #333;
+    background: #1c1c1c;
   }
 
   .header {
@@ -262,10 +253,10 @@ input {
 
     cursor: pointer;
 
-    background: #444;
+    background: #2b2b2b;
 
     img {
-      max-width: 1.5em;
+      height: 0.85em;
     }
 
     span {

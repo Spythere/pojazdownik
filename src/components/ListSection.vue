@@ -19,7 +19,7 @@
           :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
           @click="subStock(store.chosenStockListIndex)"
         >
-          <img :src="icons.sub" alt="subtract vehicle count" />
+          <img :src="getIconURL('sub')" alt="subtract vehicle count" />
           1
         </button>
 
@@ -39,7 +39,7 @@
           :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
           @click="addStock(store.chosenStockListIndex)"
         >
-          <img :src="icons.add" alt="add vehicle count" />
+          <img :src="getIconURL('add')" alt="add vehicle count" />
           1
         </button>
       </div>
@@ -49,7 +49,7 @@
         :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
         @click="moveUpStock(store.chosenStockListIndex)"
       >
-        <img :src="icons.higher" alt="move up vehicle" />
+        <img :src="getIconURL('higher')" alt="move up vehicle" />
         Przenieś wyżej
       </button>
 
@@ -58,7 +58,7 @@
         :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
         @click="moveDownStock(store.chosenStockListIndex)"
       >
-        <img :src="icons.lower" alt="move down vehicle" />
+        <img :src="getIconURL('lower')" alt="move down vehicle" />
         Przenieś niżej
       </button>
 
@@ -67,7 +67,7 @@
         :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
         @click="removeStock(store.chosenStockListIndex)"
       >
-        <img :src="icons.remove" alt="remove vehicle" />
+        <img :src="getIconURL('remove')" alt="remove vehicle" />
         Usuń
       </button>
     </div>
@@ -81,7 +81,7 @@
     <div class="stock_specs">
       <b class="real-stock-info" v-if="store.chosenRealStock">
         <span class="text--accent">
-          <img :src="icons[store.chosenRealStock.type]" :alt="store.chosenRealStock.type" />
+          <img :src="getIconURL(store.chosenRealStock.type)" :alt="store.chosenRealStock.type" />
           {{ store.chosenRealStock.number }} {{ store.chosenRealStock.name }}</span
         >
       </b>
@@ -168,25 +168,16 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import RandomizerCard from './RandomizerCard.vue';
 import TrainImage from './TrainImageSection.vue';
-
-import addIcon from '../assets/add-icon.svg';
-import subIcon from '../assets/sub-icon.svg';
-import removeIcon from '../assets/remove-icon.svg';
-import lowerIcon from '../assets/lower-icon.svg';
-import higherIcon from '../assets/higher-icon.svg';
-import TLKIcon from '../assets/TLK.png';
-import EICIcon from '../assets/EIC.png';
-import ICIcon from '../assets/IC.svg';
 
 import { useStore } from '../store';
 import warningsMixin from '../mixins/warningsMixin';
+import imageMixin from '../mixins/imageMixin';
 
 export default defineComponent({
-  components: { RandomizerCard, TrainImage },
+  components: { TrainImage },
 
-  mixins: [warningsMixin],
+  mixins: [warningsMixin, imageMixin],
 
   setup() {
     const store = useStore();
@@ -197,17 +188,6 @@ export default defineComponent({
   },
 
   data: () => ({
-    icons: {
-      add: addIcon,
-      sub: subIcon,
-      remove: removeIcon,
-      lower: lowerIcon,
-      higher: higherIcon,
-      TLK: TLKIcon,
-      EIC: EICIcon,
-      IC: ICIcon,
-    } as { [key: string]: string },
-
     imageOffsetY: 0,
 
     draggedVehicleID: -1,
@@ -437,7 +417,7 @@ export default defineComponent({
 }
 
 .stock-list-section {
-  grid-row: 1 / 3;
+  grid-row: 1 / 4;
   grid-column: 2;
 }
 

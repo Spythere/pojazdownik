@@ -1,168 +1,174 @@
 <template>
-  <div class="card">
-    <transition name="slide-top">
-      <div class="warning-message" v-if="warningMessage">{{ warningMessage }}</div>
-    </transition>
+  <div class="randomizer-card g-card" v-if="store.isRandomizerCardOpen">
+    <div class="g-card_bg" @click="store.isRandomizerCardOpen = false"></div>
 
-    <div class="card_wrapper" ref="cardWrapper" tabindex="0">
-      <h1><img :src="getIcon('randomize-icon')" alt="ikona losowania" /> LOSUJ SKŁAD</h1>
+    <div class="card_content">
+      <transition name="slide-top">
+        <div class="warning-message" v-if="warningMessage">{{ warningMessage }}</div>
+      </transition>
 
-      <div class="random-stock-selections">
-        <div class="first-row">
-          <h3>WŁAŚCIWOŚCI SKŁADU</h3>
+      <div class="card_wrapper" ref="cardWrapper" tabindex="0">
+        <h1><img :src="getIconURL('randomize')" alt="ikona losowania" /> LOSUJ SKŁAD</h1>
 
-          <div class="max-values">
-            <span>
-              <label for="stock-mass">Maks. masa (t)</label>
-              <input type="number" id="stock-mass" v-model="maxStockMass" />
-            </span>
-            <span>
-              <label for="stock-mass">Maks. długość (m)</label>
-              <input type="number" id="stock-mass" v-model="maxStockLength" />
-            </span>
-            <span>
-              <label for="stock-count">Maks. liczba wagonów</label>
-              <input type="number" id="stock-count" v-model="maxStockCount" />
-            </span>
-          </div>
-        </div>
+        <div class="random-stock-selections">
+          <div class="first-row">
+            <h3>WŁAŚCIWOŚCI SKŁADU</h3>
 
-        <div class="second-row">
-          <div class="select-box locos">
-            <h3>LOKOMOTYWA</h3>
-
-            <select
-              v-model="chosenLocomotive"
-              @change="onLocomotivePreviewSelect()"
-              @focus="onLocomotivePreviewSelect()"
-            >
-              <option :value="undefined">Wybierz lokomotywę</option>
-              <option v-for="loco in store.locoDataList.filter((l) => !l.type.includes('EN'))" :value="loco">
-                {{ loco.type }}
-              </option>
-            </select>
-          </div>
-
-          <div class="car-preview">
-            <div v-if="isPreviewLoading" class="loading">ŁADOWANIE...</div>
-
-            <span class="preview-message" v-if="!previewVehicle">
-              WYBIERZ POJAZD LUB WAGON, BY ZOBACZYĆ JEGO PODGLĄD
-            </span>
-
-            <img v-else :src="previewVehicle.imageSrc" :alt="previewVehicle.type" />
-
-            <span class="preview-message info" v-if="previewVehicle">
-              <button @click="prevPreviewIndex">&lt;</button>
-
+            <div class="max-values">
               <span>
-                {{ previewVehicle.type }}
-                {{
-                  isLocomotive(previewVehicle) ? '' : `(${previewIndex + 1} z ${focusedCarWagon?.availableCars.length})`
-                }}
+                <label for="stock-mass">Maks. masa (t)</label>
+                <input type="number" id="stock-mass" v-model="maxStockMass" />
+              </span>
+              <span>
+                <label for="stock-mass">Maks. długość (m)</label>
+                <input type="number" id="stock-mass" v-model="maxStockLength" />
+              </span>
+              <span>
+                <label for="stock-count">Maks. liczba wagonów</label>
+                <input type="number" id="stock-count" v-model="maxStockCount" />
+              </span>
+            </div>
+          </div>
+
+          <div class="second-row">
+            <div class="select-box locos">
+              <h3>LOKOMOTYWA</h3>
+
+              <select
+                v-model="chosenLocomotive"
+                @change="onLocomotivePreviewSelect()"
+                @focus="onLocomotivePreviewSelect()"
+              >
+                <option :value="undefined">Wybierz lokomotywę</option>
+                <option v-for="loco in store.locoDataList.filter((l) => !l.type.includes('EN'))" :value="loco">
+                  {{ loco.type }}
+                </option>
+              </select>
+            </div>
+
+            <div class="car-preview">
+              <div v-if="isPreviewLoading" class="loading">ŁADOWANIE...</div>
+
+              <span class="preview-message" v-if="!previewVehicle">
+                WYBIERZ POJAZD LUB WAGON, BY ZOBACZYĆ JEGO PODGLĄD
               </span>
 
-              <button @click="nextPreviewIndex">&gt;</button>
-            </span>
+              <img v-else :src="previewVehicle.imageSrc" :alt="previewVehicle.type" />
+
+              <span class="preview-message info" v-if="previewVehicle">
+                <button @click="prevPreviewIndex">&lt;</button>
+
+                <span>
+                  {{ previewVehicle.type }}
+                  {{
+                    isLocomotive(previewVehicle)
+                      ? ''
+                      : `(${previewIndex + 1} z ${focusedCarWagon?.availableCars.length})`
+                  }}
+                </span>
+
+                <button @click="nextPreviewIndex">&gt;</button>
+              </span>
+            </div>
+          </div>
+
+          <div class="select-box carwagons">
+            <h3>
+              WAGONY
+
+              <button class="btn btn--text" @click="showRules = !showRules">[ zasady dodawania wagonów ]</button>
+            </h3>
+
+            <div class="rules" v-if="showRules">
+              <ul>
+                <li>
+                  <b class="text--accent">Typ wagonu</b> musi zaczynać się typem konstrukcyjnym (np. <i>111a</i> lub
+                  <i>203V</i>), wariantem np. <i>111a Grafitti 1</i> lub jego początkiem, np. <i>111a PKPIC</i> (wtedy
+                  losowanie obejmuje wszystkie dostępne warianty typu o takim początku)
+                </li>
+                <li>
+                  <b class="text--accent">Ładunek</b> można wybrać po uprzednim wpisaniu typu konstrukcyjnego wagonu
+                  towarowego (zakładając, że je posiada)
+                </li>
+                <li>
+                  <b class="text--accent">Szansa</b> (waga) określa prawdopodobieństwo wylosowania danego typu wagonu.
+                  Im większa liczba względem reszty wag, tym bardziej prawdopodobne, że zostanie on wybrany
+                </li>
+                <li>
+                  <b class="text--accent">Warianty</b> pokazują liczbę możliwych wagonów w puli w ramach losowania
+                  danego typu
+                </li>
+              </ul>
+            </div>
+
+            <div class="list-wrapper">
+              <ul class="carwagon-list">
+                <li class="text--accent" style="font-weight: bold">
+                  <div>Typ wagonu</div>
+                  <div>Ładunek</div>
+                  <div>Szansa</div>
+                  <div>Warianty</div>
+                  <div>Usuń</div>
+                </li>
+                <li v-for="(stockWagon, i) in chosenCarWagonList">
+                  <div>
+                    <input
+                      class="carwagon-type g-input"
+                      type="text"
+                      list="types-datalist"
+                      v-model="stockWagon.stockString"
+                      @input="onCarWagonTypeInput(stockWagon)"
+                      @focus="onCarWagonTypeFocus(stockWagon)"
+                      placeholder="Kliknij, aby dodać wagon..."
+                    />
+                    <datalist id="types-datalist">
+                      <option value="">Wybierz wagon</option>
+                      <option v-for="carOptionType in allCarOptionsList" :value="carOptionType">
+                        {{ carOptionType }}
+                      </option>
+                    </datalist>
+                  </div>
+                  <div>
+                    <select class="carwagon-cargo" v-model="stockWagon.chosenCargo">
+                      <option :value="undefined">brak</option>
+                      <option
+                        :value="{ id: 'random', totalMass: 0 }"
+                        v-if="stockWagon.availableCargo && stockWagon.availableCargo.length > 0"
+                      >
+                        losowy
+                      </option>
+                      <option v-for="cargo in stockWagon.availableCargo" :value="cargo">
+                        {{ cargo.id }}
+                      </option>
+                    </select>
+                  </div>
+                  <div>
+                    <span class="carwagon-chance">
+                      <input type="number" v-model="stockWagon.chance" max="100" min="1" />
+                    </span>
+                  </div>
+                  <div class="variant-count">{{ stockWagon.availableCars.length }}</div>
+                  <div class="carwagon-remove">
+                    <button @click="removeFromRandomStockList(i)">
+                      <img :src="getIconURL('remove')" alt="remove" />
+                    </button>
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            <button class="btn btn--outline" @click="addToRandomStockList">+ NOWY WAGON</button>
           </div>
         </div>
 
-        <div class="select-box carwagons">
-          <h3>
-            WAGONY
-
-            <button class="btn btn--text" @click="showRules = !showRules">[ zasady dodawania wagonów ]</button>
-          </h3>
-
-          <div class="rules" v-if="showRules">
-            <ul>
-              <li>
-                <b class="text--accent">Typ wagonu</b> musi zaczynać się typem konstrukcyjnym (np. <i>111a</i> lub
-                <i>203V</i>), wariantem np. <i>111a Grafitti 1</i> lub jego początkiem, np. <i>111a PKPIC</i> (wtedy
-                losowanie obejmuje wszystkie dostępne warianty typu o takim początku)
-              </li>
-              <li>
-                <b class="text--accent">Ładunek</b> można wybrać po uprzednim wpisaniu typu konstrukcyjnego wagonu
-                towarowego (zakładając, że je posiada)
-              </li>
-              <li>
-                <b class="text--accent">Szansa</b> (waga) określa prawdopodobieństwo wylosowania danego typu wagonu. Im
-                większa liczba względem reszty wag, tym bardziej prawdopodobne, że zostanie on wybrany
-              </li>
-              <li>
-                <b class="text--accent">Warianty</b> pokazują liczbę możliwych wagonów w puli w ramach losowania danego
-                typu
-              </li>
-            </ul>
-          </div>
-
-          <div class="list-wrapper">
-            <ul class="carwagon-list">
-              <li class="text--accent" style="font-weight: bold">
-                <div>Typ wagonu</div>
-                <div>Ładunek</div>
-                <div>Szansa</div>
-                <div>Warianty</div>
-                <div>Usuń</div>
-              </li>
-              <li v-for="(stockWagon, i) in chosenCarWagonList">
-                <div>
-                  <input
-                    class="carwagon-type g-input"
-                    type="text"
-                    list="types-datalist"
-                    v-model="stockWagon.stockString"
-                    @input="onCarWagonTypeInput(stockWagon)"
-                    @focus="onCarWagonTypeFocus(stockWagon)"
-                    placeholder="Kliknij, aby dodać wagon..."
-                  />
-                  <datalist id="types-datalist">
-                    <option value="">Wybierz wagon</option>
-                    <option v-for="carOptionType in allCarOptionsList" :value="carOptionType">
-                      {{ carOptionType }}
-                    </option>
-                  </datalist>
-                </div>
-                <div>
-                  <select class="carwagon-cargo" v-model="stockWagon.chosenCargo">
-                    <option :value="undefined">brak</option>
-                    <option
-                      :value="{ id: 'random', totalMass: 0 }"
-                      v-if="stockWagon.availableCargo && stockWagon.availableCargo.length > 0"
-                    >
-                      losowy
-                    </option>
-                    <option v-for="cargo in stockWagon.availableCargo" :value="cargo">
-                      {{ cargo.id }}
-                    </option>
-                  </select>
-                </div>
-                <div>
-                  <span class="carwagon-chance">
-                    <input type="number" v-model="stockWagon.chance" max="100" min="1" />
-                  </span>
-                </div>
-                <div class="variant-count">{{ stockWagon.availableCars.length }}</div>
-                <div class="carwagon-remove">
-                  <button @click="removeFromRandomStockList(i)">
-                    <img :src="getIcon('remove-icon')" alt="remove" />
-                  </button>
-                </div>
-              </li>
-            </ul>
-          </div>
-
-          <button class="btn btn--outline" @click="addToRandomStockList">+ NOWY WAGON</button>
+        <div class="stock-actions">
+          <button class="btn" style="font-size: 1.15em; margin-top: 2em" @click="generateRandomStock">
+            LOSUJ SKŁAD!
+          </button>
+          <button class="btn" style="font-size: 1.15em; margin-top: 2em" @click="store.isRandomizerCardOpen = false">
+            ZAMKNIJ
+          </button>
         </div>
-      </div>
-
-      <div class="stock-actions">
-        <button class="btn" style="font-size: 1.15em; margin-top: 2em" @click="generateRandomStock">
-          LOSUJ SKŁAD!
-        </button>
-        <button class="btn" style="font-size: 1.15em; margin-top: 2em" @click="store.isRandomizerCardOpen = false">
-          ZAMKNIJ
-        </button>
       </div>
     </div>
   </div>
@@ -171,11 +177,12 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
-import { ICargo, ICarWagon, ILocomotive, IStock, IVehicleData, Vehicle } from '../types';
+import { ICargo, ICarWagon, ILocomotive, Vehicle } from '../../types';
 
-import { useStore } from '../store';
-import stockMixin from '../mixins/stockMixin';
-import { isLocomotive } from '../utils/vehicleUtils';
+import { useStore } from '../../store';
+import stockMixin from '../../mixins/stockMixin';
+import imageMixin from '../../mixins/imageMixin';
+import { isLocomotive } from '../../utils/vehicleUtils';
 
 interface RandomStockCarWagon {
   stockString: string;
@@ -195,7 +202,7 @@ export default defineComponent({
     };
   },
 
-  mixins: [stockMixin, stockMixin],
+  mixins: [stockMixin, imageMixin],
 
   activated() {
     (this.$refs['cardWrapper'] as any).focus();
@@ -399,16 +406,12 @@ export default defineComponent({
 
       return { carWagon: randCarWagon!, cargo: randCargo };
     },
-
-    getIcon(name: string) {
-      return new URL(`../assets/${name}.svg`, import.meta.url).href;
-    },
   },
 });
 </script>
 
 <style lang="scss" scoped>
-@import '../styles/global.scss';
+@import '../../styles/global.scss';
 
 h1 {
   display: flex;
@@ -429,15 +432,10 @@ h3 {
   margin: 0 0 0.5em 0;
 }
 
-.card {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
 
-  z-index: 100;
+
+.card_content {
   overflow-y: hidden;
-
   border: 2px solid white;
 
   width: 95vw;
@@ -446,9 +444,11 @@ h3 {
   height: 90vh;
   max-height: 900px;
 
-  background: #111;
+  background-color: #111;
 
   border-radius: 1em;
+
+  z-index: 99;
 
   .card_wrapper {
     display: flex;
@@ -473,8 +473,6 @@ h3 {
 
   text-align: center;
   padding: 0.25em;
-
-  border-radius: 1em 1em 0 0;
 
   background-color: #b2222288;
 }

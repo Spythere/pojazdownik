@@ -112,7 +112,7 @@ export default defineComponent({
 @import '../styles/global.scss';
 
 .train-image-section {
-  grid-row: 2;
+  grid-row: 3;
   grid-column: 1;
 
   margin-top: 2em;

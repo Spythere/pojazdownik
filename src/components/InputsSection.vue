@@ -98,8 +98,7 @@
           </b>
         </button>
 
-        <button class="btn" @click="setReadyStockList(true)"><b>REALNE ZESTAWIENIA</b></button>
-        <ready-stock-list />
+        <button class="btn" @click="store.isRealStockListCardOpen = true"><b>REALNE ZESTAWIENIA</b></button>
       </div>
     </div>
   </section>
@@ -108,7 +107,6 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
-import ReadyStockList from './ReadyStockList.vue';
 import { IStock } from '../types';
 import imageMixin from '../mixins/imageMixin';
 import { useStore } from '../store';
@@ -121,10 +119,6 @@ interface ILocoType {
 }
 
 export default defineComponent({
-  components: {
-    ReadyStockList,
-  },
-
   mixins: [imageMixin],
 
   data: () => ({
@@ -203,10 +197,6 @@ export default defineComponent({
 
     prepareSwapVehicles() {
       this.store.swapVehicles = true;
-    },
-
-    setReadyStockList(bool = false) {
-      this.store.isRealStockListCardOpen = bool;
     },
 
     onVehicleSelect(type: 'loco' | 'car') {
@@ -310,7 +300,7 @@ export default defineComponent({
   display: flex;
   justify-content: space-between;
 
-  grid-row: 1;
+  grid-row: 2;
   grid-column: 1;
 }
 

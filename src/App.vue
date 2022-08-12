@@ -7,14 +7,21 @@
   <div class="g-card-dimmer" v-if="store.isRealStockListCardOpen" @click="store.isRealStockListCardOpen = false"></div>
 
   <keep-alive>
-    <RandomizerCard v-if="store.isRandomizerCardOpen" />
+    <transition name="card-appear">
+      <RandomizerCard />
+    </transition>
+  </keep-alive>
+
+  <keep-alive>
+    <transition name="card-appear">
+      <RealStockCard />
+    </transition>
   </keep-alive>
 
   <div class="app_container">
-    <header>
-      <img :src="logoImage" alt="logo pojazdownik" />
-    </header>
     <main>
+      <LogoSection />
+
       <InputsSection />
 
       <TrainImageSection />
@@ -47,10 +54,11 @@ import { defineComponent } from 'vue';
 import InputsSection from './components/InputsSection.vue';
 import ListSection from './components/ListSection.vue';
 
-import logoImage from './assets/logo.svg';
 import { useStore } from './store';
 import TrainImageSection from './components/TrainImageSection.vue';
-import RandomizerCard from './components/RandomizerCard.vue';
+import LogoSection from './components/LogoSection.vue';
+import RandomizerCard from './components/cards/RandomizerCard.vue';
+import RealStockCard from './components/cards/RealStockCard.vue';
 
 export default defineComponent({
   components: {
@@ -58,12 +66,14 @@ export default defineComponent({
     InputsSection,
     TrainImageSection,
     RandomizerCard,
+    LogoSection,
+    RealStockCard,
+    RandomizerCard,
+    RealStockCard,
   },
 
   data: () => ({
     VERSION: packageInfo.version,
-
-    logoImage,
   }),
 
   setup() {
@@ -147,7 +157,6 @@ h2 {
 /* MAIN SECTION */
 
 main {
-  margin-top: 2em;
   display: grid;
   gap: 1em 3em;
 
@@ -156,7 +165,7 @@ main {
   min-height: 75vh;
 
   grid-template-columns: 1fr 2fr;
-  grid-template-rows: 330px minmax(400px, 1fr);
+  grid-template-rows: auto 360px minmax(400px, 1fr);
 
   padding: 0.5em;
 }
