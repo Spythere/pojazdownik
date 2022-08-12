@@ -68,8 +68,6 @@ export default defineComponent({
     RandomizerCard,
     LogoSection,
     RealStockCard,
-    RandomizerCard,
-    RealStockCard,
   },
 
   data: () => ({
