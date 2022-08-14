@@ -5,6 +5,7 @@ $breakpointSm: 550px;
 
 $bgColor: #2c3149;
 $textColor: #fff;
+$secondaryColor: #222;
 $accentColor: #ffd600;
 
 ::-webkit-scrollbar {
@@ -112,6 +113,7 @@ button.btn {
     font-weight: bold;
     transition: all 250ms;
     background: none;
+    padding: 0;
 
     &:focus-visible {
       outline: 1px solid white;

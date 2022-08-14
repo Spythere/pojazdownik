@@ -157,7 +157,12 @@ export function chosenRealStock(state: IStore) {
     }, [] as string[])
     .join(';');
 
-  return Object.values(state.readyStockList).find((readyStock) => readyStock.stockString == currentStockString);
+
+  const realStockObj = Object.values(state.readyStockList).find((readyStock) => readyStock.stockString == currentStockString);
+
+  state.chosenRealStockName = realStockObj ? `${realStockObj.type} ${realStockObj.number} ${realStockObj.name}` : undefined;
+
+  return realStockObj;
 }
 
 // export function maxAllowedSpeed(state: IStore) {

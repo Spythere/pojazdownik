@@ -119,7 +119,7 @@
                       v-model="stockWagon.stockString"
                       @input="onCarWagonTypeInput(stockWagon)"
                       @focus="onCarWagonTypeFocus(stockWagon)"
-                      placeholder="Kliknij, aby dodać wagon..."
+                      placeholder="Wybierz wagon..."
                     />
                     <datalist id="types-datalist">
                       <option value="">Wybierz wagon</option>
@@ -157,7 +157,7 @@
               </ul>
             </div>
 
-            <button class="btn btn--outline" @click="addToRandomStockList">+ NOWY WAGON</button>
+            <button class="btn btn--outline" style="margin-top: 0.5em;" @click="addToRandomStockList">+ NOWY WAGON</button>
           </div>
         </div>
 
@@ -432,8 +432,6 @@ h3 {
   margin: 0 0 0.5em 0;
 }
 
-
-
 .card_content {
   overflow-y: hidden;
   border: 2px solid white;
@@ -510,7 +508,6 @@ h3 {
     position: relative;
     width: 300px;
     height: 180px;
-    margin: 0 auto;
 
     border: 1px solid white;
 
@@ -623,10 +620,11 @@ h3 {
   }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 650px) {
   .car-preview {
     width: 20em;
     height: 13em;
+    margin: 0 auto;
   }
 
   h3 {

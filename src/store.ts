@@ -26,7 +26,7 @@ export const useStore = defineStore({
       swapVehicles: false,
 
       chosenStockListIndex: -1,
-      chosenRealStockName: null,
+      chosenRealStockName: undefined,
 
       vehiclePreviewSrc: '',
 

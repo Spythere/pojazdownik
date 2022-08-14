@@ -4,7 +4,7 @@
 
     <div class="card_content">
       <div class="top-sticky">
-        <button class="btn btn--text exit" @click="store.isRealStockListCardOpen = false">&lt; POWRÓT</button>
+        <button class="btn btn--text exit-btn" @click="store.isRealStockListCardOpen = false">&lt; POWRÓT</button>
 
         <div class="header">
           <h1>
@@ -97,8 +97,6 @@ export default defineComponent({
 
       this.store.swapVehicles = false;
 
-      this.store.chosenRealStockName = `${type} ${number} ${name}`;
-
       stockArray.forEach((type, i) => {
         let vehicle: Vehicle | null = null;
         if (i == 0) vehicle = this.store.locoDataList.find((loco) => loco.type == stockArray[0]) || null;
@@ -176,8 +174,9 @@ export default defineComponent({
 <style lang="scss" scoped>
 @import '../../styles/global.scss';
 
-.exit {
+.exit-btn {
   font-size: 1.2em;
+  margin: 0.5em 0;
 }
 
 input {

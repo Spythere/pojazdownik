@@ -72,25 +72,24 @@
       </button>
     </div>
 
-    <div class="stock_clipboard-text">
-      <button class="btn" v-if="store.stockList.length > 0" @click="copyToClipboard">
-        Skopiuj pociąg w formie tekstowej do schowka
-      </button>
+    <div class="stock_clipboard-text" v-if="store.stockList.length > 0">
+      <button class="btn" @click="copyToClipboard">Skopiuj tekst składu do schowka</button>
     </div>
 
     <div class="stock_specs">
       <b class="real-stock-info" v-if="store.chosenRealStock">
         <span class="text--accent">
           <img :src="getIconURL(store.chosenRealStock.type)" :alt="store.chosenRealStock.type" />
-          {{ store.chosenRealStock.number }} {{ store.chosenRealStock.name }}</span
-        >
+          {{ store.chosenRealStock.number }} {{ store.chosenRealStock.name }}
+        </span>
+        |
       </b>
 
-      <div>
-        Masa: <span class="text--accent">{{ store.totalMass }}t</span> | Długość:
+      <span>
+        Masa: <span class="text--accent">{{ store.totalMass }}t</span> - Długość:
         <span class="text--accent">{{ store.totalLength }}m</span>
-        | Vmax pociągu: <span class="text--accent">{{ store.maxStockSpeed }} km/h</span>
-      </div>
+        - Vmax pociągu: <span class="text--accent">{{ store.maxStockSpeed }} km/h</span>
+      </span>
     </div>
 
     <div class="stock_warnings">
@@ -348,12 +347,12 @@ export default defineComponent({
     },
 
     downloadStock() {
-      if (this.stockHasWarnings()) {
-        alert('Jazda tym pociągiem jest niezgodna z regulaminem symulatora! Zmień parametry zestawienia!');
-        return;
-      }
+      if (this.store.stockList.length == 0) return alert('Lista pojazdów jest pusta!');
 
-      const fileName = prompt('Nazwij plik:', 'pociag');
+      if (this.stockHasWarnings())
+        return alert('Jazda tym pociągiem jest niezgodna z regulaminem symulatora! Zmień parametry zestawienia!');
+
+      const fileName = prompt('Nazwij plik:', `${this.store.chosenRealStockName || this.store.stockList[0].type}`);
 
       if (!fileName) return;
 
@@ -398,13 +397,12 @@ export default defineComponent({
 <style lang="scss" scoped>
 @import '../styles/global';
 
-.warnings {
-  margin-top: 0.5em;
+.stock_warnings {
+  margin-top: 1em;
 }
 
 .warning {
   padding: 0.25em;
-  margin-top: 0.5em;
   background: $accentColor;
   color: black;
 
@@ -487,15 +485,16 @@ export default defineComponent({
 }
 
 .stock_clipboard-text {
-  margin: 0.5em 0;
   font-weight: bold;
+
+  & > .btn {
+    margin: 0 0.5em 0.5em 0;
+  }
 }
 
 .real-stock-info {
-  font-size: 1.15em;
-
   img {
-    height: 1.5ch;
+    height: 1.3ch;
   }
 }
 
@@ -524,7 +523,7 @@ ul > li {
   }
 
   &.list-empty {
-    border: 1px solid white;
+    background-color: $secondaryColor;
     padding: 0.5em;
   }
 }
@@ -550,7 +549,7 @@ li > .stock-info {
 .stock-info {
   &__no,
   &__type {
-    background-color: #222;
+    background-color: $secondaryColor;
   }
 
   &__count {
