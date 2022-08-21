@@ -1,7 +1,11 @@
+export type Vehicle = ILocomotive | ICarWagon;
+
 export interface IStore {
   chosenCar: ICarWagon | null;
   chosenLoco: ILocomotive | null;
   chosenCargo: ICargo | null;
+
+  chosenVehicle: Vehicle | null;
 
   showSupporter: boolean;
   imageLoading: boolean;
@@ -10,13 +14,17 @@ export interface IStore {
   chosenCarUseType: string;
 
   stockList: IStock[];
+  readyStockList: IReadyStockList;
   cargoOptions: any[][];
 
   chosenStockListIndex: number;
-  chosenRealStockName: string | null;
+  chosenRealStockName?: string;
 
   swapVehicles: boolean;
   vehiclePreviewSrc: string;
+
+  isRandomizerCardOpen: boolean;
+  isRealStockListCardOpen: boolean;
 }
 
 export interface IVehicleData {
@@ -39,7 +47,7 @@ export interface ILocomotive {
 export interface ICarWagon {
   //"203V_PKPC_Fll_01","203V",true,false,"100",img
   type: string;
-  useType: string;
+  useType: 'car-passenger' | 'car-cargo';
   constructionType: string;
   loadable: boolean;
   supportersOnly: boolean;
@@ -57,6 +65,7 @@ export interface ICargo {
 }
 
 export interface IStock {
+  id: string;
   useType: string;
   type: string;
   length: number;
@@ -67,4 +76,8 @@ export interface IStock {
   supportersOnly: boolean;
   count: number;
   imgSrc: string;
+}
+
+export interface IReadyStockList {
+  [key: string]: { stockString: string; type: string; number: string; name: string };
 }

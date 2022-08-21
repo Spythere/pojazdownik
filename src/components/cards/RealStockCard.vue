@@ -1,62 +1,62 @@
 <template>
-  <div class="ready-stock-list" v-if="isOpen">
-    <div class="top-sticky">
-      <button class="btn btn--text exit" @click="exit">&lt; POWRÓT</button>
+  <div class="real-stock-card g-card" v-if="store.isRealStockListCardOpen">
+    <div class="g-card_bg" @click="store.isRealStockListCardOpen = false"></div>
 
-      <div class="header">
-        <h1>
-          REALNE ZESTAWIENIA
-          <div>by <a href="https://td2.info.pl/profile/?u=17708" target="_blank">Railtrains997</a></div>
-        </h1>
-        <p>
-          {{ isMobile ? 'Przytrzymaj zestawienie' : 'Kliknij na zestawienie prawym przyciskiem myszy' }}, aby zobaczyć
-          je na stronie <i>vagonweb.cz</i>
-        </p>
+    <div class="card_content">
+      <div class="top-sticky">
+        <button class="btn btn--text exit-btn" @click="store.isRealStockListCardOpen = false">&lt; POWRÓT</button>
 
-        <input type="text" tabindex="0" v-model="searchedReadyStockName" placeholder="Szukaj zestawienia..." />
+        <div class="header">
+          <h1>
+            REALNE ZESTAWIENIA
+            <div>by <a href="https://td2.info.pl/profile/?u=17708" target="_blank">Railtrains997</a></div>
+          </h1>
+          <p>
+            Pełne informacje o zestawieniach dostępne na stronie
+            <a href="http://bocznica.eu/files/archiwum/2021r_2021-11-04.html" target="_blank">bocznica.eu</a> (stan na
+            listopad 2021r.)
+          </p>
+
+          <input type="text" tabindex="0" v-model="searchedReadyStockName" placeholder="Szukaj zestawienia..." />
+        </div>
       </div>
+
+      <ul v-if="responseStatus == 'loaded'">
+        <li
+          v-for="(stock, key) in computedReadyStockList"
+          :key="key"
+          tabindex="0"
+          @click="choseStock(stock.name, stock.type, stock.number, stock.stockString)"
+          @keydown.enter="choseStock(stock.name, stock.type, stock.number, stock.stockString)"
+        >
+          <img :src="getIconURL(stock.type)" :alt="stock.type" />
+
+          <b class="text--accent"> {{ stock.name }}</b>
+          <div>{{ stock.number }}</div>
+        </li>
+      </ul>
     </div>
-
-    <ul v-if="responseStatus == 'loaded'">
-      <li
-        v-for="(stock, key) in computedReadyStockList"
-        :key="key"
-        tabindex="0"
-        @contextmenu="openPreview($event, stock.type, stock.number)"
-        @click="choseStock(stock.name, stock.type, stock.number, stock.stockString)"
-        @keydown.space="openPreview($event, stock.type, stock.number)"
-        @keydown.enter="choseStock(stock.name, stock.type, stock.number, stock.stockString)"
-      >
-        <img v-if="stock.type != 'iR' && stock.type != 'RE'" :src="icons[stock.type]" alt="" />
-        <span v-else>{{ stock.type }}</span>
-
-        <b class="text--accent"> {{ stock.name }}</b>
-        <div>{{ stock.number }}</div>
-      </li>
-    </ul>
   </div>
 </template>
 
 <script lang="ts">
-import { ICarWagon, ILocomotive, IStore } from '@/types';
-import { defineComponent, inject } from 'vue';
+import { defineComponent } from 'vue';
+import { Vehicle, IStock, IReadyStockList } from '../../types';
 
-interface ReadyStockList {
-  [key: string]: { stockString: string; type: string; number: string; name: string };
-}
+import { useStore } from '../../store';
+import { isLocomotive } from '../../utils/vehicleUtils';
+import imageMixin from '../../mixins/imageMixin';
 
 interface ResponseJSONData {
   [key: string]: string;
 }
 
 export default defineComponent({
+  mixins: [imageMixin],
+
   setup() {
     return {
-      isOpen: inject('isReadyStockListOpen'),
-      store: inject('Store') as IStore,
-      locoDataList: inject('locoDataList') as ILocomotive[],
-      carDataList: inject('carDataList') as ICarWagon[],
-      isLocomotive: inject('isLocomotive') as (vehicle: ILocomotive | ICarWagon) => vehicle is ILocomotive,
+      store: useStore(),
     };
   },
 
@@ -64,25 +64,18 @@ export default defineComponent({
     responseStatus: 'loading',
     isMobile: 'ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/) ? true : false,
 
-    readyStockList: {} as ReadyStockList,
     searchedReadyStockName: '',
-
-    icons: {
-      EIC: require('@/assets/EIC.png'),
-      IC: require('@/assets/IC.svg'),
-      TLK: require('@/assets/TLK.png'),
-    } as { [key: string]: string },
   }),
 
   computed: {
     computedReadyStockList() {
-      if (this.searchedReadyStockName == null) return this.readyStockList;
+      if (this.searchedReadyStockName == null) return this.store.readyStockList;
 
-      let filtered: ReadyStockList = {};
+      let filtered: IReadyStockList = {};
 
-      for (let key in this.readyStockList) {
+      for (let key in this.store.readyStockList) {
         if (key.toLocaleLowerCase().includes(this.searchedReadyStockName.toLocaleLowerCase()))
-          filtered[key] = this.readyStockList[key];
+          filtered[key] = this.store.readyStockList[key];
       }
 
       return filtered;
@@ -90,21 +83,8 @@ export default defineComponent({
   },
 
   methods: {
-    exit() {
-      this.isOpen = false;
-    },
-
-    openPreview(e: Event, type: string, number: string) {
-      e.preventDefault();
-
-      const isRegio = type == 'RE' || type == 'iR';
-
-      const zeme = isRegio ? 'PREG' : 'PKPIC';
-      const rok = isRegio ? '&rok=2013' : '';
-
-      const url = `https://www.vagonweb.cz/razeni/vlak.php?zeme=${zeme}&kategorie=${type}&cislo=${number}${rok}`;
-
-      window.open(url);
+    getImageUrl(name: string) {
+      return new URL(`./dir/${name}.png`, import.meta.url).href;
     },
 
     choseStock(name: string, type: string, number: string, stockString: string) {
@@ -117,32 +97,34 @@ export default defineComponent({
 
       this.store.swapVehicles = false;
 
-      this.store.chosenRealStockName = `${type} ${number} ${name}`;
-
       stockArray.forEach((type, i) => {
-        let vehicle;
-        if (i == 0) vehicle = this.locoDataList.find((loco) => loco.type == stockArray[0]);
-        else vehicle = this.carDataList.find((car) => car.type == type);
+        let vehicle: Vehicle | null = null;
+        if (i == 0) vehicle = this.store.locoDataList.find((loco) => loco.type == stockArray[0]) || null;
+        else vehicle = this.store.carDataList.find((car) => car.type == type) || null;
 
         this.addVehicle(vehicle);
       });
 
-      this.exit();
+      this.store.chosenStockListIndex = -1;
+      this.store.chosenVehicle = null;
+
+      this.store.isRealStockListCardOpen = false;
     },
 
-    addVehicle(vehicle: ILocomotive | ICarWagon | undefined) {
+    addVehicle(vehicle: Vehicle | null) {
       if (!vehicle) return;
 
-      const stockObj = {
+      const stockObj: IStock = {
+        id: `${Date.now() + this.store.stockList.length}`,
         type: vehicle.type,
         length: vehicle.length,
         mass: vehicle.mass,
         maxSpeed: vehicle.maxSpeed,
-        isLoco: this.isLocomotive(vehicle),
+        isLoco: isLocomotive(vehicle),
         cargo: undefined,
         count: 1,
         imgSrc: vehicle.imageSrc,
-        useType: this.isLocomotive(vehicle) ? vehicle.power : vehicle.useType,
+        useType: isLocomotive(vehicle) ? vehicle.power : vehicle.useType,
         supportersOnly: vehicle.supportersOnly,
       };
 
@@ -176,7 +158,7 @@ export default defineComponent({
         name += ' ' + splittedKey[i];
       }
 
-      this.readyStockList[stockKey] = {
+      this.store.readyStockList[stockKey] = {
         type: splittedKey[0],
         number: splittedKey[1].replace(/_/g, '/'),
         name,
@@ -190,9 +172,11 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.exit {
-  padding: 1em 0;
+@import '../../styles/global.scss';
+
+.exit-btn {
   font-size: 1.2em;
+  margin: 0.5em 0;
 }
 
 input {
@@ -204,16 +188,8 @@ input {
   }
 }
 
-.ready-stock-list {
-  position: fixed;
-  z-index: 101;
-
-  top: 50%;
-  left: 50%;
-
-  transform: translate(-50%, -50%);
-
-  background: #333;
+.card_content {
+  background-color: #1c1c1c;
   border-radius: 1em;
 
   height: 85vh;
@@ -223,11 +199,12 @@ input {
   padding: 0 1em;
 
   overflow-y: auto;
+  z-index: 100;
 
   .top-sticky {
     position: sticky;
     top: 0;
-    background: #333;
+    background: #1c1c1c;
   }
 
   .header {
@@ -275,10 +252,10 @@ input {
 
     cursor: pointer;
 
-    background: #444;
+    background: #2b2b2b;
 
     img {
-      max-width: 1.5em;
+      height: 0.85em;
     }
 
     span {
@@ -296,3 +273,4 @@ input {
   }
 }
 </style>
+
