@@ -186,7 +186,7 @@ footer {
   }
 
   #app {
-    font-size: calc(0.75vw + 0.6rem);
+    font-size: calc(0.75vw + 0.7rem);
   }
 
   header {

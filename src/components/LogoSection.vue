@@ -25,6 +25,9 @@ export default {
 
 img {
   width: 25em;
+  @media screen and (max-width: 400px) {
+    width: 20em;
+  }
 }
 </style>
 

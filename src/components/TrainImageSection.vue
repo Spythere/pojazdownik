@@ -116,6 +116,7 @@ export default defineComponent({
   grid-column: 1;
 
   margin-top: 2em;
+  height: 290px;
 }
 
 .train-image {

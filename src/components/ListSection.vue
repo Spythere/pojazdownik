@@ -503,8 +503,7 @@ ul {
 
   overflow: auto;
 
-  height: 50vh;
-  min-height: 500px;
+  height: 70vh;
   margin-top: 1em;
 }
 
@@ -512,6 +511,7 @@ ul > li {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  min-width: 500px;
 
   margin: 0.25em 0;
 
@@ -600,9 +600,6 @@ li > .stock-info {
 @media screen and (max-width: $breakpointMd) {
   ul {
     min-height: auto;
-  }
-  li > .stock-info {
-    font-size: 0.9em;
   }
 }
 </style>
