@@ -70,8 +70,8 @@
           data-select="cargo"
           data-ignore-outside="1"
           v-model="store.chosenCargo"
-          @focus="onVehicleSelect('car')"
-          @change="onVehicleSelect('car')"
+          @focus="onVehicleSelect('cargo')"
+          @change="onVehicleSelect('cargo')"
           @keydown.enter.prevent="addOrSwitchVehicle"
           @keydown.backspace="removeVehicle"
         >
@@ -199,11 +199,14 @@ export default defineComponent({
       this.store.swapVehicles = true;
     },
 
-    onVehicleSelect(type: 'loco' | 'car') {
+    onVehicleSelect(type: 'loco' | 'car' | 'cargo') {
       this.$nextTick(() => {
         if (!this.store.chosenLoco && !this.store.chosenCar) return;
 
         this.store.chosenVehicle = type == 'loco' ? this.store.chosenLoco : this.store.chosenCar;
+
+        this.store.chosenCargo =
+          this.store.chosenCar?.cargoList.find((cargo) => cargo.id == this.store.chosenCargo?.id) || null;
       });
     },
 
@@ -362,3 +365,4 @@ export default defineComponent({
   }
 }
 </style>
+
