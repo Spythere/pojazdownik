@@ -40,6 +40,10 @@ export function locoDataList(state: IStore) {
         ) {
           mass = 83;
         }
+
+        if (locoType.startsWith('ET')) {
+          mass = 167;
+        }
       }
 
       // Spalinowozy
@@ -157,10 +161,13 @@ export function chosenRealStock(state: IStore) {
     }, [] as string[])
     .join(';');
 
+  const realStockObj = Object.values(state.readyStockList).find(
+    (readyStock) => readyStock.stockString == currentStockString
+  );
 
-  const realStockObj = Object.values(state.readyStockList).find((readyStock) => readyStock.stockString == currentStockString);
-
-  state.chosenRealStockName = realStockObj ? `${realStockObj.type} ${realStockObj.number} ${realStockObj.name}` : undefined;
+  state.chosenRealStockName = realStockObj
+    ? `${realStockObj.type} ${realStockObj.number} ${realStockObj.name}`
+    : undefined;
 
   return realStockObj;
 }
