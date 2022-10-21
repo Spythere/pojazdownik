@@ -352,7 +352,10 @@ export default defineComponent({
       if (this.stockHasWarnings())
         return alert('Jazda tym pociągiem jest niezgodna z regulaminem symulatora! Zmień parametry zestawienia!');
 
-      const fileName = prompt('Nazwij plik:', `${this.store.chosenRealStockName || this.store.stockList[0].type}`);
+      const fileName = prompt(
+        'Nazwij plik, a następnie pobierz do folderu Presets (Dokumenty/TTSK/TrainDriver2):',
+        `${this.store.chosenRealStockName || this.store.stockList[0].type}`
+      );
 
       if (!fileName) return;
 

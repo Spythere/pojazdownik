@@ -1,9 +1,38 @@
-import { computed } from 'vue';
 import { EVehicleUseType } from '../enums/EVehicleUseType';
 import { ICarWagon, ILocomotive, IStore, IVehicleData } from '../types';
 
 import vehicleDataJSON from '../data/vehicleData.json';
 import vehiclePropsJSON from '../data/vehicleProps.json';
+
+// rodzaj: [tMaxPas, vMaxPas, tMaxTow, vMaxTow] | SM42: [tMax, vMax, ...]
+const maxAllowedSpeedTable = {
+  EU07: [
+    [650, 125],
+    [2000, 70],
+  ],
+  EP07: [
+    [650, 125],
+    [0, 0],
+  ],
+  EP08: [
+    [650, 140],
+    [0, 0],
+  ],
+  ET41: [
+    [700, 125],
+    [4000, 70],
+  ],
+  SM42: [
+    [95, 90],
+    [200, 80],
+    [300, 70],
+    [450, 60],
+    [750, 50],
+    [1130, 40],
+    [1720, 30],
+    [2400, 20],
+  ],
+};
 
 export function isLocomotive(vehicle: ILocomotive | ICarWagon): vehicle is ILocomotive {
   return (vehicle as ILocomotive).power !== undefined;
@@ -171,6 +200,19 @@ export function chosenRealStock(state: IStore) {
 
   return realStockObj;
 }
+
+// export function maxAllowedSpeed(state: IStore) {
+//   const headLocoType = state.stockList[0]?.isLoco ? state.stockList[0].type : undefined;
+
+//   if (!headLocoType) return 0;
+
+//   const isPassenger = isTrainPassenger(state);
+//   const stockMass = totalMass(state);
+
+//   // const maxSpeed = maxAllowedSpeedTable[headLocoType];
+
+//   // if()
+// }
 
 // export function maxAllowedSpeed(state: IStore) {
 //   if (state.stockList.length < 1) return -1;
