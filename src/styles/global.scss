@@ -146,6 +146,10 @@ input {
   &:focus-visible {
     border-color: $accentColor;
   }
+
+  &::placeholder {
+    color: #aaa;
+  }
 }
 
 option {

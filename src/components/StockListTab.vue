@@ -1,14 +1,14 @@
 <template>
-  <section class="stock-list-section">
-    <div class="list_actions">
+  <section class="stock-list">
+    <div class="stock_actions">
       <button class="btn" @click="downloadStock">POBIERZ POCIĄG</button>
       <button class="btn" @click="resetStock">ZRESETUJ LISTĘ</button>
       <span class="spacer"></span>
       <button class="btn" @click="shuffleCars">TASUJ WAGONY</button>
-      <button class="btn" @click="store.isRandomizerCardOpen = true">LOSUJ SKŁAD</button>
+      <button class="btn" @click="store.stockSectionMode = 'stock-generator'">LOSUJ SKŁAD</button>
     </div>
 
-    <div class="stock_actions" :data-disabled="store.chosenStockListIndex == -1">
+    <div class="stock_controls" :data-disabled="store.chosenStockListIndex == -1">
       <b class="no">
         POJAZD NR <span class="text--accent">{{ store.chosenStockListIndex + 1 }}</span> &nbsp;
       </b>
@@ -174,6 +174,7 @@ import warningsMixin from '../mixins/warningsMixin';
 import imageMixin from '../mixins/imageMixin';
 
 export default defineComponent({
+  name: 'stock-list',
   components: { TrainImage },
 
   mixins: [warningsMixin, imageMixin],
@@ -417,28 +418,7 @@ export default defineComponent({
   }
 }
 
-.stock-list-section {
-  grid-row: 1 / 4;
-  grid-column: 2;
-}
-
-.list_actions {
-  display: flex;
-
-  .spacer {
-    flex-grow: 2;
-  }
-
-  button {
-    margin-right: 0.5em;
-
-    &:nth-child(5) {
-      margin-right: 0;
-    }
-  }
-}
-
-.stock_actions {
+.stock_controls {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -606,4 +586,3 @@ li > .stock-info {
   }
 }
 </style>
-

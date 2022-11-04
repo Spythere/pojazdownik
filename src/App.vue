@@ -8,12 +8,6 @@
 
   <keep-alive>
     <transition name="card-appear">
-      <RandomizerCard />
-    </transition>
-  </keep-alive>
-
-  <keep-alive>
-    <transition name="card-appear">
       <RealStockCard />
     </transition>
   </keep-alive>
@@ -26,8 +20,9 @@
 
       <TrainImageSection />
 
-      <ListSection />
+      <StockSection />
     </main>
+
     <footer>
       <div class="text--grayed" style="margin-bottom: 0.25em">
         Ta strona ma charakter informacyjny. Autor nie ponosi odpowiedzialności za tworzenie pociągów niezgodnych z
@@ -52,17 +47,17 @@ import packageInfo from '.././package.json';
 import { defineComponent } from 'vue';
 
 import InputsSection from './components/InputsSection.vue';
-import ListSection from './components/ListSection.vue';
 
 import { useStore } from './store';
 import TrainImageSection from './components/TrainImageSection.vue';
 import LogoSection from './components/LogoSection.vue';
 import RandomizerCard from './components/cards/RandomizerCard.vue';
 import RealStockCard from './components/cards/RealStockCard.vue';
+import StockSection from './components/StockSection.vue';
 
 export default defineComponent({
   components: {
-    ListSection,
+    StockSection,
     InputsSection,
     TrainImageSection,
     RandomizerCard,
@@ -165,7 +160,7 @@ main {
   grid-template-columns: 1fr 2fr;
   grid-template-rows: auto 360px minmax(400px, 1fr);
 
-  padding: 0.5em;
+  padding: 0 1em;
 }
 
 /* FOOTER SECTION */

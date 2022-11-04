@@ -1,4 +1,5 @@
 export type Vehicle = ILocomotive | ICarWagon;
+export type StockSectionMode = 'STOCK_LIST' | 'STOCK_GENERATOR';
 
 export interface IStore {
   chosenCar: ICarWagon | null;
@@ -25,6 +26,8 @@ export interface IStore {
 
   isRandomizerCardOpen: boolean;
   isRealStockListCardOpen: boolean;
+
+  stockSectionMode: 'stock-list' | 'stock-generator';
 }
 
 export interface IVehicleData {
