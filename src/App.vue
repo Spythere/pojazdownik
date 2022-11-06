@@ -161,6 +161,7 @@ main {
   grid-template-rows: auto 360px minmax(400px, 1fr);
 
   padding: 0 1em;
+  margin-bottom: 2em;
 }
 
 /* FOOTER SECTION */

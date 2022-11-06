@@ -18,8 +18,8 @@
         <select
           id="locomotives-list"
           v-model="store.chosenLoco"
-          @focus="onVehicleSelect('loco')"
-          @change="onVehicleSelect('loco')"
+          @focus="previewVehicleByType('loco')"
+          @change="previewVehicleByType('loco')"
           @keydown.enter.prevent="addOrSwitchVehicle"
           @keydown.backspace="removeVehicle"
         >
@@ -45,8 +45,8 @@
         <select
           id="carwagons-list"
           v-model="store.chosenCar"
-          @focus="onVehicleSelect('car')"
-          @change="onVehicleSelect('car')"
+          @focus="previewVehicleByType('car')"
+          @change="previewVehicleByType('car')"
           @keydown.enter.prevent="addOrSwitchVehicle"
           @keydown.backspace="removeVehicle"
         >
@@ -70,8 +70,8 @@
           data-select="cargo"
           data-ignore-outside="1"
           v-model="store.chosenCargo"
-          @focus="onVehicleSelect('cargo')"
-          @change="onVehicleSelect('cargo')"
+          @focus="previewVehicleByType('cargo')"
+          @change="previewVehicleByType('cargo')"
           @keydown.enter.prevent="addOrSwitchVehicle"
           @keydown.backspace="removeVehicle"
         >
@@ -111,6 +111,7 @@ import { IStock } from '../types';
 import imageMixin from '../mixins/imageMixin';
 import { useStore } from '../store';
 import { isLocomotive } from '../utils/vehicleUtils';
+import stockPreviewMixin from '../mixins/stockPreviewMixin';
 
 interface ILocoType {
   id: string;
@@ -119,7 +120,7 @@ interface ILocoType {
 }
 
 export default defineComponent({
-  mixins: [imageMixin],
+  mixins: [imageMixin, stockPreviewMixin],
 
   data: () => ({
     locomotiveTypeList: [
@@ -167,47 +168,9 @@ export default defineComponent({
     };
   },
 
-  computed: {
-    locoOptions() {
-      return this.store.locoDataList
-        .sort((a, b) => (a.type > b.type ? 1 : -1))
-        .filter((loco) => loco.power == this.store.chosenLocoPower);
-    },
-
-    carOptions() {
-      return this.store.carDataList
-        .sort((a, b) => (a.type > b.type ? 1 : -1))
-        .filter((car) => car.useType == this.store.chosenCarUseType);
-    },
-  },
-
   methods: {
-    selectLocoType(locoTypeId: string) {
-      this.store.chosenLocoPower = locoTypeId;
-      this.store.chosenVehicle = this.locoOptions[0];
-      this.store.chosenLoco = this.locoOptions[0];
-    },
-
-    selectCarWagonType(carWagonTypeId: string) {
-      this.store.chosenCarUseType = carWagonTypeId;
-      this.store.chosenVehicle = this.carOptions[0];
-      this.store.chosenCar = this.carOptions[0];
-      this.store.chosenCargo = null;
-    },
-
     prepareSwapVehicles() {
       this.store.swapVehicles = true;
-    },
-
-    onVehicleSelect(type: 'loco' | 'car' | 'cargo') {
-      this.$nextTick(() => {
-        if (!this.store.chosenLoco && !this.store.chosenCar) return;
-
-        this.store.chosenVehicle = type == 'loco' ? this.store.chosenLoco : this.store.chosenCar;
-
-        this.store.chosenCargo =
-          this.store.chosenCar?.cargoList.find((cargo) => cargo.id == this.store.chosenCargo?.id) || null;
-      });
     },
 
     addOrSwitchVehicle() {

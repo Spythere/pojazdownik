@@ -91,10 +91,12 @@ export default defineComponent({
       const stockArray = stockString.split(';');
 
       this.store.stockList.length = 0;
+      this.store.chosenVehicle = null;
       this.store.chosenCar = null;
       this.store.chosenCargo = null;
       this.store.chosenLoco = null;
-
+      this.store.chosenStockListIndex = -1;
+      
       this.store.swapVehicles = false;
 
       stockArray.forEach((type, i) => {
@@ -104,9 +106,6 @@ export default defineComponent({
 
         this.addVehicle(vehicle);
       });
-
-      this.store.chosenStockListIndex = -1;
-      this.store.chosenVehicle = null;
 
       this.store.isRealStockListCardOpen = false;
     },
