@@ -1,8 +1,8 @@
 <template>
   <div class="stock-section">
-    <keep-alive>
-      <component :is="chosenSectionComponent" :key="chosenSectionComponent"></component>
-    </keep-alive>
+    <!-- <keep-alive> -->
+      <component :is="chosenSectionComponent" :key="store.stockSectionMode"></component>
+    <!-- </keep-alive> -->
   </div>
 </template>
 

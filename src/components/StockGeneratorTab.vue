@@ -1,7 +1,8 @@
 <template>
   <div class="stock-generator">
     <div class="stock_actions">
-      <button class="btn" @click="() => (store.stockSectionMode = 'stock-list')">LISTA SKŁADU</button>
+      <h2>GENERATOR SKŁADU TOWAROWEGO</h2>
+      <button class="btn" @click="() => (store.stockSectionMode = 'stock-list')">POWRÓT DO LISTY &gt;</button>
     </div>
 
     <div class="generator_content">
@@ -10,16 +11,22 @@
       <div class="generator_attributes">
         <label>
           Maksymalna masa (t)
-          <input type="number" value="650" step="5" />
+          <input type="number" v-model="maxMass" step="100" max="4000" min="0" />
         </label>
 
         <label>
-          Maksymalna długość (m)
-          <input type="number" value="350" step="25" />
+          Maks. długość (m)
+          <input type="number" v-model="maxLength" step="25" max="650" min="0" />
+        </label>
+
+        <label>
+          Maks. liczba wagonów
+          <input type="number" v-model="maxCarCount" step="1" max="60" min="1" />
         </label>
       </div>
 
       <h2>ŁADUNEK</h2>
+      <p>Wybierz ładunki, którymi chcesz wypełnić dostępne wagony:</p>
 
       <div class="generator_cargo">
         <button
@@ -32,8 +39,13 @@
         </button>
       </div>
 
-      <h2>WYBRANE WAGONY</h2>
-      <p>
+      <h2>WAGONY Z WYBRANYMI ŁADUNKAMI</h2>
+
+      <b v-if="computedChosenCarTypes.size == 0">
+        Wybierz co najmniej jeden ładunek, aby zobaczyć wagony, które go posiadają
+      </b>
+
+      <p v-else>
         Wagony posiadające wybrane ładunki. Najedź na nazwę, aby zobaczyć podgląd wagonu. Kliknij, aby wyłączyć z
         losowania (tylko podświetlone nazwy będą uwzględnione).
       </p>
@@ -54,6 +66,13 @@
           <!-- <span>X</span> -->
         </button>
       </div>
+
+      <div class="generator_actions" v-if="computedChosenCarTypes.size != 0">
+        <button class="btn" @click="generateStock">WYGENERUJ</button>
+        <button class="btn">WYGENERUJ PRÓŻNE WAGONY</button>
+
+        <button class="btn" @click="resetChosenCargo">ZRESETUJ ŁADUNKI</button>
+      </div>
     </div>
   </div>
 </template>
@@ -63,6 +82,8 @@ import { defineComponent } from 'vue';
 import { useStore } from '../store';
 
 import generatorData from '../data/generatorData.json';
+import stockMixin from '../mixins/stockMixin';
+import { ICargo, ICarWagon } from '../types';
 
 export default defineComponent({
   name: 'stock-generator',
@@ -73,6 +94,8 @@ export default defineComponent({
     };
   },
 
+  mixins: [stockMixin],
+
   data() {
     return {
       generatorData,
@@ -82,6 +105,10 @@ export default defineComponent({
       chosenCargoTypes: [] as string[],
 
       previewTimeout: -1,
+
+      maxMass: 3000,
+      maxLength: 650,
+      maxCarCount: 50,
     };
   },
 
@@ -104,6 +131,51 @@ export default defineComponent({
       window.clearTimeout(this.previewTimeout);
     },
 
+    resetChosenCargo() {
+      this.chosenCargoTypes.length = 0;
+      this.chosenCarTypes.length = 0;
+      this.excludedCarTypes.length = 0;
+    },
+
+    generateStock() {
+      const generatedChosenStockList = this.chosenCargoTypes.reduce((acc, type) => {
+        this.generatorData.cargo[type as keyof typeof this.generatorData.cargo]
+          .filter((c) => !this.excludedCarTypes.includes(c.split(':')[0]))
+          .forEach((c) => {
+            const [type, cargoType] = c.split(':');
+            const carWagonObjs = this.store.carDataList.filter((cw) => cw.type.startsWith(type));
+            const cargoObjs = [] as (ICargo | undefined)[];
+
+            if (cargoType == 'all') cargoObjs.push(...carWagonObjs[0]?.cargoList);
+            else if (cargoType) cargoObjs.push(carWagonObjs[0]?.cargoList.find((cargo) => cargo.id == cargoType));
+            else cargoObjs.push(undefined);
+
+            carWagonObjs.forEach((cw) => {
+              console.log(cw, cargoType);
+
+              cargoObjs.forEach((cargoObj) => {
+                acc.push({ carWagon: cw, cargo: cargoObj });
+              });
+            });
+          });
+
+        return acc;
+      }, [] as { carWagon: ICarWagon; cargo?: ICargo }[]);
+
+      this.store.stockList.length = 0;
+
+      new Array(this.maxCarCount).fill(0).forEach(() => {
+        const { carWagon, cargo } = generatedChosenStockList[~~(Math.random() * generatedChosenStockList.length)];
+
+        if (this.store.totalMass + (cargo?.totalMass || carWagon.mass) > this.maxMass) return;
+        if (this.store.totalLength + carWagon.length > this.maxLength) return;
+
+        this.addCarWagon(carWagon, cargo);
+      });
+
+      this.store.stockSectionMode = 'stock-list';
+    },
+
     previewCar(type: string) {
       const c = this.store.carDataList.find((c) => c.type.startsWith(type)) || null;
 
@@ -113,8 +185,6 @@ export default defineComponent({
       this.store.chosenCargo = null;
 
       if (c) this.store.chosenCarUseType = c?.useType;
-
-      // this.store.chosenVehicle = this.store.chosenCar;
     },
 
     toggleCargoChosen(cargoType: string, vehicles: string[]) {
@@ -132,8 +202,6 @@ export default defineComponent({
 
       vehicles.forEach((v) => {
         const [type] = v.split(':');
-        // const cars = this.store.carDataList.filter((c) => c.constructionType == type);
-
         this.chosenCarTypes.push(type);
       });
     },
@@ -150,10 +218,26 @@ export default defineComponent({
 @import '../styles/global.scss';
 
 .stock_actions {
-  justify-content: flex-end;
+  align-items: center;
+
+  h2 {
+    margin: 0;
+    color: white;
+    font-size: 1.35em;
+  }
+  
+  button {
+    margin-left: auto;
+  }
 }
+
+.stock-generator {
+  height: 100%;
+}
+
 .generator_content {
   margin-top: 1em;
+  height: 100%;
 }
 
 h2 {
@@ -214,6 +298,20 @@ h2 {
       background-color: $bgColor;
       color: white;
     }
+  }
+}
+
+.generator_actions {
+  display: grid;
+  gap: 0.5em;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 2em;
+
+  button {
+    background-color: #4b4b4b;
+
+    padding: 0.5em;
+    font-weight: bold;
   }
 }
 </style>
