@@ -51,7 +51,6 @@ import InputsSection from './components/InputsSection.vue';
 import { useStore } from './store';
 import TrainImageSection from './components/TrainImageSection.vue';
 import LogoSection from './components/LogoSection.vue';
-import RandomizerCard from './components/cards/RandomizerCard.vue';
 import RealStockCard from './components/cards/RealStockCard.vue';
 import StockSection from './components/StockSection.vue';
 
@@ -60,7 +59,6 @@ export default defineComponent({
     StockSection,
     InputsSection,
     TrainImageSection,
-    RandomizerCard,
     LogoSection,
     RealStockCard,
   },

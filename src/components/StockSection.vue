@@ -1,8 +1,10 @@
 <template>
   <div class="stock-section">
-    <!-- <keep-alive> -->
-      <component :is="chosenSectionComponent" :key="store.stockSectionMode"></component>
-    <!-- </keep-alive> -->
+    <keep-alive>
+      <transition name="tab-change" mode="out-in">
+        <component :is="chosenSectionComponent" :key="store.stockSectionMode"></component>
+      </transition>
+    </keep-alive>
   </div>
 </template>
 
@@ -37,6 +39,19 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+// Tab change animation
+.tab-change {
+  &-enter-from,
+  &-leave-to {
+    opacity: 0;
+  }
+
+  &-enter-active,
+  &-leave-active {
+    transition: all 100ms ease-in-out;
+  }
+}
+
 // Section styles
 .stock-section {
   grid-row: 1 / 4;
@@ -60,3 +75,4 @@ export default defineComponent({
   }
 }
 </style>
+

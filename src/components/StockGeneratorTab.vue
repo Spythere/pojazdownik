@@ -41,14 +41,16 @@
 
       <h2>WAGONY Z WYBRANYMI ŁADUNKAMI</h2>
 
-      <b v-if="computedChosenCarTypes.size == 0">
-        Wybierz co najmniej jeden ładunek, aby zobaczyć wagony, które go posiadają
-      </b>
+      <div class="warning">
+        <span v-if="computedChosenCarTypes.size == 0">
+          Wybierz co najmniej jeden ładunek, aby zobaczyć wagony, które go posiadają!
+        </span>
 
-      <p v-else>
-        Wagony posiadające wybrane ładunki. Najedź na nazwę, aby zobaczyć podgląd wagonu. Kliknij, aby wyłączyć z
-        losowania (tylko podświetlone nazwy będą uwzględnione).
-      </p>
+        <span v-else>
+          Wagony posiadające wybrane ładunki. Najedź na nazwę, aby zobaczyć podgląd wagonu. Kliknij, aby wyłączyć z
+          losowania (tylko podświetlone nazwy będą uwzględnione).
+        </span>
+      </div>
 
       <div class="generator_vehicles">
         <button
@@ -66,6 +68,8 @@
           <!-- <span>X</span> -->
         </button>
       </div>
+
+      <hr />
 
       <div class="generator_actions" v-if="computedChosenCarTypes.size != 0">
         <button class="btn" @click="generateStock">WYGENERUJ</button>
@@ -301,18 +305,37 @@ h2 {
   }
 }
 
+.generator_vehicles {
+  margin-top: 1em;
+}
+
+hr {
+  height: 3px;
+  background-color: white;
+  outline: none;
+
+  margin: 15px 0;
+}
+
 .generator_actions {
   display: grid;
   gap: 0.5em;
   grid-template-columns: repeat(3, 1fr);
-  margin-top: 2em;
 
   button {
-    background-color: #4b4b4b;
+    background-color: #131313;
 
     padding: 0.5em;
     font-weight: bold;
   }
+}
+
+.warning {
+  background-color: $accentColor;
+  padding: 0.5em;
+  text-align: justify;
+  font-weight: bold;
+  color: black;
 }
 </style>
 

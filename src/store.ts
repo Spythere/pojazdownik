@@ -30,7 +30,7 @@ export const useStore = defineStore({
 
       vehiclePreviewSrc: '',
 
-      stockSectionMode: 'stock-generator',
+      stockSectionMode: 'stock-list',
 
       isRandomizerCardOpen: false,
       isRealStockListCardOpen: false,
