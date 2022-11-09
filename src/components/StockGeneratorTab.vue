@@ -162,7 +162,7 @@ export default defineComponent({
         return acc;
       }, [] as { carWagon: ICarWagon; cargo?: ICargo }[]);
 
-      this.store.stockList.length = 0;
+      this.store.stockList.length = this.store.stockList[0]?.isLoco ? 1 : 0;
 
       new Array(this.maxCarCount).fill(0).forEach(() => {
         const { carWagon, cargo } = generatedChosenStockList[~~(Math.random() * generatedChosenStockList.length)];
@@ -225,7 +225,7 @@ export default defineComponent({
     color: white;
     font-size: 1.35em;
   }
-  
+
   button {
     margin-left: auto;
   }
@@ -315,3 +315,4 @@ h2 {
   }
 }
 </style>
+
