@@ -71,11 +71,13 @@
 
       <hr />
 
-      <div class="generator_actions" v-if="computedChosenCarTypes.size != 0">
-        <button class="btn" @click="generateStock">WYGENERUJ</button>
-        <button class="btn">WYGENERUJ PRÓŻNE WAGONY</button>
+      <div class="generator_actions">
+        <button class="btn" :data-disabled="computedChosenCarTypes.size == 0" @click="generateStock">WYGENERUJ</button>
+        <button class="btn" :data-disabled="computedChosenCarTypes.size == 0">WYGENERUJ PRÓŻNE WAGONY</button>
 
-        <button class="btn" @click="resetChosenCargo">ZRESETUJ ŁADUNKI</button>
+        <button class="btn" :data-disabled="computedChosenCarTypes.size == 0" @click="resetChosenCargo">
+          ZRESETUJ ŁADUNKI
+        </button>
       </div>
     </div>
   </div>
@@ -327,6 +329,10 @@ hr {
 
     padding: 0.5em;
     font-weight: bold;
+  }
+
+  &[data-disabled] button {
+    opacity: 0.75;
   }
 }
 
