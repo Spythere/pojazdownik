@@ -220,10 +220,10 @@ export default defineComponent({
     },
 
     copyToClipboard() {
-      if (this.stockHasWarnings()) {
-        alert('Jazda tym pociągiem jest niezgodna z regulaminem symulatora! Zmień parametry zestawienia!');
-        return;
-      }
+      // if (this.stockHasWarnings()) {
+      //   alert('Jazda tym pociągiem jest niezgodna z regulaminem symulatora! Zmień parametry zestawienia!');
+      //   return;
+      // }
 
       navigator.clipboard.writeText(this.stockString);
 
@@ -331,8 +331,8 @@ export default defineComponent({
     downloadStock() {
       if (this.store.stockList.length == 0) return alert('Lista pojazdów jest pusta!');
 
-      if (this.stockHasWarnings())
-        return alert('Jazda tym pociągiem jest niezgodna z regulaminem symulatora! Zmień parametry zestawienia!');
+      // if (this.stockHasWarnings())
+      //   return alert('Jazda tym pociągiem jest niezgodna z regulaminem symulatora! Zmień parametry zestawienia!');
 
       const fileName = prompt(
         'Nazwij plik, a następnie pobierz do folderu Presets (Dokumenty/TTSK/TrainDriver2):',
