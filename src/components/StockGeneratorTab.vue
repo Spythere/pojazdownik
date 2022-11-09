@@ -72,8 +72,8 @@
       <hr />
 
       <div class="generator_actions">
-        <button class="btn" :data-disabled="computedChosenCarTypes.size == 0" @click="generateStock">WYGENERUJ</button>
-        <button class="btn" :data-disabled="computedChosenCarTypes.size == 0">WYGENERUJ PRÓŻNE WAGONY</button>
+        <button class="btn" :data-disabled="computedChosenCarTypes.size == 0" @click="generateStock()">WYGENERUJ</button>
+        <button class="btn" :data-disabled="computedChosenCarTypes.size == 0" @click="generateStock(true)">WYGENERUJ PRÓŻNE WAGONY</button>
 
         <button class="btn" :data-disabled="computedChosenCarTypes.size == 0" @click="resetChosenCargo">
           ZRESETUJ ŁADUNKI
@@ -143,7 +143,7 @@ export default defineComponent({
       this.excludedCarTypes.length = 0;
     },
 
-    generateStock() {
+    generateStock(empty = false) {
       const generatedChosenStockList = this.chosenCargoTypes.reduce((acc, type) => {
         this.generatorData.cargo[type as keyof typeof this.generatorData.cargo]
           .filter((c) => !this.excludedCarTypes.includes(c.split(':')[0]))
@@ -151,14 +151,16 @@ export default defineComponent({
             const [type, cargoType] = c.split(':');
             const carWagonObjs = this.store.carDataList.filter((cw) => cw.type.startsWith(type));
             const cargoObjs = [] as (ICargo | undefined)[];
+            
+            if(!cargoType || empty) cargoObjs.push(undefined);
+            else if(cargoType == 'all') cargoObjs.push(...carWagonObjs[0]?.cargoList);
+            else cargoObjs.push(carWagonObjs[0]?.cargoList.find((cargo) => cargo.id == cargoType));
 
-            if (cargoType == 'all') cargoObjs.push(...carWagonObjs[0]?.cargoList);
-            else if (cargoType) cargoObjs.push(carWagonObjs[0]?.cargoList.find((cargo) => cargo.id == cargoType));
-            else cargoObjs.push(undefined);
+            // if (cargoType == 'all') 
+            // else if (cargoType)
+            // else cargoObjs.push(undefined);
 
             carWagonObjs.forEach((cw) => {
-              console.log(cw, cargoType);
-
               cargoObjs.forEach((cargoObj) => {
                 acc.push({ carWagon: cw, cargo: cargoObj });
               });

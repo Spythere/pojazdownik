@@ -1,10 +1,10 @@
 <template>
   <div class="stock-section">
-    <keep-alive>
-      <transition name="tab-change" mode="out-in">
-        <component :is="chosenSectionComponent" :key="store.stockSectionMode"></component>
-      </transition>
-    </keep-alive>
+    <transition name="tab-change" mode="out-in">
+      <keep-alive>
+        <component :is="chosenSectionComponent" :key="chosenSectionComponent"></component>
+      </keep-alive>
+    </transition>
   </div>
 </template>
 
