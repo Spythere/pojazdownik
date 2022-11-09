@@ -72,8 +72,12 @@
       <hr />
 
       <div class="generator_actions">
-        <button class="btn" :data-disabled="computedChosenCarTypes.size == 0" @click="generateStock()">WYGENERUJ</button>
-        <button class="btn" :data-disabled="computedChosenCarTypes.size == 0" @click="generateStock(true)">WYGENERUJ PRÓŻNE WAGONY</button>
+        <button class="btn" :data-disabled="computedChosenCarTypes.size == 0" @click="generateStock()">
+          WYGENERUJ
+        </button>
+        <button class="btn" :data-disabled="computedChosenCarTypes.size == 0" @click="generateStock(true)">
+          WYGENERUJ PRÓŻNE WAGONY
+        </button>
 
         <button class="btn" :data-disabled="computedChosenCarTypes.size == 0" @click="resetChosenCargo">
           ZRESETUJ ŁADUNKI
@@ -151,12 +155,12 @@ export default defineComponent({
             const [type, cargoType] = c.split(':');
             const carWagonObjs = this.store.carDataList.filter((cw) => cw.type.startsWith(type));
             const cargoObjs = [] as (ICargo | undefined)[];
-            
-            if(!cargoType || empty) cargoObjs.push(undefined);
-            else if(cargoType == 'all') cargoObjs.push(...carWagonObjs[0]?.cargoList);
+
+            if (!cargoType || empty) cargoObjs.push(undefined);
+            else if (cargoType == 'all') cargoObjs.push(...carWagonObjs[0]?.cargoList);
             else cargoObjs.push(carWagonObjs[0]?.cargoList.find((cargo) => cargo.id == cargoType));
 
-            // if (cargoType == 'all') 
+            // if (cargoType == 'all')
             // else if (cargoType)
             // else cargoObjs.push(undefined);
 
@@ -232,6 +236,7 @@ export default defineComponent({
     margin: 0;
     color: white;
     font-size: 1.35em;
+    text-align: center;
   }
 
   button {
@@ -263,8 +268,8 @@ h2 {
   }
 
   input {
+    max-width: 250px;
     margin-top: 0.5em;
-    max-width: 200px;
   }
 }
 
@@ -344,6 +349,24 @@ hr {
   text-align: justify;
   font-weight: bold;
   color: black;
+}
+
+@media only screen and (max-width: 470px) {
+  .generator_cargo,
+  .generator_vehicles {
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  }
+
+  .generator_attributes {
+    label {
+      width: 100%;
+    }
+
+    input {
+      max-width: 100%;
+      width: 100%;
+    }
+  }
 }
 </style>
 

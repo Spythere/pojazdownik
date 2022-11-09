@@ -93,20 +93,13 @@ export default defineComponent({
   margin: 0 auto;
 
   color: $textColor;
+  font-size: 1em;
 
   display: flex;
   justify-content: center;
 }
 
 /* HEADER SECTION */
-
-header {
-  text-align: center;
-
-  img {
-    width: 35em;
-  }
-}
 
 h2 {
   margin: 0;
@@ -167,6 +160,7 @@ main {
 footer {
   margin-top: auto;
   text-align: center;
+  padding: 0 1em;
 }
 
 /* MOBILE VIEWS */
@@ -178,28 +172,12 @@ footer {
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
   }
-
-  #app {
-    font-size: calc(0.75vw + 0.7rem);
-  }
-
-  header {
-    font-size: 0.85em;
-
-    img {
-      width: 35em;
-    }
-  }
 }
 
-@media screen and (max-width: $breakpointSm) {
-  header {
-    font-size: 0.75em;
-
-    img {
-      width: 32em;
-    }
-  }
-}
+// @media screen and (max-width: $breakpointSm) {
+//   header {
+//     font-size: 0.75em;
+//   }
+// }
 </style>
 

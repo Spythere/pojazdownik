@@ -129,9 +129,8 @@ export default defineComponent({
     position: relative;
     overflow: hidden;
 
-    width: 22em;
+    max-width: 22em;
     height: 13em;
-
     margin: 0 auto;
 
     &.supporter {

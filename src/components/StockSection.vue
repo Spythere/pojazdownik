@@ -61,18 +61,16 @@ export default defineComponent({
 // Stock tabs styles
 .stock_actions {
   display: flex;
+  gap: 0.5em;
 
-  .spacer {
-    flex-grow: 2;
-  }
+  @media only screen and (max-width: 450px) {
+    flex-wrap: wrap;
 
-  button {
-    margin-right: 0.5em;
-
-    &:nth-child(5) {
-      margin-right: 0;
+    button {
+      width: 100%;
     }
   }
+ 
 }
 </style>
 

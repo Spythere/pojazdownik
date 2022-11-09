@@ -3,8 +3,7 @@
     <div class="stock_actions">
       <button class="btn" @click="downloadStock">POBIERZ POCIĄG</button>
       <button class="btn" @click="resetStock">ZRESETUJ LISTĘ</button>
-      <span class="spacer"></span>
-      <button class="btn" @click="shuffleCars">TASUJ WAGONY</button>
+      <button class="btn" style="margin-left: auto" @click="shuffleCars">TASUJ WAGONY</button>
       <button class="btn" @click="store.stockSectionMode = 'stock-generator'">LOSUJ SKŁAD</button>
     </div>
 
@@ -567,3 +566,4 @@ li > .stock-info {
   }
 }
 </style>
+
