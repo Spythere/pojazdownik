@@ -91,9 +91,11 @@ export default defineComponent({
       const stockArray = stockString.split(';');
 
       this.store.stockList.length = 0;
+      this.store.chosenVehicle = null;
       this.store.chosenCar = null;
       this.store.chosenCargo = null;
       this.store.chosenLoco = null;
+      this.store.chosenStockListIndex = -1;
 
       this.store.swapVehicles = false;
 
@@ -104,9 +106,6 @@ export default defineComponent({
 
         this.addVehicle(vehicle);
       });
-
-      this.store.chosenStockListIndex = -1;
-      this.store.chosenVehicle = null;
 
       this.store.isRealStockListCardOpen = false;
     },
@@ -180,7 +179,8 @@ export default defineComponent({
 }
 
 input {
-  min-width: 250px;
+  width: 100%;
+  max-width: 250px;
 
   &::placeholder {
     font-size: 0.9em;
@@ -242,6 +242,10 @@ input {
 
     @media screen and (max-width: 550px) {
       grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media screen and (max-width: 400px) {
+      grid-template-columns: repeat(1, 1fr);
     }
 
     margin-bottom: 1em;

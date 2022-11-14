@@ -8,12 +8,6 @@
 
   <keep-alive>
     <transition name="card-appear">
-      <RandomizerCard />
-    </transition>
-  </keep-alive>
-
-  <keep-alive>
-    <transition name="card-appear">
       <RealStockCard />
     </transition>
   </keep-alive>
@@ -26,8 +20,9 @@
 
       <TrainImageSection />
 
-      <ListSection />
+      <StockSection />
     </main>
+
     <footer>
       <div class="text--grayed" style="margin-bottom: 0.25em">
         Ta strona ma charakter informacyjny. Autor nie ponosi odpowiedzialności za tworzenie pociągów niezgodnych z
@@ -52,20 +47,18 @@ import packageInfo from '.././package.json';
 import { defineComponent } from 'vue';
 
 import InputsSection from './components/InputsSection.vue';
-import ListSection from './components/ListSection.vue';
 
 import { useStore } from './store';
 import TrainImageSection from './components/TrainImageSection.vue';
 import LogoSection from './components/LogoSection.vue';
-import RandomizerCard from './components/cards/RandomizerCard.vue';
 import RealStockCard from './components/cards/RealStockCard.vue';
+import StockSection from './components/StockSection.vue';
 
 export default defineComponent({
   components: {
-    ListSection,
+    StockSection,
     InputsSection,
     TrainImageSection,
-    RandomizerCard,
     LogoSection,
     RealStockCard,
   },
@@ -100,20 +93,13 @@ export default defineComponent({
   margin: 0 auto;
 
   color: $textColor;
+  font-size: 1em;
 
   display: flex;
   justify-content: center;
 }
 
 /* HEADER SECTION */
-
-header {
-  text-align: center;
-
-  img {
-    width: 35em;
-  }
-}
 
 h2 {
   margin: 0;
@@ -165,7 +151,8 @@ main {
   grid-template-columns: 1fr 2fr;
   grid-template-rows: auto 360px minmax(400px, 1fr);
 
-  padding: 0.5em;
+  padding: 0 1em;
+  margin-bottom: 2em;
 }
 
 /* FOOTER SECTION */
@@ -173,6 +160,7 @@ main {
 footer {
   margin-top: auto;
   text-align: center;
+  padding: 0 1em;
 }
 
 /* MOBILE VIEWS */
@@ -184,28 +172,12 @@ footer {
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
   }
-
-  #app {
-    font-size: calc(0.75vw + 0.7rem);
-  }
-
-  header {
-    font-size: 0.85em;
-
-    img {
-      width: 35em;
-    }
-  }
 }
 
-@media screen and (max-width: $breakpointSm) {
-  header {
-    font-size: 0.75em;
-
-    img {
-      width: 32em;
-    }
-  }
-}
+// @media screen and (max-width: $breakpointSm) {
+//   header {
+//     font-size: 0.75em;
+//   }
+// }
 </style>
 

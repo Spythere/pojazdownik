@@ -1,14 +1,13 @@
 <template>
-  <section class="stock-list-section">
-    <div class="list_actions">
+  <section class="stock-list">
+    <div class="stock_actions">
       <button class="btn" @click="downloadStock">POBIERZ POCIĄG</button>
       <button class="btn" @click="resetStock">ZRESETUJ LISTĘ</button>
-      <span class="spacer"></span>
-      <button class="btn" @click="shuffleCars">TASUJ WAGONY</button>
-      <button class="btn" @click="store.isRandomizerCardOpen = true">LOSUJ SKŁAD</button>
+      <button class="btn" style="margin-left: auto" @click="shuffleCars">TASUJ WAGONY</button>
+      <button class="btn" @click="store.stockSectionMode = 'stock-generator'">LOSUJ SKŁAD</button>
     </div>
 
-    <div class="stock_actions" :data-disabled="store.chosenStockListIndex == -1">
+    <div class="stock_controls" :data-disabled="store.chosenStockListIndex == -1">
       <b class="no">
         POJAZD NR <span class="text--accent">{{ store.chosenStockListIndex + 1 }}</span> &nbsp;
       </b>
@@ -118,6 +117,7 @@
       <div class="warning" v-if="tooManyLocomotives">Ten skład posiada za dużo pojazdów trakcyjnych!</div>
     </div>
 
+    <!-- Stock list -->
     <ul ref="list">
       <li v-if="store.stockList.length == 0" class="list-empty">
         <div class="stock-info">Lista pojazdów jest pusta!</div>
@@ -172,11 +172,13 @@ import TrainImage from './TrainImageSection.vue';
 import { useStore } from '../store';
 import warningsMixin from '../mixins/warningsMixin';
 import imageMixin from '../mixins/imageMixin';
+import stockPreviewMixin from '../mixins/stockPreviewMixin';
 
 export default defineComponent({
+  name: 'stock-list',
   components: { TrainImage },
 
-  mixins: [warningsMixin, imageMixin],
+  mixins: [warningsMixin, imageMixin, stockPreviewMixin],
 
   setup() {
     const store = useStore();
@@ -217,10 +219,10 @@ export default defineComponent({
     },
 
     copyToClipboard() {
-      if (this.stockHasWarnings()) {
-        alert('Jazda tym pociągiem jest niezgodna z regulaminem symulatora! Zmień parametry zestawienia!');
-        return;
-      }
+      // if (this.stockHasWarnings()) {
+      //   alert('Jazda tym pociągiem jest niezgodna z regulaminem symulatora! Zmień parametry zestawienia!');
+      //   return;
+      // }
 
       navigator.clipboard.writeText(this.stockString);
 
@@ -229,41 +231,20 @@ export default defineComponent({
       }, 20);
     },
 
-    onListItemClick(vehicleID: number) {
-      const vehicle = this.store.stockList[vehicleID];
+    onListItemClick(stockID: number) {
+      const stock = this.store.stockList[stockID];
 
       this.store.chosenStockListIndex =
-        this.store.chosenStockListIndex == vehicleID && this.store.chosenVehicle?.type == vehicle.type ? -1 : vehicleID;
+        this.store.chosenStockListIndex == stockID && this.store.chosenVehicle?.type == stock.type ? -1 : stockID;
 
       if (this.store.chosenStockListIndex == -1) {
         this.store.chosenVehicle = null;
         return;
       }
 
-      if (this.store.chosenVehicle?.imageSrc != vehicle.imgSrc) this.store.imageLoading = true;
+      if (this.store.swapVehicles) this.store.swapVehicles = false;
 
-      if (this.store.showSupporter && !vehicle.supportersOnly) {
-        this.store.showSupporter = false;
-      }
-
-      if (vehicle.isLoco) {
-        const chosenLoco = this.store.locoDataList.find((v) => v.type == vehicle.type) || null;
-        this.store.chosenVehicle = chosenLoco;
-        this.store.chosenLoco = chosenLoco;
-        // this.store.chosenCargo = null;
-        this.store.chosenLocoPower = vehicle.useType;
-      } else {
-        const chosenCar = this.store.carDataList.find((v) => v.type == vehicle.type) || null;
-        this.store.chosenVehicle = chosenCar;
-        this.store.chosenCar = chosenCar;
-
-        this.store.chosenCargo = vehicle.cargo || null;
-        this.store.chosenCarUseType = vehicle.useType;
-      }
-
-      if (this.store.swapVehicles) {
-        this.store.swapVehicles = false;
-      }
+      this.previewStock(stock);
     },
 
     getCarSpecFromType(typeStr: string) {
@@ -349,8 +330,8 @@ export default defineComponent({
     downloadStock() {
       if (this.store.stockList.length == 0) return alert('Lista pojazdów jest pusta!');
 
-      if (this.stockHasWarnings())
-        return alert('Jazda tym pociągiem jest niezgodna z regulaminem symulatora! Zmień parametry zestawienia!');
+      // if (this.stockHasWarnings())
+      //   return alert('Jazda tym pociągiem jest niezgodna z regulaminem symulatora! Zmień parametry zestawienia!');
 
       const fileName = prompt(
         'Nazwij plik, a następnie pobierz do folderu Presets (Dokumenty/TTSK/TrainDriver2):',
@@ -417,28 +398,7 @@ export default defineComponent({
   }
 }
 
-.stock-list-section {
-  grid-row: 1 / 4;
-  grid-column: 2;
-}
-
-.list_actions {
-  display: flex;
-
-  .spacer {
-    flex-grow: 2;
-  }
-
-  button {
-    margin-right: 0.5em;
-
-    &:nth-child(5) {
-      margin-right: 0;
-    }
-  }
-}
-
-.stock_actions {
+.stock_controls {
   display: flex;
   justify-content: center;
   align-items: center;

@@ -116,7 +116,7 @@ export default defineComponent({
   grid-column: 1;
 
   margin-top: 2em;
-  height: 20em;
+  height: 22em;
 }
 
 .train-image {
@@ -129,9 +129,8 @@ export default defineComponent({
     position: relative;
     overflow: hidden;
 
-    width: 22em;
+    max-width: 22em;
     height: 13em;
-
     margin: 0 auto;
 
     &.supporter {
