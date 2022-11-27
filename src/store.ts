@@ -1,7 +1,14 @@
 import { IStore } from './types';
 import { defineStore } from 'pinia';
-import { carDataList, chosenRealStock, isTrainPassenger, locoDataList, maxStockSpeed, totalLength, totalMass } from './utils/vehicleUtils';
-
+import {
+  carDataList,
+  chosenRealStock,
+  isTrainPassenger,
+  locoDataList,
+  maxStockSpeed,
+  totalLength,
+  totalMass,
+} from './utils/vehicleUtils';
 
 export const useStore = defineStore({
   id: 'store',
@@ -35,7 +42,7 @@ export const useStore = defineStore({
       isRandomizerCardOpen: false,
       isRealStockListCardOpen: false,
 
-
+      stockData: undefined,
     } as IStore),
 
   getters: {
@@ -45,8 +52,7 @@ export const useStore = defineStore({
     totalLength: (state) => totalLength(state),
     maxStockSpeed: (state) => maxStockSpeed(state),
     isTrainPassenger: (state) => isTrainPassenger(state),
-    chosenRealStock: (state) => chosenRealStock(state)
+    chosenRealStock: (state) => chosenRealStock(state),
   },
 });
-
 

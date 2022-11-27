@@ -1,8 +1,5 @@
 import { EVehicleUseType } from '../enums/EVehicleUseType';
-import { ICarWagon, ILocomotive, IStore, IVehicleData } from '../types';
-
-import vehicleDataJSON from '../data/vehicleData.json';
-import vehiclePropsJSON from '../data/vehicleProps.json';
+import { ICarWagon, ILocomotive, IStore, TStockInfoKey } from '../types';
 
 // rodzaj: [tMaxPas, vMaxPas, tMaxTow, vMaxTow] | SM42: [tMax, vMax, ...]
 const maxAllowedSpeedTable = {
@@ -39,10 +36,14 @@ export function isLocomotive(vehicle: ILocomotive | ICarWagon): vehicle is ILoco
 }
 
 export function locoDataList(state: IStore) {
-  return Object.keys(vehicleDataJSON).reduce((acc, vehicleTypeKey) => {
+  if (!state.stockData) return [];
+
+  const stockData = state.stockData;
+
+  return Object.keys(stockData.info).reduce((acc, vehicleTypeKey) => {
     if (!vehicleTypeKey.startsWith('loco')) return acc;
 
-    const locoVehiclesData = (vehicleDataJSON as IVehicleData)[vehicleTypeKey];
+    const locoVehiclesData = stockData.info[vehicleTypeKey as TStockInfoKey];
 
     locoVehiclesData.forEach((loco) => {
       if (state.showSupporter && !loco[4]) return;
@@ -125,15 +126,19 @@ export function locoDataList(state: IStore) {
 }
 
 export function carDataList(state: IStore) {
-  return Object.keys(vehicleDataJSON).reduce((acc, vehicleTypeKey) => {
+  if (!state.stockData) return [];
+
+  const stockData = state.stockData;
+
+  return Object.keys(stockData.info).reduce((acc, vehicleTypeKey) => {
     if (!vehicleTypeKey.startsWith('car')) return acc;
 
-    const carVehiclesData = (vehicleDataJSON as IVehicleData)[vehicleTypeKey];
+    const carVehiclesData = (stockData.info)[vehicleTypeKey as TStockInfoKey];
 
     carVehiclesData.forEach((car) => {
       if (state.showSupporter && !car[3]) return;
 
-      const carPropsData = vehiclePropsJSON.find((v) => car[0].toString().includes(v.type));
+      const carPropsData = stockData.props.find((v) => car[0].toString().includes(v.type));
 
       acc.push({
         useType: vehicleTypeKey as 'car-passenger' | 'car-cargo',
@@ -321,4 +326,6 @@ export function chosenRealStock(state: IStore) {
 //     return false;
 //   }),
 // };
+
+
 

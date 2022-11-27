@@ -65,14 +65,13 @@ export default defineComponent({
 
   data: () => ({
     VERSION: packageInfo.version,
+    store: useStore(),
   }),
 
-  setup() {
-    const store = useStore();
+  async created() {
+    const stockData = await (await fetch('https://spythere.github.io/api/stockData.json')).json();
 
-    return {
-      store,
-    };
+    this.store.stockData = stockData;
   },
 });
 </script>
