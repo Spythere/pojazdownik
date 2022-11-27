@@ -28,10 +28,33 @@ export interface IStore {
   isRealStockListCardOpen: boolean;
 
   stockSectionMode: 'stock-list' | 'stock-generator';
+  stockData?: IStockData;
 }
 
-export interface IVehicleData {
-  [key: string]: (string | boolean)[][];
+export type TStockInfoKey = 'loco-e' | 'loco-s' | 'loco-ezt' | 'loco-szt' | 'car-passenger' | 'car-cargo';
+
+export interface IStockProps {
+  type: string;
+  length: number;
+  mass: number;
+  cargo: string;
+}
+
+export interface IStockData {
+  generator: {
+    passenger: [];
+    cargo: {
+      [key: string]: string[];
+    };
+  };
+
+  info: {
+    [key in TStockInfoKey]: any[];
+  };
+
+  props: IStockProps[];
+
+  usage: { [key: string]: string };
 }
 
 export interface ILocomotive {
@@ -84,3 +107,4 @@ export interface IStock {
 export interface IReadyStockList {
   [key: string]: { stockString: string; type: string; number: string; name: string };
 }
+

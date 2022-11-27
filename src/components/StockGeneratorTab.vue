@@ -31,9 +31,9 @@
       <div class="generator_cargo">
         <button
           class="btn"
-          :data-chosen="chosenCargoTypes.includes(k)"
-          v-for="(v, k) in generatorData.cargo"
-          @click="toggleCargoChosen(k, v)"
+          :data-chosen="chosenCargoTypes.includes(k as string)"
+          v-for="(v, k) in store.stockData?.generator.cargo"
+          @click="toggleCargoChosen(k as string, v)"
         >
           {{ k }}
         </button>
@@ -91,24 +91,16 @@
 import { defineComponent } from 'vue';
 import { useStore } from '../store';
 
-import generatorData from '../data/generatorData.json';
 import stockMixin from '../mixins/stockMixin';
 import { ICargo, ICarWagon } from '../types';
 
 export default defineComponent({
   name: 'stock-generator',
 
-  setup() {
-    return {
-      store: useStore(),
-    };
-  },
-
   mixins: [stockMixin],
 
   data() {
     return {
-      generatorData,
       chosenCarTypes: [] as string[],
       excludedCarTypes: [] as string[],
 
@@ -119,6 +111,8 @@ export default defineComponent({
       maxMass: 3000,
       maxLength: 650,
       maxCarCount: 50,
+
+      store: useStore(),
     };
   },
 
@@ -149,7 +143,7 @@ export default defineComponent({
 
     generateStock(empty = false) {
       const generatedChosenStockList = this.chosenCargoTypes.reduce((acc, type) => {
-        this.generatorData.cargo[type as keyof typeof this.generatorData.cargo]
+        this.store.stockData?.generator.cargo[type]
           .filter((c) => !this.excludedCarTypes.includes(c.split(':')[0]))
           .forEach((c) => {
             const [type, cargoType] = c.split(':');

@@ -36,7 +36,7 @@
           <div v-else>
             {{
               store.chosenVehicle.useType == 'car-cargo'
-                ? carUsage[store.chosenVehicle.constructionType]
+                ? store.stockData?.usage[store.chosenVehicle.constructionType]
                 : 'Typ konstrukcji: ' + store.chosenVehicle.constructionType
             }}
           </div>
@@ -49,11 +49,10 @@
 </template>
 
 <script lang="ts">
-import carUsage from '../data/carUsage.json';
 import { computed, defineComponent } from 'vue';
 import { useStore } from '../store';
 import { isLocomotive } from '../utils/vehicleUtils';
-import { ILocomotive, IVehicleData, Vehicle } from '../types';
+import { ILocomotive, Vehicle } from '../types';
 
 export default defineComponent({
   setup() {
@@ -75,8 +74,6 @@ export default defineComponent({
         'car-passenger': 'WAGON PASAŻERSKI',
         'car-cargo': 'WAGON TOWAROWY',
       } as { [key: string]: string },
-
-      carUsage: carUsage as { [key: string]: string },
     };
   },
 
