@@ -3,18 +3,20 @@
     <div class="train-image__wrapper">
       <div class="train-image__content">
         <transition name="img-message-anim">
-          <div class="empty-message" v-if="store.imageLoading">ŁADOWANIE OBRAZU...</div>
+          <div class="empty-message" v-if="store.imageLoading && store.chosenVehicle?.imageSrc">ŁADOWANIE OBRAZU...</div>
         </transition>
 
         <div class="no-img" v-if="!store.chosenVehicle">PODGLĄD WYBRANEGO POJAZDU</div>
 
         <img
-          v-if="store.chosenVehicle"
+          v-if="store.chosenVehicle && store.chosenVehicle.imageSrc"
           :src="store.chosenVehicle.imageSrc"
           :alt="store.chosenVehicle.type"
           @load="onImageLoad"
           @click="onImageClick"
         />
+
+        <div class="empty-message" v-if="store.chosenVehicle && !store.chosenVehicle.imageSrc">Ten pojazd nie ma jeszcze podglądu!</div>
       </div>
 
       <div class="train-image__info" v-if="store.chosenVehicle">

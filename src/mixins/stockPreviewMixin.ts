@@ -48,7 +48,7 @@ export default defineComponent({
       });
     },
 
-    previewStock(stock: IStock) {
+    previewStock(stock: IStock) {      
       if (this.store.chosenVehicle?.imageSrc != stock.imgSrc) this.store.imageLoading = true;
 
       if (stock.isLoco) {

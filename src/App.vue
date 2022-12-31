@@ -69,7 +69,7 @@ export default defineComponent({
   }),
 
   async created() {
-    const stockData = await (await fetch('https://spythere.github.io/api/stockData.json')).json();
+    const stockData = await (await fetch('https://spythere.github.io/api/stockDataNew.json')).json();
 
     this.store.stockData = stockData;
   },
