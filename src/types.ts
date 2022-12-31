@@ -101,7 +101,7 @@ export interface IStock {
   isLoco: boolean;
   supportersOnly: boolean;
   count: number;
-  imgSrc: string;
+  imgSrc?: string;
 }
 
 export interface IReadyStockList {
