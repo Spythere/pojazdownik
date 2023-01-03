@@ -147,6 +147,7 @@ export default defineComponent({
           .filter((c) => !this.excludedCarTypes.includes(c.split(':')[0]))
           .forEach((c) => {
             const [type, cargoType] = c.split(':');
+
             const carWagonObjs = this.store.carDataList.filter((cw) => cw.type.startsWith(type));
             const cargoObjs = [] as (ICargo | undefined)[];
 
@@ -154,24 +155,28 @@ export default defineComponent({
             else if (cargoType == 'all') cargoObjs.push(...carWagonObjs[0]?.cargoList);
             else cargoObjs.push(carWagonObjs[0]?.cargoList.find((cargo) => cargo.id == cargoType));
 
-            // if (cargoType == 'all')
-            // else if (cargoType)
-            // else cargoObjs.push(undefined);
-
             carWagonObjs.forEach((cw) => {
               cargoObjs.forEach((cargoObj) => {
-                acc.push({ carWagon: cw, cargo: cargoObj });
+                const chosenStock = acc.find((a) => a.constructionType.includes(cw.constructionType));
+
+                if (!chosenStock)
+                  acc.push({
+                    constructionType: cw.constructionType,
+                    carPool: [{ carWagon: cw, cargo: cargoObj }],
+                  });
+                else chosenStock.carPool.push({ carWagon: cw, cargo: cargoObj });
               });
             });
           });
 
         return acc;
-      }, [] as { carWagon: ICarWagon; cargo?: ICargo }[]);
+      }, [] as { constructionType: string; carPool: { carWagon: ICarWagon; cargo?: ICargo }[] }[]);
 
       this.store.stockList.length = this.store.stockList[0]?.isLoco ? 1 : 0;
 
       new Array(this.maxCarCount).fill(0).forEach(() => {
-        const { carWagon, cargo } = generatedChosenStockList[~~(Math.random() * generatedChosenStockList.length)];
+        const randomStockType = generatedChosenStockList[~~(Math.random() * generatedChosenStockList.length)];
+        const {carWagon, cargo} = randomStockType.carPool[~~(Math.random() * randomStockType.carPool.length)];
 
         if (this.store.totalMass + (cargo?.totalMass || carWagon.mass) > this.maxMass) return;
         if (this.store.totalLength + carWagon.length > this.maxLength) return;
