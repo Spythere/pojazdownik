@@ -3,20 +3,22 @@
     <div class="train-image__wrapper">
       <div class="train-image__content">
         <transition name="img-message-anim">
-          <div class="empty-message" v-if="store.imageLoading && store.chosenVehicle?.imageSrc">ŁADOWANIE OBRAZU...</div>
+          <div class="empty-message" v-if="store.imageLoading && store.chosenVehicle?.imageSrc">
+            ŁADOWANIE OBRAZU...
+          </div>
         </transition>
 
         <div class="no-img" v-if="!store.chosenVehicle">PODGLĄD WYBRANEGO POJAZDU</div>
 
         <img
-          v-if="store.chosenVehicle && store.chosenVehicle.imageSrc"
-          :src="store.chosenVehicle.imageSrc"
+          v-if="store.chosenVehicle"
+          :src="`https://spythere.github.io/api/td2/images/${store.chosenVehicle.type}--300px.jpg`"
           :alt="store.chosenVehicle.type"
           @load="onImageLoad"
           @click="onImageClick"
         />
 
-        <div class="empty-message" v-if="store.chosenVehicle && !store.chosenVehicle.imageSrc">Ten pojazd nie ma jeszcze podglądu!</div>
+        <!-- <div class="empty-message" v-if="store.chosenVehicle && !store.chosenVehicle.imageSrc">Ten pojazd nie ma jeszcze podglądu!</div> -->
       </div>
 
       <div class="train-image__info" v-if="store.chosenVehicle">
@@ -81,6 +83,8 @@ export default defineComponent({
 
   watch: {
     chosenVehicle(vehicle: Vehicle, prevVehicle: Vehicle) {
+      console.log(vehicle);
+
       if (vehicle && vehicle.type != prevVehicle?.type) {
         this.store.imageLoading = true;
       }
@@ -101,7 +105,7 @@ export default defineComponent({
 
       if (!chosenVehicle) return;
 
-      this.store.vehiclePreviewSrc = chosenVehicle.imageSrc.replace('300', '800');
+      this.store.vehiclePreviewSrc = `https://spythere.github.io/api/td2/images/${chosenVehicle.type}--800px.jpg`;
     },
   },
 });
