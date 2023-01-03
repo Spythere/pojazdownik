@@ -133,12 +133,12 @@ export function carDataList(state: IStore) {
   return Object.keys(stockData.info).reduce((acc, vehicleTypeKey) => {
     if (!vehicleTypeKey.startsWith('car')) return acc;
 
-    const carVehiclesData = (stockData.info)[vehicleTypeKey as TStockInfoKey];
+    const carVehiclesData = stockData.info[vehicleTypeKey as TStockInfoKey];
 
     carVehiclesData.forEach((car) => {
       if (state.showSupporter && !car[3]) return;
 
-      const carPropsData = stockData.props.find((v) => car[0].toString().includes(v.type));
+      const carPropsData = stockData.props.find((v) => car[0].toString().startsWith(v.type));
 
       acc.push({
         useType: vehicleTypeKey as 'car-passenger' | 'car-cargo',
@@ -148,7 +148,7 @@ export function carDataList(state: IStore) {
         supportersOnly: car[3] as boolean,
         maxSpeed: Number(car[4] as string),
         imageSrc: car[5] as string,
-        cargoList: carPropsData?.cargo.includes(';')
+        cargoList: carPropsData?.cargo.split(';').filter((s) => s.length > 0)
           ? carPropsData.cargo.split(';').map((cargo) => ({
               id: cargo.split(':')[0],
               totalMass: Number(cargo.split(':')[1]),
@@ -326,6 +326,4 @@ export function chosenRealStock(state: IStore) {
 //     return false;
 //   }),
 // };
-
-
 
