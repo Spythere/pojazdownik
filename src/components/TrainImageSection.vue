@@ -83,8 +83,6 @@ export default defineComponent({
 
   watch: {
     chosenVehicle(vehicle: Vehicle, prevVehicle: Vehicle) {
-      console.log(vehicle);
-
       if (vehicle && vehicle.type != prevVehicle?.type) {
         this.store.imageLoading = true;
       }

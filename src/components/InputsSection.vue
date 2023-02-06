@@ -7,7 +7,7 @@
         <div class="vehicle-types locos">
           <button
             v-for="locoType in locomotiveTypeList"
-            class="btn--choice"
+            class="btn btn--choice"
             :data-selected="locoType.id == store.chosenLocoPower"
             @click="selectLocoType(locoType.id)"
           >
@@ -34,7 +34,7 @@
         <div class="vehicle-types carwagons">
           <button
             v-for="carType in carTypeList"
-            class="btn--choice"
+            class="btn btn--choice"
             :data-selected="carType.id == store.chosenCarUseType"
             @click="selectCarWagonType(carType.id)"
           >
@@ -274,11 +274,10 @@ export default defineComponent({
   margin-bottom: 1em;
 }
 
-.btn--choice {
-  margin-right: 0.5em;
+button.btn--choice {
   font-weight: bold;
-
-  background-color: #444;
+  font-size: 0.9em;
+  padding: 0.15em 0.6em;
 
   &[data-selected='true'] {
     background-color: $accentColor;
@@ -314,6 +313,9 @@ export default defineComponent({
 }
 
 .vehicle-types {
+  display: flex;
+  gap: 0.25em;
+
   margin-bottom: 0.5em;
 }
 
@@ -324,6 +326,10 @@ export default defineComponent({
   }
 
   .input_actions {
+    justify-content: center;
+  }
+
+  .vehicle-types {
     justify-content: center;
   }
 }

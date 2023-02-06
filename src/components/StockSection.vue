@@ -1,11 +1,11 @@
 <template>
-  <div class="stock-section">
+  <section class="stock-section">
     <transition name="tab-change" mode="out-in">
       <keep-alive>
         <component :is="chosenSectionComponent" :key="chosenSectionComponent"></component>
       </keep-alive>
     </transition>
-  </div>
+  </section>
 </template>
 
 <script lang="ts">
@@ -56,6 +56,8 @@ export default defineComponent({
 .stock-section {
   grid-row: 1 / 4;
   grid-column: 2;
+
+  overflow: hidden;
 }
 
 // Stock tabs styles
@@ -70,7 +72,6 @@ export default defineComponent({
       width: 100%;
     }
   }
- 
 }
 </style>
 

@@ -14,7 +14,7 @@
 
       <div class="count">
         <button
-          class="action-btn"
+          class="btn action-btn"
           :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
           @click="subStock(store.chosenStockListIndex)"
         >
@@ -34,7 +34,7 @@
         <input v-else id="stock-count" type="number" value="0" :tabindex="store.chosenStockListIndex == -1 ? -1 : 0" />
 
         <button
-          class="action-btn"
+          class="btn action-btn"
           :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
           @click="addStock(store.chosenStockListIndex)"
         >
@@ -44,7 +44,7 @@
       </div>
 
       <button
-        class="action-btn"
+        class="btn action-btn"
         :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
         @click="moveUpStock(store.chosenStockListIndex)"
       >
@@ -53,7 +53,7 @@
       </button>
 
       <button
-        class="action-btn"
+        class="btn action-btn"
         :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
         @click="moveDownStock(store.chosenStockListIndex)"
       >
@@ -62,7 +62,7 @@
       </button>
 
       <button
-        class="action-btn"
+        class="btn action-btn"
         :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
         @click="removeStock(store.chosenStockListIndex)"
       >
@@ -89,6 +89,22 @@
         <span class="text--accent">{{ store.totalLength }}m</span>
         - Vmax pociągu: <span class="text--accent">{{ store.maxStockSpeed }} km/h</span>
       </span>
+    </div>
+
+    <div class="stock_thumbnails" ref="thumbnails">
+      <div v-for="(stock, stockIndex) in store.stockList" :data-selected="store.chosenStockListIndex == stockIndex">
+        <img
+          v-for="i in stock.count"
+          @click="onListItemClick(stockIndex)"
+          :key="stock.id"
+          :src="`https://rj.td2.info.pl/dist/img/thumbnails/${stock.type}.png`"
+          :alt="stock.type"
+          :title="stock.type"
+          @error="stockImageError($event, stock)"
+        />
+
+        <!-- <b>{{ stock.type }}</b> -->
+      </div>
     </div>
 
     <div class="stock_warnings">
@@ -173,6 +189,7 @@ import { useStore } from '../store';
 import warningsMixin from '../mixins/warningsMixin';
 import imageMixin from '../mixins/imageMixin';
 import stockPreviewMixin from '../mixins/stockPreviewMixin';
+import { IStock } from '../types';
 
 export default defineComponent({
   name: 'stock-list',
@@ -193,6 +210,16 @@ export default defineComponent({
 
     draggedVehicleID: -1,
   }),
+
+  watch: {
+    'store.chosenStockListIndex': {
+      handler(id: number) {
+        (this.$refs['thumbnails'] as HTMLElement)
+          .querySelector(`div:nth-child(${id + 1})`)
+          ?.scrollIntoView({ block: 'nearest', inline: 'start', behavior: 'smooth' });
+      },
+    },
+  },
 
   computed: {
     stockString() {
@@ -216,6 +243,10 @@ export default defineComponent({
   methods: {
     stockHasWarnings() {
       return this.tooManyLocomotives || this.trainTooHeavy || this.trainTooLong || this.locoNotSuitable;
+    },
+
+    stockImageError(e: Event, stock: IStock): void {
+      (e.target as HTMLImageElement).src = `images/${stock.useType}-unknown.png`;
     },
 
     copyToClipboard() {
@@ -381,10 +412,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 @import '../styles/global';
 
-.stock_warnings {
-  margin-top: 1em;
-}
-
 .warning {
   padding: 0.25em;
   background: $accentColor;
@@ -403,12 +430,12 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
 
+  gap: 0.5em;
   flex-wrap: wrap;
 
   margin: 1em 0;
-  border: 1px solid white;
-
-  padding: 0 0.3em;
+  padding: 0.5em;
+  background-color: #353a57;
 
   &[data-disabled='true'] {
     opacity: 0.8;
@@ -430,12 +457,7 @@ export default defineComponent({
   }
 
   button {
-    margin: 0.25em;
-    padding: 0.25em;
-
-    &:focus-visible {
-      outline: 1px solid white;
-    }
+    padding: 0.25em 0.5em;
 
     img {
       vertical-align: text-bottom;
@@ -467,7 +489,6 @@ ul {
   overflow: auto;
 
   height: 70vh;
-  margin-top: 1em;
 }
 
 ul > li {
@@ -557,6 +578,31 @@ li > .stock-info {
 
   &-leave-active {
     position: absolute;
+  }
+}
+
+.stock_thumbnails {
+  display: flex;
+  margin: 1em 0;
+
+  overflow: auto;
+
+  background-color: #353a57;
+
+  div {
+    display: flex;
+    align-items: flex-end;
+
+    &[data-selected='true'] {
+      background-color: rebeccapurple;
+    }
+  }
+
+  img {
+    margin: 0.5em 0;
+
+    // max-width: 150px;
+    max-height: 60px;
   }
 }
 
