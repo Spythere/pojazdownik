@@ -86,7 +86,6 @@ export default defineComponent({
 
   display: flex;
   flex-direction: column;
-  padding: 1em;
 }
 
 /* APP */
@@ -95,6 +94,7 @@ export default defineComponent({
 
   color: $textColor;
   font-size: 1em;
+  padding: 1em;
 
   display: flex;
   justify-content: center;

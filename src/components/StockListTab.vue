@@ -91,22 +91,6 @@
       </span>
     </div>
 
-    <div class="stock_thumbnails" ref="thumbnails">
-      <div v-for="(stock, stockIndex) in store.stockList" :data-selected="store.chosenStockListIndex == stockIndex">
-        <img
-          v-for="i in stock.count"
-          @click="onListItemClick(stockIndex)"
-          :key="stock.id"
-          :src="`https://rj.td2.info.pl/dist/img/thumbnails/${stock.type}.png`"
-          :alt="stock.type"
-          :title="stock.type"
-          @error="stockImageError($event, stock)"
-        />
-
-        <!-- <b>{{ stock.type }}</b> -->
-      </div>
-    </div>
-
     <div class="stock_warnings">
       <div class="warning" v-if="locoNotSuitable">
         Lokomotywy EP07 i EP08 są przeznaczone jedynie do ruchu pasażerskiego!
@@ -131,6 +115,21 @@
       </div>
 
       <div class="warning" v-if="tooManyLocomotives">Ten skład posiada za dużo pojazdów trakcyjnych!</div>
+    </div>
+
+    <div class="stock_thumbnails" ref="thumbnails">
+      <div v-for="(stock, stockIndex) in store.stockList" :data-selected="store.chosenStockListIndex == stockIndex">
+        <span v-for="i in stock.count" @click="onListItemClick(stockIndex)" :key="stock.id">
+          <b>{{ stock.type }}</b>
+
+          <img
+            :src="`https://rj.td2.info.pl/dist/img/thumbnails/${stock.type}.png`"
+            :alt="stock.type"
+            :title="stock.type"
+            @error="stockImageError($event, stock)"
+          />
+        </span>
+      </div>
     </div>
 
     <!-- Stock list -->
@@ -214,6 +213,8 @@ export default defineComponent({
   watch: {
     'store.chosenStockListIndex': {
       handler(id: number) {
+        if (id < 0) return;
+
         (this.$refs['thumbnails'] as HTMLElement)
           .querySelector(`div:nth-child(${id + 1})`)
           ?.scrollIntoView({ block: 'nearest', inline: 'start', behavior: 'smooth' });
@@ -488,7 +489,7 @@ ul {
 
   overflow: auto;
 
-  height: 70vh;
+  height: 500px;
 }
 
 ul > li {
@@ -528,6 +529,10 @@ li > .stock-info {
     justify-content: center;
     align-items: center;
   }
+}
+
+.stock_warnings {
+  margin: 0.5em 0; 
 }
 
 .stock-info {
@@ -596,12 +601,20 @@ li > .stock-info {
     &[data-selected='true'] {
       background-color: rebeccapurple;
     }
+
+    span {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5em;
+      padding: 0.5em 0;
+
+      text-align: center;
+
+      font-size: 0.85em;
+    }
   }
 
   img {
-    margin: 0.5em 0;
-
-    // max-width: 150px;
     max-height: 60px;
   }
 }
