@@ -13,6 +13,7 @@ import { defineComponent } from 'vue';
 import { useStore } from '../store';
 import StockListTab from './StockListTab.vue';
 import StockGeneratorTab from './StockGeneratorTab.vue';
+import NumberGeneratorTab from './NumberGeneratorTab.vue';
 
 export default defineComponent({
   setup() {
@@ -29,6 +30,9 @@ export default defineComponent({
 
         case 'stock-generator':
           return StockGeneratorTab;
+
+        case 'number-generator':
+          return NumberGeneratorTab;
 
         default:
           return StockListTab;
@@ -56,6 +60,8 @@ export default defineComponent({
 .stock-section {
   grid-row: 1 / 4;
   grid-column: 2;
+
+  padding: 0 1px;
 
   overflow: hidden;
 }

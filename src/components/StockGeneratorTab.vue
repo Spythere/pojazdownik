@@ -1,14 +1,14 @@
 <template>
-  <div class="stock-generator">
-    <div class="stock_actions">
+  <div class="stock-generator tab">
+    <div class="tab_header">
       <h2>GENERATOR SKŁADU TOWAROWEGO</h2>
       <button class="btn" @click="() => (store.stockSectionMode = 'stock-list')">POWRÓT DO LISTY &gt;</button>
     </div>
 
-    <div class="generator_content">
+    <div class="tab_content">
       <h2>WŁAŚCIWOŚCI SKŁADU</h2>
 
-      <div class="generator_attributes">
+      <div class="tab_attributes">
         <label>
           Maksymalna masa (t)
           <input type="number" v-model="maxMass" step="100" max="4000" min="0" />
@@ -41,7 +41,7 @@
 
       <h2>WAGONY Z WYBRANYMI ŁADUNKAMI</h2>
 
-      <div class="warning">
+      <div class="generator_warning">
         <span v-if="computedChosenCarTypes.size == 0">
           Wybierz co najmniej jeden ładunek, aby zobaczyć wagony, które go posiadają!
         </span>
@@ -71,7 +71,7 @@
 
       <hr />
 
-      <div class="generator_actions">
+      <div class="tab_actions">
         <button class="btn" :data-disabled="computedChosenCarTypes.size == 0" @click="generateStock()">
           WYGENERUJ
         </button>
@@ -176,7 +176,7 @@ export default defineComponent({
 
       new Array(this.maxCarCount).fill(0).forEach(() => {
         const randomStockType = generatedChosenStockList[~~(Math.random() * generatedChosenStockList.length)];
-        const {carWagon, cargo} = randomStockType.carPool[~~(Math.random() * randomStockType.carPool.length)];
+        const { carWagon, cargo } = randomStockType.carPool[~~(Math.random() * randomStockType.carPool.length)];
 
         if (this.store.totalMass + (cargo?.totalMass || carWagon.mass) > this.maxMass) return;
         if (this.store.totalLength + carWagon.length > this.maxLength) return;
@@ -227,49 +227,12 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @import '../styles/global.scss';
+@import '../styles/tab.scss';
 
-.stock_actions {
-  align-items: center;
 
-  h2 {
-    margin: 0;
-    color: white;
-    font-size: 1.35em;
-    text-align: center;
-  }
-
-  button {
-    margin-left: auto;
-  }
-}
-
-.stock-generator {
-  height: 100%;
-}
-
-.generator_content {
-  margin-top: 1em;
-  height: 100%;
-}
 
 h2 {
   margin: 1em 0;
-}
-
-.generator_attributes {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1em;
-
-  label {
-    display: flex;
-    flex-direction: column;
-  }
-
-  input {
-    max-width: 250px;
-    margin-top: 0.5em;
-  }
 }
 
 .generator_cargo,
@@ -325,24 +288,7 @@ hr {
   margin: 15px 0;
 }
 
-.generator_actions {
-  display: grid;
-  gap: 0.5em;
-  grid-template-columns: repeat(3, 1fr);
-
-  button {
-    background-color: #131313;
-
-    padding: 0.5em;
-    font-weight: bold;
-  }
-
-  &[data-disabled] button {
-    opacity: 0.75;
-  }
-}
-
-.warning {
+.generator_warning {
   background-color: $accentColor;
   padding: 0.5em;
   text-align: justify;
@@ -354,17 +300,6 @@ hr {
   .generator_cargo,
   .generator_vehicles {
     grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-  }
-
-  .generator_attributes {
-    label {
-      width: 100%;
-    }
-
-    input {
-      max-width: 100%;
-      width: 100%;
-    }
   }
 }
 </style>

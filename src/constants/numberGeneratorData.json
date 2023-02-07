@@ -1,0 +1,29 @@
+{
+  "regions": {
+    "Losowy": [
+      10, 11, 19, 91, 93, 97, 99, 20, 22, 29, 30, 33, 39, 40, 44, 49, 94, 50, 55, 59, 90, 95, 96, 66, 60, 69, 77, 70,
+      79, 88, 80, 89, 92, 98
+    ],
+    "Warszawa": [10, 11, 19, 91, 93, 97, 99],
+    "Lublin": [20, 22, 29],
+    "Kraków": [30, 33, 39],
+    "Sosnowiec": [40, 44, 49, 94],
+    "Gdańsk": [50, 55, 59, 90, 95, 96],
+    "Wrocław": [66, 60, 69],
+    "Poznań": [77, 70, 79],
+    "Szczecin": [88, 80],
+    "Rezerwa": [89, 92, 98]
+  },
+  "categories": {
+    "ekspres krajowy (EI)": "2:00-99:2",
+    "międzywojewódzki pośpieszny (MP)": "2:050-169:3",
+    "wojewódzki pośpieszny (RP)": "2:050-169:3",
+    "wojewódzki osobowy (RO)": "2:200-999:3",
+    "próżny \"służbowy\" (PW)": "2:6;3:0-899:3",
+    "towarowy do przewozów masowych (TM)": "2:4;3:0-899:3",
+    "towarowy do obsługi stacji (TK)": "2:3;3:0-899:3",
+    "lokomotywa luzem (LT)": "2:5;3:0-899:3"
+  }
+}
+
+

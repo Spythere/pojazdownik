@@ -27,7 +27,7 @@ export interface IStore {
   isRandomizerCardOpen: boolean;
   isRealStockListCardOpen: boolean;
 
-  stockSectionMode: 'stock-list' | 'stock-generator';
+  stockSectionMode: 'stock-list' | 'stock-generator' | 'number-generator';
   stockData?: IStockData;
 }
 

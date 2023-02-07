@@ -1,35 +1,36 @@
 import { EVehicleUseType } from '../enums/EVehicleUseType';
 import { ICarWagon, ILocomotive, IStore, TStockInfoKey } from '../types';
+import { LocoType, calculateSpeedLimit } from './speedLimitUtils';
 
 // rodzaj: [tMaxPas, vMaxPas, tMaxTow, vMaxTow] | SM42: [tMax, vMax, ...]
-const maxAllowedSpeedTable = {
-  EU07: [
-    [650, 125],
-    [2000, 70],
-  ],
-  EP07: [
-    [650, 125],
-    [0, 0],
-  ],
-  EP08: [
-    [650, 140],
-    [0, 0],
-  ],
-  ET41: [
-    [700, 125],
-    [4000, 70],
-  ],
-  SM42: [
-    [95, 90],
-    [200, 80],
-    [300, 70],
-    [450, 60],
-    [750, 50],
-    [1130, 40],
-    [1720, 30],
-    [2400, 20],
-  ],
-};
+// const maxAllowedSpeedTable = {
+//   EU07: [
+//     [650, 125],
+//     [2000, 70],
+//   ],
+//   EP07: [
+//     [650, 125],
+//     [0, 0],
+//   ],
+//   EP08: [
+//     [650, 140],
+//     [0, 0],
+//   ],
+//   ET41: [
+//     [700, 125],
+//     [4000, 70],
+//   ],
+//   SM42: [
+//     [95, 90],
+//     [200, 80],
+//     [300, 70],
+//     [450, 60],
+//     [750, 50],
+//     [1130, 40],
+//     [1720, 30],
+//     [2400, 20],
+//   ],
+// };
 
 export function isLocomotive(vehicle: ILocomotive | ICarWagon): vehicle is ILocomotive {
   return (vehicle as ILocomotive).power !== undefined;
@@ -175,7 +176,23 @@ export function totalLength(state: IStore) {
 }
 
 export function maxStockSpeed(state: IStore) {
-  return state.stockList.reduce((acc, stock) => (stock.maxSpeed < acc || acc == 0 ? stock.maxSpeed : acc), 0);
+  const stockSpeedLimit = state.stockList.reduce(
+    (acc, stock) => (stock.maxSpeed < acc || acc == 0 ? stock.maxSpeed : acc),
+    0
+  );
+  const headingLoco = state.stockList[0]?.isLoco ? state.stockList[0] : undefined;
+
+  if (!headingLoco) return stockSpeedLimit;
+
+  const locoType = headingLoco.type.split('-')[0];
+
+  if (/^(EN|2EN|SN)/.test(locoType)) return stockSpeedLimit;
+
+  const stockMass = totalMass(state);
+
+  const speedLimitByMass = calculateSpeedLimit(locoType as LocoType, stockMass, isTrainPassenger(state));
+
+  return speedLimitByMass ? Math.min(stockSpeedLimit, speedLimitByMass) : stockSpeedLimit;
 }
 
 export function isTrainPassenger(state: IStore) {

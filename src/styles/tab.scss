@@ -1,0 +1,72 @@
+.tab {
+  height: 100%;
+
+  &_header {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+
+    h2 {
+      margin: 0;
+      color: white;
+      font-size: 1.35em;
+      text-align: center;
+    }
+
+    button {
+      margin-left: auto;
+    }
+  }
+
+  &_content {
+    margin-top: 1em;
+    height: 100%;
+  }
+
+  &_attributes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+
+    label {
+      display: flex;
+      flex-direction: column;
+    }
+
+    input {
+      max-width: 250px;
+      margin-top: 0.5em;
+    }
+  }
+
+  &_actions {
+    display: grid;
+    gap: 0.5em;
+    grid-template-columns: repeat(3, 1fr);
+
+    button {
+      background-color: #131313;
+
+      padding: 0.5em;
+      font-weight: bold;
+    }
+
+    &[data-disabled] button {
+      opacity: 0.75;
+    }
+  }
+}
+
+@media only screen and (max-width: 470px) {
+  .tab_attributes {
+    label {
+      width: 100%;
+    }
+
+    input {
+      max-width: 100%;
+      width: 100%;
+    }
+  }
+}
+

@@ -15,7 +15,7 @@ export default defineComponent({
       return `${Math.random().toString(36).slice(5)}`;
     },
 
-    getStockObject(vehicle: Vehicle, cargo?: ICargo, count = 1): IStock {
+    getStockObject(vehicle: Vehicle, cargo?: ICargo | null, count = 1): IStock {
       const isLoco = isLocomotive(vehicle);
 
       return {
@@ -33,13 +33,22 @@ export default defineComponent({
       };
     },
 
+    addVehicle(vehicle: Vehicle | null, cargo?: ICargo | null) {
+      if (!vehicle) return;
+
+      const stock = this.getStockObject(vehicle, cargo);
+
+      if (stock.isLoco && !this.store.stockList[0]?.isLoco) this.store.stockList.unshift(stock);
+      else this.store.stockList.push(stock);
+    },
+
     addLocomotive(loco: ILocomotive) {
-      const previousStock =
-        this.store.stockList.length > 0 ? this.store.stockList[this.store.stockList.length - 1] : null;
-      if (previousStock && previousStock.type == loco.type) {
-        this.store.stockList[this.store.stockList.length - 1].count++;
-        return;
-      }
+      // const previousStock =
+      //   this.store.stockList.length > 0 ? this.store.stockList[this.store.stockList.length - 1] : null;
+      // if (previousStock && previousStock.type == loco.type) {
+      //   this.store.stockList[this.store.stockList.length - 1].count++;
+      //   return;
+      // }
 
       const stockObj = this.getStockObject(loco);
 
@@ -48,14 +57,14 @@ export default defineComponent({
     },
 
     addCarWagon(car: ICarWagon, cargo?: ICargo) {
-      const previousStock =
-        this.store.stockList.length > 0 ? this.store.stockList[this.store.stockList.length - 1] : null;
+      // const previousStock =
+      //   this.store.stockList.length > 0 ? this.store.stockList[this.store.stockList.length - 1] : null;
 
-      if (previousStock && previousStock.type == car.type && previousStock.cargo?.id == cargo?.id) {
-        this.store.stockList[this.store.stockList.length - 1].count++;
+      // if (previousStock && previousStock.type == car.type && previousStock.cargo?.id == cargo?.id) {
+      //   this.store.stockList[this.store.stockList.length - 1].count++;
 
-        return;
-      }
+      //   return;
+      // }
 
       const stockObj = this.getStockObject(car, cargo);
 
@@ -63,3 +72,4 @@ export default defineComponent({
     },
   },
 });
+

@@ -12,37 +12,6 @@
         POJAZD NR <span class="text--accent">{{ store.chosenStockListIndex + 1 }}</span> &nbsp;
       </b>
 
-      <div class="count">
-        <button
-          class="btn action-btn"
-          :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
-          @click="subStock(store.chosenStockListIndex)"
-        >
-          <img :src="getIconURL('sub')" alt="subtract vehicle count" />
-          1
-        </button>
-
-        <input
-          v-if="chosenStockVehicle"
-          v-model="chosenStockVehicle.count"
-          type="number"
-          min="1"
-          name="stock-count"
-          id="stock-count"
-        />
-
-        <input v-else id="stock-count" type="number" value="0" :tabindex="store.chosenStockListIndex == -1 ? -1 : 0" />
-
-        <button
-          class="btn action-btn"
-          :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
-          @click="addStock(store.chosenStockListIndex)"
-        >
-          <img :src="getIconURL('add')" alt="add vehicle count" />
-          1
-        </button>
-      </div>
-
       <button
         class="btn action-btn"
         :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
@@ -71,8 +40,12 @@
       </button>
     </div>
 
-    <div class="stock_clipboard-text" v-if="store.stockList.length > 0">
-      <button class="btn" @click="copyToClipboard">Skopiuj tekst składu do schowka</button>
+    <div class="stock_additional">
+      <button class="btn" v-if="store.stockList.length > 0" @click="copyToClipboard">
+        Skopiuj tekst składu do schowka
+      </button>
+
+      <button class="btn" v-if="store.stockList[0]?.isLoco">Wygeneruj numer pociągu</button>
     </div>
 
     <div class="stock_specs">
@@ -117,20 +90,7 @@
       <div class="warning" v-if="tooManyLocomotives">Ten skład posiada za dużo pojazdów trakcyjnych!</div>
     </div>
 
-    <div class="stock_thumbnails" ref="thumbnails">
-      <div v-for="(stock, stockIndex) in store.stockList" :data-selected="store.chosenStockListIndex == stockIndex">
-        <span v-for="i in stock.count" @click="onListItemClick(stockIndex)" :key="stock.id">
-          <b>{{ stock.type }}</b>
-
-          <img
-            :src="`https://rj.td2.info.pl/dist/img/thumbnails/${stock.type}.png`"
-            :alt="stock.type"
-            :title="stock.type"
-            @error="stockImageError($event, stock)"
-          />
-        </span>
-      </div>
-    </div>
+    <StockThumbnails :onListItemClick="onListItemClick" :onStockImageError="stockImageError" />
 
     <!-- Stock list -->
     <ul ref="list">
@@ -138,7 +98,7 @@
         <div class="stock-info">Lista pojazdów jest pusta!</div>
       </li>
 
-      <transition-group name="stock-list-anim">
+      <TransitionGroup name="stock-list-anim">
         <li
           v-for="(stock, i) in store.stockList"
           :key="stock.id"
@@ -171,11 +131,9 @@
             <span class="stock-info__length"> {{ stock.length }}m </span>
             <span class="stock-info__mass">{{ stock.cargo ? stock.cargo.totalMass : stock.mass }}t </span>
             <span class="stock-info__speed"> {{ stock.maxSpeed }}km/h </span>
-
-            <span class="stock-info__count"> x{{ stock.count }} </span>
           </div>
         </li>
-      </transition-group>
+      </TransitionGroup>
     </ul>
   </section>
 </template>
@@ -189,10 +147,11 @@ import warningsMixin from '../mixins/warningsMixin';
 import imageMixin from '../mixins/imageMixin';
 import stockPreviewMixin from '../mixins/stockPreviewMixin';
 import { IStock } from '../types';
+import StockThumbnails from './StockThumbnails.vue';
 
 export default defineComponent({
   name: 'stock-list',
-  components: { TrainImage },
+  components: { TrainImage, StockThumbnails },
 
   mixins: [warningsMixin, imageMixin, stockPreviewMixin],
 
@@ -209,18 +168,6 @@ export default defineComponent({
 
     draggedVehicleID: -1,
   }),
-
-  watch: {
-    'store.chosenStockListIndex': {
-      handler(id: number) {
-        if (id < 0) return;
-
-        (this.$refs['thumbnails'] as HTMLElement)
-          .querySelector(`div:nth-child(${id + 1})`)
-          ?.scrollIntoView({ block: 'nearest', inline: 'start', behavior: 'smooth' });
-      },
-    },
-  },
 
   computed: {
     stockString() {
@@ -470,12 +417,11 @@ export default defineComponent({
   }
 }
 
-.stock_clipboard-text {
-  font-weight: bold;
+.stock_additional {
+  display: flex;
+  gap: 0.5em;
 
-  & > .btn {
-    margin: 0 0.5em 0.5em 0;
-  }
+  margin: 0.5em 0;
 }
 
 .real-stock-info {
@@ -509,7 +455,8 @@ ul > li {
 
   &.list-empty {
     background-color: $secondaryColor;
-    padding: 0.5em;
+    border-radius: 0.5em;
+    padding: 0.75em;
   }
 }
 
@@ -532,7 +479,7 @@ li > .stock-info {
 }
 
 .stock_warnings {
-  margin: 0.5em 0; 
+  margin: 0.5em 0;
 }
 
 .stock-info {
@@ -583,39 +530,6 @@ li > .stock-info {
 
   &-leave-active {
     position: absolute;
-  }
-}
-
-.stock_thumbnails {
-  display: flex;
-  margin: 1em 0;
-
-  overflow: auto;
-
-  background-color: #353a57;
-
-  div {
-    display: flex;
-    align-items: flex-end;
-
-    &[data-selected='true'] {
-      background-color: rebeccapurple;
-    }
-
-    span {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5em;
-      padding: 0.5em 0;
-
-      text-align: center;
-
-      font-size: 0.85em;
-    }
-  }
-
-  img {
-    max-height: 60px;
   }
 }
 

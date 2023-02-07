@@ -85,7 +85,7 @@
       </div>
 
       <div class="input_actions">
-        <button class="btn" @click="addVehicle">DODAJ NOWY</button>
+        <button class="btn" @click="addVehicle(store.chosenVehicle, store.chosenCargo)">DODAJ NOWY</button>
         <button
           class="btn"
           @click="switchVehicles"
@@ -112,6 +112,7 @@ import imageMixin from '../mixins/imageMixin';
 import { useStore } from '../store';
 import { isLocomotive } from '../utils/vehicleUtils';
 import stockPreviewMixin from '../mixins/stockPreviewMixin';
+import stockMixin from '../mixins/stockMixin';
 
 interface ILocoType {
   id: string;
@@ -120,7 +121,7 @@ interface ILocoType {
 }
 
 export default defineComponent({
-  mixins: [imageMixin, stockPreviewMixin],
+  mixins: [imageMixin, stockPreviewMixin, stockMixin],
 
   data: () => ({
     locomotiveTypeList: [
@@ -174,7 +175,10 @@ export default defineComponent({
     },
 
     addOrSwitchVehicle() {
-      if (this.store.chosenStockListIndex == -1) this.addVehicle();
+      if(!this.store.chosenVehicle) return;
+
+      if (this.store.chosenStockListIndex == -1)
+        this.addVehicle(this.store.chosenVehicle, this.store.chosenCargo);
       else this.switchVehicles();
     },
 
@@ -210,50 +214,6 @@ export default defineComponent({
       };
 
       this.store.stockList[this.store.chosenStockListIndex] = stockObj;
-    },
-
-    addVehicle() {
-      const vehicle = this.store.chosenVehicle;
-
-      if (!vehicle) return;
-
-      const stockObj: IStock = {
-        id: `${Date.now()}`,
-        useType: isLocomotive(vehicle) ? vehicle.power : vehicle.useType,
-        type: vehicle.type,
-        length: vehicle.length,
-        mass: vehicle.mass,
-        maxSpeed: vehicle.maxSpeed,
-        isLoco: isLocomotive(vehicle),
-        cargo:
-          !isLocomotive(vehicle) && vehicle.loadable && this.store.chosenCargo ? this.store.chosenCargo : undefined,
-        count: 1,
-        imgSrc: vehicle.imageSrc,
-        supportersOnly: vehicle.supportersOnly,
-      };
-
-      const previousStock =
-        this.store.stockList.length > 0 ? this.store.stockList[this.store.stockList.length - 1] : null;
-
-      if (isLocomotive(vehicle) && previousStock && previousStock.type == vehicle.type) {
-        this.store.stockList[this.store.stockList.length - 1].count++;
-        return;
-      }
-
-      if (
-        !isLocomotive(vehicle) &&
-        previousStock &&
-        previousStock.type == vehicle.type &&
-        previousStock.cargo?.id == this.store.chosenCargo?.id
-      ) {
-        this.store.stockList[this.store.stockList.length - 1].count++;
-
-        return;
-      }
-
-      if (isLocomotive(vehicle) && this.store.stockList.length > 0 && !this.store.stockList[0].isLoco)
-        this.store.stockList.unshift(stockObj);
-      else this.store.stockList.push(stockObj);
     },
   },
 });
