@@ -70,13 +70,10 @@ export default defineComponent({
 .stock_actions {
   display: flex;
   gap: 0.5em;
+  margin: 0.5em 0;
 
   @media only screen and (max-width: 450px) {
     flex-wrap: wrap;
-
-    button {
-      width: 100%;
-    }
   }
 }
 </style>

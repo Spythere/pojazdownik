@@ -7,18 +7,22 @@
 
     <div class="tab_content">
       <div class="options">
-        <select v-model="regionNumbers">
+        <select v-model="regionNumbers" @change="randomizeTrainNumber">
           <option :value="null" disabled>Obszar konstrukcyjny</option>
           <option v-for="(nums, name) in genData.regions" :value="nums">{{ name }}</option>
         </select>
 
-        <select v-model="categoryRules">
+        <select v-model="categoryRules" @change="randomizeTrainNumber">
           <option :value="null" disabled>Kategoria pociągu</option>
           <option v-for="(rules, category) in genData.categories" :value="rules">{{ category }}</option>
         </select>
       </div>
 
-      <h1>Wygenerowany numer pociągu: {{ computedNumber }}</h1>
+      <h1>
+        Wygenerowany numer pociągu: <b class="text--accent">{{ trainNumber }}</b>
+      </h1>
+
+      <button class="btn" @click="randomizeTrainNumber">PRZELOSUJ</button>
     </div>
   </div>
 </template>
@@ -34,13 +38,15 @@ const store = useStore();
 const regionNumbers = ref(null) as Ref<number[] | null>;
 const categoryRules = ref(null) as Ref<string | null>;
 
-const computedNumber = computed(() => {
+const trainNumber = ref(null) as Ref<string | null>;
+
+const randomizeTrainNumber = () => {
   if (regionNumbers.value == null || categoryRules.value == null) return '';
 
-  let trainNumber = '';
+  let number = '';
   const randRegionNumber = regionNumbers.value[Math.floor(Math.random() * regionNumbers.value.length)];
 
-  trainNumber += randRegionNumber.toString();
+  number += randRegionNumber.toString();
 
   const rulesArray = categoryRules.value.split(';').map((r) => ({
     index: r.split(':')[0],
@@ -51,17 +57,17 @@ const computedNumber = computed(() => {
   rulesArray.forEach((r) => {
     const range = r.rule.split('-');
 
-    if (range.length == 1) trainNumber += r.rule;
+    if (range.length == 1) number += r.rule;
     else {
       const [minRange, maxRange] = range;
       const randRange = Math.floor(Math.random() * (Number(maxRange) - Number(minRange)) + Number(minRange)).toString();
 
-      trainNumber += new Array(Math.abs(randRange.length - r.nums)).fill('0').join('') + randRange;
+      number += new Array(Math.abs(randRange.length - r.nums)).fill('0').join('') + randRange;
     }
   });
 
-  return trainNumber;
-});
+  trainNumber.value = number;
+};
 </script>
 
 <style lang="scss" scoped>

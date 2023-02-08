@@ -2,9 +2,22 @@
   <section class="stock-list">
     <div class="stock_actions">
       <button class="btn" @click="downloadStock">POBIERZ POCIĄG</button>
-      <button class="btn" @click="resetStock">ZRESETUJ LISTĘ</button>
-      <button class="btn" style="margin-left: auto" @click="shuffleCars">TASUJ WAGONY</button>
       <button class="btn" @click="store.stockSectionMode = 'stock-generator'">LOSUJ SKŁAD</button>
+      <button class="btn" @click="store.stockSectionMode = 'number-generator'">GENERUJ NUMER</button>
+    </div>
+
+    <div class="stock_actions">
+      <button
+        class="btn"
+        :data-disabled="store.stockList.length == 0"
+        :disabled="store.stockList.length == 0"
+        @click="copyToClipboard"
+      >
+        KOPIUJ DO SCHOWKA
+      </button>
+
+      <button class="btn" @click="resetStock">ZRESETUJ LISTĘ</button>
+      <button class="btn" @click="shuffleCars">TASUJ WAGONY</button>
     </div>
 
     <div class="stock_controls" :data-disabled="store.chosenStockListIndex == -1">
@@ -38,14 +51,6 @@
         <img :src="getIconURL('remove')" alt="remove vehicle" />
         Usuń
       </button>
-    </div>
-
-    <div class="stock_additional">
-      <button class="btn" v-if="store.stockList.length > 0" @click="copyToClipboard">
-        Skopiuj tekst składu do schowka
-      </button>
-
-      <button class="btn" v-if="store.stockList[0]?.isLoco">Wygeneruj numer pociągu</button>
     </div>
 
     <div class="stock_specs">
@@ -417,11 +422,8 @@ export default defineComponent({
   }
 }
 
-.stock_additional {
-  display: flex;
-  gap: 0.5em;
-
-  margin: 0.5em 0;
+.stock_actions button {
+  width: 100%;
 }
 
 .real-stock-info {
