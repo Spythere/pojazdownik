@@ -88,25 +88,7 @@ export default defineComponent({
     },
 
     choseStock(name: string, type: string, number: string, stockString: string) {
-      const stockArray = stockString.split(';');
-
-      this.store.stockList.length = 0;
-      this.store.chosenVehicle = null;
-      this.store.chosenCar = null;
-      this.store.chosenCargo = null;
-      this.store.chosenLoco = null;
-      this.store.chosenStockListIndex = -1;
-
-      this.store.swapVehicles = false;
-
-      stockArray.forEach((type, i) => {
-        let vehicle: Vehicle | null = null;
-        if (i == 0) vehicle = this.store.locoDataList.find((loco) => loco.type == stockArray[0]) || null;
-        else vehicle = this.store.carDataList.find((car) => car.type == type) || null;
-
-        this.addVehicle(vehicle);
-      });
-
+      this.loadStockFromString(stockString);
       this.store.isRealStockListCardOpen = false;
     },
   },

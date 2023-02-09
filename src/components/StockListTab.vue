@@ -1,6 +1,17 @@
 <template>
   <section class="stock-list">
     <div class="stock_actions">
+      <label class="file-label">
+        <input
+          type="file"
+          accept=".con, .txt"
+          ref="conFile"
+          style="position: fixed; top: -100%"
+          @change="uploadStock"
+        />
+        <div class="btn">ZAŁADUJ PLIK</div>
+      </label>
+
       <button class="btn" @click="store.stockSectionMode = 'number-generator'">GENERUJ NUMER</button>
       <button class="btn" @click="store.stockSectionMode = 'stock-generator'">LOSUJ SKŁAD</button>
     </div>
@@ -350,6 +361,25 @@ export default defineComponent({
       a.dispatchEvent(e);
     },
 
+    uploadStock() {
+      const files = (this.$refs['conFile'] as HTMLInputElement).files;
+
+      if (files?.length != 1) return;
+
+      const reader = new FileReader();
+      reader.readAsText(files[0]);
+
+      reader.onload = (res) => {
+        const stockString = res.target?.result;
+
+        if (!stockString || typeof stockString !== 'string') return;
+
+        this.loadStockFromString(stockString);
+      };
+
+      reader.onerror = (err) => console.log(err);
+    },
+
     onDragStart(vehicleIndex: number) {
       this.draggedVehicleID = vehicleIndex;
     },
@@ -435,6 +465,21 @@ export default defineComponent({
   margin: 1em 0;
 
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+
+  label.file-label {
+    text-align: center;
+    cursor: pointer;
+    padding: 0;
+
+    input:focus-visible + div {
+      outline: 1px solid white;
+      color: $accentColor;
+    }
+
+    input:hover + div {
+      color: $accentColor;
+    }
+  }
 }
 
 .real-stock-info {
