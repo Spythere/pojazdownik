@@ -40,11 +40,11 @@
 
     <div class="stock_actions">
       <button class="btn" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="downloadStock">
-        POBIERZ POCIĄG
+        POBIERZ PLIK
       </button>
 
       <button class="btn" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="copyToClipboard">
-        KOPIUJ DO SCHOWKA
+        KOPIUJ JAKO TEKST
       </button>
 
       <button class="btn" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="resetStock">
@@ -327,9 +327,13 @@ export default defineComponent({
       // if (this.stockHasWarnings())
       //   return alert('Jazda tym pociągiem jest niezgodna z regulaminem symulatora! Zmień parametry zestawienia!');
 
+      const defaultName = `${this.store.chosenRealStockName || this.store.stockList[0].type} ${
+        this.store.totalMass
+      }t; ${this.store.totalLength}m; vmax ${this.store.maxStockSpeed}`;
+
       const fileName = prompt(
         'Nazwij plik, a następnie pobierz do folderu Presets (Dokumenty/TTSK/TrainDriver2):',
-        `${this.store.chosenRealStockName || this.store.stockList[0].type}`
+        defaultName
       );
 
       if (!fileName) return;
