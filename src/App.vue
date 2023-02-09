@@ -86,6 +86,7 @@ export default defineComponent({
 
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 /* APP */
@@ -94,10 +95,7 @@ export default defineComponent({
 
   color: $textColor;
   font-size: 1em;
-  padding: 1em;
-
-  display: flex;
-  justify-content: center;
+  padding: 1em 0.5em;
 }
 
 /* HEADER SECTION */
@@ -145,14 +143,14 @@ main {
   display: grid;
   gap: 1em 3em;
 
-  width: 100vw;
+  width: 100%;
   max-width: 1300px;
   min-height: 75vh;
 
   grid-template-columns: 1fr 2fr;
   grid-template-rows: auto 360px minmax(400px, 1fr);
 
-  padding: 0 1em;
+  // padding: 0 1em;
   margin-bottom: 2em;
 }
 

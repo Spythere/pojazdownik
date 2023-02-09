@@ -9,8 +9,8 @@ $secondaryColor: #222;
 $accentColor: #e4c428;
 
 ::-webkit-scrollbar {
-  width: 0.5rem;
-  height: 0.5rem;
+  width: 7px;
+  height: 7px;
 
   &-track {
     background: #222;
@@ -31,7 +31,6 @@ html {
   font-family: 'Lato', sans-serif;
 
   background-color: $bgColor;
-  width: 100vw;
   overflow-x: hidden;
 }
 

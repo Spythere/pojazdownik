@@ -1,23 +1,8 @@
 <template>
   <section class="stock-list">
     <div class="stock_actions">
-      <button class="btn" @click="downloadStock">POBIERZ POCIĄG</button>
-      <button class="btn" @click="store.stockSectionMode = 'stock-generator'">LOSUJ SKŁAD</button>
       <button class="btn" @click="store.stockSectionMode = 'number-generator'">GENERUJ NUMER</button>
-    </div>
-
-    <div class="stock_actions">
-      <button
-        class="btn"
-        :data-disabled="store.stockList.length == 0"
-        :disabled="store.stockList.length == 0"
-        @click="copyToClipboard"
-      >
-        KOPIUJ DO SCHOWKA
-      </button>
-
-      <button class="btn" @click="resetStock">ZRESETUJ LISTĘ</button>
-      <button class="btn" @click="shuffleCars">TASUJ WAGONY</button>
+      <button class="btn" @click="store.stockSectionMode = 'stock-generator'">LOSUJ SKŁAD</button>
     </div>
 
     <div class="stock_controls" :data-disabled="store.chosenStockListIndex == -1">
@@ -26,30 +11,48 @@
       </b>
 
       <button
-        class="btn action-btn"
+        class="btn"
         :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
         @click="moveUpStock(store.chosenStockListIndex)"
       >
         <img :src="getIconURL('higher')" alt="move up vehicle" />
-        Przenieś wyżej
+        PRZENIEŚ WYŻEJ
       </button>
 
       <button
-        class="btn action-btn"
+        class="btn"
         :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
         @click="moveDownStock(store.chosenStockListIndex)"
       >
         <img :src="getIconURL('lower')" alt="move down vehicle" />
-        Przenieś niżej
+        PRZENIEŚ NIŻEJ
       </button>
 
       <button
-        class="btn action-btn"
+        class="btn"
         :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
         @click="removeStock(store.chosenStockListIndex)"
       >
         <img :src="getIconURL('remove')" alt="remove vehicle" />
-        Usuń
+        USUŃ
+      </button>
+    </div>
+
+    <div class="stock_actions">
+      <button class="btn" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="downloadStock">
+        POBIERZ POCIĄG
+      </button>
+
+      <button class="btn" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="copyToClipboard">
+        KOPIUJ DO SCHOWKA
+      </button>
+
+      <button class="btn" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="resetStock">
+        ZRESETUJ LISTĘ
+      </button>
+
+      <button class="btn" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="shuffleCars">
+        TASUJ WAGONY
       </button>
     </div>
 
@@ -99,7 +102,7 @@
 
     <!-- Stock list -->
     <ul ref="list">
-      <li v-if="store.stockList.length == 0" class="list-empty">
+      <li v-if="stockIsEmpty" class="list-empty">
         <div class="stock-info">Lista pojazdów jest pusta!</div>
       </li>
 
@@ -153,12 +156,13 @@ import imageMixin from '../mixins/imageMixin';
 import stockPreviewMixin from '../mixins/stockPreviewMixin';
 import { IStock } from '../types';
 import StockThumbnails from './StockThumbnails.vue';
+import stockMixin from '../mixins/stockMixin';
 
 export default defineComponent({
   name: 'stock-list',
   components: { TrainImage, StockThumbnails },
 
-  mixins: [warningsMixin, imageMixin, stockPreviewMixin],
+  mixins: [warningsMixin, imageMixin, stockMixin, stockPreviewMixin],
 
   setup() {
     const store = useStore();
@@ -186,6 +190,10 @@ export default defineComponent({
           return final;
         })
         .join(';');
+    },
+
+    stockIsEmpty() {
+      return this.store.stockList.length == 0;
     },
 
     chosenStockVehicle() {
@@ -266,6 +274,8 @@ export default defineComponent({
       if (index == -1) return;
 
       this.store.stockList = this.store.stockList.filter((stock, i) => i != index);
+
+      if (this.store.stockList.length < index + 1) this.store.chosenStockListIndex = -1;
     },
 
     moveUpStock(index: number) {
@@ -386,7 +396,6 @@ export default defineComponent({
   gap: 0.5em;
   flex-wrap: wrap;
 
-  margin: 1em 0;
   padding: 0.5em;
   background-color: #353a57;
 
@@ -410,20 +419,18 @@ export default defineComponent({
   }
 
   button {
-    padding: 0.25em 0.5em;
-
     img {
-      vertical-align: text-bottom;
       margin-right: 0.25em;
-
-      width: 1.1em;
-      height: 1.1em;
     }
   }
 }
 
-.stock_actions button {
-  width: 100%;
+.stock_actions {
+  display: grid;
+  gap: 0.5em;
+  margin: 1em 0;
+
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
 }
 
 .real-stock-info {

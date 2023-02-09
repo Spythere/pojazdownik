@@ -65,16 +65,5 @@ export default defineComponent({
 
   overflow: hidden;
 }
-
-// Stock tabs styles
-.stock_actions {
-  display: flex;
-  gap: 0.5em;
-  margin: 0.5em 0;
-
-  @media only screen and (max-width: 450px) {
-    flex-wrap: wrap;
-  }
-}
 </style>
 

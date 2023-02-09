@@ -175,10 +175,9 @@ export default defineComponent({
     },
 
     addOrSwitchVehicle() {
-      if(!this.store.chosenVehicle) return;
+      if (!this.store.chosenVehicle) return;
 
-      if (this.store.chosenStockListIndex == -1)
-        this.addVehicle(this.store.chosenVehicle, this.store.chosenCargo);
+      if (this.store.chosenStockListIndex == -1) this.addVehicle(this.store.chosenVehicle, this.store.chosenCargo);
       else this.switchVehicles();
     },
 
@@ -224,7 +223,7 @@ export default defineComponent({
 
 .inputs-section {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
 
   grid-row: 2;
   grid-column: 1;
@@ -264,11 +263,12 @@ button.btn--choice {
 }
 
 .input_actions {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5em;
 
-  button {
-    margin: 0.5em 0.5em 0 0;
+  button:nth-child(3) {
+    grid-column: 1 / 3;
   }
 }
 
@@ -283,10 +283,6 @@ button.btn--choice {
   .inputs-section {
     justify-content: center;
     text-align: center;
-  }
-
-  .input_actions {
-    justify-content: center;
   }
 
   .vehicle-types {

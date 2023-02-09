@@ -98,6 +98,7 @@ const allowDrop = (e: DragEvent) => {
     display: flex;
     align-items: flex-end;
     cursor: pointer;
+    min-height: 100px;
 
     &[data-selected='true'] {
       background-color: rebeccapurple;
