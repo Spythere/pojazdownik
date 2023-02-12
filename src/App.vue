@@ -164,7 +164,12 @@ footer {
 
 /* MOBILE VIEWS */
 
+
 @media screen and (max-width: $breakpointMd) {
+  #app {
+    font-size: calc(0.7rem + 0.75vw);
+  }
+
   main {
     display: flex;
     flex-direction: column;
