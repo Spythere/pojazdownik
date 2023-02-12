@@ -7,9 +7,14 @@
 
     <div class="tab_content">
       <div class="options">
-        <select v-model="regionNumbers" @change="randomizeTrainNumber">
-          <option :value="null" disabled>Obszar konstrukcyjny</option>
-          <option v-for="(nums, name) in genData.regions" :value="nums">{{ name }}</option>
+        <select v-model="beginRegionName" @change="randomizeTrainNumber">
+          <option :value="null" disabled>Początkowy obszar konstrukcyjny</option>
+          <option v-for="(_, name) in genData.regionNumbers" :value="name">{{ name }}</option>
+        </select>
+
+        <select v-model="endRegionName" @change="randomizeTrainNumber">
+          <option :value="null" disabled>Końcowy obszar konstrukcyjny</option>
+          <option v-for="(_, name) in genData.regionNumbers" :value="name">{{ name }}</option>
         </select>
 
         <select v-model="categoryRules" @change="randomizeTrainNumber">
@@ -18,11 +23,13 @@
         </select>
       </div>
 
-      <h1>
+      <div class="generated-number">
         Wygenerowany numer pociągu: <b class="text--accent">{{ trainNumber }}</b>
-      </h1>
+      </div>
 
-      <button class="btn" @click="randomizeTrainNumber">PRZELOSUJ</button>
+      <div class="tab_actions">
+        <button class="btn" @click="randomizeTrainNumber">PRZELOSUJ</button>
+      </div>
     </div>
   </div>
 </template>
@@ -33,20 +40,31 @@ import { useStore } from '../store';
 
 import genData from '../constants/numberGeneratorData.json';
 
+type RegionName = keyof typeof genData.regionNumbers;
+
 const store = useStore();
 
-const regionNumbers = ref(null) as Ref<number[] | null>;
+const beginRegionName = ref(null) as Ref<RegionName | null>;
+const endRegionName = ref(null) as Ref<RegionName | null>;
 const categoryRules = ref(null) as Ref<string | null>;
 
 const trainNumber = ref(null) as Ref<string | null>;
 
 const randomizeTrainNumber = () => {
-  if (regionNumbers.value == null || categoryRules.value == null) return '';
+  if (beginRegionName.value == null || endRegionName.value == null || categoryRules.value == null) return '';
 
   let number = '';
-  const randRegionNumber = regionNumbers.value[Math.floor(Math.random() * regionNumbers.value.length)];
 
-  number += randRegionNumber.toString();
+  if (beginRegionName.value == endRegionName.value) {
+    const sameRegionsNumbers = genData.sameRegions[beginRegionName.value];
+    const randRegionNumber = sameRegionsNumbers[Math.floor(Math.random() * sameRegionsNumbers.length)];
+    number += randRegionNumber.toString();
+  } else {
+    const beginRegionNumber = genData.regionNumbers[beginRegionName.value];
+    const endRegionNumber = genData.regionNumbers[endRegionName.value];
+
+    number += `${beginRegionNumber}${endRegionNumber}`;
+  }
 
   const rulesArray = categoryRules.value.split(';').map((r) => ({
     index: r.split(':')[0],
@@ -72,14 +90,36 @@ const randomizeTrainNumber = () => {
 
 <style lang="scss" scoped>
 @import '../styles/tab.scss';
+@import '../styles/global.scss';
 
 .options {
   display: flex;
   flex-wrap: wrap;
-  gap: 1em;
+  gap: 0.5em;
 
   select {
-    width: calc(50% - 1em);
+    width: calc(50% - 0.5em);
+  }
+}
+
+.generated-number {
+  font-size: 1.5em;
+  font-weight: bold;
+
+  margin: 0.5em 0;
+  padding: 0.5em;
+  background-color: $secondaryColor;
+}
+
+.tab_actions {
+  button {
+    grid-column: 3;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .options select {
+    width: 100%;
   }
 }
 </style>
