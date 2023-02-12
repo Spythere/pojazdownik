@@ -117,7 +117,7 @@ const randomizeTrainNumber = () => {
   }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: $breakpointSm) {
   .options select {
     width: 100%;
   }

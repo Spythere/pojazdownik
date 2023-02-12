@@ -172,11 +172,5 @@ footer {
     grid-template-rows: 1fr;
   }
 }
-
-// @media screen and (max-width: $breakpointSm) {
-//   header {
-//     font-size: 0.75em;
-//   }
-// }
 </style>
 
