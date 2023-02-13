@@ -54,9 +54,9 @@
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
-import { useStore } from '../store';
-import { isLocomotive } from '../utils/vehicleUtils';
-import { ILocomotive, Vehicle } from '../types';
+import { useStore } from '../../store';
+import { isLocomotive } from '../../utils/vehicleUtils';
+import { ILocomotive, Vehicle } from '../../types';
 
 export default defineComponent({
   setup() {
@@ -110,7 +110,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '../styles/global.scss';
+@import '../../styles/global.scss';
 
 .train-image-section {
   grid-row: 3;

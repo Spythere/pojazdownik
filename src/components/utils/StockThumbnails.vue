@@ -29,8 +29,8 @@
 
 <script setup lang="ts">
 import { Ref, computed, nextTick, ref, watch } from 'vue';
-import { useStore } from '../store';
-import { IStock } from '../types';
+import { useStore } from '../../store';
+import { IStock } from '../../types';
 
 const store = useStore();
 const emit = defineEmits(['listItemClick', 'stockImageError']);

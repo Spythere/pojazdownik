@@ -36,9 +36,9 @@
 
 <script setup lang="ts">
 import { Ref, computed, ref } from 'vue';
-import { useStore } from '../store';
+import { useStore } from '../../store';
 
-import genData from '../constants/numberGeneratorData.json';
+import genData from '../../constants/numberGeneratorData.json';
 
 type RegionName = keyof typeof genData.regionNumbers;
 
@@ -89,8 +89,8 @@ const randomizeTrainNumber = () => {
 </script>
 
 <style lang="scss" scoped>
-@import '../styles/tab.scss';
-@import '../styles/global.scss';
+@import '../../styles/tab.scss';
+@import '../../styles/global.scss';
 
 .options {
   display: flex;

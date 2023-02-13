@@ -107,12 +107,12 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
-import { IStock } from '../types';
-import imageMixin from '../mixins/imageMixin';
-import { useStore } from '../store';
-import { isLocomotive } from '../utils/vehicleUtils';
-import stockPreviewMixin from '../mixins/stockPreviewMixin';
-import stockMixin from '../mixins/stockMixin';
+import { IStock } from '../../types';
+import imageMixin from '../../mixins/imageMixin';
+import { useStore } from '../../store';
+import { isLocomotive } from '../../utils/vehicleUtils';
+import stockPreviewMixin from '../../mixins/stockPreviewMixin';
+import stockMixin from '../../mixins/stockMixin';
 
 interface ILocoType {
   id: string;
@@ -219,7 +219,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '../styles/global';
+@import '../../styles/global';
 
 .inputs-section {
   display: flex;

@@ -89,10 +89,10 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useStore } from '../store';
+import { useStore } from '../../store';
 
-import stockMixin from '../mixins/stockMixin';
-import { ICargo, ICarWagon } from '../types';
+import stockMixin from '../../mixins/stockMixin';
+import { ICargo, ICarWagon } from '../../types';
 
 export default defineComponent({
   name: 'stock-generator',
@@ -226,8 +226,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '../styles/global.scss';
-@import '../styles/tab.scss';
+@import '../../styles/global.scss';
+@import '../../styles/tab.scss';
 
 
 

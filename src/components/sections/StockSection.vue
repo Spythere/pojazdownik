@@ -10,10 +10,10 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useStore } from '../store';
-import StockListTab from './StockListTab.vue';
-import StockGeneratorTab from './StockGeneratorTab.vue';
-import NumberGeneratorTab from './NumberGeneratorTab.vue';
+import { useStore } from '../../store';
+import StockListTab from '../tabs/StockListTab.vue';
+import StockGeneratorTab from '../tabs/StockGeneratorTab.vue';
+import NumberGeneratorTab from '../tabs/NumberGeneratorTab.vue';
 
 export default defineComponent({
   setup() {

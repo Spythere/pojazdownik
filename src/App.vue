@@ -46,13 +46,13 @@ import packageInfo from '.././package.json';
 
 import { defineComponent } from 'vue';
 
-import InputsSection from './components/InputsSection.vue';
+import InputsSection from './components/sections/InputsSection.vue';
 
 import { useStore } from './store';
-import TrainImageSection from './components/TrainImageSection.vue';
-import LogoSection from './components/LogoSection.vue';
+import TrainImageSection from './components/sections/TrainImageSection.vue';
+import LogoSection from './components/sections/LogoSection.vue';
 import RealStockCard from './components/cards/RealStockCard.vue';
-import StockSection from './components/StockSection.vue';
+import StockSection from './components/sections/StockSection.vue';
 
 export default defineComponent({
   components: {

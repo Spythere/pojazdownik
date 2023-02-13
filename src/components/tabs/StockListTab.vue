@@ -159,15 +159,15 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import TrainImage from './TrainImageSection.vue';
+import TrainImage from '../sections/TrainImageSection.vue';
 
-import { useStore } from '../store';
-import warningsMixin from '../mixins/warningsMixin';
-import imageMixin from '../mixins/imageMixin';
-import stockPreviewMixin from '../mixins/stockPreviewMixin';
-import { IStock } from '../types';
-import StockThumbnails from './StockThumbnails.vue';
-import stockMixin from '../mixins/stockMixin';
+import { useStore } from '../../store';
+import warningsMixin from '../../mixins/warningsMixin';
+import imageMixin from '../../mixins/imageMixin';
+import stockPreviewMixin from '../../mixins/stockPreviewMixin';
+import { IStock } from '../../types';
+import StockThumbnails from '../utils/StockThumbnails.vue';
+import stockMixin from '../../mixins/stockMixin';
 
 export default defineComponent({
   name: 'stock-list',
@@ -407,7 +407,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '../styles/global';
+@import '../../styles/global';
 
 .warning {
   padding: 0.25em;
