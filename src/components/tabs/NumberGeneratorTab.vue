@@ -2,7 +2,6 @@
   <div class="number-generator tab">
     <div class="tab_header">
       <h2>GENERATOR NUMERU POCIĄGU</h2>
-      <button class="btn" @click="() => (store.stockSectionMode = 'stock-list')">POWRÓT DO LISTY &gt;</button>
     </div>
 
     <div class="tab_content">
@@ -35,14 +34,11 @@
 </template>
 
 <script setup lang="ts">
-import { Ref, computed, ref } from 'vue';
-import { useStore } from '../../store';
+import { Ref, ref } from 'vue';
 
 import genData from '../../constants/numberGeneratorData.json';
 
 type RegionName = keyof typeof genData.regionNumbers;
-
-const store = useStore();
 
 const beginRegionName = ref(null) as Ref<RegionName | null>;
 const endRegionName = ref(null) as Ref<RegionName | null>;

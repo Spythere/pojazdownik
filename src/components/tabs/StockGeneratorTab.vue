@@ -2,7 +2,6 @@
   <div class="stock-generator tab">
     <div class="tab_header">
       <h2>GENERATOR SKŁADU TOWAROWEGO</h2>
-      <button class="btn" @click="() => (store.stockSectionMode = 'stock-list')">POWRÓT DO LISTY &gt;</button>
     </div>
 
     <div class="tab_content">
@@ -228,8 +227,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 @import '../../styles/global.scss';
 @import '../../styles/tab.scss';
-
-
 
 h2 {
   margin: 1em 0;

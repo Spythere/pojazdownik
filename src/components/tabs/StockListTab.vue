@@ -1,6 +1,6 @@
 <template>
   <section class="stock-list">
-    <div class="stock_actions">
+    <!-- <div class="stock_actions">
       <label class="file-label">
         <input
           type="file"
@@ -14,7 +14,7 @@
 
       <button class="btn" @click="store.stockSectionMode = 'number-generator'">GENERUJ NUMER</button>
       <button class="btn" @click="store.stockSectionMode = 'stock-generator'">LOSUJ SKŁAD</button>
-    </div>
+    </div> -->
 
     <div class="stock_controls" :data-disabled="store.chosenStockListIndex == -1">
       <b class="no">
@@ -112,7 +112,7 @@
     <StockThumbnails :onListItemClick="onListItemClick" :onStockImageError="stockImageError" />
 
     <!-- Stock list -->
-    <ul ref="list">
+    <ul ref="stock_list">
       <li v-if="stockIsEmpty" class="list-empty">
         <div class="stock-info">Lista pojazdów jest pusta!</div>
       </li>
@@ -431,6 +431,8 @@ export default defineComponent({
   flex-wrap: wrap;
 
   padding: 0.5em;
+  margin-bottom: 1em;
+
   background-color: #353a57;
 
   &[data-disabled='true'] {
@@ -462,7 +464,7 @@ export default defineComponent({
 .stock_actions {
   display: grid;
   gap: 0.5em;
-  margin: 1em 0;
+  margin-bottom: 1em;
 
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
 

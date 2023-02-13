@@ -1,11 +1,13 @@
+@import './global.scss';
+
 .tab {
   height: 100%;
   margin-top: 1px;
 
   &_header {
-    display: flex;
-    align-items: center;
-    gap: 0.5em;
+    padding: 0.5em 1em;
+
+    background-color: $secondaryColor;
 
     h2 {
       margin: 0;
