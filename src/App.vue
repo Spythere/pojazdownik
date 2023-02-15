@@ -70,7 +70,7 @@ export default defineComponent({
 
   async created() {
     const stockData = await (
-      await fetch(`https://spythere.github.io/api/td2/data/stockData.json?t=${Math.floor(Date.now() / 60000)}`)
+      await fetch(`https://spythere.github.io/api/td2/data/stockInfo.json?t=${Math.floor(Date.now() / 60000)}`)
     ).json();
 
     this.store.stockData = stockData;

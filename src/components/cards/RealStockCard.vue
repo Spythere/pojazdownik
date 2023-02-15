@@ -95,7 +95,7 @@ export default defineComponent({
 
   async mounted() {
     const readyStockJSONData: ResponseJSONData = await (
-      await fetch(`https://spythere.github.io/api/readyStock.json?t=${Math.floor(Date.now() / 60000)}`)
+      await fetch(`https://spythere.github.io/api/td2/data/readyStock.json?t=${Math.floor(Date.now() / 60000)}`)
     ).json();
 
     if (!readyStockJSONData) {
