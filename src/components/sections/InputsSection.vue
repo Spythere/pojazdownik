@@ -234,9 +234,8 @@ export default defineComponent({
 }
 
 button.btn--choice {
-  font-weight: bold;
   font-size: 0.9em;
-  padding: 0.15em 0.6em;
+  padding: 0.3em 0.6em;
 
   &[data-selected='true'] {
     background-color: $accentColor;
