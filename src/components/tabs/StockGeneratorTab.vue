@@ -63,8 +63,6 @@
           @click="toggleCarExclusion(carType)"
         >
           {{ carType }}
-
-          <!-- <span>X</span> -->
         </button>
       </div>
 

@@ -94,6 +94,10 @@ button {
 
   transition: all 250ms;
 
+  &:hover {
+    color: $accentColor;
+  }
+
   &.btn--outline {
     background: none;
     font-weight: bold;

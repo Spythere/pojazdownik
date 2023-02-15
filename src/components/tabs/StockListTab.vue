@@ -1,21 +1,5 @@
 <template>
   <section class="stock-list">
-    <!-- <div class="stock_actions">
-      <label class="file-label">
-        <input
-          type="file"
-          accept=".con, .txt"
-          ref="conFile"
-          style="position: fixed; top: -100%"
-          @change="uploadStock"
-        />
-        <div class="btn">ZAŁADUJ PLIK</div>
-      </label>
-
-      <button class="btn" @click="store.stockSectionMode = 'number-generator'">GENERUJ NUMER</button>
-      <button class="btn" @click="store.stockSectionMode = 'stock-generator'">LOSUJ SKŁAD</button>
-    </div> -->
-
     <div class="stock_controls" :data-disabled="store.chosenStockListIndex == -1">
       <b class="no">
         POJAZD NR <span class="text--accent">{{ store.chosenStockListIndex + 1 }}</span> &nbsp;
@@ -50,21 +34,20 @@
     </div>
 
     <div class="stock_actions">
-      <button class="btn" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="downloadStock">
-        POBIERZ PLIK
-      </button>
+      <label class="file-label">
+        <div class="btn">WCZYTAJ</div>
+        <input type="file" @change="uploadStock" ref="conFile" />
+      </label>
+
+      <button class="btn" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="downloadStock">POBIERZ</button>
 
       <button class="btn" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="copyToClipboard">
-        KOPIUJ JAKO TEKST
+        SKOPIUJ
       </button>
 
-      <button class="btn" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="resetStock">
-        ZRESETUJ LISTĘ
-      </button>
+      <button class="btn" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="resetStock">ZRESETUJ</button>
 
-      <button class="btn" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="shuffleCars">
-        TASUJ WAGONY
-      </button>
+      <button class="btn" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="shuffleCars">PRZETASUJ</button>
     </div>
 
     <div class="stock_specs">
@@ -362,7 +345,8 @@ export default defineComponent({
     },
 
     uploadStock() {
-      const files = (this.$refs['conFile'] as HTMLInputElement).files;
+      const inputEl = this.$refs['conFile'] as HTMLInputElement;
+      const files = inputEl.files;
 
       if (files?.length != 1) return;
 
@@ -378,6 +362,8 @@ export default defineComponent({
       };
 
       reader.onerror = (err) => console.log(err);
+
+      inputEl.value = '';
     },
 
     onDragStart(vehicleIndex: number) {
@@ -471,15 +457,9 @@ export default defineComponent({
   label.file-label {
     text-align: center;
     cursor: pointer;
-    padding: 0;
 
-    input:focus-visible + div {
-      outline: 1px solid white;
-      color: $accentColor;
-    }
-
-    input:hover + div {
-      color: $accentColor;
+    input {
+      display: none;
     }
   }
 }

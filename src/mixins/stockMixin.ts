@@ -85,10 +85,18 @@ export default defineComponent({
 
       stockArray.forEach((type, i) => {
         let vehicle: Vehicle | null = null;
-        if (i == 0) vehicle = this.store.locoDataList.find((loco) => loco.type == stockArray[0]) || null;
-        else vehicle = this.store.carDataList.find((car) => car.type == type) || null;
+        let vehicleCargo: ICargo | null = null;
 
-        this.addVehicle(vehicle);
+        if (/^(EU|EP|ET|SM|EN|2EN|SN)/.test(type))
+          vehicle = this.store.locoDataList.find((loco) => loco.type == type) || null;
+        else {
+          const [carType, cargo] = type.split(':');
+          vehicle = this.store.carDataList.find((car) => car.type == carType) || null;
+
+          if (cargo) vehicleCargo = vehicle?.cargoList.find((c) => c.id == cargo) || null;
+        }
+
+        this.addVehicle(vehicle, vehicleCargo);
       });
     },
   },
