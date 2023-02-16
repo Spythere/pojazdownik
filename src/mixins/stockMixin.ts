@@ -72,7 +72,7 @@ export default defineComponent({
     },
 
     loadStockFromString(stockString: string) {
-      const stockArray = stockString.split(';');
+      const stockArray = stockString.trim().split(';');
 
       this.store.stockList.length = 0;
       this.store.chosenVehicle = null;
@@ -83,7 +83,7 @@ export default defineComponent({
 
       this.store.swapVehicles = false;
 
-      stockArray.forEach((type, i) => {
+      stockArray.forEach((type) => {
         let vehicle: Vehicle | null = null;
         let vehicleCargo: ICargo | null = null;
 
@@ -95,6 +95,8 @@ export default defineComponent({
 
           if (cargo) vehicleCargo = vehicle?.cargoList.find((c) => c.id == cargo) || null;
         }
+
+        if (!vehicle) console.log('Brak pojazdu:', type);
 
         this.addVehicle(vehicle, vehicleCargo);
       });

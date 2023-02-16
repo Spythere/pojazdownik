@@ -36,7 +36,7 @@
     <div class="stock_actions">
       <label class="file-label">
         <div class="btn">WCZYTAJ</div>
-        <input type="file" @change="uploadStock" ref="conFile" />
+        <input type="file" @change="uploadStock" ref="conFile" accept=".con,.txt" />
       </label>
 
       <button class="btn" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="downloadStock">POBIERZ</button>
@@ -349,6 +349,7 @@ export default defineComponent({
       const files = inputEl.files;
 
       if (files?.length != 1) return;
+      if (!/\.con$/.test(files[0].name)) return;
 
       const reader = new FileReader();
       reader.readAsText(files[0]);
