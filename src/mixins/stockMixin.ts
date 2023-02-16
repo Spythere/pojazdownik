@@ -87,9 +87,10 @@ export default defineComponent({
         let vehicle: Vehicle | null = null;
         let vehicleCargo: ICargo | null = null;
 
-        if (/^(EU|EP|ET|SM|EN|2EN|SN)/.test(type))
-          vehicle = this.store.locoDataList.find((loco) => loco.type == type) || null;
-        else {
+        if (/^(EU|EP|ET|SM|EN|2EN|SN)/.test(type)) {
+          const [locoType, coldStart] = type.split(',');
+          vehicle = this.store.locoDataList.find((loco) => loco.type == locoType) || null;
+        } else {
           const [carType, cargo] = type.split(':');
           vehicle = this.store.carDataList.find((car) => car.type == carType) || null;
 
