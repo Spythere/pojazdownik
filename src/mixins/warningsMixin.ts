@@ -18,32 +18,7 @@ export default defineComponent({
     },
 
     trainTooHeavy() {
-      const totalMass = this.store.totalMass;
-      const isTrainPassenger = this.store.isTrainPassenger;
-      const stockList = this.store.stockList;
-
-      if (stockList.length == 0 || !stockList[0].isLoco) return false;
-
-      const activeLocomotiveType = stockList[0].type;
-
-      // Spalinowy SM
-      if (/^SM/.test(activeLocomotiveType) && totalMass > 2400) return true;
-
-      // Elektryczne EU07 / EP07 / EP08 / ET41
-
-      // Pasażerski elektr.
-      if (isTrainPassenger) {
-        if (/^(EU|EP)/.test(activeLocomotiveType) && totalMass > 650) return true;
-        if (/^ET/.test(activeLocomotiveType) && totalMass > 700) return true;
-
-        return false;
-      }
-
-      // Towarowy / inny elektr.
-      if (/^EU/.test(activeLocomotiveType) && totalMass > 2000) return true;
-      if (/^ET/.test(activeLocomotiveType) && totalMass > 4000) return true;
-
-      return false;
+      return this.store.acceptableMass && this.store.totalMass > this.store.acceptableMass;
     },
 
     locoNotSuitable() {

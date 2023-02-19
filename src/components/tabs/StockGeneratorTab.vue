@@ -5,53 +5,61 @@
     </div>
 
     <div class="tab_content">
-      <h2>WŁAŚCIWOŚCI SKŁADU</h2>
+      <div>
+        <h2>WŁAŚCIWOŚCI SKŁADU</h2>
 
-      <div class="tab_attributes">
-        <label>
-          Maksymalna masa (t)
-          <input type="number" v-model="maxMass" step="100" max="4000" min="0" />
-        </label>
+        <b class="text--accent"> &lArr; Dodaj lokomotywę na pierwsze miejsce listy, aby uwzględnić ją przy losowaniu składu! </b>
 
-        <label>
-          Maks. długość (m)
-          <input type="number" v-model="maxLength" step="25" max="650" min="0" />
-        </label>
+        <div class="tab_attributes">
+          <label>
+            Maksymalna masa (t)
+            <input type="number" v-model="maxMass" step="100" max="4000" min="0" />
+          </label>
 
-        <label>
-          Maks. liczba wagonów
-          <input type="number" v-model="maxCarCount" step="1" max="60" min="1" />
-        </label>
+          <label>
+            Maks. długość (m)
+            <input type="number" v-model="maxLength" step="25" max="650" min="0" />
+          </label>
+
+          <label>
+            Maks. liczba wagonów
+            <input type="number" v-model="maxCarCount" step="1" max="60" min="1" />
+          </label>
+        </div>
       </div>
 
-      <h2>ŁADUNEK</h2>
-      <p>Wybierz ładunki, którymi chcesz wypełnić dostępne wagony:</p>
+      <div>
+        <h2>ŁADUNEK</h2>
+        <b>Wybierz ładunki, którymi chcesz wypełnić dostępne wagony:</b>
+      </div>
 
       <div class="generator_cargo">
         <button
           class="btn"
-          :data-chosen="chosenCargoTypes.includes(k as string)"
+          :data-chosen="chosenCargoTypes.includes(k.toString())"
           v-for="(v, k) in store.stockData?.generator.cargo"
-          @click="toggleCargoChosen(k as string, v)"
+          @click="toggleCargoChosen(k.toString(), v)"
         >
           {{ k }}
         </button>
       </div>
 
-      <h2>WAGONY Z WYBRANYMI ŁADUNKAMI</h2>
+      <div>
+        <h2>WAGONY Z WYBRANYMI ŁADUNKAMI</h2>
 
-      <div class="generator_warning">
-        <span v-if="computedChosenCarTypes.size == 0">
-          Wybierz co najmniej jeden ładunek, aby zobaczyć wagony, które go posiadają!
-        </span>
+        <div class="generator_warning">
+          <span v-if="computedChosenCarTypes.size == 0">
+            Wybierz co najmniej jeden ładunek, aby zobaczyć wagony, które go posiadają!
+          </span>
 
-        <span v-else>
-          Wagony posiadające wybrane ładunki. Najedź na nazwę, aby zobaczyć podgląd wagonu. Kliknij, aby wyłączyć z
-          losowania (tylko podświetlone nazwy będą uwzględnione).
-        </span>
+          <span v-else>
+            Wagony posiadające wybrane ładunki. Najedź na nazwę, aby zobaczyć podgląd wagonu. Kliknij, aby wyłączyć z
+            losowania (tylko podświetlone nazwy będą uwzględnione).
+          </span>
+        </div>
       </div>
 
-      <div class="generator_vehicles">
+      <div class="generator_vehicles" v-if="computedChosenCarTypes.size != 0">
         <button
           :data-chosen="true"
           :data-excluded="excludedCarTypes.includes(carType)"
@@ -90,11 +98,12 @@ import { useStore } from '../../store';
 
 import stockMixin from '../../mixins/stockMixin';
 import { ICargo, ICarWagon } from '../../types';
+import warningsMixin from '../../mixins/warningsMixin';
 
 export default defineComponent({
   name: 'stock-generator',
 
-  mixins: [stockMixin],
+  mixins: [stockMixin, warningsMixin],
 
   data() {
     return {
@@ -169,13 +178,16 @@ export default defineComponent({
         return acc;
       }, [] as { constructionType: string; carPool: { carWagon: ICarWagon; cargo?: ICargo }[] }[]);
 
-      this.store.stockList.length = this.store.stockList[0]?.isLoco ? 1 : 0;
+      const headingLoco = this.store.stockList[0]?.isLoco ? this.store.stockList[0] : undefined;
+
+      this.store.stockList.length = headingLoco ? 1 : 0;
+      const maxMass = this.store.acceptableMass || this.maxMass;
 
       new Array(this.maxCarCount).fill(0).forEach(() => {
         const randomStockType = generatedChosenStockList[~~(Math.random() * generatedChosenStockList.length)];
         const { carWagon, cargo } = randomStockType.carPool[~~(Math.random() * randomStockType.carPool.length)];
 
-        if (this.store.totalMass + (cargo?.totalMass || carWagon.mass) > this.maxMass) return;
+        if (this.store.totalMass + (cargo?.totalMass || carWagon.mass) > maxMass) return;
         if (this.store.totalLength + carWagon.length > this.maxLength) return;
 
         this.addCarWagon(carWagon, cargo);
@@ -226,10 +238,6 @@ export default defineComponent({
 @import '../../styles/global.scss';
 @import '../../styles/tab.scss';
 
-h2 {
-  margin: 1em 0;
-}
-
 .generator_cargo,
 .generator_vehicles {
   display: grid;
@@ -271,16 +279,17 @@ h2 {
   }
 }
 
-.generator_vehicles {
-  margin-top: 1em;
+.tab_content {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
 }
 
 hr {
   height: 3px;
   background-color: white;
   outline: none;
-
-  margin: 15px 0;
+  margin: 0;
 }
 
 .generator_warning {

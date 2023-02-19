@@ -111,6 +111,30 @@ export function maxStockSpeed(state: IStore) {
   return speedLimitByMass ? Math.min(stockSpeedLimit, speedLimitByMass) : stockSpeedLimit;
 }
 
+export function acceptableMass(state: IStore) {
+  if (state.stockList.length == 0 || !state.stockList[0].isLoco) return 0;
+  const activeLocomotiveType = state.stockList[0].type;
+
+  if (/^SM/.test(activeLocomotiveType)) return 2400;
+
+  // Elektryczne EU07 / EP07 / EP08 / ET41
+
+  // Pasażerski elektr.
+  if (isTrainPassenger(state)) {
+    if (/^(EU|EP)/.test(activeLocomotiveType)) return 650;
+    if (/^ET/.test(activeLocomotiveType)) return 700;
+
+    return 0;
+  }
+
+  // Towarowy / inny elektr.
+  if (/^EU/.test(activeLocomotiveType)) return 2000;
+  if (/^ET/.test(activeLocomotiveType)) return 4000;
+  if (/^EP/.test(activeLocomotiveType)) return 0;
+
+  return 0;
+}
+
 export function isTrainPassenger(state: IStore) {
   if (state.stockList.length == 0) return false;
   if (state.stockList.every((stock) => stock.isLoco)) return false;
@@ -138,125 +162,4 @@ export function chosenRealStock(state: IStore) {
 
   return realStockObj;
 }
-
-// export function maxAllowedSpeed(state: IStore) {
-//   const headLocoType = state.stockList[0]?.isLoco ? state.stockList[0].type : undefined;
-
-//   if (!headLocoType) return 0;
-
-//   const isPassenger = isTrainPassenger(state);
-//   const stockMass = totalMass(state);
-
-//   // const maxSpeed = maxAllowedSpeedTable[headLocoType];
-
-//   // if()
-// }
-
-// export function maxAllowedSpeed(state: IStore) {
-//   if (state.stockList.length < 1) return -1;
-//   if (!state.stockList[0].isLoco) return -1;
-
-//   const headingLoco = state.stockList[0];
-//   const isPassenger = isTrainPassenger(state);
-
-//   if (headingLoco.type.startsWith('EU07')) {
-//     if (isPassenger && totalMass.value <= 650) return 125;
-//     if (!isPassenger && totalMass.value <= 2000) return 70;
-
-//     return -1;
-//   }
-
-//   if (headingLoco.type.startsWith('EP07')) {
-//     if (isPassenger && totalMass.value <= 650) return 125;
-//     if (!isPassenger) return -1;
-
-//     return -1;
-//   }
-
-//   if (headingLoco.type.startsWith('EP08')) {
-//     if (isPassenger && totalMass.value <= 650) return 140;
-//     if (!isPassenger) return -1;
-
-//     return -1;
-//   }
-
-//   if (headingLoco.type.startsWith('ET41')) {
-//     if (isPassenger && totalMass.value <= 700) return 125;
-//     if (!isPassenger && totalMass.value <= 4000) return 70;
-
-//     return -1;
-//   }
-
-//   if (headingLoco.type.startsWith('SM42')) {
-//     if (totalMass.value <= 95) return 90;
-//     if (totalMass.value <= 200) return 80;
-//     if (totalMass.value <= 300) return 70;
-//     if (totalMass.value <= 450) return 60;
-//     if (totalMass.value <= 750) return 50;
-//     if (totalMass.value <= 1130) return 40;
-//     if (totalMass.value <= 1720) return 30;
-//     if (totalMass.value <= 2400) return 20;
-
-//     return -1;
-//   }
-
-//   return Store.stockList.reduce((acc, stock) => (stock.maxSpeed < acc || acc == 0 ? stock.maxSpeed : acc), 0);
-// });
-
-// export const warnings = {
-//   trainTooLong: computed(() => {
-//     if (isTrainPassenger.value && totalLength.value > 350) return true;
-//     if (!isTrainPassenger.value && totalLength.value > 650) return true;
-
-//     return false;
-//   }),
-
-//   locoNotSuitable: computed(() => {
-//     if (
-//       !isTrainPassenger.value &&
-//       Store.stockList.length > 1 &&
-//       !Store.stockList.every((stock) => stock.isLoco) &&
-//       Store.stockList.find((stock) => stock.isLoco && stock.type.startsWith('EP'))
-//     )
-//       return true;
-
-//     return false;
-//   }),
-
-//   trainTooHeavy: computed(() => {
-//     if (Store.stockList.length == 0 || !Store.stockList[0].isLoco) return false;
-
-//     const headingLoco = Store.stockList[0];
-
-//     if (
-//       isTrainPassenger.value &&
-//       (headingLoco.type.startsWith('EU') || headingLoco.type.startsWith('EP')) &&
-//       totalMass.value > 650
-//     )
-//       return true;
-//     if (isTrainPassenger.value && headingLoco.type.startsWith('ET') && totalMass.value > 700) return true;
-
-//     if (!isTrainPassenger.value && headingLoco.type.startsWith('EU') && totalMass.value > 2000) return true;
-//     if (!isTrainPassenger.value && headingLoco.type.startsWith('ET') && totalMass.value > 4000) return true;
-
-//     if (headingLoco.type.startsWith('SM') && totalMass.value > 2400) return true;
-
-//     return false;
-//   }),
-
-//   tooManyLocos: computed(() => {
-//     if (
-//       Store.stockList.reduce((acc, stock) => {
-//         if (!stock.isLoco) return acc;
-
-//         acc += stock.count;
-
-//         return acc;
-//       }, 0) > 2
-//     )
-//       return true;
-
-//     return false;
-//   }),
-// };
 
