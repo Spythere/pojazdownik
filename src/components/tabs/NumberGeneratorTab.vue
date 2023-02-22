@@ -23,9 +23,12 @@
       </div>
 
       <div class="generated-number">
-        Wygenerowany numer pociągu: <b class="text--accent">{{ trainNumber }}</b>
+        <span v-if="trainNumber">Wygenerowany numer pociągu: <b class="text--accent">{{ trainNumber }}</b></span>
+        <span v-else>Wybierz obszary konstrukcyjne i kategorię!</span>
       </div>
 
+      <hr>
+      
       <div class="tab_actions">
         <button class="btn" @click="randomizeTrainNumber">PRZELOSUJ</button>
       </div>
@@ -99,7 +102,7 @@ const randomizeTrainNumber = () => {
 }
 
 .generated-number {
-  font-size: 1.5em;
+  font-size: 1.3em;
   font-weight: bold;
 
   margin: 0.5em 0;
@@ -108,6 +111,8 @@ const randomizeTrainNumber = () => {
 }
 
 .tab_actions {
+  margin-top: 0.5em;
+
   button {
     grid-column: 3;
   }

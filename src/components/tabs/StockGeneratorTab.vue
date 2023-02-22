@@ -8,7 +8,9 @@
       <div>
         <h2>WŁAŚCIWOŚCI SKŁADU</h2>
 
-        <b class="text--accent"> &lArr; Dodaj lokomotywę na pierwsze miejsce listy, aby uwzględnić ją przy losowaniu składu! </b>
+        <b class="text--accent">
+          &lArr; Dodaj lokomotywę na pierwsze miejsce listy, aby uwzględnić ją przy losowaniu składu!
+        </b>
 
         <div class="tab_attributes">
           <label>
@@ -283,13 +285,6 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   gap: 1em;
-}
-
-hr {
-  height: 3px;
-  background-color: white;
-  outline: none;
-  margin: 0;
 }
 
 .generator_warning {

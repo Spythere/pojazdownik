@@ -130,7 +130,7 @@ export function acceptableMass(state: IStore) {
   // Towarowy / inny elektr.
   if (/^EU/.test(activeLocomotiveType)) return 2000;
   if (/^ET/.test(activeLocomotiveType)) return 4000;
-  if (/^EP/.test(activeLocomotiveType)) return 0;
+  if (/^EP/.test(activeLocomotiveType)) return 650;
 
   return 0;
 }

@@ -60,10 +60,11 @@
       </b>
 
       <span>
-        Masa: <span class="text--accent">{{ store.totalMass }}t</span> - Długość:
+        Masa: <span class="text--accent">{{ store.totalMass }}t</span> (dopuszczalna:
+        <span class="text--accent">{{ store.acceptableMass ? store.acceptableMass + 't' : '-' }}</span
+        >) - Długość:
         <span class="text--accent">{{ store.totalLength }}m</span>
-        - vMax: <span class="text--accent">{{ store.maxStockSpeed }} km/h</span> - tMax:
-        <span class="text--accent">{{ store.acceptableMass || '-' }}t</span>
+        - vMax: <span class="text--accent">{{ store.maxStockSpeed }} km/h</span>
       </span>
     </div>
 
