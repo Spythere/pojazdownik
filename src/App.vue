@@ -34,6 +34,7 @@
           regulaminem symulatora Train Driver 2</a
         >!
       </div>
+      <div class="text--grayed" style="margin-bottom: 0.25em">Strona jest kompletna dla wersji 2022.2.2 symulatora TD2</div>
       &copy;
       <a href="https://td2.info.pl/profile/?u=20777" target="_blank">Spythere</a>
       {{ new Date().getUTCFullYear() }} | v{{ VERSION }}
@@ -163,7 +164,6 @@ footer {
 }
 
 /* MOBILE VIEWS */
-
 
 @media screen and (max-width: $breakpointMd) {
   #app {

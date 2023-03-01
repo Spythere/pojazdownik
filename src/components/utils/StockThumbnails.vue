@@ -43,8 +43,6 @@ const onListItemClick = (index: number) => {
 };
 
 const stockImageError = (e: Event, stock: IStock) => {
-  console.log('error');
-
   emit('stockImageError', e, stock);
 };
 
