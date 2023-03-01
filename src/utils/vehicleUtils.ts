@@ -81,7 +81,7 @@ export function carDataList(state: IStore) {
 }
 
 export function totalMass(state: IStore) {
-  return state.stockList.reduce(
+  return ~~state.stockList.reduce(
     (acc, stock) => acc + (stock.cargo ? stock.cargo.totalMass : stock.mass) * stock.count,
     0
   );

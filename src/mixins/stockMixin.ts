@@ -18,6 +18,8 @@ export default defineComponent({
     getStockObject(vehicle: Vehicle, cargo?: ICargo | null, count = 1): IStock {
       const isLoco = isLocomotive(vehicle);
 
+      console.log(vehicle.type);
+      
       return {
         id: this.getStockId(),
         type: vehicle.type,
