@@ -31,8 +31,8 @@ type SectionMode = typeof store.stockSectionMode;
 
 const sectionModes: { [key: string]: SectionMode } = {
   SKŁAD: 'stock-list',
-  'GNR. NUMERU': 'number-generator',
-  'GNR. SKŁADU': 'stock-generator',
+  'GNR NUMERU': 'number-generator',
+  'GNR SKŁADU': 'stock-generator',
 };
 
 const chosenSectionComponent = computed(() => {
