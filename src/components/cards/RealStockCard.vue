@@ -41,18 +41,18 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { Vehicle, IStock, IReadyStockList } from '../../types';
+import { Vehicle, IReadyStockList } from '../../types';
 
 import { useStore } from '../../store';
-import { isLocomotive } from '../../utils/vehicleUtils';
 import imageMixin from '../../mixins/imageMixin';
+import stockMixin from '../../mixins/stockMixin';
 
 interface ResponseJSONData {
   [key: string]: string;
 }
 
 export default defineComponent({
-  mixins: [imageMixin],
+  mixins: [imageMixin, stockMixin],
 
   setup() {
     return {
@@ -88,60 +88,14 @@ export default defineComponent({
     },
 
     choseStock(name: string, type: string, number: string, stockString: string) {
-      const stockArray = stockString.split(';');
-
-      this.store.stockList.length = 0;
-      this.store.chosenVehicle = null;
-      this.store.chosenCar = null;
-      this.store.chosenCargo = null;
-      this.store.chosenLoco = null;
-      this.store.chosenStockListIndex = -1;
-
-      this.store.swapVehicles = false;
-
-      stockArray.forEach((type, i) => {
-        let vehicle: Vehicle | null = null;
-        if (i == 0) vehicle = this.store.locoDataList.find((loco) => loco.type == stockArray[0]) || null;
-        else vehicle = this.store.carDataList.find((car) => car.type == type) || null;
-
-        this.addVehicle(vehicle);
-      });
-
+      this.loadStockFromString(stockString);
       this.store.isRealStockListCardOpen = false;
-    },
-
-    addVehicle(vehicle: Vehicle | null) {
-      if (!vehicle) return;
-
-      const stockObj: IStock = {
-        id: `${Date.now() + this.store.stockList.length}`,
-        type: vehicle.type,
-        length: vehicle.length,
-        mass: vehicle.mass,
-        maxSpeed: vehicle.maxSpeed,
-        isLoco: isLocomotive(vehicle),
-        cargo: undefined,
-        count: 1,
-        imgSrc: vehicle.imageSrc,
-        useType: isLocomotive(vehicle) ? vehicle.power : vehicle.useType,
-        supportersOnly: vehicle.supportersOnly,
-      };
-
-      const previousStock =
-        this.store.stockList.length > 0 ? this.store.stockList[this.store.stockList.length - 1] : null;
-
-      if (previousStock && previousStock.type == vehicle.type) {
-        this.store.stockList[this.store.stockList.length - 1].count++;
-        return;
-      }
-
-      this.store.stockList.push(stockObj);
     },
   },
 
   async mounted() {
     const readyStockJSONData: ResponseJSONData = await (
-      await fetch(`https://spythere.github.io/api/readyStock.json?t=${Math.floor(Date.now() / 60000)}`)
+      await fetch(`https://spythere.github.io/api/td2/data/readyStock.json?t=${Math.floor(Date.now() / 60000)}`)
     ).json();
 
     if (!readyStockJSONData) {

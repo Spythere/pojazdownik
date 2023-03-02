@@ -1,58 +1,67 @@
 <template>
-  <div class="stock-generator">
-    <div class="stock_actions">
+  <div class="stock-generator tab">
+    <div class="tab_header">
       <h2>GENERATOR SKŁADU TOWAROWEGO</h2>
-      <button class="btn" @click="() => (store.stockSectionMode = 'stock-list')">POWRÓT DO LISTY &gt;</button>
     </div>
 
-    <div class="generator_content">
-      <h2>WŁAŚCIWOŚCI SKŁADU</h2>
+    <div class="tab_content">
+      <div>
+        <h2>WŁAŚCIWOŚCI SKŁADU</h2>
 
-      <div class="generator_attributes">
-        <label>
-          Maksymalna masa (t)
-          <input type="number" v-model="maxMass" step="100" max="4000" min="0" />
-        </label>
+        <b class="text--accent">
+          &lArr; Dodaj lokomotywę na pierwsze miejsce listy, aby uwzględnić ją przy losowaniu składu!
+        </b>
 
-        <label>
-          Maks. długość (m)
-          <input type="number" v-model="maxLength" step="25" max="650" min="0" />
-        </label>
+        <div class="tab_attributes">
+          <label>
+            Maksymalna masa (t)
+            <input type="number" v-model="maxMass" step="100" max="4000" min="0" />
+          </label>
 
-        <label>
-          Maks. liczba wagonów
-          <input type="number" v-model="maxCarCount" step="1" max="60" min="1" />
-        </label>
+          <label>
+            Maks. długość (m)
+            <input type="number" v-model="maxLength" step="25" max="650" min="0" />
+          </label>
+
+          <label>
+            Maks. liczba wagonów
+            <input type="number" v-model="maxCarCount" step="1" max="60" min="1" />
+          </label>
+        </div>
       </div>
 
-      <h2>ŁADUNEK</h2>
-      <p>Wybierz ładunki, którymi chcesz wypełnić dostępne wagony:</p>
+      <div>
+        <h2>ŁADUNEK</h2>
+        <b>Wybierz ładunki, którymi chcesz wypełnić dostępne wagony:</b>
+      </div>
 
       <div class="generator_cargo">
         <button
           class="btn"
-          :data-chosen="chosenCargoTypes.includes(k as string)"
+          :data-chosen="chosenCargoTypes.includes(k.toString())"
           v-for="(v, k) in store.stockData?.generator.cargo"
-          @click="toggleCargoChosen(k as string, v)"
+          @click="toggleCargoChosen(k.toString(), v)"
         >
           {{ k }}
         </button>
       </div>
 
-      <h2>WAGONY Z WYBRANYMI ŁADUNKAMI</h2>
+      <div>
+        <h2>WAGONY Z WYBRANYMI ŁADUNKAMI</h2>
 
-      <div class="warning">
-        <span v-if="computedChosenCarTypes.size == 0">
-          Wybierz co najmniej jeden ładunek, aby zobaczyć wagony, które go posiadają!
-        </span>
+        <div class="generator_warning">
+          <span v-if="computedChosenCarTypes.size == 0">
+            Wybierz co najmniej jeden ładunek, aby zobaczyć wagony, które go posiadają!
+          </span>
 
-        <span v-else>
-          Wagony posiadające wybrane ładunki. Najedź na nazwę, aby zobaczyć podgląd wagonu. Kliknij, aby wyłączyć z
-          losowania (tylko podświetlone nazwy będą uwzględnione).
-        </span>
+          <span v-else>
+            Wagony posiadające wybrane ładunki. Najedź na nazwę, aby zobaczyć podgląd wagonu. Kliknij, aby wyłączyć z
+            losowania (tylko podświetlone nazwy będą uwzględnione).
+          </span>
+        </div>
       </div>
 
-      <div class="generator_vehicles">
+      <div class="generator_vehicles" v-if="computedChosenCarTypes.size != 0">
         <button
           :data-chosen="true"
           :data-excluded="excludedCarTypes.includes(carType)"
@@ -64,14 +73,12 @@
           @click="toggleCarExclusion(carType)"
         >
           {{ carType }}
-
-          <!-- <span>X</span> -->
         </button>
       </div>
 
       <hr />
 
-      <div class="generator_actions">
+      <div class="tab_actions">
         <button class="btn" :data-disabled="computedChosenCarTypes.size == 0" @click="generateStock()">
           WYGENERUJ
         </button>
@@ -89,15 +96,16 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useStore } from '../store';
+import { useStore } from '../../store';
 
-import stockMixin from '../mixins/stockMixin';
-import { ICargo, ICarWagon } from '../types';
+import stockMixin from '../../mixins/stockMixin';
+import { ICargo, ICarWagon } from '../../types';
+import warningsMixin from '../../mixins/warningsMixin';
 
 export default defineComponent({
   name: 'stock-generator',
 
-  mixins: [stockMixin],
+  mixins: [stockMixin, warningsMixin],
 
   data() {
     return {
@@ -172,13 +180,16 @@ export default defineComponent({
         return acc;
       }, [] as { constructionType: string; carPool: { carWagon: ICarWagon; cargo?: ICargo }[] }[]);
 
-      this.store.stockList.length = this.store.stockList[0]?.isLoco ? 1 : 0;
+      const headingLoco = this.store.stockList[0]?.isLoco ? this.store.stockList[0] : undefined;
+
+      this.store.stockList.length = headingLoco ? 1 : 0;
+      const maxMass = this.store.acceptableMass || this.maxMass;
 
       new Array(this.maxCarCount).fill(0).forEach(() => {
         const randomStockType = generatedChosenStockList[~~(Math.random() * generatedChosenStockList.length)];
-        const {carWagon, cargo} = randomStockType.carPool[~~(Math.random() * randomStockType.carPool.length)];
+        const { carWagon, cargo } = randomStockType.carPool[~~(Math.random() * randomStockType.carPool.length)];
 
-        if (this.store.totalMass + (cargo?.totalMass || carWagon.mass) > this.maxMass) return;
+        if (this.store.totalMass + (cargo?.totalMass || carWagon.mass) > maxMass) return;
         if (this.store.totalLength + carWagon.length > this.maxLength) return;
 
         this.addCarWagon(carWagon, cargo);
@@ -226,51 +237,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '../styles/global.scss';
-
-.stock_actions {
-  align-items: center;
-
-  h2 {
-    margin: 0;
-    color: white;
-    font-size: 1.35em;
-    text-align: center;
-  }
-
-  button {
-    margin-left: auto;
-  }
-}
-
-.stock-generator {
-  height: 100%;
-}
-
-.generator_content {
-  margin-top: 1em;
-  height: 100%;
-}
-
-h2 {
-  margin: 1em 0;
-}
-
-.generator_attributes {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1em;
-
-  label {
-    display: flex;
-    flex-direction: column;
-  }
-
-  input {
-    max-width: 250px;
-    margin-top: 0.5em;
-  }
-}
+@import '../../styles/global.scss';
+@import '../../styles/tab.scss';
 
 .generator_cargo,
 .generator_vehicles {
@@ -313,36 +281,13 @@ h2 {
   }
 }
 
-.generator_vehicles {
-  margin-top: 1em;
+.tab_content {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
 }
 
-hr {
-  height: 3px;
-  background-color: white;
-  outline: none;
-
-  margin: 15px 0;
-}
-
-.generator_actions {
-  display: grid;
-  gap: 0.5em;
-  grid-template-columns: repeat(3, 1fr);
-
-  button {
-    background-color: #131313;
-
-    padding: 0.5em;
-    font-weight: bold;
-  }
-
-  &[data-disabled] button {
-    opacity: 0.75;
-  }
-}
-
-.warning {
+.generator_warning {
   background-color: $accentColor;
   padding: 0.5em;
   text-align: justify;
@@ -354,17 +299,6 @@ hr {
   .generator_cargo,
   .generator_vehicles {
     grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-  }
-
-  .generator_attributes {
-    label {
-      width: 100%;
-    }
-
-    input {
-      max-width: 100%;
-      width: 100%;
-    }
   }
 }
 </style>

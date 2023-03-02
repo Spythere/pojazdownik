@@ -3,14 +3,14 @@
 $breakpointMd: 960px;
 $breakpointSm: 550px;
 
-$bgColor: #2c3149;
+$bgColor: #2b3552;
 $textColor: #fff;
 $secondaryColor: #222;
 $accentColor: #e4c428;
 
 ::-webkit-scrollbar {
-  width: 0.5rem;
-  height: 0.5rem;
+  width: 7px;
+  height: 7px;
 
   &-track {
     background: #222;
@@ -20,6 +20,10 @@ $accentColor: #e4c428;
   &-thumb {
     border-radius: 1rem;
     background: #777;
+  }
+
+  &-corner {
+    background: #222;
   }
 }
 
@@ -31,7 +35,6 @@ html {
   font-family: 'Lato', sans-serif;
 
   background-color: $bgColor;
-  width: 100vw;
   overflow-x: hidden;
 }
 
@@ -81,13 +84,19 @@ button {
   }
 }
 
-button.btn {
+.btn {
   padding: 0.4em 0.75em;
 
   outline: none;
   background-color: #222;
+  border-radius: 8px;
+  font-weight: bold;
 
   transition: all 250ms;
+
+  &:hover {
+    color: $accentColor;
+  }
 
   &.btn--outline {
     background: none;
@@ -115,15 +124,6 @@ button.btn {
     transition: all 250ms;
     background: none;
     padding: 0;
-
-    &:focus-visible {
-      outline: 1px solid white;
-    }
-  }
-
-  &--choice {
-    padding: 0.25em 0.3em;
-    background-color: #222;
 
     &:focus-visible {
       outline: 1px solid white;

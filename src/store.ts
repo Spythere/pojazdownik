@@ -1,6 +1,7 @@
 import { IStore } from './types';
 import { defineStore } from 'pinia';
 import {
+  acceptableMass,
   carDataList,
   chosenRealStock,
   isTrainPassenger,
@@ -53,6 +54,7 @@ export const useStore = defineStore({
     maxStockSpeed: (state) => maxStockSpeed(state),
     isTrainPassenger: (state) => isTrainPassenger(state),
     chosenRealStock: (state) => chosenRealStock(state),
+    acceptableMass: (state) => acceptableMass(state),
   },
 });
 

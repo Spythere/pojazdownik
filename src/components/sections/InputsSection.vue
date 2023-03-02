@@ -7,7 +7,7 @@
         <div class="vehicle-types locos">
           <button
             v-for="locoType in locomotiveTypeList"
-            class="btn--choice"
+            class="btn btn--choice"
             :data-selected="locoType.id == store.chosenLocoPower"
             @click="selectLocoType(locoType.id)"
           >
@@ -34,7 +34,7 @@
         <div class="vehicle-types carwagons">
           <button
             v-for="carType in carTypeList"
-            class="btn--choice"
+            class="btn btn--choice"
             :data-selected="carType.id == store.chosenCarUseType"
             @click="selectCarWagonType(carType.id)"
           >
@@ -85,7 +85,7 @@
       </div>
 
       <div class="input_actions">
-        <button class="btn" @click="addVehicle">DODAJ NOWY</button>
+        <button class="btn" @click="addVehicle(store.chosenVehicle, store.chosenCargo)">DODAJ NOWY</button>
         <button
           class="btn"
           @click="switchVehicles"
@@ -107,11 +107,12 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
-import { IStock } from '../types';
-import imageMixin from '../mixins/imageMixin';
-import { useStore } from '../store';
-import { isLocomotive } from '../utils/vehicleUtils';
-import stockPreviewMixin from '../mixins/stockPreviewMixin';
+import { IStock } from '../../types';
+import imageMixin from '../../mixins/imageMixin';
+import { useStore } from '../../store';
+import { isLocomotive } from '../../utils/vehicleUtils';
+import stockPreviewMixin from '../../mixins/stockPreviewMixin';
+import stockMixin from '../../mixins/stockMixin';
 
 interface ILocoType {
   id: string;
@@ -120,7 +121,7 @@ interface ILocoType {
 }
 
 export default defineComponent({
-  mixins: [imageMixin, stockPreviewMixin],
+  mixins: [imageMixin, stockPreviewMixin, stockMixin],
 
   data: () => ({
     locomotiveTypeList: [
@@ -174,7 +175,9 @@ export default defineComponent({
     },
 
     addOrSwitchVehicle() {
-      if (this.store.chosenStockListIndex == -1) this.addVehicle();
+      if (!this.store.chosenVehicle) return;
+
+      if (this.store.chosenStockListIndex == -1) this.addVehicle(this.store.chosenVehicle, this.store.chosenCargo);
       else this.switchVehicles();
     },
 
@@ -211,60 +214,16 @@ export default defineComponent({
 
       this.store.stockList[this.store.chosenStockListIndex] = stockObj;
     },
-
-    addVehicle() {
-      const vehicle = this.store.chosenVehicle;
-
-      if (!vehicle) return;
-
-      const stockObj: IStock = {
-        id: `${Date.now()}`,
-        useType: isLocomotive(vehicle) ? vehicle.power : vehicle.useType,
-        type: vehicle.type,
-        length: vehicle.length,
-        mass: vehicle.mass,
-        maxSpeed: vehicle.maxSpeed,
-        isLoco: isLocomotive(vehicle),
-        cargo:
-          !isLocomotive(vehicle) && vehicle.loadable && this.store.chosenCargo ? this.store.chosenCargo : undefined,
-        count: 1,
-        imgSrc: vehicle.imageSrc,
-        supportersOnly: vehicle.supportersOnly,
-      };
-
-      const previousStock =
-        this.store.stockList.length > 0 ? this.store.stockList[this.store.stockList.length - 1] : null;
-
-      if (isLocomotive(vehicle) && previousStock && previousStock.type == vehicle.type) {
-        this.store.stockList[this.store.stockList.length - 1].count++;
-        return;
-      }
-
-      if (
-        !isLocomotive(vehicle) &&
-        previousStock &&
-        previousStock.type == vehicle.type &&
-        previousStock.cargo?.id == this.store.chosenCargo?.id
-      ) {
-        this.store.stockList[this.store.stockList.length - 1].count++;
-
-        return;
-      }
-
-      if (isLocomotive(vehicle) && this.store.stockList.length > 0 && !this.store.stockList[0].isLoco)
-        this.store.stockList.unshift(stockObj);
-      else this.store.stockList.push(stockObj);
-    },
   },
 });
 </script>
 
 <style lang="scss" scoped>
-@import '../styles/global';
+@import '../../styles/global';
 
 .inputs-section {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
 
   grid-row: 2;
   grid-column: 1;
@@ -274,11 +233,9 @@ export default defineComponent({
   margin-bottom: 1em;
 }
 
-.btn--choice {
-  margin-right: 0.5em;
-  font-weight: bold;
-
-  background-color: #444;
+button.btn--choice {
+  font-size: 0.9em;
+  padding: 0.3em 0.6em;
 
   &[data-selected='true'] {
     background-color: $accentColor;
@@ -305,15 +262,19 @@ export default defineComponent({
 }
 
 .input_actions {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5em;
 
-  button {
-    margin: 0.5em 0.5em 0 0;
+  button:nth-child(3) {
+    grid-column: 1 / 3;
   }
 }
 
 .vehicle-types {
+  display: flex;
+  gap: 0.25em;
+
   margin-bottom: 0.5em;
 }
 
@@ -323,7 +284,7 @@ export default defineComponent({
     text-align: center;
   }
 
-  .input_actions {
+  .vehicle-types {
     justify-content: center;
   }
 }

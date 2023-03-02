@@ -1,78 +1,53 @@
 <template>
   <section class="stock-list">
-    <div class="stock_actions">
-      <button class="btn" @click="downloadStock">POBIERZ POCIĄG</button>
-      <button class="btn" @click="resetStock">ZRESETUJ LISTĘ</button>
-      <button class="btn" style="margin-left: auto" @click="shuffleCars">TASUJ WAGONY</button>
-      <button class="btn" @click="store.stockSectionMode = 'stock-generator'">LOSUJ SKŁAD</button>
-    </div>
-
     <div class="stock_controls" :data-disabled="store.chosenStockListIndex == -1">
       <b class="no">
         POJAZD NR <span class="text--accent">{{ store.chosenStockListIndex + 1 }}</span> &nbsp;
       </b>
 
-      <div class="count">
-        <button
-          class="action-btn"
-          :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
-          @click="subStock(store.chosenStockListIndex)"
-        >
-          <img :src="getIconURL('sub')" alt="subtract vehicle count" />
-          1
-        </button>
-
-        <input
-          v-if="chosenStockVehicle"
-          v-model="chosenStockVehicle.count"
-          type="number"
-          min="1"
-          name="stock-count"
-          id="stock-count"
-        />
-
-        <input v-else id="stock-count" type="number" value="0" :tabindex="store.chosenStockListIndex == -1 ? -1 : 0" />
-
-        <button
-          class="action-btn"
-          :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
-          @click="addStock(store.chosenStockListIndex)"
-        >
-          <img :src="getIconURL('add')" alt="add vehicle count" />
-          1
-        </button>
-      </div>
-
       <button
-        class="action-btn"
+        class="btn"
         :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
         @click="moveUpStock(store.chosenStockListIndex)"
       >
         <img :src="getIconURL('higher')" alt="move up vehicle" />
-        Przenieś wyżej
+        PRZENIEŚ WYŻEJ
       </button>
 
       <button
-        class="action-btn"
+        class="btn"
         :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
         @click="moveDownStock(store.chosenStockListIndex)"
       >
         <img :src="getIconURL('lower')" alt="move down vehicle" />
-        Przenieś niżej
+        PRZENIEŚ NIŻEJ
       </button>
 
       <button
-        class="action-btn"
+        class="btn"
         :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
         @click="removeStock(store.chosenStockListIndex)"
       >
         <img :src="getIconURL('remove')" alt="remove vehicle" />
-        Usuń
+        USUŃ
       </button>
     </div>
 
-    <div class="stock_clipboard-text" v-if="store.stockList.length > 0">
-      <button class="btn" @click="copyToClipboard">Skopiuj tekst składu do schowka</button>
+    <div class="stock_actions">
+      <label class="file-label">
+        <div class="btn">WCZYTAJ</div>
+        <input type="file" @change="uploadStock" ref="conFile" accept=".con,.txt" />
+      </label>
+
+      <button class="btn" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="downloadStock">POBIERZ</button>
+
+      <button class="btn" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="copyToClipboard">
+        SKOPIUJ
+      </button>
+
+      <button class="btn" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="resetStock">ZRESETUJ</button>
+
+      <button class="btn" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="shuffleCars">PRZETASUJ</button>
     </div>
 
     <div class="stock_specs">
@@ -85,9 +60,11 @@
       </b>
 
       <span>
-        Masa: <span class="text--accent">{{ store.totalMass }}t</span> - Długość:
+        Masa: <span class="text--accent">{{ store.totalMass }}t</span> (dopuszczalna:
+        <span class="text--accent">{{ store.acceptableMass ? store.acceptableMass + 't' : '-' }}</span
+        >) - Długość:
         <span class="text--accent">{{ store.totalLength }}m</span>
-        - Vmax pociągu: <span class="text--accent">{{ store.maxStockSpeed }} km/h</span>
+        - vMax: <span class="text--accent">{{ store.maxStockSpeed }} km/h</span>
       </span>
     </div>
 
@@ -117,13 +94,15 @@
       <div class="warning" v-if="tooManyLocomotives">Ten skład posiada za dużo pojazdów trakcyjnych!</div>
     </div>
 
+    <StockThumbnails :onListItemClick="onListItemClick" :onStockImageError="stockImageError" />
+
     <!-- Stock list -->
-    <ul ref="list">
-      <li v-if="store.stockList.length == 0" class="list-empty">
+    <ul ref="stock_list">
+      <li v-if="stockIsEmpty" class="list-empty">
         <div class="stock-info">Lista pojazdów jest pusta!</div>
       </li>
 
-      <transition-group name="stock-list-anim">
+      <TransitionGroup name="stock-list-anim">
         <li
           v-for="(stock, i) in store.stockList"
           :key="stock.id"
@@ -156,29 +135,30 @@
             <span class="stock-info__length"> {{ stock.length }}m </span>
             <span class="stock-info__mass">{{ stock.cargo ? stock.cargo.totalMass : stock.mass }}t </span>
             <span class="stock-info__speed"> {{ stock.maxSpeed }}km/h </span>
-
-            <span class="stock-info__count"> x{{ stock.count }} </span>
           </div>
         </li>
-      </transition-group>
+      </TransitionGroup>
     </ul>
   </section>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import TrainImage from './TrainImageSection.vue';
+import TrainImage from '../sections/TrainImageSection.vue';
 
-import { useStore } from '../store';
-import warningsMixin from '../mixins/warningsMixin';
-import imageMixin from '../mixins/imageMixin';
-import stockPreviewMixin from '../mixins/stockPreviewMixin';
+import { useStore } from '../../store';
+import warningsMixin from '../../mixins/warningsMixin';
+import imageMixin from '../../mixins/imageMixin';
+import stockPreviewMixin from '../../mixins/stockPreviewMixin';
+import { IStock } from '../../types';
+import StockThumbnails from '../utils/StockThumbnails.vue';
+import stockMixin from '../../mixins/stockMixin';
 
 export default defineComponent({
   name: 'stock-list',
-  components: { TrainImage },
+  components: { TrainImage, StockThumbnails },
 
-  mixins: [warningsMixin, imageMixin, stockPreviewMixin],
+  mixins: [warningsMixin, imageMixin, stockMixin, stockPreviewMixin],
 
   setup() {
     const store = useStore();
@@ -208,6 +188,10 @@ export default defineComponent({
         .join(';');
     },
 
+    stockIsEmpty() {
+      return this.store.stockList.length == 0;
+    },
+
     chosenStockVehicle() {
       return this.store.chosenStockListIndex == -1 ? undefined : this.store.stockList[this.store.chosenStockListIndex];
     },
@@ -216,6 +200,10 @@ export default defineComponent({
   methods: {
     stockHasWarnings() {
       return this.tooManyLocomotives || this.trainTooHeavy || this.trainTooLong || this.locoNotSuitable;
+    },
+
+    stockImageError(e: Event, stock: IStock): void {
+      (e.target as HTMLImageElement).src = `images/${stock.useType}-unknown.png`;
     },
 
     copyToClipboard() {
@@ -282,6 +270,8 @@ export default defineComponent({
       if (index == -1) return;
 
       this.store.stockList = this.store.stockList.filter((stock, i) => i != index);
+
+      if (this.store.stockList.length < index + 1) this.store.chosenStockListIndex = -1;
     },
 
     moveUpStock(index: number) {
@@ -333,9 +323,13 @@ export default defineComponent({
       // if (this.stockHasWarnings())
       //   return alert('Jazda tym pociągiem jest niezgodna z regulaminem symulatora! Zmień parametry zestawienia!');
 
+      const defaultName = `${this.store.chosenRealStockName || this.store.stockList[0].type} ${
+        this.store.totalMass
+      }t; ${this.store.totalLength}m; vmax ${this.store.maxStockSpeed}`;
+
       const fileName = prompt(
         'Nazwij plik, a następnie pobierz do folderu Presets (Dokumenty/TTSK/TrainDriver2):',
-        `${this.store.chosenRealStockName || this.store.stockList[0].type}`
+        defaultName
       );
 
       if (!fileName) return;
@@ -350,6 +344,29 @@ export default defineComponent({
       a.dataset.downloadurl = ['', a.download, a.href].join(':');
       e.initEvent('click', true, false);
       a.dispatchEvent(e);
+    },
+
+    uploadStock() {
+      const inputEl = this.$refs['conFile'] as HTMLInputElement;
+      const files = inputEl.files;
+
+      if (files?.length != 1) return;
+      if (!/\.con$/.test(files[0].name)) return;
+
+      const reader = new FileReader();
+      reader.readAsText(files[0]);
+
+      reader.onload = (res) => {
+        const stockString = res.target?.result;
+
+        if (!stockString || typeof stockString !== 'string') return;
+
+        this.loadStockFromString(stockString);
+      };
+
+      reader.onerror = (err) => console.log(err);
+
+      inputEl.value = '';
     },
 
     onDragStart(vehicleIndex: number) {
@@ -379,11 +396,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '../styles/global';
-
-.stock_warnings {
-  margin-top: 1em;
-}
+@import '../../styles/global';
 
 .warning {
   padding: 0.25em;
@@ -403,12 +416,13 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
 
+  gap: 0.5em;
   flex-wrap: wrap;
 
-  margin: 1em 0;
-  border: 1px solid white;
+  padding: 0.5em;
+  margin-bottom: 1em;
 
-  padding: 0 0.3em;
+  background-color: #353a57;
 
   &[data-disabled='true'] {
     opacity: 0.8;
@@ -430,28 +444,26 @@ export default defineComponent({
   }
 
   button {
-    margin: 0.25em;
-    padding: 0.25em;
-
-    &:focus-visible {
-      outline: 1px solid white;
-    }
-
     img {
-      vertical-align: text-bottom;
       margin-right: 0.25em;
-
-      width: 1.1em;
-      height: 1.1em;
     }
   }
 }
 
-.stock_clipboard-text {
-  font-weight: bold;
+.stock_actions {
+  display: grid;
+  gap: 0.5em;
+  margin-bottom: 1em;
 
-  & > .btn {
-    margin: 0 0.5em 0.5em 0;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+
+  label.file-label {
+    text-align: center;
+    cursor: pointer;
+
+    input {
+      display: none;
+    }
   }
 }
 
@@ -466,8 +478,7 @@ ul {
 
   overflow: auto;
 
-  height: 70vh;
-  margin-top: 1em;
+  height: 500px;
 }
 
 ul > li {
@@ -487,7 +498,8 @@ ul > li {
 
   &.list-empty {
     background-color: $secondaryColor;
-    padding: 0.5em;
+    border-radius: 0.5em;
+    padding: 0.75em;
   }
 }
 
@@ -507,6 +519,10 @@ li > .stock-info {
     justify-content: center;
     align-items: center;
   }
+}
+
+.stock_warnings {
+  margin: 0.5em 0;
 }
 
 .stock-info {

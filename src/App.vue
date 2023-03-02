@@ -34,6 +34,7 @@
           regulaminem symulatora Train Driver 2</a
         >!
       </div>
+      <div class="text--grayed" style="margin-bottom: 0.25em">Strona jest kompletna dla wersji 2022.2.2 symulatora TD2</div>
       &copy;
       <a href="https://td2.info.pl/profile/?u=20777" target="_blank">Spythere</a>
       {{ new Date().getUTCFullYear() }} | v{{ VERSION }}
@@ -46,13 +47,13 @@ import packageInfo from '.././package.json';
 
 import { defineComponent } from 'vue';
 
-import InputsSection from './components/InputsSection.vue';
+import InputsSection from './components/sections/InputsSection.vue';
 
 import { useStore } from './store';
-import TrainImageSection from './components/TrainImageSection.vue';
-import LogoSection from './components/LogoSection.vue';
+import TrainImageSection from './components/sections/TrainImageSection.vue';
+import LogoSection from './components/sections/LogoSection.vue';
 import RealStockCard from './components/cards/RealStockCard.vue';
-import StockSection from './components/StockSection.vue';
+import StockSection from './components/sections/StockSection.vue';
 
 export default defineComponent({
   components: {
@@ -70,7 +71,7 @@ export default defineComponent({
 
   async created() {
     const stockData = await (
-      await fetch(`https://spythere.github.io/api/td2/data/stockData.json?t=${Math.floor(Date.now() / 60000)}`)
+      await fetch(`https://spythere.github.io/api/td2/data/stockInfo.json?t=${Math.floor(Date.now() / 60000)}`)
     ).json();
 
     this.store.stockData = stockData;
@@ -86,7 +87,7 @@ export default defineComponent({
 
   display: flex;
   flex-direction: column;
-  padding: 1em;
+  align-items: center;
 }
 
 /* APP */
@@ -95,9 +96,7 @@ export default defineComponent({
 
   color: $textColor;
   font-size: 1em;
-
-  display: flex;
-  justify-content: center;
+  padding: 1em 0.5em;
 }
 
 /* HEADER SECTION */
@@ -145,14 +144,14 @@ main {
   display: grid;
   gap: 1em 3em;
 
-  width: 100vw;
+  width: 100%;
   max-width: 1300px;
   min-height: 75vh;
 
   grid-template-columns: 1fr 2fr;
   grid-template-rows: auto 360px minmax(400px, 1fr);
 
-  padding: 0 1em;
+  // padding: 0 1em;
   margin-bottom: 2em;
 }
 
@@ -167,6 +166,10 @@ footer {
 /* MOBILE VIEWS */
 
 @media screen and (max-width: $breakpointMd) {
+  #app {
+    font-size: calc(0.7rem + 0.75vw);
+  }
+
   main {
     display: flex;
     flex-direction: column;
@@ -174,11 +177,5 @@ footer {
     grid-template-rows: 1fr;
   }
 }
-
-// @media screen and (max-width: $breakpointSm) {
-//   header {
-//     font-size: 0.75em;
-//   }
-// }
 </style>
 

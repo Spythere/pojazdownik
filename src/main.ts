@@ -7,11 +7,7 @@ import App from './App.vue';
 const pinia = createPinia();
 
 const updateSW = registerSW({
-  onOfflineReady() {},
-  
-  onNeedRefresh() {
-    console.log('Need refresh!');
-  },
+  immediate: true,
 });
 
 createApp(App).use(pinia).mount('#app');

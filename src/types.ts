@@ -27,7 +27,7 @@ export interface IStore {
   isRandomizerCardOpen: boolean;
   isRealStockListCardOpen: boolean;
 
-  stockSectionMode: 'stock-list' | 'stock-generator';
+  stockSectionMode: 'stock-list' | 'stock-generator' | 'number-generator';
   stockData?: IStockData;
 }
 
@@ -49,7 +49,12 @@ export interface IStockData {
   };
 
   info: {
-    [key in TStockInfoKey]: any[];
+    'car-cargo': [string, string, boolean, boolean, string][];
+    'car-passenger': [string, string, boolean, boolean, string][];
+    'loco-e': [string, string, string, string, boolean][];
+    'loco-s': [string, string, string, string, boolean][];
+    'loco-szt': [string, string, string, string, boolean][];
+    'loco-ezt': [string, string, string, string, boolean][];
   };
 
   props: IStockProps[];
@@ -107,4 +112,8 @@ export interface IStock {
 export interface IReadyStockList {
   [key: string]: { stockString: string; type: string; number: string; name: string };
 }
+
+
+
+
 
