@@ -9,7 +9,7 @@
       @dragover="allowDrop"
     >
       <span @click="onListItemClick(stockIndex)" :key="stock.id">
-        <b>
+        <b :class="{ supporter: stock.supportersOnly }">
           {{ stock.type }}
         </b>
 
@@ -119,6 +119,10 @@ const allowDrop = (e: DragEvent) => {
   img {
     max-height: 60px;
   }
+}
+
+.supporter {
+  color: salmon;
 }
 </style>
 

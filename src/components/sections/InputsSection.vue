@@ -25,7 +25,7 @@
         >
           <option :value="null" disabled>Wybierz pojazd trakcyjny</option>
           <option v-for="loco in locoOptions" :value="loco" :key="loco.type">
-            {{ loco.type }}
+            {{ loco.type }}<b v-if="loco.supportersOnly">*</b>
           </option>
         </select>
       </div>
@@ -53,7 +53,7 @@
           <option :value="null" disabled>Wybierz wagon</option>
 
           <option v-for="car in carOptions" :value="car" :key="car.type">
-            {{ car.type }}
+            {{ car.type }}<b v-if="car.supportersOnly">*</b>
           </option>
         </select>
       </div>
