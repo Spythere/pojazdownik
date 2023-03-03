@@ -1,7 +1,7 @@
 <template>
   <section class="train-image-section">
     <div class="train-image__wrapper">
-      <div class="train-image__content">
+      <div class="train-image__content" :class="{'supporter': store.chosenVehicle?.supportersOnly}">
         <transition name="img-message-anim">
           <div class="empty-message" v-if="store.imageLoading && store.chosenVehicle?.imageSrc">
             ŁADOWANIE OBRAZU...
@@ -44,6 +44,8 @@
                 : 'Typ konstrukcji: ' + store.chosenVehicle.constructionType
             }}
           </div>
+
+          <b style="color: salmon;" v-if="store.chosenVehicle.supportersOnly">* TYLKO DLA SPONSORÓW</b>
         </div>
       </div>
 

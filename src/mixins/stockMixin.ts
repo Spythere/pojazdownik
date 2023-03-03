@@ -29,7 +29,7 @@ export default defineComponent({
         count,
         imgSrc: vehicle.imageSrc,
         useType: isLoco ? vehicle.power : vehicle.useType,
-        supportersOnly: false,
+        supportersOnly: vehicle.supportersOnly,
       };
     },
 

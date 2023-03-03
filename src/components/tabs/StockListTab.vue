@@ -127,7 +127,7 @@
               {{ i + 1 }}.
             </span>
 
-            <span class="stock-info__type">
+            <span class="stock-info__type" :class="{ supporter: stock.supportersOnly }">
               {{ stock.isLoco ? stock.type : getCarSpecFromType(stock.type) }}
             </span>
 
@@ -523,6 +523,10 @@ li > .stock-info {
 
 .stock_warnings {
   margin: 0.5em 0;
+}
+
+.supporter {
+  color: salmon;
 }
 
 .stock-info {
