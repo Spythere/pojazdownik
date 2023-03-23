@@ -1,13 +1,13 @@
 <template>
-  <div class="real-stock-card g-card" v-if="store.isRealStockListCardOpen">
+  <div class="real-stock-card g-card" v-show="store.isRealStockListCardOpen">
     <div class="g-card_bg" @click="store.isRealStockListCardOpen = false"></div>
 
     <div class="card_content">
-      <div class="top-sticky">
-        <button class="btn btn--text exit-btn" @click="store.isRealStockListCardOpen = false">&lt; POWRÓT</button>
+      <div>
+        <button class="btn exit-btn" @click="store.isRealStockListCardOpen = false">&lt; POWRÓT</button>
 
         <div class="header">
-          <h1>
+          <!-- <h1>
             REALNE ZESTAWIENIA
             <div>by <a href="https://td2.info.pl/profile/?u=17708" target="_blank">Railtrains997</a></div>
           </h1>
@@ -15,24 +15,39 @@
             Pełne informacje o zestawieniach dostępne na stronie
             <a href="http://bocznica.eu/files/archiwum/2021r_2021-11-04.html" target="_blank">bocznica.eu</a> (stan na
             listopad 2021r.)
-          </p>
+          </p> -->
 
           <input type="text" tabindex="0" v-model="searchedReadyStockName" placeholder="Szukaj zestawienia..." />
         </div>
       </div>
 
-      <ul v-if="responseStatus == 'loaded'">
+      <ul class="list" v-if="responseStatus == 'loaded'">
         <li
-          v-for="(stock, key) in computedReadyStockList"
+          v-for="(rStock, key) in computedReadyStockList"
           :key="key"
           tabindex="0"
-          @click="choseStock(stock.name, stock.type, stock.number, stock.stockString)"
-          @keydown.enter="choseStock(stock.name, stock.type, stock.number, stock.stockString)"
+          @click="chooseStock(rStock.stockString)"
+          @keydown.enter="chooseStock(rStock.stockString)"
         >
-          <img :src="getIconURL(stock.type)" :alt="stock.type" />
+          <div class="desc">
+            <img :src="getIconURL(rStock.type)" :alt="rStock.type" />
 
-          <b class="text--accent"> {{ stock.name }}</b>
-          <div>{{ stock.number }}</div>
+            <b class="text--accent"> {{ rStock.name }}</b>
+            <div>{{ rStock.number }}</div>
+          </div>
+
+          <div class="thumbnails" ref="thumbnailsRef">
+            <div v-for="stockItem in rStock.stockString.split(';')">
+              <span>
+                <!-- <span>{{ stockItem }}</span> -->
+                <img
+                  :src="`https://rj.td2.info.pl/dist/img/thumbnails/${stockItem}.png`"
+                  :alt="rStock.type"
+                  :title="rStock.type"
+                />
+              </span>
+            </div>
+          </div>
         </li>
       </ul>
     </div>
@@ -87,7 +102,7 @@ export default defineComponent({
       return new URL(`./dir/${name}.png`, import.meta.url).href;
     },
 
-    choseStock(name: string, type: string, number: string, stockString: string) {
+    chooseStock(stockString: string) {
       this.loadStockFromString(stockString);
       this.store.isRealStockListCardOpen = false;
     },
@@ -146,7 +161,7 @@ input {
   background-color: #1c1c1c;
   border-radius: 1em;
 
-  height: 85vh;
+  height: 90vh;
   max-width: 1000px;
   width: 90vw;
 
@@ -154,61 +169,66 @@ input {
 
   overflow-y: auto;
   z-index: 100;
+}
 
-  .top-sticky {
-    position: sticky;
-    top: 0;
-    background: #1c1c1c;
+.top-sticky {
+  position: sticky;
+  top: 0;
+  background: #1c1c1c;
+}
+
+.header {
+  padding-bottom: 1.5em;
+  padding-top: 0.5em;
+
+  text-align: center;
+  font-size: 1.3em;
+
+  h1 {
+    line-height: 0.9em;
+    margin: 0.5em 0;
+
+    div {
+      font-size: 0.65em;
+      color: #ccc;
+    }
   }
 
-  .header {
-    padding-bottom: 1.5em;
-    padding-top: 0.5em;
+  p {
+    margin: 1em 0;
+    color: #999;
+    font-size: 0.95em;
+  }
+}
 
-    text-align: center;
-    font-size: 1.3em;
+ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
 
-    h1 {
-      line-height: 0.9em;
-      margin: 0.5em 0;
+  li {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
 
-      div {
-        font-size: 0.65em;
-        color: #ccc;
+    .desc {
+      cursor: pointer;
+      padding: 0.5em;
+    }
+
+    .thumbnails {
+      display: flex;
+      align-items: flex-end;
+
+      overflow: auto;
+      padding: 0.5em;
+
+      img {
+        // width: 150px;
+        height: 100%;
+        max-height: 20px;
+        vertical-align: middle;
       }
     }
-
-    p {
-      margin: 1em 0;
-      color: #999;
-      font-size: 0.95em;
-    }
-  }
-
-  ul {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1em;
-
-    @media screen and (max-width: 700px) {
-      grid-template-columns: repeat(3, 1fr);
-    }
-
-    @media screen and (max-width: 550px) {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    @media screen and (max-width: 400px) {
-      grid-template-columns: repeat(1, 1fr);
-    }
-
-    margin-bottom: 1em;
-  }
-
-  ul li {
-    padding: 0.5em;
-
-    cursor: pointer;
 
     background: #2b2b2b;
 

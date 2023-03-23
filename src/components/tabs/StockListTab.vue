@@ -94,7 +94,7 @@
       <div class="warning" v-if="tooManyLocomotives">Ten skład posiada za dużo pojazdów trakcyjnych!</div>
     </div>
 
-    <StockThumbnails :onListItemClick="onListItemClick" :onStockImageError="stockImageError" />
+    <StockThumbnails :onListItemClick="onListItemClick" />
 
     <!-- Stock list -->
     <ul ref="stock_list">
@@ -200,10 +200,6 @@ export default defineComponent({
   methods: {
     stockHasWarnings() {
       return this.tooManyLocomotives || this.trainTooHeavy || this.trainTooLong || this.locoNotSuitable;
-    },
-
-    stockImageError(e: Event, stock: IStock): void {
-      (e.target as HTMLImageElement).src = `images/${stock.useType}-unknown.png`;
     },
 
     copyToClipboard() {
