@@ -154,9 +154,7 @@ export function chosenRealStock(state: IStore) {
 
   const realStockObj = state.readyStockList.find((readyStock) => readyStock.stockString == currentStockString);
 
-  state.chosenRealStockName = realStockObj
-    ? `${realStockObj.type} ${realStockObj.number} ${realStockObj.name}`
-    : undefined;
+  state.chosenRealStockName = realStockObj?.stockId ?? undefined;
 
   return realStockObj;
 }

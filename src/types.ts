@@ -110,6 +110,7 @@ export interface IStock {
 }
 
 export interface IReadyStockItem {
+  stockId: string;
   stockString: string;
   type: string;
   number: string;

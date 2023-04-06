@@ -5,7 +5,9 @@
     <div class="card_content">
       <div class="card_nav">
         <div class="top-pane">
-          <h1>ZESTAWIENIA REALNE by <a href="https://td2.info.pl/profile/?u=17708" target="_blank">Railtrains997</a></h1>
+          <h1>
+            ZESTAWIENIA REALNE by <a href="https://td2.info.pl/profile/?u=17708" target="_blank">Railtrains997</a>
+          </h1>
           <button class="btn exit-btn" @click="store.isRealStockListCardOpen = false">&Cross;</button>
         </div>
 
@@ -23,34 +25,32 @@
             </option>
           </datalist>
 
-          <input list="readyStockStringList" placeholder="Szukaj zestawienia po pojazdach" />
+          <input
+            list="readyStockStringList"
+            v-model="searchedReadyStockString"
+            placeholder="Szukaj zestawienia po pojazdach"
+          />
 
           <datalist id="readyStockStringList">
-            <option v-for="stock in store.readyStockList" :value="stock.stockString">
-              {{ stock.type }} {{ stock.number }} {{ stock.name }}
-            </option>
+            <option v-for="stock in store.readyStockList" :value="stock.stockString">{{stock.stockString}}</option>
           </datalist>
         </div>
       </div>
 
       <ul class="card_list" ref="list" @scroll="onListScroll">
-        <li v-for="(rStock, i) in computedReadyStockList" :key="i">
-          <div
-            class="desc"
-            tabindex="0"
-            @click="chooseStock(rStock.stockString)"
-            @keydown.enter="chooseStock(rStock.stockString)"
-          >
+        <li
+          v-for="rStock in computedReadyStockList"
+          :key="rStock.stockId"
+          :data-last-selected="store.chosenRealStockName === rStock.stockId"
+        >
+          <div class="stock-title" tabindex="0" @click="chooseStock(rStock)" @keydown.enter="chooseStock(rStock)">
             <img :src="getIconURL(rStock.type)" :alt="rStock.type" />
             <b class="text--accent" style="margin-left: 5px"> {{ rStock.name }}</b>
             <div>{{ rStock.number }}</div>
           </div>
 
-          <div class="thumbnails" ref="thumbnailsRef">
+          <div class="stock-thumbnails" ref="thumbnailsRef">
             <div v-for="stockItem in rStock.stockString.split(';')">
-              <!-- rStock.stockString.split(';') -->
-              <!-- <span> -->
-              <!-- <span>{{ stockItem }}</span> -->
               <div class="thumbnail_container">
                 <img
                   :src="`https://rj.td2.info.pl/dist/img/thumbnails/${stockItem}.png`"
@@ -59,11 +59,7 @@
                   @error="onStockItemError"
                   @load="e => (e.target as HTMLElement).style.opacity = '1'"
                 />
-
-                <!-- <img src="images/car-passenger-unknown.png" alt=""> -->
               </div>
-              <!-- <img @error="e => (e.target as HTMLImageElement).src = `images/car-passenger-unknown.png`" /> -->
-              <!-- </span> -->
             </div>
           </div>
         </li>
@@ -81,6 +77,8 @@ import { useStore } from '../../store';
 import imageMixin from '../../mixins/imageMixin';
 import stockMixin from '../../mixins/stockMixin';
 
+import { IReadyStockItem } from '../../types';
+
 interface ResponseJSONData {
   [key: string]: string;
 }
@@ -89,14 +87,15 @@ export default defineComponent({
   mixins: [imageMixin, stockMixin],
 
   data: () => ({
+    store: useStore(),
     responseStatus: 'loading',
     isMobile: 'ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/) ? true : false,
     observer: null as IntersectionObserver | null,
     searchedReadyStockName: '',
-    store: useStore(),
+    searchedReadyStockString: '',
     visibleIndexesTo: 0,
-    lastChecked: null,
-    scrollY: 0,
+    lastSelectedStockId: null as string | null,
+    scrollTop: 0,
   }),
 
   async mounted() {
@@ -106,10 +105,11 @@ export default defineComponent({
 
   activated() {
     (this.$refs['search'] as HTMLInputElement).focus();
-  },
 
-  deactivated() {
-    console.log((this.$refs['list'] as HTMLElement).scrollTop);
+    (this.$refs['list'] as HTMLElement).scrollTo({
+      top: this.scrollTop,
+      behavior: 'auto',
+    });
   },
 
   computed: {
@@ -117,7 +117,11 @@ export default defineComponent({
       if (this.searchedReadyStockName == null) return this.store.readyStockList;
 
       return this.store.readyStockList
-        .filter((rs) => rs.name.toLocaleLowerCase().includes(this.searchedReadyStockName.toLocaleLowerCase()))
+        .filter(
+          (rs) =>
+            rs.name.toLocaleLowerCase().includes(this.searchedReadyStockName.toLocaleLowerCase()) &&
+            rs.stockString.includes(this.searchedReadyStockString)
+        )
         .filter((_, i) => i <= this.visibleIndexesTo);
     },
   },
@@ -142,11 +146,16 @@ export default defineComponent({
       for (let stockKey in readyStockJSONData) {
         const [type, number, ...name] = stockKey.split(' ');
 
-        this.store.readyStockList.push({
-          type,
+        const obj = {
           number: number.replace(/_/g, '/'),
           name: name.join(' '),
           stockString: readyStockJSONData[stockKey],
+          type,
+        };
+
+        this.store.readyStockList.push({
+          ...obj,
+          stockId: `${obj.type} ${obj.number} ${obj.name}`,
         });
       }
 
@@ -155,10 +164,7 @@ export default defineComponent({
 
     mountObserver() {
       this.observer = new IntersectionObserver((entries) => {
-        // Is the entry visible?
-        if (entries[0].intersectionRatio > 0) {
-          this.visibleIndexesTo += 20;
-        }
+        if (entries[0].intersectionRatio > 0) this.visibleIndexesTo += 20;
       });
 
       this.observer.observe(this.$refs['bottom'] as HTMLElement);
@@ -168,8 +174,9 @@ export default defineComponent({
       return new URL(`./dir/${name}.png`, import.meta.url).href;
     },
 
-    chooseStock(stockString: string) {
-      this.loadStockFromString(stockString);
+    chooseStock(stockItem: IReadyStockItem) {
+      this.loadStockFromString(stockItem.stockString);
+      this.lastSelectedStockId = stockItem.stockId;
       this.store.isRealStockListCardOpen = false;
     },
 
@@ -182,6 +189,8 @@ export default defineComponent({
     onListScroll(e: Event) {
       const listElement = e.target as HTMLElement;
       const scrollTop = listElement.scrollTop;
+
+      this.scrollTop = scrollTop;
     },
   },
 });
@@ -221,6 +230,7 @@ export default defineComponent({
     color: #aaa;
   }
 }
+
 .top-sticky {
   position: sticky;
   top: 0;
@@ -247,8 +257,13 @@ ul {
     grid-template-columns: 1fr 2fr;
     background: #2b2b2b;
     gap: 1rem;
+    padding: 0.1em;
 
-    .desc {
+    &[data-last-selected='true'] .stock-title {
+      border: 1px solid $accentColor;
+    }
+
+    .stock-title {
       cursor: pointer;
       padding: 0.5em;
     }
@@ -257,22 +272,13 @@ ul {
       height: 0.85em;
     }
 
-    span {
-      color: #999;
-      font-weight: bold;
-    }
-
     &:hover {
       background: #222;
-    }
-
-    &:focus {
-      outline: 1px solid white;
     }
   }
 }
 
-.thumbnails {
+.stock-thumbnails {
   display: flex;
   align-items: flex-end;
 
@@ -280,27 +286,10 @@ ul {
 
   overflow: auto;
   padding: 0.5em;
-
-  // img {
-  //   // width: 150px;
-  //   height: 100%;
-  //   max-height: 20px;
-  //   vertical-align: middle;
-  // }
 }
 
-.thumbnail_container {
-  // position: relative;
-  // width: 100%;
-  // height: 0;
-
-  img {
-    // position: absolute;
-    // top: 0;
-    // left: 0;
-    // width: 100%;
-    height: 30px;
-  }
+.thumbnail_container img {
+  height: 30px;
 }
 </style>
 
