@@ -12,11 +12,13 @@ export default defineConfig({
     vue(),
     VitePWA({
       registerType: 'autoUpdate',
+
       workbox: {
-        globPatterns: ['**/*.{js,css,html,png,svg,img}'],
+        // globPatterns: ['**/*.{js,css,html,png,svg,img}'],
+
         runtimeCaching: [
           {
-            urlPattern: new RegExp(`^https://rj.td2.info.pl/dist/img/thumbnails/.*`),
+            urlPattern: /^https:\/\/rj.td2.info.pl\/dist\/img\/thumbnails\/.*/i,
             handler: 'CacheFirst',
             options: {
               cacheName: 'swdr-images-cache',
@@ -31,10 +33,8 @@ export default defineConfig({
           },
         ],
       },
-      devOptions: {
-        enabled: true,
-      },
     }),
   ],
 });
+
 

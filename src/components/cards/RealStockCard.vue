@@ -1,54 +1,74 @@
 <template>
-  <div class="real-stock-card g-card" v-show="store.isRealStockListCardOpen">
+  <div class="real-stock-card g-card">
     <div class="g-card_bg" @click="store.isRealStockListCardOpen = false"></div>
 
     <div class="card_content">
-      <div>
-        <button class="btn exit-btn" @click="store.isRealStockListCardOpen = false">&lt; POWRÓT</button>
+      <div class="card_nav">
+        <div class="top-pane">
+          <h1>ZESTAWIENIA REALNE by <a href="https://td2.info.pl/profile/?u=17708" target="_blank">Railtrains997</a></h1>
+          <button class="btn exit-btn" @click="store.isRealStockListCardOpen = false">&Cross;</button>
+        </div>
 
-        <div class="header">
-          <!-- <h1>
-            REALNE ZESTAWIENIA
-            <div>by <a href="https://td2.info.pl/profile/?u=17708" target="_blank">Railtrains997</a></div>
-          </h1>
-          <p>
-            Pełne informacje o zestawieniach dostępne na stronie
-            <a href="http://bocznica.eu/files/archiwum/2021r_2021-11-04.html" target="_blank">bocznica.eu</a> (stan na
-            listopad 2021r.)
-          </p> -->
+        <div class="filters">
+          <input
+            list="readyStockDataList"
+            ref="search"
+            v-model="searchedReadyStockName"
+            placeholder="Szukaj zestawienia po nazwie"
+          />
 
-          <input type="text" tabindex="0" v-model="searchedReadyStockName" placeholder="Szukaj zestawienia..." />
+          <datalist id="readyStockDataList">
+            <option v-for="stock in store.readyStockList" :value="stock.name">
+              {{ stock.type }} {{ stock.number }} {{ stock.name }}
+            </option>
+          </datalist>
+
+          <input list="readyStockStringList" placeholder="Szukaj zestawienia po pojazdach" />
+
+          <datalist id="readyStockStringList">
+            <option v-for="stock in store.readyStockList" :value="stock.stockString">
+              {{ stock.type }} {{ stock.number }} {{ stock.name }}
+            </option>
+          </datalist>
         </div>
       </div>
 
-      <ul class="list" v-if="responseStatus == 'loaded'">
-        <li
-          v-for="(rStock, key) in computedReadyStockList"
-          :key="key"
-          tabindex="0"
-          @click="chooseStock(rStock.stockString)"
-          @keydown.enter="chooseStock(rStock.stockString)"
-        >
-          <div class="desc">
+      <ul class="card_list" ref="list" @scroll="onListScroll">
+        <li v-for="(rStock, i) in computedReadyStockList" :key="i">
+          <div
+            class="desc"
+            tabindex="0"
+            @click="chooseStock(rStock.stockString)"
+            @keydown.enter="chooseStock(rStock.stockString)"
+          >
             <img :src="getIconURL(rStock.type)" :alt="rStock.type" />
-
-            <b class="text--accent"> {{ rStock.name }}</b>
+            <b class="text--accent" style="margin-left: 5px"> {{ rStock.name }}</b>
             <div>{{ rStock.number }}</div>
           </div>
 
           <div class="thumbnails" ref="thumbnailsRef">
             <div v-for="stockItem in rStock.stockString.split(';')">
-              <span>
-                <!-- <span>{{ stockItem }}</span> -->
+              <!-- rStock.stockString.split(';') -->
+              <!-- <span> -->
+              <!-- <span>{{ stockItem }}</span> -->
+              <div class="thumbnail_container">
                 <img
                   :src="`https://rj.td2.info.pl/dist/img/thumbnails/${stockItem}.png`"
-                  :alt="rStock.type"
                   :title="rStock.type"
+                  style="opacity: 0"
+                  @error="onStockItemError"
+                  @load="e => (e.target as HTMLElement).style.opacity = '1'"
                 />
-              </span>
+
+                <!-- <img src="images/car-passenger-unknown.png" alt=""> -->
+              </div>
+              <!-- <img @error="e => (e.target as HTMLImageElement).src = `images/car-passenger-unknown.png`" /> -->
+              <!-- </span> -->
             </div>
           </div>
         </li>
+
+        <div ref="bottom"></div>
       </ul>
     </div>
   </div>
@@ -56,7 +76,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { Vehicle, IReadyStockList } from '../../types';
 
 import { useStore } from '../../store';
 import imageMixin from '../../mixins/imageMixin';
@@ -69,35 +88,82 @@ interface ResponseJSONData {
 export default defineComponent({
   mixins: [imageMixin, stockMixin],
 
-  setup() {
-    return {
-      store: useStore(),
-    };
-  },
-
   data: () => ({
     responseStatus: 'loading',
     isMobile: 'ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/) ? true : false,
-
+    observer: null as IntersectionObserver | null,
     searchedReadyStockName: '',
+    store: useStore(),
+    visibleIndexesTo: 0,
+    lastChecked: null,
+    scrollY: 0,
   }),
+
+  async mounted() {
+    this.mountObserver();
+    this.fetchStockListData();
+  },
+
+  activated() {
+    (this.$refs['search'] as HTMLInputElement).focus();
+  },
+
+  deactivated() {
+    console.log((this.$refs['list'] as HTMLElement).scrollTop);
+  },
 
   computed: {
     computedReadyStockList() {
       if (this.searchedReadyStockName == null) return this.store.readyStockList;
 
-      let filtered: IReadyStockList = {};
+      return this.store.readyStockList
+        .filter((rs) => rs.name.toLocaleLowerCase().includes(this.searchedReadyStockName.toLocaleLowerCase()))
+        .filter((_, i) => i <= this.visibleIndexesTo);
+    },
+  },
 
-      for (let key in this.store.readyStockList) {
-        if (key.toLocaleLowerCase().includes(this.searchedReadyStockName.toLocaleLowerCase()))
-          filtered[key] = this.store.readyStockList[key];
-      }
-
-      return filtered;
+  watch: {
+    computedReadyStockList(curr, prev) {
+      if (curr.length < prev.length) this.visibleIndexesTo = 20;
     },
   },
 
   methods: {
+    async fetchStockListData() {
+      const readyStockJSONData: ResponseJSONData = await (
+        await fetch(`https://spythere.github.io/api/td2/data/readyStock.json?t=${Math.floor(Date.now() / 60000)}`)
+      ).json();
+
+      if (!readyStockJSONData) {
+        this.responseStatus = 'error';
+        return;
+      }
+
+      for (let stockKey in readyStockJSONData) {
+        const [type, number, ...name] = stockKey.split(' ');
+
+        this.store.readyStockList.push({
+          type,
+          number: number.replace(/_/g, '/'),
+          name: name.join(' '),
+          stockString: readyStockJSONData[stockKey],
+        });
+      }
+
+      this.responseStatus = 'loaded';
+    },
+
+    mountObserver() {
+      this.observer = new IntersectionObserver((entries) => {
+        // Is the entry visible?
+        if (entries[0].intersectionRatio > 0) {
+          this.visibleIndexesTo += 20;
+        }
+      });
+
+      this.observer.observe(this.$refs['bottom'] as HTMLElement);
+    },
+
     getImageUrl(name: string) {
       return new URL(`./dir/${name}.png`, import.meta.url).href;
     },
@@ -106,35 +172,17 @@ export default defineComponent({
       this.loadStockFromString(stockString);
       this.store.isRealStockListCardOpen = false;
     },
-  },
 
-  async mounted() {
-    const readyStockJSONData: ResponseJSONData = await (
-      await fetch(`https://spythere.github.io/api/td2/data/readyStock.json?t=${Math.floor(Date.now() / 60000)}`)
-    ).json();
+    onStockItemError(e: Event) {
+      const imageEl = e.target as HTMLImageElement;
+      imageEl.src = 'images/car-passenger-unknown.png';
+      imageEl.style.opacity = '1';
+    },
 
-    if (!readyStockJSONData) {
-      this.responseStatus = 'error';
-      return;
-    }
-
-    for (let stockKey in readyStockJSONData) {
-      const splittedKey = stockKey.split(' ');
-
-      let name = '';
-      for (let i = 2; i < splittedKey.length; i++) {
-        name += ' ' + splittedKey[i];
-      }
-
-      this.store.readyStockList[stockKey] = {
-        type: splittedKey[0],
-        number: splittedKey[1].replace(/_/g, '/'),
-        name,
-        stockString: readyStockJSONData[stockKey],
-      };
-    }
-
-    this.responseStatus = 'loaded';
+    onListScroll(e: Event) {
+      const listElement = e.target as HTMLElement;
+      const scrollTop = listElement.scrollTop;
+    },
   },
 });
 </script>
@@ -144,20 +192,14 @@ export default defineComponent({
 
 .exit-btn {
   font-size: 1.2em;
-  margin: 0.5em 0;
-}
-
-input {
-  width: 100%;
-  max-width: 250px;
-
-  &::placeholder {
-    font-size: 0.9em;
-    text-align: center;
-  }
+  margin: 0.25em 0;
 }
 
 .card_content {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 0.5em;
+
   background-color: #1c1c1c;
   border-radius: 1em;
 
@@ -167,38 +209,30 @@ input {
 
   padding: 0 1em;
 
-  overflow-y: auto;
   z-index: 100;
 }
 
+.top-pane {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h1 {
+    color: #aaa;
+  }
+}
 .top-sticky {
   position: sticky;
   top: 0;
   background: #1c1c1c;
 }
 
-.header {
-  padding-bottom: 1.5em;
-  padding-top: 0.5em;
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
 
-  text-align: center;
-  font-size: 1.3em;
-
-  h1 {
-    line-height: 0.9em;
-    margin: 0.5em 0;
-
-    div {
-      font-size: 0.65em;
-      color: #ccc;
-    }
-  }
-
-  p {
-    margin: 1em 0;
-    color: #999;
-    font-size: 0.95em;
-  }
+  padding: 0.5em 0;
 }
 
 ul {
@@ -206,31 +240,18 @@ ul {
   flex-direction: column;
   gap: 0.5em;
 
+  overflow: auto;
+
   li {
     display: grid;
     grid-template-columns: 1fr 2fr;
+    background: #2b2b2b;
+    gap: 1rem;
 
     .desc {
       cursor: pointer;
       padding: 0.5em;
     }
-
-    .thumbnails {
-      display: flex;
-      align-items: flex-end;
-
-      overflow: auto;
-      padding: 0.5em;
-
-      img {
-        // width: 150px;
-        height: 100%;
-        max-height: 20px;
-        vertical-align: middle;
-      }
-    }
-
-    background: #2b2b2b;
 
     img {
       height: 0.85em;
@@ -248,6 +269,37 @@ ul {
     &:focus {
       outline: 1px solid white;
     }
+  }
+}
+
+.thumbnails {
+  display: flex;
+  align-items: flex-end;
+
+  width: 100%;
+
+  overflow: auto;
+  padding: 0.5em;
+
+  // img {
+  //   // width: 150px;
+  //   height: 100%;
+  //   max-height: 20px;
+  //   vertical-align: middle;
+  // }
+}
+
+.thumbnail_container {
+  // position: relative;
+  // width: 100%;
+  // height: 0;
+
+  img {
+    // position: absolute;
+    // top: 0;
+    // left: 0;
+    // width: 100%;
+    height: 30px;
   }
 }
 </style>

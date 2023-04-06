@@ -152,9 +152,7 @@ export function chosenRealStock(state: IStore) {
     }, [] as string[])
     .join(';');
 
-  const realStockObj = Object.values(state.readyStockList).find(
-    (readyStock) => readyStock.stockString == currentStockString
-  );
+  const realStockObj = state.readyStockList.find((readyStock) => readyStock.stockString == currentStockString);
 
   state.chosenRealStockName = realStockObj
     ? `${realStockObj.type} ${realStockObj.number} ${realStockObj.name}`
