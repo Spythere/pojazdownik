@@ -1,39 +1,66 @@
 <template>
-  <div class="real-stock-card g-card" v-if="store.isRealStockListCardOpen">
+  <div class="real-stock-card g-card" @keydown.esc="store.isRealStockListCardOpen = false">
     <div class="g-card_bg" @click="store.isRealStockListCardOpen = false"></div>
 
     <div class="card_content">
-      <div class="top-sticky">
-        <button class="btn btn--text exit-btn" @click="store.isRealStockListCardOpen = false">&lt; POWRÓT</button>
-
-        <div class="header">
+      <div class="card_nav">
+        <div class="top-pane">
           <h1>
-            REALNE ZESTAWIENIA
-            <div>by <a href="https://td2.info.pl/profile/?u=17708" target="_blank">Railtrains997</a></div>
+            ZESTAWIENIA REALNE by <a href="https://td2.info.pl/profile/?u=17708" target="_blank">Railtrains997</a>
           </h1>
-          <p>
-            Pełne informacje o zestawieniach dostępne na stronie
-            <a href="http://bocznica.eu/files/archiwum/2021r_2021-11-04.html" target="_blank">bocznica.eu</a> (stan na
-            listopad 2021r.)
-          </p>
+          <button class="btn exit-btn" @click="store.isRealStockListCardOpen = false">&Cross;</button>
+        </div>
 
-          <input type="text" tabindex="0" v-model="searchedReadyStockName" placeholder="Szukaj zestawienia..." />
+        <div class="filters" ref="focus" tabindex="0">
+          <input list="readyStockDataList" v-model="searchedReadyStockName" placeholder="Szukaj po nazwie" />
+
+          <datalist id="readyStockDataList">
+            <option v-for="stock in store.readyStockList" :value="stock.stockId">
+              {{ stock.stockId }}
+            </option>
+          </datalist>
+
+          <input list="readyStockStringList" v-model="searchedReadyStockString" placeholder="Szukaj po pojazdach" />
+
+          <datalist id="readyStockStringList">
+            <option v-for="stock in computedAvailableStockTypes" :value="stock">
+              {{ stock }}
+            </option>
+          </datalist>
+
+          <button class="btn" @click="resetStockFilters">RESETUJ</button>
         </div>
       </div>
 
-      <ul v-if="responseStatus == 'loaded'">
+      <ul class="card_list" ref="list" @scroll="onListScroll">
         <li
-          v-for="(stock, key) in computedReadyStockList"
-          :key="key"
-          tabindex="0"
-          @click="choseStock(stock.name, stock.type, stock.number, stock.stockString)"
-          @keydown.enter="choseStock(stock.name, stock.type, stock.number, stock.stockString)"
+          v-for="rStock in computedReadyStockList"
+          :key="rStock.stockId"
+          :data-last-selected="store.chosenRealStockName === rStock.stockId"
         >
-          <img :src="getIconURL(stock.type)" :alt="stock.type" />
+          <div class="stock-title" tabindex="0" @click="chooseStock(rStock)" @keydown.enter="chooseStock(rStock)">
+            <img class="stock-icon" :src="getIconURL(rStock.type)" :alt="rStock.type" />
+            <b class="text--accent" style="margin-left: 5px"> {{ rStock.name }}</b>
+            <div>{{ rStock.number }}</div>
+          </div>
 
-          <b class="text--accent"> {{ stock.name }}</b>
-          <div>{{ stock.number }}</div>
+          <div class="stock-thumbnails" ref="thumbnailsRef">
+            <div class="thumbnail-item" v-for="stockType in rStock.stockString.split(';')">
+              <div class="thumbnail-container">
+                <div>{{ stockType }}</div>
+                <img
+                  :src="`https://rj.td2.info.pl/dist/img/thumbnails/${stockType}.png`"
+                  :title="stockType"
+                  style="opacity: 0"
+                  @error="(e) => onStockItemError(e, stockType)"
+                  @load="e => (e.target as HTMLElement).style.opacity = '1'"
+                />
+              </div>
+            </div>
+          </div>
         </li>
+
+        <div class="bottom" ref="bottom"></div>
       </ul>
     </div>
   </div>
@@ -41,85 +68,155 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { Vehicle, IReadyStockList } from '../../types';
 
 import { useStore } from '../../store';
 import imageMixin from '../../mixins/imageMixin';
 import stockMixin from '../../mixins/stockMixin';
 
+import { IReadyStockItem } from '../../types';
+
 interface ResponseJSONData {
   [key: string]: string;
+}
+
+function getVehicleType(stockType: string) {
+  if (/^E/.test(stockType)) return 'loco-e';
+  if (/^S/.test(stockType)) return 'loco-s';
+
+  return 'car-passenger';
 }
 
 export default defineComponent({
   mixins: [imageMixin, stockMixin],
 
-  setup() {
-    return {
-      store: useStore(),
-    };
-  },
-
   data: () => ({
+    store: useStore(),
     responseStatus: 'loading',
     isMobile: 'ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/) ? true : false,
-
+    observer: null as IntersectionObserver | null,
     searchedReadyStockName: '',
+    searchedReadyStockString: '',
+    visibleIndexesTo: 0,
+    lastSelectedStockId: null as string | null,
+    scrollTop: 0,
   }),
+
+  async mounted() {
+    this.mountObserver();
+    this.fetchStockListData();
+  },
+
+  activated() {
+    (this.$refs['focus'] as HTMLElement).focus();
+
+    (this.$refs['list'] as HTMLElement).scrollTo({
+      top: this.scrollTop,
+      behavior: 'auto',
+    });
+  },
 
   computed: {
     computedReadyStockList() {
       if (this.searchedReadyStockName == null) return this.store.readyStockList;
 
-      let filtered: IReadyStockList = {};
+      return this.store.readyStockList
+        .filter(
+          (rs) =>
+            rs.stockId.toLocaleLowerCase().includes(this.searchedReadyStockName.toLocaleLowerCase()) &&
+            rs.stockString.toLocaleLowerCase().includes(this.searchedReadyStockString.toLocaleLowerCase())
+        )
+        .filter((_, i) => i <= this.visibleIndexesTo);
+    },
 
-      for (let key in this.store.readyStockList) {
-        if (key.toLocaleLowerCase().includes(this.searchedReadyStockName.toLocaleLowerCase()))
-          filtered[key] = this.store.readyStockList[key];
+    computedAvailableStockTypes() {
+      return this.store.readyStockList
+        .reduce((acc, rs) => {
+          rs.stockString.split(';').forEach((s) => {
+            if (!acc.includes(s)) acc.push(s);
+          });
+
+          return acc;
+        }, [] as string[])
+        .sort((a, b) => (a > b ? 1 : -1));
+    },
+  },
+
+  watch: {
+    computedReadyStockList(curr, prev) {
+      if (curr.length < prev.length) {
+        this.visibleIndexesTo = 20;
+        (this.$refs['list'] as HTMLElement).scrollTo({
+          top: 0,
+        });
       }
-
-      return filtered;
     },
   },
 
   methods: {
+    async fetchStockListData() {
+      const readyStockJSONData: ResponseJSONData = await (
+        await fetch(`https://spythere.github.io/api/td2/data/readyStock.json?t=${Math.floor(Date.now() / 60000)}`)
+      ).json();
+
+      if (!readyStockJSONData) {
+        this.responseStatus = 'error';
+        return;
+      }
+
+      for (let stockKey in readyStockJSONData) {
+        const [type, number, ...name] = stockKey.split(' ');
+
+        const obj = {
+          number: number.replace(/_/g, '/'),
+          name: name.join(' '),
+          stockString: readyStockJSONData[stockKey],
+          type,
+        };
+
+        this.store.readyStockList.push({
+          ...obj,
+          stockId: `${obj.type} ${obj.number} ${obj.name}`,
+        });
+      }
+
+      this.responseStatus = 'loaded';
+    },
+
+    mountObserver() {
+      this.observer = new IntersectionObserver((entries) => {
+        if (entries[0].intersectionRatio > 0) this.visibleIndexesTo += 20;
+      });
+
+      this.observer.observe(this.$refs['bottom'] as HTMLElement);
+    },
+
     getImageUrl(name: string) {
       return new URL(`./dir/${name}.png`, import.meta.url).href;
     },
 
-    choseStock(name: string, type: string, number: string, stockString: string) {
-      this.loadStockFromString(stockString);
+    resetStockFilters() {
+      this.searchedReadyStockName = '';
+      this.searchedReadyStockString = '';
+    },
+
+    chooseStock(stockItem: IReadyStockItem) {
+      this.loadStockFromString(stockItem.stockString);
+      this.lastSelectedStockId = stockItem.stockId;
       this.store.isRealStockListCardOpen = false;
     },
-  },
 
-  async mounted() {
-    const readyStockJSONData: ResponseJSONData = await (
-      await fetch(`https://spythere.github.io/api/td2/data/readyStock.json?t=${Math.floor(Date.now() / 60000)}`)
-    ).json();
+    onStockItemError(e: Event, stockType: string) {
+      const imageEl = e.target as HTMLImageElement;
+      imageEl.src = `images/${getVehicleType(stockType)}-unknown.png`;
+      imageEl.style.opacity = '1';
+    },
 
-    if (!readyStockJSONData) {
-      this.responseStatus = 'error';
-      return;
-    }
+    onListScroll(e: Event) {
+      const listElement = e.target as HTMLElement;
+      const scrollTop = listElement.scrollTop;
 
-    for (let stockKey in readyStockJSONData) {
-      const splittedKey = stockKey.split(' ');
-
-      let name = '';
-      for (let i = 2; i < splittedKey.length; i++) {
-        name += ' ' + splittedKey[i];
-      }
-
-      this.store.readyStockList[stockKey] = {
-        type: splittedKey[0],
-        number: splittedKey[1].replace(/_/g, '/'),
-        name,
-        stockString: readyStockJSONData[stockKey],
-      };
-    }
-
-    this.responseStatus = 'loaded';
+      this.scrollTop = scrollTop;
+    },
   },
 });
 </script>
@@ -129,106 +226,148 @@ export default defineComponent({
 
 .exit-btn {
   font-size: 1.2em;
-  margin: 0.5em 0;
+  margin: 0.25em 0;
 }
 
-input {
-  width: 100%;
-  max-width: 250px;
-
-  &::placeholder {
-    font-size: 0.9em;
-    text-align: center;
-  }
+.btn {
+  background-color: #444;
 }
 
 .card_content {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 0.5em;
+
   background-color: #1c1c1c;
   border-radius: 1em;
 
-  height: 85vh;
+  height: 95vh;
   max-width: 1000px;
   width: 90vw;
 
   padding: 0 1em;
 
-  overflow-y: auto;
   z-index: 100;
 
-  .top-sticky {
-    position: sticky;
-    top: 0;
-    background: #1c1c1c;
+  @media screen and (max-width: $breakpointSm) {
+    height: 80vh;
+  }
+}
+
+.top-pane {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5em;
+
+  h1 {
+    color: #aaa;
+  }
+}
+
+.top-sticky {
+  position: sticky;
+  top: 0;
+  background: #1c1c1c;
+}
+
+.filters {
+  display: flex;
+  gap: 0.5em;
+
+  padding: 0.5em 0;
+
+  input {
+    width: 35%;
   }
 
-  .header {
-    padding-bottom: 1.5em;
-    padding-top: 0.5em;
+  @media screen and (max-width: $breakpointSm) {
+    flex-wrap: wrap;
 
-    text-align: center;
-    font-size: 1.3em;
-
-    h1 {
-      line-height: 0.9em;
-      margin: 0.5em 0;
-
-      div {
-        font-size: 0.65em;
-        color: #ccc;
-      }
+    input {
+      width: 100%;
     }
 
-    p {
-      margin: 1em 0;
-      color: #999;
-      font-size: 0.95em;
+    .btn {
+      width: 100%;
     }
   }
+}
 
-  ul {
+ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+
+  overflow: auto;
+
+  li {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1em;
-
-    @media screen and (max-width: 700px) {
-      grid-template-columns: repeat(3, 1fr);
-    }
-
-    @media screen and (max-width: 550px) {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    @media screen and (max-width: 400px) {
-      grid-template-columns: repeat(1, 1fr);
-    }
-
-    margin-bottom: 1em;
-  }
-
-  ul li {
-    padding: 0.5em;
-
-    cursor: pointer;
-
+    grid-template-columns: 1fr 2fr;
     background: #2b2b2b;
+    gap: 1rem;
+    padding: 0.1em;
 
-    img {
-      height: 0.85em;
+    &[data-last-selected='true'] .stock-title {
+      border: 1px solid $accentColor;
     }
 
-    span {
-      color: #999;
-      font-weight: bold;
+    .stock-title {
+      cursor: pointer;
+      padding: 0.5em;
+    }
+
+    .stock-icon {
+      height: 0.85em;
     }
 
     &:hover {
       background: #222;
     }
 
-    &:focus {
-      outline: 1px solid white;
+    @media screen and (max-width: $breakpointSm) {
+      grid-template-columns: 1fr;
+      // grid-template-rows: 1fr 1fr;
     }
   }
+}
+
+.stock-thumbnails {
+  display: flex;
+  align-items: flex-end;
+
+  width: 100%;
+
+  overflow: auto;
+  padding: 0.5em;
+}
+
+.thumbnail-item {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: 100%;
+
+  div {
+    font-size: 0.9em;
+    text-align: center;
+  }
+
+  img {
+    max-width: 250px;
+    max-height: 50px;
+  }
+
+  & > .thumbnail-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+  }
+}
+
+.bottom {
+  padding: 1em;
 }
 </style>
 

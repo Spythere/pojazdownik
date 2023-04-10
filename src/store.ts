@@ -29,7 +29,7 @@ export const useStore = defineStore({
       stockList: [],
       cargoOptions: [],
 
-      readyStockList: {},
+      readyStockList: [],
 
       swapVehicles: false,
 

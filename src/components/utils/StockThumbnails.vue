@@ -33,7 +33,7 @@ import { useStore } from '../../store';
 import { IStock } from '../../types';
 
 const store = useStore();
-const emit = defineEmits(['listItemClick', 'stockImageError']);
+const emit = defineEmits(['listItemClick']);
 
 const thumbnailsRef = ref() as Ref<HTMLElement>;
 const draggedIndex = ref(-1);
@@ -43,7 +43,7 @@ const onListItemClick = (index: number) => {
 };
 
 const stockImageError = (e: Event, stock: IStock) => {
-  emit('stockImageError', e, stock);
+  (e.target as HTMLImageElement).src = `images/${stock.useType}-unknown.png`;
 };
 
 watch(
