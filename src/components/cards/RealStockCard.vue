@@ -1,5 +1,5 @@
 <template>
-  <div class="real-stock-card g-card">
+  <div class="real-stock-card g-card" @keydown.esc="store.isRealStockListCardOpen = false">
     <div class="g-card_bg" @click="store.isRealStockListCardOpen = false"></div>
 
     <div class="card_content">
@@ -11,29 +11,24 @@
           <button class="btn exit-btn" @click="store.isRealStockListCardOpen = false">&Cross;</button>
         </div>
 
-        <div class="filters">
-          <input
-            list="readyStockDataList"
-            ref="search"
-            v-model="searchedReadyStockName"
-            placeholder="Szukaj zestawienia po nazwie"
-          />
+        <div class="filters" ref="focus" tabindex="0">
+          <input list="readyStockDataList" v-model="searchedReadyStockName" placeholder="Szukaj po nazwie" />
 
           <datalist id="readyStockDataList">
-            <option v-for="stock in store.readyStockList" :value="stock.name">
-              {{ stock.type }} {{ stock.number }} {{ stock.name }}
+            <option v-for="stock in store.readyStockList" :value="stock.stockId">
+              {{ stock.stockId }}
             </option>
           </datalist>
 
-          <input
-            list="readyStockStringList"
-            v-model="searchedReadyStockString"
-            placeholder="Szukaj zestawienia po pojazdach"
-          />
+          <input list="readyStockStringList" v-model="searchedReadyStockString" placeholder="Szukaj po pojazdach" />
 
           <datalist id="readyStockStringList">
-            <option v-for="stock in store.readyStockList" :value="stock.stockString">{{stock.stockString}}</option>
+            <option v-for="stock in computedAvailableStockTypes" :value="stock">
+              {{ stock }}
+            </option>
           </datalist>
+
+          <button class="btn" @click="resetStockFilters">RESETUJ</button>
         </div>
       </div>
 
@@ -44,19 +39,20 @@
           :data-last-selected="store.chosenRealStockName === rStock.stockId"
         >
           <div class="stock-title" tabindex="0" @click="chooseStock(rStock)" @keydown.enter="chooseStock(rStock)">
-            <img :src="getIconURL(rStock.type)" :alt="rStock.type" />
+            <img class="stock-icon" :src="getIconURL(rStock.type)" :alt="rStock.type" />
             <b class="text--accent" style="margin-left: 5px"> {{ rStock.name }}</b>
             <div>{{ rStock.number }}</div>
           </div>
 
           <div class="stock-thumbnails" ref="thumbnailsRef">
-            <div v-for="stockItem in rStock.stockString.split(';')">
-              <div class="thumbnail_container">
+            <div class="thumbnail-item" v-for="stockType in rStock.stockString.split(';')">
+              <div class="thumbnail-container">
+                <div>{{ stockType }}</div>
                 <img
-                  :src="`https://rj.td2.info.pl/dist/img/thumbnails/${stockItem}.png`"
-                  :title="rStock.type"
+                  :src="`https://rj.td2.info.pl/dist/img/thumbnails/${stockType}.png`"
+                  :title="stockType"
                   style="opacity: 0"
-                  @error="onStockItemError"
+                  @error="(e) => onStockItemError(e, stockType)"
                   @load="e => (e.target as HTMLElement).style.opacity = '1'"
                 />
               </div>
@@ -64,7 +60,7 @@
           </div>
         </li>
 
-        <div ref="bottom"></div>
+        <div class="bottom" ref="bottom"></div>
       </ul>
     </div>
   </div>
@@ -81,6 +77,13 @@ import { IReadyStockItem } from '../../types';
 
 interface ResponseJSONData {
   [key: string]: string;
+}
+
+function getVehicleType(stockType: string) {
+  if (/^E/.test(stockType)) return 'loco-e';
+  if (/^S/.test(stockType)) return 'loco-s';
+
+  return 'car-passenger';
 }
 
 export default defineComponent({
@@ -104,7 +107,7 @@ export default defineComponent({
   },
 
   activated() {
-    (this.$refs['search'] as HTMLInputElement).focus();
+    (this.$refs['focus'] as HTMLElement).focus();
 
     (this.$refs['list'] as HTMLElement).scrollTo({
       top: this.scrollTop,
@@ -119,16 +122,33 @@ export default defineComponent({
       return this.store.readyStockList
         .filter(
           (rs) =>
-            rs.name.toLocaleLowerCase().includes(this.searchedReadyStockName.toLocaleLowerCase()) &&
-            rs.stockString.includes(this.searchedReadyStockString)
+            rs.stockId.toLocaleLowerCase().includes(this.searchedReadyStockName.toLocaleLowerCase()) &&
+            rs.stockString.toLocaleLowerCase().includes(this.searchedReadyStockString.toLocaleLowerCase())
         )
         .filter((_, i) => i <= this.visibleIndexesTo);
+    },
+
+    computedAvailableStockTypes() {
+      return this.store.readyStockList
+        .reduce((acc, rs) => {
+          rs.stockString.split(';').forEach((s) => {
+            if (!acc.includes(s)) acc.push(s);
+          });
+
+          return acc;
+        }, [] as string[])
+        .sort((a, b) => (a > b ? 1 : -1));
     },
   },
 
   watch: {
     computedReadyStockList(curr, prev) {
-      if (curr.length < prev.length) this.visibleIndexesTo = 20;
+      if (curr.length < prev.length) {
+        this.visibleIndexesTo = 20;
+        (this.$refs['list'] as HTMLElement).scrollTo({
+          top: 0,
+        });
+      }
     },
   },
 
@@ -174,15 +194,20 @@ export default defineComponent({
       return new URL(`./dir/${name}.png`, import.meta.url).href;
     },
 
+    resetStockFilters() {
+      this.searchedReadyStockName = '';
+      this.searchedReadyStockString = '';
+    },
+
     chooseStock(stockItem: IReadyStockItem) {
       this.loadStockFromString(stockItem.stockString);
       this.lastSelectedStockId = stockItem.stockId;
       this.store.isRealStockListCardOpen = false;
     },
 
-    onStockItemError(e: Event) {
+    onStockItemError(e: Event, stockType: string) {
       const imageEl = e.target as HTMLImageElement;
-      imageEl.src = 'images/car-passenger-unknown.png';
+      imageEl.src = `images/${getVehicleType(stockType)}-unknown.png`;
       imageEl.style.opacity = '1';
     },
 
@@ -204,6 +229,10 @@ export default defineComponent({
   margin: 0.25em 0;
 }
 
+.btn {
+  background-color: #444;
+}
+
 .card_content {
   display: grid;
   grid-template-rows: auto 1fr auto;
@@ -212,19 +241,24 @@ export default defineComponent({
   background-color: #1c1c1c;
   border-radius: 1em;
 
-  height: 90vh;
+  height: 95vh;
   max-width: 1000px;
   width: 90vw;
 
   padding: 0 1em;
 
   z-index: 100;
+
+  @media screen and (max-width: $breakpointSm) {
+    height: 80vh;
+  }
 }
 
 .top-pane {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.5em;
 
   h1 {
     color: #aaa;
@@ -239,10 +273,25 @@ export default defineComponent({
 
 .filters {
   display: flex;
-  flex-wrap: wrap;
   gap: 0.5em;
 
   padding: 0.5em 0;
+
+  input {
+    width: 35%;
+  }
+
+  @media screen and (max-width: $breakpointSm) {
+    flex-wrap: wrap;
+
+    input {
+      width: 100%;
+    }
+
+    .btn {
+      width: 100%;
+    }
+  }
 }
 
 ul {
@@ -268,12 +317,17 @@ ul {
       padding: 0.5em;
     }
 
-    img {
+    .stock-icon {
       height: 0.85em;
     }
 
     &:hover {
       background: #222;
+    }
+
+    @media screen and (max-width: $breakpointSm) {
+      grid-template-columns: 1fr;
+      // grid-template-rows: 1fr 1fr;
     }
   }
 }
@@ -288,8 +342,32 @@ ul {
   padding: 0.5em;
 }
 
-.thumbnail_container img {
-  height: 30px;
+.thumbnail-item {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: 100%;
+
+  div {
+    font-size: 0.9em;
+    text-align: center;
+  }
+
+  img {
+    max-width: 250px;
+    max-height: 50px;
+  }
+
+  & > .thumbnail-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+  }
+}
+
+.bottom {
+  padding: 1em;
 }
 </style>
 

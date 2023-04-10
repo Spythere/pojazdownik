@@ -176,7 +176,7 @@ ul {
 
 .g-card {
   position: fixed;
-  top: 0;
+  top: 1em;
   left: 0;
 
   width: 100vw;
@@ -184,7 +184,6 @@ ul {
 
   display: flex;
   justify-content: center;
-  align-items: center;
 
   z-index: 200;
 
