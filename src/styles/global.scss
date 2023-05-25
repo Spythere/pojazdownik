@@ -48,6 +48,8 @@ a {
   color: white;
   text-decoration: none;
 
+  transition: color 250ms;
+
   &:visited {
     color: white;
   }

@@ -77,6 +77,18 @@ export default defineComponent({
     ).json();
 
     this.store.stockData = stockData;
+
+    // routing
+    switch (window.location.pathname) {
+      case '/numgnr':
+        this.store.stockSectionMode = 'number-generator';
+        break;
+      case '/stockgnr':
+        this.store.stockSectionMode = 'stock-generator';
+        break;
+      default:
+        break;
+    }
   },
 });
 </script>

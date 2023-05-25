@@ -6,31 +6,40 @@
 
     <div class="tab_content">
       <div class="options">
-        <select v-model="beginRegionName" @change="randomizeTrainNumber">
+        <select v-model="beginRegionName" @change="randomizeTrainNumber()">
           <option :value="null" disabled>Początkowy obszar konstrukcyjny</option>
           <option v-for="(_, name) in genData.regionNumbers" :value="name">{{ name }}</option>
         </select>
 
-        <select v-model="endRegionName" @change="randomizeTrainNumber">
+        <select v-model="endRegionName" @change="randomizeTrainNumber()">
           <option :value="null" disabled>Końcowy obszar konstrukcyjny</option>
           <option v-for="(_, name) in genData.regionNumbers" :value="name">{{ name }}</option>
         </select>
 
-        <select v-model="categoryRules" @change="randomizeTrainNumber">
+        <select v-model="categoryRules" @change="randomizeTrainNumber()">
           <option :value="null" disabled>Kategoria pociągu</option>
           <option v-for="(rules, category) in genData.categories" :value="rules">{{ category }}</option>
         </select>
       </div>
 
-      <div class="generated-number">
-        <span v-if="trainNumber">Wygenerowany numer pociągu: <b class="text--accent">{{ trainNumber }}</b></span>
-        <span v-else>Wybierz obszary konstrukcyjne i kategorię!</span>
+      <div class="generated-number" @click="copyNumber">
+        <span v-if="trainNumber">
+          Wygenerowany numer pociągu: <b class="text--accent">{{ trainNumber }}</b>
+        </span>
+        <span v-else>Wybierz kategorię oraz obszary konstrukcyjne (opcjonalnie)</span>
       </div>
 
-      <hr>
-      
+      <div class="tab_links">
+        <a href="https://wiki.td2.info.pl/index.php?title=Zasady_numeracji_poci%C4%85g%C3%B3w" target="_blank">
+          > Szczegółowe zasady numeracji (wikipedia TD2)
+        </a>
+      </div>
+
+      <hr />
+
       <div class="tab_actions">
-        <button class="btn" @click="randomizeTrainNumber">PRZELOSUJ</button>
+        <button class="btn" @click="randomizeTrainNumber(true)">LOSUJ OBSZARY</button>
+        <button class="btn" @click="randomizeTrainNumber(false)">LOSUJ NUMER</button>
       </div>
     </div>
   </div>
@@ -49,20 +58,41 @@ const categoryRules = ref(null) as Ref<string | null>;
 
 const trainNumber = ref(null) as Ref<string | null>;
 
-const randomizeTrainNumber = () => {
-  if (beginRegionName.value == null || endRegionName.value == null || categoryRules.value == null) return '';
+const copyNumber = () => {
+  if (trainNumber.value) {
+    navigator.clipboard.writeText(trainNumber.value);
+    alert('Skopiowano numer do schowka!');
+  }
+};
+
+const randomizeTrainNumber = (randomizeRegions = false) => {
+  if (categoryRules.value == null) return;
+
+  const regionKeys = Object.keys(genData.regionNumbers);
+
+  if (beginRegionName.value == null || randomizeRegions)
+    beginRegionName.value = regionKeys[(regionKeys.length * Math.random()) << 0] as RegionName;
+
+  if (endRegionName.value == null || randomizeRegions)
+    endRegionName.value = regionKeys[(regionKeys.length * Math.random()) << 0] as RegionName;
 
   let number = '';
 
   if (beginRegionName.value == endRegionName.value) {
-    const sameRegionsNumbers = genData.sameRegions[beginRegionName.value];
+    const sameRegionsNumbers = genData.sameRegions[beginRegionName.value!];
     const randRegionNumber = sameRegionsNumbers[Math.floor(Math.random() * sameRegionsNumbers.length)];
     number += randRegionNumber.toString();
   } else {
-    const beginRegionNumber = genData.regionNumbers[beginRegionName.value];
-    const endRegionNumber = genData.regionNumbers[endRegionName.value];
+    const beginRegionNumber = genData.regionNumbers[beginRegionName.value!];
+    const endRegionNumber = genData.regionNumbers[endRegionName.value!];
 
     number += `${beginRegionNumber}${endRegionNumber}`;
+  }
+
+  // Do not roll the rest of number again if only randomize regions
+  if (randomizeRegions) {
+    trainNumber.value = number + trainNumber.value?.substring(2);
+    return;
   }
 
   const rulesArray = categoryRules.value.split(';').map((r) => ({
@@ -104,6 +134,9 @@ const randomizeTrainNumber = () => {
 .generated-number {
   font-size: 1.3em;
   font-weight: bold;
+  text-align: center;
+
+  cursor: pointer;
 
   margin: 0.5em 0;
   padding: 0.5em;
@@ -111,11 +144,13 @@ const randomizeTrainNumber = () => {
 }
 
 .tab_actions {
-  margin-top: 0.5em;
+  grid-template-columns: 1fr 1fr;
+  margin: 0.5em 0;
+}
 
-  button {
-    grid-column: 3;
-  }
+.tab_links {
+  display: flex;
+  justify-content: flex-end;
 }
 
 @media screen and (max-width: $breakpointMd) {
