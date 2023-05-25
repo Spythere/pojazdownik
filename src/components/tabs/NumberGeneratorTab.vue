@@ -22,7 +22,7 @@
         </select>
       </div>
 
-      <div class="generated-number">
+      <div class="generated-number" @click="copyNumber">
         <span v-if="trainNumber">
           Wygenerowany numer pociągu: <b class="text--accent">{{ trainNumber }}</b>
         </span>
@@ -57,6 +57,13 @@ const endRegionName = ref(null) as Ref<RegionName | null>;
 const categoryRules = ref(null) as Ref<string | null>;
 
 const trainNumber = ref(null) as Ref<string | null>;
+
+const copyNumber = () => {
+  if (trainNumber.value) {
+    navigator.clipboard.writeText(trainNumber.value);
+    alert('Skopiowano numer do schowka!');
+  }
+};
 
 const randomizeTrainNumber = (randomizeRegions = false) => {
   if (categoryRules.value == null) return;
