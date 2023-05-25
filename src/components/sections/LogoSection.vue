@@ -1,5 +1,5 @@
 <template>
-  <section class="logo-section">
+  <section class="logo-section" @click="navigate">
     <img src="/images/logo.svg" alt="logo pojazdownik" />
   </section>
 </template>
@@ -8,6 +8,12 @@
 export default {
   setup() {
     return {};
+  },
+
+  methods: {
+    navigate() {
+      window.location.pathname = '';
+    },
   },
 };
 </script>
@@ -21,11 +27,13 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+
+  cursor: pointer;
 }
 
 img {
   max-width: 25em;
-  width: 100%;    
+  width: 100%;
 }
 </style>
 
