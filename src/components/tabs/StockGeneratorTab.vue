@@ -183,17 +183,25 @@ export default defineComponent({
       const headingLoco = this.store.stockList[0]?.isLoco ? this.store.stockList[0] : undefined;
 
       this.store.stockList.length = headingLoco ? 1 : 0;
-      const maxMass = this.store.acceptableMass || this.maxMass;
+      const maxMass = Math.min(this.store.acceptableMass, this.maxMass);
 
-      new Array(this.maxCarCount).fill(0).forEach(() => {
+      let exceeded = false;
+
+      while (!exceeded) {
         const randomStockType = generatedChosenStockList[~~(Math.random() * generatedChosenStockList.length)];
         const { carWagon, cargo } = randomStockType.carPool[~~(Math.random() * randomStockType.carPool.length)];
 
-        if (this.store.totalMass + (cargo?.totalMass || carWagon.mass) > maxMass) return;
-        if (this.store.totalLength + carWagon.length > this.maxLength) return;
+        if (
+          this.store.totalMass + (cargo?.totalMass || carWagon.mass) > maxMass ||
+          this.store.totalLength + carWagon.length > this.maxLength ||
+          this.store.stockList.length > this.maxCarCount
+        ) {
+          exceeded = true;
+          break;
+        }
 
         this.addCarWagon(carWagon, cargo);
-      });
+      }
 
       this.store.stockSectionMode = 'stock-list';
     },

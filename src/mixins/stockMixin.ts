@@ -43,13 +43,6 @@ export default defineComponent({
     },
 
     addLocomotive(loco: ILocomotive) {
-      // const previousStock =
-      //   this.store.stockList.length > 0 ? this.store.stockList[this.store.stockList.length - 1] : null;
-      // if (previousStock && previousStock.type == loco.type) {
-      //   this.store.stockList[this.store.stockList.length - 1].count++;
-      //   return;
-      // }
-
       const stockObj = this.getStockObject(loco);
 
       if (this.store.stockList.length > 0 && !this.store.stockList[0].isLoco) this.store.stockList.unshift(stockObj);
@@ -57,15 +50,6 @@ export default defineComponent({
     },
 
     addCarWagon(car: ICarWagon, cargo?: ICargo) {
-      // const previousStock =
-      //   this.store.stockList.length > 0 ? this.store.stockList[this.store.stockList.length - 1] : null;
-
-      // if (previousStock && previousStock.type == car.type && previousStock.cargo?.id == cargo?.id) {
-      //   this.store.stockList[this.store.stockList.length - 1].count++;
-
-      //   return;
-      // }
-
       const stockObj = this.getStockObject(car, cargo);
 
       this.store.stockList.push(stockObj);
