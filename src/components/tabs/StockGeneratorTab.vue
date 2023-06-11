@@ -99,7 +99,7 @@ import { defineComponent } from 'vue';
 import { useStore } from '../../store';
 
 import stockMixin from '../../mixins/stockMixin';
-import { ICargo, ICarWagon } from '../../types';
+import { ICargo, ICarWagon, IStock } from '../../types';
 import warningsMixin from '../../mixins/warningsMixin';
 
 export default defineComponent({
@@ -180,29 +180,42 @@ export default defineComponent({
         return acc;
       }, [] as { constructionType: string; carPool: { carWagon: ICarWagon; cargo?: ICargo }[] }[]);
 
-      const headingLoco = this.store.stockList[0]?.isLoco ? this.store.stockList[0] : undefined;
+      let bestGeneration: { stockList: IStock[]; value: number } = { stockList: [], value: 0 };
 
-      this.store.stockList.length = headingLoco ? 1 : 0;
-      const maxMass = Math.min(this.store.acceptableMass, this.maxMass);
+      for (let i = 0; i < 10; i++) {
+        const headingLoco = this.store.stockList[0]?.isLoco ? this.store.stockList[0] : undefined;
+        this.store.stockList.length = headingLoco ? 1 : 0;
 
-      let exceeded = false;
+        const maxMass =
+          this.store.acceptableMass > 0 ? Math.min(this.store.acceptableMass, this.maxMass) : this.maxMass;
 
-      while (!exceeded) {
-        const randomStockType = generatedChosenStockList[~~(Math.random() * generatedChosenStockList.length)];
-        const { carWagon, cargo } = randomStockType.carPool[~~(Math.random() * randomStockType.carPool.length)];
+        let exceeded = false;
 
-        if (
-          this.store.totalMass + (cargo?.totalMass || carWagon.mass) > maxMass ||
-          this.store.totalLength + carWagon.length > this.maxLength ||
-          this.store.stockList.length > this.maxCarCount
-        ) {
-          exceeded = true;
-          break;
+        while (!exceeded) {
+          const randomStockType = generatedChosenStockList[~~(Math.random() * generatedChosenStockList.length)];
+          const { carWagon, cargo } = randomStockType.carPool[~~(Math.random() * randomStockType.carPool.length)];
+
+          if (
+            this.store.totalMass + (cargo?.totalMass || carWagon.mass) > maxMass ||
+            this.store.totalLength + carWagon.length > this.maxLength ||
+            this.store.stockList.length > this.maxCarCount
+          ) {
+            exceeded = true;
+            break;
+          }
+
+          this.addCarWagon(carWagon, cargo);
         }
 
-        this.addCarWagon(carWagon, cargo);
+        const currentGenerationValue = this.store.totalLength + this.store.totalMass + this.store.stockList.length;
+
+        if (bestGeneration.value < currentGenerationValue) {
+          bestGeneration.stockList = this.store.stockList;
+          bestGeneration.value = currentGenerationValue;
+        }
       }
 
+      this.store.stockList = bestGeneration.stockList;
       this.store.stockSectionMode = 'stock-list';
     },
 
