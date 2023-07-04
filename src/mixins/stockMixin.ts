@@ -35,8 +35,6 @@ export default defineComponent({
 
     addVehicle(vehicle: Vehicle | null, cargo?: ICargo | null) {
       if (!vehicle) return;
-      console.log(vehicle);
-      
 
       const stock = this.getStockObject(vehicle, cargo);
 
