@@ -73,13 +73,13 @@ export default defineComponent({
   }),
 
   async created() {
-    if (import.meta.env['VITE_STOCK_DEV'] == '1') {
-      const data = await import('../stockInfoDev.json');
-      this.store.stockData = data.default as any;
-    } else {
-      const stockData = await (await fetch(`https://spythere.github.io/api/td2/data/stockInfo.json`)).json();
-      this.store.stockData = stockData;
-    }
+    /* dev info testing */
+    // if (import.meta.env['VITE_STOCK_DEV'] == '1') {
+    //   const data = await import('../stockInfoDev.json');
+    //   this.store.stockData = data.default as any;
+    // }
+    const stockData = await (await fetch(`https://spythere.github.io/api/td2/data/stockInfo.json`)).json();
+    this.store.stockData = stockData;
 
     // routing
     switch (window.location.pathname) {
