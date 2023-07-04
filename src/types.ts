@@ -41,8 +41,10 @@ export interface IStockProps {
 }
 
 export interface IStockData {
+  version: string;
+  
   generator: {
-    passenger: [];
+    passenger: any;
     cargo: {
       [key: string]: string[];
     };

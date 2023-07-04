@@ -34,12 +34,12 @@
           regulaminem symulatora Train Driver 2</a
         >!
       </div>
-      <div class="text--grayed" style="margin-bottom: 0.25em">
-        Strona jest kompletna dla wersji 2022.2.2 symulatora TD2
+      <div class="text--grayed" style="margin-bottom: 0.25em" v-if="store.stockData">
+        Strona jest kompletna dla wersji {{ store.stockData.version }} symulatora TD2
       </div>
       &copy;
       <a href="https://td2.info.pl/profile/?u=20777" target="_blank">Spythere</a>
-      {{ new Date().getUTCFullYear() }} | v{{ VERSION }}
+      {{ new Date().getUTCFullYear() }} | v{{ VERSION }}{{ !isOnProductionHost ? 'dev' : '' }}
     </footer>
   </div>
 </template>
@@ -69,13 +69,16 @@ export default defineComponent({
   data: () => ({
     VERSION: packageInfo.version,
     store: useStore(),
+    isOnProductionHost: location.hostname == 'pojazdownik-td2.web.app',
   }),
 
   async created() {
-    const stockData = await (
-      await fetch(`https://spythere.github.io/api/td2/data/stockInfo.json?t=${Math.floor(Date.now() / 60000)}`)
-    ).json();
-
+    /* dev info testing */
+    // if (import.meta.env['VITE_STOCK_DEV'] == '1') {
+    //   const data = await import('../stockInfoDev.json');
+    //   this.store.stockData = data.default as any;
+    // }
+    const stockData = await (await fetch(`https://spythere.github.io/api/td2/data/stockInfo.json`)).json();
     this.store.stockData = stockData;
 
     // routing
