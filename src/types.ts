@@ -42,7 +42,7 @@ export interface IStockProps {
 
 export interface IStockData {
   generator: {
-    passenger: [];
+    passenger: any;
     cargo: {
       [key: string]: string[];
     };

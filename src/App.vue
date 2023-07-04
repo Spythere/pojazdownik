@@ -73,13 +73,13 @@ export default defineComponent({
   }),
 
   async created() {
-    const stockData = await (
-      await fetch(
-        `https://spythere.github.io/api/td2/data/stockInfo${import.meta.env['VITE_STOCK_DEV'] == '1' ? 'Dev' : ''}.json`
-      )
-    ).json();
-
-    this.store.stockData = stockData;
+    if (import.meta.env['VITE_STOCK_DEV'] == '1') {
+      const data = await import('../stockInfoDev.json');
+      this.store.stockData = data.default as any;
+    } else {
+      const stockData = await (await fetch(`https://spythere.github.io/api/td2/data/stockInfo.json`)).json();
+      this.store.stockData = stockData;
+    }
 
     // routing
     switch (window.location.pathname) {
