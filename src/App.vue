@@ -39,7 +39,7 @@
       </div>
       &copy;
       <a href="https://td2.info.pl/profile/?u=20777" target="_blank">Spythere</a>
-      {{ new Date().getUTCFullYear() }} | v{{ VERSION }}
+      {{ new Date().getUTCFullYear() }} | v{{ VERSION }}{{ !isOnProductionHost ? 'dev' : '' }}
     </footer>
   </div>
 </template>
@@ -69,11 +69,14 @@ export default defineComponent({
   data: () => ({
     VERSION: packageInfo.version,
     store: useStore(),
+    isOnProductionHost: location.hostname == 'pojazdownik-td2.web.app',
   }),
 
   async created() {
     const stockData = await (
-      await fetch(`https://spythere.github.io/api/td2/data/stockInfo.json?t=${Math.floor(Date.now() / 60000)}`)
+      await fetch(
+        `https://spythere.github.io/api/td2/data/stockInfo${import.meta.env['VITE_STOCK_DEV'] == '1' ? 'Dev' : ''}.json`
+      )
     ).json();
 
     this.store.stockData = stockData;
