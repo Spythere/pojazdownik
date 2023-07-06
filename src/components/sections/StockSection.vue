@@ -25,12 +25,14 @@ import { useStore } from '../../store';
 import StockListTab from '../tabs/StockListTab.vue';
 import StockGeneratorTab from '../tabs/StockGeneratorTab.vue';
 import NumberGeneratorTab from '../tabs/NumberGeneratorTab.vue';
+import WikiListTab from '../tabs/WikiListTab.vue';
 
 const store = useStore();
 type SectionMode = typeof store.stockSectionMode;
 
 const sectionModes: { [key: string]: SectionMode } = {
   SKŁAD: 'stock-list',
+  POJAZDY: 'wiki-list',
   'GNR NUMERU': 'number-generator',
   'GNR SKŁADU': 'stock-generator',
 };
@@ -39,6 +41,9 @@ const chosenSectionComponent = computed(() => {
   switch (store.stockSectionMode) {
     case 'stock-list':
       return StockListTab;
+
+    case 'wiki-list':
+      return WikiListTab;
 
     case 'stock-generator':
       return StockGeneratorTab;
@@ -83,7 +88,7 @@ function chooseSection(sectionId: SectionMode) {
 
 .section_modes {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 0.5em;
 
   margin-bottom: 0.5em;

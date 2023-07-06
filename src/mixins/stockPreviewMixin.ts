@@ -1,6 +1,6 @@
 import { defineComponent } from 'vue';
 import { useStore } from '../store';
-import { IStock, Vehicle } from '../types';
+import { ICarWagon, ILocomotive, IStock, Vehicle } from '../types';
 
 export default defineComponent({
   setup() {
@@ -48,7 +48,7 @@ export default defineComponent({
       });
     },
 
-    previewStock(stock: IStock) {      
+    previewStock(stock: IStock) {
       if (this.store.chosenVehicle?.imageSrc != stock.imgSrc) this.store.imageLoading = true;
 
       if (stock.isLoco) {
@@ -67,14 +67,26 @@ export default defineComponent({
       }
     },
 
+    previewLocomotive(loco: ILocomotive) {
+      this.store.chosenLoco = loco;
+      this.store.chosenVehicle = loco;
+      this.store.chosenLocoPower = loco.power;
+    },
+
+    previewCarWagon(carWagon: ICarWagon) {
+      this.store.chosenCar = carWagon;
+      this.store.chosenCarUseType = carWagon.useType;
+      this.store.chosenVehicle = carWagon;
+
+      this.store.chosenCargo = null;
+    },
+
     resetPreview() {
-        this.store.chosenVehicle = null;
-        this.store.chosenCar = null;
-        this.store.chosenCargo = null;
-        this.store.chosenLoco = null;
-    }
+      this.store.chosenVehicle = null;
+      this.store.chosenCar = null;
+      this.store.chosenCargo = null;
+      this.store.chosenLoco = null;
+    },
   },
 });
-
-
 

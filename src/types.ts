@@ -27,7 +27,7 @@ export interface IStore {
   isRandomizerCardOpen: boolean;
   isRealStockListCardOpen: boolean;
 
-  stockSectionMode: 'stock-list' | 'stock-generator' | 'number-generator';
+  stockSectionMode: 'stock-list' | 'stock-generator' | 'number-generator' | 'wiki-list';
   stockData?: IStockData;
 }
 
@@ -42,7 +42,7 @@ export interface IStockProps {
 
 export interface IStockData {
   version: string;
-  
+
   generator: {
     passenger: any;
     cargo: {
