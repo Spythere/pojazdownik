@@ -135,8 +135,8 @@ button {
 
 select,
 input {
-  background: none;
-  border: 2px solid white;
+  background: $bgColor;
+  border: 2px solid #aaa;
   outline: none;
 
   padding: 0.25em 0.35em;
@@ -156,7 +156,7 @@ input {
 }
 
 option {
-  color: black;
+  color: white;
   border: none;
 }
 

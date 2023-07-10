@@ -8,6 +8,7 @@
         :data-selected="store.stockSectionMode == id"
       >
         {{ name }}
+        <span v-if="id == 'stock-list'">({{ store.stockList.length }})</span>
       </button>
     </div>
 
