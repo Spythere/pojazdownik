@@ -56,5 +56,25 @@ export const useStore = defineStore({
     chosenRealStock: (state) => chosenRealStock(state),
     acceptableMass: (state) => acceptableMass(state),
   },
+
+  actions: {
+    async fetchStockInfoData() {
+      const stockData = await (await fetch(`https://spythere.github.io/api/td2/data/stockInfo.json`)).json();
+      this.stockData = stockData;
+    },
+
+    handleRouting() {
+      switch (window.location.pathname) {
+        case '/numgnr':
+          this.stockSectionMode = 'number-generator';
+          break;
+        case '/stockgnr':
+          this.stockSectionMode = 'stock-generator';
+          break;
+        default:
+          break;
+      }
+    },
+  },
 });
 
