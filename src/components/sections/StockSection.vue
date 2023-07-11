@@ -3,6 +3,7 @@
     <div class="section_modes">
       <button
         class="btn"
+        ref="sectionButtonRefs"
         v-for="(id, name, i) in sectionModes"
         @click="chooseSection(id)"
         :data-selected="store.stockSectionMode == id"
@@ -21,12 +22,14 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, KeepAlive, onMounted } from 'vue';
+import { computed, KeepAlive, onMounted, ref } from 'vue';
 import { useStore } from '../../store';
 import StockListTab from '../tabs/StockListTab.vue';
 import StockGeneratorTab from '../tabs/StockGeneratorTab.vue';
 import NumberGeneratorTab from '../tabs/NumberGeneratorTab.vue';
 import WikiListTab from '../tabs/WikiListTab.vue';
+
+const sectionButtonRefs = ref([]);
 
 const store = useStore();
 type SectionMode = typeof store.stockSectionMode;
@@ -38,12 +41,26 @@ const sectionModes: { [key: string]: SectionMode } = {
   'GNR SKŁADU': 'stock-generator',
 };
 
-const sectionKeyIndexes: { [key: string]: SectionMode } = {
-  '1': 'stock-list',
-  '2': 'wiki-list',
-  '3': 'number-generator',
-  '4': 'stock-generator',
+const sectionKeyIndexes: { [key: number]: SectionMode } = {
+  1: 'stock-list',
+  2: 'wiki-list',
+  3: 'number-generator',
+  4: 'stock-generator',
 };
+
+onMounted(() => {
+  console.log(sectionButtonRefs.value);
+
+  window.addEventListener('keydown', (e) => {
+    if (e.target instanceof HTMLInputElement) return;
+
+    if (e.key == '1' || e.key == '2' || e.key == '3' || e.key == '4') {
+      const keyNum = Number(e.key);
+      store.stockSectionMode = sectionKeyIndexes[keyNum];
+      (sectionButtonRefs.value[keyNum - 1] as HTMLButtonElement).focus();
+    }
+  });
+});
 
 const chosenSectionComponent = computed(() => {
   switch (store.stockSectionMode) {
@@ -67,14 +84,6 @@ const chosenSectionComponent = computed(() => {
 function chooseSection(sectionId: SectionMode) {
   store.stockSectionMode = sectionId;
 }
-
-onMounted(() => {
-  window.addEventListener('keydown', (e) => {
-    if (e.key == '1' || e.key == '2' || e.key == '3' || e.key == '4') {
-      store.stockSectionMode = sectionKeyIndexes[e.key];
-    }
-  });
-});
 </script>
 
 <style lang="scss">
