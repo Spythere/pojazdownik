@@ -1,5 +1,6 @@
 <template>
-  <ImageFullscreenPreview />
+  <AppModals />
+  <ImageFullscreenPreview v-if="store.vehiclePreviewSrc" />
   <AppContainerView />
 </template>
 
@@ -8,6 +9,7 @@ import { defineComponent } from 'vue';
 import { useStore } from './store';
 import ImageFullscreenPreview from './components/utils/ImageFullscreenPreview.vue';
 import AppContainerView from './views/AppContainerView.vue';
+import AppModals from './components/app/AppModals.vue';
 
 export default defineComponent({
   data() {
@@ -24,7 +26,7 @@ export default defineComponent({
     this.store.fetchStockInfoData();
     this.store.handleRouting();
   },
-  components: { ImageFullscreenPreview, AppContainerView },
+  components: { ImageFullscreenPreview, AppContainerView, AppModals },
 });
 </script>
 

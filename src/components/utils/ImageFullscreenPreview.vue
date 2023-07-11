@@ -1,5 +1,10 @@
 <template>
-  <div class="image-preview" v-if="store.vehiclePreviewSrc">
+  <div
+    class="image-preview"
+    @click="store.vehiclePreviewSrc = ''"
+    @keydown.esc="store.vehiclePreviewSrc = ''"
+    tabindex="0"
+  >
     <img :src="store.vehiclePreviewSrc" alt="preview" />
   </div>
 </template>
@@ -13,6 +18,10 @@ export default defineComponent({
     return {
       store: useStore(),
     };
+  },
+
+  mounted() {
+    this.$el.focus();
   },
 });
 </script>
@@ -32,10 +41,12 @@ export default defineComponent({
   height: 100%;
 
   background: rgba(black, 0.85);
+  cursor: zoom-out;
 
   img {
-    width: 90%;
-    max-width: 800px;
+    max-width: 100%;
+    height: auto;
+    max-height: 100%;
   }
 }
 </style>

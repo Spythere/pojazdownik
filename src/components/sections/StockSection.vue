@@ -3,11 +3,11 @@
     <div class="section_modes">
       <button
         class="btn"
-        v-for="(id, name) in sectionModes"
+        v-for="(id, name, i) in sectionModes"
         @click="chooseSection(id)"
         :data-selected="store.stockSectionMode == id"
       >
-        {{ name }}
+        <span class="text--accent">{{ i + 1 }}.</span> {{ name }}
         <span v-if="id == 'stock-list'">({{ store.stockList.length }})</span>
       </button>
     </div>
@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, KeepAlive } from 'vue';
+import { computed, KeepAlive, onMounted } from 'vue';
 import { useStore } from '../../store';
 import StockListTab from '../tabs/StockListTab.vue';
 import StockGeneratorTab from '../tabs/StockGeneratorTab.vue';
@@ -36,6 +36,13 @@ const sectionModes: { [key: string]: SectionMode } = {
   POJAZDY: 'wiki-list',
   'GNR NUMERU': 'number-generator',
   'GNR SKŁADU': 'stock-generator',
+};
+
+const sectionKeyIndexes: { [key: string]: SectionMode } = {
+  '1': 'stock-list',
+  '2': 'wiki-list',
+  '3': 'number-generator',
+  '4': 'stock-generator',
 };
 
 const chosenSectionComponent = computed(() => {
@@ -60,6 +67,14 @@ const chosenSectionComponent = computed(() => {
 function chooseSection(sectionId: SectionMode) {
   store.stockSectionMode = sectionId;
 }
+
+onMounted(() => {
+  window.addEventListener('keydown', (e) => {
+    if (e.key == '1' || e.key == '2' || e.key == '3' || e.key == '4') {
+      store.stockSectionMode = sectionKeyIndexes[e.key];
+    }
+  });
+});
 </script>
 
 <style lang="scss">

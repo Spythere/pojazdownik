@@ -26,7 +26,13 @@
         </thead>
 
         <tbody v-if="wikiMode == 'locomotives'">
-          <tr v-for="loco in computedLocoList" @click="previewLocomotive(loco)" @dblclick="addLocomotive(loco)">
+          <tr
+            v-for="loco in computedLocoList"
+            @click="previewLocomotive(loco)"
+            @keydown.enter="previewLocomotive(loco)"
+            @dblclick="addLocomotive(loco)"
+            tabindex="0"
+          >
             <td>
               <img
                 :src="`https://spythere.github.io/api/td2/images/${loco.type}--300px.jpg`"
@@ -45,7 +51,13 @@
         </tbody>
 
         <tbody v-else>
-          <tr v-for="car in computedCarList" @click="previewCarWagon(car)" @dblclick="addCarWagon(car)">
+          <tr
+            v-for="car in computedCarList"
+            @keydow.enter="previewCarWagon(car)"
+            @click="previewCarWagon(car)"
+            @dblclick="addCarWagon(car)"
+            tabindex="0"
+          >
             <td>
               <img
                 :src="`https://spythere.github.io/api/td2/images/${car.type}--300px.jpg`"

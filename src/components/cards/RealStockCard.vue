@@ -1,6 +1,4 @@
 <template>
-  <div class="g-card-dimmer" @click="store.isRealStockListCardOpen = false"></div>
-
   <div class="real-stock-card g-card" @keydown.esc="store.isRealStockListCardOpen = false">
     <div class="g-card_bg" @click="store.isRealStockListCardOpen = false"></div>
 
