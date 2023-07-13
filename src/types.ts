@@ -5,8 +5,9 @@ export interface IStore {
   chosenCar: ICarWagon | null;
   chosenLoco: ILocomotive | null;
   chosenCargo: ICargo | null;
-
   chosenVehicle: Vehicle | null;
+
+  isColdStart: boolean;
 
   showSupporter: boolean;
   imageLoading: boolean;
@@ -99,8 +100,9 @@ export interface ICargo {
 
 export interface IStock {
   id: string;
-  useType: string;
   type: string;
+  useType: string;
+  constructionType: string;
   length: number;
   mass: number;
   maxSpeed: number;

@@ -30,6 +30,7 @@ export default defineComponent({
         imgSrc: vehicle.imageSrc,
         useType: isLoco ? vehicle.power : vehicle.useType,
         supportersOnly: vehicle.supportersOnly,
+        constructionType: vehicle.constructionType,
       };
     },
 
@@ -67,13 +68,15 @@ export default defineComponent({
 
       this.store.swapVehicles = false;
 
-      stockArray.forEach((type) => {
+      stockArray.forEach((type, i) => {
         let vehicle: Vehicle | null = null;
         let vehicleCargo: ICargo | null = null;
 
         if (/^(EU|EP|ET|SM|EN|2EN|SN)/.test(type)) {
           const [locoType, coldStart] = type.split(',');
           vehicle = this.store.locoDataList.find((loco) => loco.type == locoType) || null;
+
+          if (i == 0 && coldStart == 'c') this.store.isColdStart = true;
         } else {
           const [carType, cargo] = type.split(':');
           vehicle = this.store.carDataList.find((car) => car.type == carType) || null;

@@ -26,7 +26,7 @@ export default defineComponent({
         !this.store.isTrainPassenger &&
         this.store.stockList.length > 1 &&
         !this.store.stockList.every((stock) => stock.isLoco) &&
-        this.store.stockList.find((stock) => stock.isLoco && stock.type.startsWith('EP'))
+        this.store.stockList.some((stock) => stock.isLoco && stock.type.startsWith('EP'))
       );
     },
 

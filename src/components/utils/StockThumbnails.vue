@@ -86,10 +86,7 @@ const allowDrop = (e: DragEvent) => {
 <style lang="scss" scoped>
 .stock_thumbnails {
   display: flex;
-  margin: 1em 0;
-
   overflow: auto;
-
   background-color: #353a57;
 
   > div {

@@ -49,12 +49,10 @@ const sectionKeyIndexes: { [key: number]: SectionMode } = {
 };
 
 onMounted(() => {
-  console.log(sectionButtonRefs.value);
-
   window.addEventListener('keydown', (e) => {
     if (e.target instanceof HTMLInputElement) return;
 
-    if (e.key == '1' || e.key == '2' || e.key == '3' || e.key == '4') {
+    if (/[1234]/.test(e.key)) {
       const keyNum = Number(e.key);
       store.stockSectionMode = sectionKeyIndexes[keyNum];
       (sectionButtonRefs.value[keyNum - 1] as HTMLButtonElement).focus();

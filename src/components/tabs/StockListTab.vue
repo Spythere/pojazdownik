@@ -1,5 +1,5 @@
 <template>
-  <section class="stock-list">
+  <section class="stock-list-tab">
     <div class="stock_controls" :data-disabled="store.chosenStockListIndex == -1">
       <b class="no">
         POJAZD NR <span class="text--accent">{{ store.chosenStockListIndex + 1 }}</span> &nbsp;
@@ -68,7 +68,18 @@
       </span>
     </div>
 
-    <div class="stock_warnings">
+    <div class="stock_cold-start">
+      <label>
+        <input
+          type="checkbox"
+          v-model="store.isColdStart"
+          :disabled="!locoSupportsColdStart(store.stockList[0]?.constructionType || '')"
+        />
+        Zimny start lokomotywy czołowej (tylko elektrowozy typów 303E i 203E)
+      </label>
+    </div>
+
+    <div class="stock_warnings" v-if="stockHasWarnings">
       <div class="warning" v-if="locoNotSuitable">
         Lokomotywy EP07 i EP08 są przeznaczone jedynie do ruchu pasażerskiego!
       </div>
@@ -147,10 +158,11 @@ import { defineComponent } from 'vue';
 import TrainImage from '../sections/TrainImageSection.vue';
 
 import { useStore } from '../../store';
+
+import { locoSupportsColdStart } from '../../utils/locoUtils';
 import warningsMixin from '../../mixins/warningsMixin';
 import imageMixin from '../../mixins/imageMixin';
 import stockPreviewMixin from '../../mixins/stockPreviewMixin';
-import { IStock } from '../../types';
 import StockThumbnails from '../utils/StockThumbnails.vue';
 import stockMixin from '../../mixins/stockMixin';
 
@@ -162,8 +174,7 @@ export default defineComponent({
 
   setup() {
     const store = useStore();
-    
-    
+
     return {
       store,
     };
@@ -178,13 +189,12 @@ export default defineComponent({
   computed: {
     stockString() {
       return this.store.stockList
-        .map((stock) => {
-          let s = stock.isLoco || !stock.cargo ? stock.type : `${stock.type}:${stock.cargo.id}`;
+        .map((stock, i) => {
+          let stockTypeStr = stock.isLoco || !stock.cargo ? stock.type : `${stock.type}:${stock.cargo.id}`;
+          let coldStart =
+            i == 0 && this.store.isColdStart && locoSupportsColdStart(stock.constructionType || '') ? ',c' : '';
 
-          let final = s;
-          for (let i = 0; i < stock.count - 1; i++) final += `;${s}`;
-
-          return final;
+          return stockTypeStr + coldStart;
         })
         .join(';');
     },
@@ -196,19 +206,16 @@ export default defineComponent({
     chosenStockVehicle() {
       return this.store.chosenStockListIndex == -1 ? undefined : this.store.stockList[this.store.chosenStockListIndex];
     },
-  },
 
-  methods: {
     stockHasWarnings() {
       return this.tooManyLocomotives || this.trainTooHeavy || this.trainTooLong || this.locoNotSuitable;
     },
+  },
+
+  methods: {
+    locoSupportsColdStart,
 
     copyToClipboard() {
-      // if (this.stockHasWarnings()) {
-      //   alert('Jazda tym pociągiem jest niezgodna z regulaminem symulatora! Zmień parametry zestawienia!');
-      //   return;
-      // }
-
       navigator.clipboard.writeText(this.stockString);
 
       setTimeout(() => {
@@ -317,9 +324,6 @@ export default defineComponent({
     downloadStock() {
       if (this.store.stockList.length == 0) return alert('Lista pojazdów jest pusta!');
 
-      // if (this.stockHasWarnings())
-      //   return alert('Jazda tym pociągiem jest niezgodna z regulaminem symulatora! Zmień parametry zestawienia!');
-
       const defaultName = `${this.store.chosenRealStockName || this.store.stockList[0].type} ${
         this.store.totalMass
       }t; ${this.store.totalLength}m; vmax ${this.store.maxStockSpeed}`;
@@ -395,6 +399,11 @@ export default defineComponent({
 <style lang="scss" scoped>
 @import '../../styles/global';
 
+.stock-list-tab {
+  display: grid;
+  grid-gap: 0.5em;
+}
+
 .warning {
   padding: 0.25em;
   background: $accentColor;
@@ -417,7 +426,6 @@ export default defineComponent({
   flex-wrap: wrap;
 
   padding: 0.5em;
-  margin-bottom: 1em;
 
   background-color: #353a57;
 
@@ -450,7 +458,6 @@ export default defineComponent({
 .stock_actions {
   display: grid;
   gap: 0.5em;
-  margin-bottom: 1em;
 
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
 
@@ -472,9 +479,7 @@ export default defineComponent({
 
 ul {
   position: relative;
-
   overflow: auto;
-
   height: 500px;
 }
 
@@ -516,10 +521,6 @@ li > .stock-info {
     justify-content: center;
     align-items: center;
   }
-}
-
-.stock_warnings {
-  margin: 0.5em 0;
 }
 
 .supporter {

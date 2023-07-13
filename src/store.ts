@@ -20,6 +20,8 @@ export const useStore = defineStore({
       chosenCargo: null,
       chosenVehicle: null,
 
+      isColdStart: false,
+
       showSupporter: false,
       imageLoading: false,
 
@@ -71,10 +73,14 @@ export const useStore = defineStore({
         case '/stockgnr':
           this.stockSectionMode = 'stock-generator';
           break;
+        case '/vehicles':
+          this.stockSectionMode = 'wiki-list';
+          break;
         default:
           break;
       }
     },
   },
 });
+
 

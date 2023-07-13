@@ -15,7 +15,7 @@
       <table>
         <thead>
           <tr>
-            <th v-for="header in wikiMode == 'locomotives' ? locoHeaders : carHeaders" @click="toggleSorter(header.id)">
+            <th v-for="header in wikiMode == 'locomotives' ? locoHeaders : carHeaders" @click="toggleSorter(header)">
               {{ header.name }}
 
               <span v-if="currentModeSorter.id == header.id">
@@ -44,6 +44,7 @@
             <td>{{ loco.type }}</td>
             <td>{{ vehicleTypes[loco.power] }}</td>
             <td>{{ loco.constructionType }}</td>
+            <td>{{ locoSupportsColdStart(loco.constructionType) ? `&check;` : '&cross;' }}</td>
             <td>{{ loco.length }}m</td>
             <td>{{ loco.mass }}t</td>
             <td>{{ loco.maxSpeed }}km/h</td>
@@ -86,28 +87,45 @@ import stockPreviewMixin from '../../mixins/stockPreviewMixin';
 import { Vehicle } from '../../types';
 import { isLocomotive } from '../../utils/vehicleUtils';
 import stockMixin from '../../mixins/stockMixin';
+import { locoSupportsColdStart } from '../../utils/locoUtils';
 
 type WikiMode = 'locomotives' | 'carWagons';
-type SorterID = 'type' | 'constructionType' | 'image' | 'length' | 'mass' | 'maxSpeed' | 'cargoCount' | 'power';
+type SorterID =
+  | 'type'
+  | 'constructionType'
+  | 'image'
+  | 'length'
+  | 'mass'
+  | 'maxSpeed'
+  | 'cargoCount'
+  | 'power'
+  | 'coldStart';
 
-const locoHeaders: { name: string; id: SorterID }[] = [
-  { name: 'Zdjęcie', id: 'image' },
-  { name: 'Nazwa', id: 'type' },
-  { name: 'Rodzaj', id: 'power' },
-  { name: 'Konstrukcja', id: 'constructionType' },
-  { name: 'Długość', id: 'length' },
-  { name: 'Masa', id: 'mass' },
-  { name: 'Prędkość', id: 'maxSpeed' },
+interface WikiHeader {
+  name: string;
+  id: SorterID;
+  sortable: boolean;
+}
+
+const locoHeaders: WikiHeader[] = [
+  { name: 'Zdjęcie', id: 'image', sortable: false },
+  { name: 'Nazwa', id: 'type', sortable: true },
+  { name: 'Rodzaj', id: 'power', sortable: true },
+  { name: 'Konstrukcja', id: 'constructionType', sortable: true },
+  { name: 'Zimny start', id: 'coldStart', sortable: true },
+  { name: 'Długość', id: 'length', sortable: true },
+  { name: 'Masa', id: 'mass', sortable: true },
+  { name: 'Prędkość', id: 'maxSpeed', sortable: true },
 ];
 
-const carHeaders: { name: string; id: SorterID }[] = [
-  { name: 'Zdjęcie', id: 'image' },
-  { name: 'Nazwa', id: 'type' },
-  { name: 'Konstrukcja', id: 'constructionType' },
-  { name: 'Długość', id: 'length' },
-  { name: 'Masa', id: 'mass' },
-  { name: 'Prędkość', id: 'maxSpeed' },
-  { name: 'Ładunki', id: 'cargoCount' },
+const carHeaders: WikiHeader[] = [
+  { name: 'Zdjęcie', id: 'image', sortable: false },
+  { name: 'Nazwa', id: 'type', sortable: true },
+  { name: 'Konstrukcja', id: 'constructionType', sortable: true },
+  { name: 'Długość', id: 'length', sortable: true },
+  { name: 'Masa', id: 'mass', sortable: true },
+  { name: 'Prędkość', id: 'maxSpeed', sortable: true },
+  { name: 'Ładunki', id: 'cargoCount', sortable: true },
 ];
 
 const vehicleTypes: { [key: string]: string } = {
@@ -151,6 +169,8 @@ export default defineComponent({
   },
 
   methods: {
+    locoSupportsColdStart,
+
     scrollEvent(e: Event) {
       const tableScrollTop = (e.target as HTMLElement).scrollTop;
 
@@ -163,14 +183,16 @@ export default defineComponent({
       this.wikiMode = wikiMode;
     },
 
-    toggleSorter(id: SorterID) {
-      if (id == this.currentModeSorter.id) this.currentModeSorter.direction = -this.currentModeSorter.direction;
-      this.currentModeSorter.id = id;
+    toggleSorter(header: WikiHeader) {
+      if (!header.sortable) return;
+
+      if (header.id == this.currentModeSorter.id) this.currentModeSorter.direction *= -1;
+      this.currentModeSorter.id = header.id;
     },
 
     sortVehicles(vA: Vehicle, vB: Vehicle) {
       const { id, direction } = this.currentModeSorter;
-      // const vehiclesAreLocos = isLocomotive(vA) && isLocomotive(vB);
+      const vehiclesAreLocos = isLocomotive(vA) && isLocomotive(vB);
       const vehiclesAreCars = !isLocomotive(vA) && !isLocomotive(vB);
 
       switch (id) {
@@ -185,6 +207,13 @@ export default defineComponent({
 
         case 'cargoCount':
           if (vehiclesAreCars) return Math.sign((vA.cargoList.length || -1) - (vB.cargoList.length || -1)) * direction;
+
+        case 'coldStart':
+          if (vehiclesAreLocos)
+            return (
+              (locoSupportsColdStart(vA.constructionType) > locoSupportsColdStart(vB.constructionType) ? 1 : -1) *
+              direction
+            );
 
         default:
           break;
