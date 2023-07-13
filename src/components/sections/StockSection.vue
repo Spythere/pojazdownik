@@ -112,6 +112,7 @@ function chooseSection(sectionId: SectionMode) {
 .section_modes {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+
   gap: 0.5em;
 
   margin-bottom: 0.5em;
@@ -136,6 +137,12 @@ function chooseSection(sectionId: SectionMode) {
     &[data-selected='true']::after {
       width: 100%;
     }
+  }
+}
+
+@media screen and (max-width: 650px) {
+  .section_modes {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   }
 }
 </style>

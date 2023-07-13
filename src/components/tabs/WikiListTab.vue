@@ -1,81 +1,87 @@
 <template>
-  <section class="wiki-list">
-    <div class="actions-panel">
-      <div class="actions-panel_vehicles">
-        <button class="btn btn--choice" @click="changeWikiMode('locomotives')">POJ. TRAKCYJNE</button>
-        <button class="btn btn--choice" @click="changeWikiMode('carWagons')">WAGONY</button>
-      </div>
-
-      <div class="actions-panel_search">
-        <input type="text" placeholder="Wyszukaj pojazd..." v-model="searchedVehicleTypeName" />
-      </div>
+  <section class="wiki-list tab">
+    <div class="tab_header">
+      <h2>LISTA DOSTĘPNYCH POJAZDÓW</h2>
     </div>
 
-    <div class="table-wrapper" @scroll="scrollEvent" ref="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th v-for="header in wikiMode == 'locomotives' ? locoHeaders : carHeaders" @click="toggleSorter(header)">
-              {{ header.name }}
+    <div class="tab_content">
+      <div class="actions-panel">
+        <div class="actions-panel_vehicles">
+          <button class="btn btn--choice" @click="changeWikiMode('locomotives')">POJ. TRAKCYJNE</button>
+          <button class="btn btn--choice" @click="changeWikiMode('carWagons')">WAGONY</button>
+        </div>
 
-              <span v-if="currentModeSorter.id == header.id">
-                {{ currentModeSorter.direction == 1 ? `&uArr;` : `&dArr;` }}
-              </span>
-            </th>
-          </tr>
-        </thead>
+        <div class="actions-panel_search">
+          <input type="text" placeholder="Wyszukaj pojazd..." v-model="searchedVehicleTypeName" />
+        </div>
+      </div>
 
-        <tbody v-if="wikiMode == 'locomotives'">
-          <tr
-            v-for="loco in computedLocoList"
-            @click="previewLocomotive(loco)"
-            @keydown.enter="previewLocomotive(loco)"
-            @dblclick="addLocomotive(loco)"
-            tabindex="0"
-          >
-            <td>
-              <img
-                :src="`https://spythere.github.io/api/td2/images/${loco.type}--300px.jpg`"
-                loading="lazy"
-                :alt="`Lokomotywa ${loco.type}`"
-              />
-            </td>
+      <div class="table-wrapper" @scroll="scrollEvent" ref="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th v-for="header in wikiMode == 'locomotives' ? locoHeaders : carHeaders" @click="toggleSorter(header)">
+                {{ header.name }}
 
-            <td>{{ loco.type }}</td>
-            <td>{{ vehicleTypes[loco.power] }}</td>
-            <td>{{ loco.constructionType }}</td>
-            <td>{{ locoSupportsColdStart(loco.constructionType) ? `&check;` : '&cross;' }}</td>
-            <td>{{ loco.length }}m</td>
-            <td>{{ loco.mass }}t</td>
-            <td>{{ loco.maxSpeed }}km/h</td>
-          </tr>
-        </tbody>
+                <span v-if="currentModeSorter.id == header.id">
+                  {{ currentModeSorter.direction == 1 ? `&uArr;` : `&dArr;` }}
+                </span>
+              </th>
+            </tr>
+          </thead>
 
-        <tbody v-else>
-          <tr
-            v-for="car in computedCarList"
-            @keydow.enter="previewCarWagon(car)"
-            @click="previewCarWagon(car)"
-            @dblclick="addCarWagon(car)"
-            tabindex="0"
-          >
-            <td>
-              <img
-                :src="`https://spythere.github.io/api/td2/images/${car.type}--300px.jpg`"
-                loading="lazy"
-                :alt="`Lokomotywa ${car.type}`"
-              />
-            </td>
+          <tbody v-if="wikiMode == 'locomotives'">
+            <tr
+              v-for="loco in computedLocoList"
+              @click="previewLocomotive(loco)"
+              @keydown.enter="previewLocomotive(loco)"
+              @dblclick="addLocomotive(loco)"
+              tabindex="0"
+            >
+              <td>
+                <img
+                  :src="`https://spythere.github.io/api/td2/images/${loco.type}--300px.jpg`"
+                  loading="lazy"
+                  :alt="`Lokomotywa ${loco.type}`"
+                />
+              </td>
 
-            <td>{{ car.type }}</td>
-            <td>{{ car.constructionType }}</td>
-            <td>{{ car.length }}m</td>
-            <td>{{ car.mass }}t</td>
-            <td>{{ car.maxSpeed }}km/h</td>
-            <td>{{ car.cargoList.length == 0 ? '-' : car.cargoList.length }}</td>
-          </tr>
-        </tbody>
-      </table>
+              <td>{{ loco.type }}</td>
+              <td>{{ vehicleTypes[loco.power] }}</td>
+              <td>{{ loco.constructionType }}</td>
+              <td>{{ locoSupportsColdStart(loco.constructionType) ? `&check;` : '&cross;' }}</td>
+              <td>{{ loco.length }}m</td>
+              <td>{{ loco.mass }}t</td>
+              <td>{{ loco.maxSpeed }}km/h</td>
+            </tr>
+          </tbody>
+
+          <tbody v-else>
+            <tr
+              v-for="car in computedCarList"
+              @keydow.enter="previewCarWagon(car)"
+              @click="previewCarWagon(car)"
+              @dblclick="addCarWagon(car)"
+              tabindex="0"
+            >
+              <td>
+                <img
+                  :src="`https://spythere.github.io/api/td2/images/${car.type}--300px.jpg`"
+                  loading="lazy"
+                  :alt="`Lokomotywa ${car.type}`"
+                />
+              </td>
+
+              <td>{{ car.type }}</td>
+              <td>{{ car.constructionType }}</td>
+              <td>{{ car.length }}m</td>
+              <td>{{ car.mass }}t</td>
+              <td>{{ car.maxSpeed }}km/h</td>
+              <td>{{ car.cargoList.length == 0 ? '-' : car.cargoList.length }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </section>
 </template>
@@ -248,6 +254,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import '../../styles/tab.scss';
+
 .actions-panel {
   display: flex;
   justify-content: space-between;
@@ -308,16 +316,28 @@ export default defineComponent({
   td {
     text-align: center;
     padding: 0.25em;
-    height: 100px;
   }
 
   td:first-child {
-    width: 150px;
+    width: 120px;
   }
 
   td img {
     display: block;
-    width: 150px;
+    width: 120px;
+  }
+}
+
+@media screen and (max-width: $breakpointMd) {
+  .wiki-list table {
+    td {
+      width: 100px;
+      height: auto;
+
+      img {
+        width: 6em;
+      }
+    }
   }
 }
 </style>
