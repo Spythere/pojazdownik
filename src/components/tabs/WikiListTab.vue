@@ -196,8 +196,6 @@ export default defineComponent({
 
   computed: {
     currentModeSorter() {
-      console.log(this.wikiMode);
-
       return this.wikiMode == 'carWagons' ? this.currentCarSorter : this.currentLocoSorter;
     },
 
