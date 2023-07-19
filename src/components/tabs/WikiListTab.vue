@@ -281,6 +281,7 @@ export default defineComponent({
 .table-wrapper {
   overflow: auto;
   height: 750px;
+  max-height: 95vh;
 }
 
 .wiki-list table {
