@@ -316,6 +316,7 @@ export default defineComponent({
   td {
     text-align: center;
     padding: 0.25em;
+    height: 85px;
   }
 
   td:first-child {
@@ -338,6 +339,22 @@ export default defineComponent({
         width: 6em;
       }
     }
+  }
+}
+
+@media screen and (max-width: $breakpointSm) {
+  .actions-panel {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  
+  .actions-panel_vehicles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .actions-panel_search {
+    display: grid;
   }
 }
 </style>

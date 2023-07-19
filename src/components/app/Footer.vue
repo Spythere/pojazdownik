@@ -7,7 +7,7 @@
         href="https://docs.google.com/document/d/1UAAPUtN0d_RoS4RgOzEzllJZJhA0VcizzCzKW4QylbY/edit"
         target="_blank"
       >
-        regulaminem symulatora Train Driver 2 </a
+        regulaminem symulatora Train Driver 2</a
       >!
     </div>
 
@@ -47,5 +47,6 @@ footer {
 
   text-align: center;
   padding: 1em 1em 0 1em;
+  margin-top: auto;
 }
 </style>
