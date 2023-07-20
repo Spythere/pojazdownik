@@ -3,11 +3,13 @@
     <div class="section_modes">
       <button
         class="btn"
-        v-for="(id, name) in sectionModes"
+        ref="sectionButtonRefs"
+        v-for="(id, name, i) in sectionModes"
         @click="chooseSection(id)"
         :data-selected="store.stockSectionMode == id"
       >
-        {{ name }}
+        <span class="text--accent">{{ i + 1 }}.</span> {{ name }}
+        <span v-if="id == 'stock-list'">({{ store.stockList.length }})</span>
       </button>
     </div>
 
@@ -20,25 +22,51 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, KeepAlive } from 'vue';
+import { computed, KeepAlive, onMounted, ref } from 'vue';
 import { useStore } from '../../store';
 import StockListTab from '../tabs/StockListTab.vue';
 import StockGeneratorTab from '../tabs/StockGeneratorTab.vue';
 import NumberGeneratorTab from '../tabs/NumberGeneratorTab.vue';
+import WikiListTab from '../tabs/WikiListTab.vue';
+
+const sectionButtonRefs = ref([]);
 
 const store = useStore();
 type SectionMode = typeof store.stockSectionMode;
 
 const sectionModes: { [key: string]: SectionMode } = {
   SKŁAD: 'stock-list',
+  POJAZDY: 'wiki-list',
   'GNR NUMERU': 'number-generator',
   'GNR SKŁADU': 'stock-generator',
 };
+
+const sectionKeyIndexes: { [key: number]: SectionMode } = {
+  1: 'stock-list',
+  2: 'wiki-list',
+  3: 'number-generator',
+  4: 'stock-generator',
+};
+
+onMounted(() => {
+  window.addEventListener('keydown', (e) => {
+    if (e.target instanceof HTMLInputElement) return;
+
+    if (/[1234]/.test(e.key)) {
+      const keyNum = Number(e.key);
+      store.stockSectionMode = sectionKeyIndexes[keyNum];
+      (sectionButtonRefs.value[keyNum - 1] as HTMLButtonElement).focus();
+    }
+  });
+});
 
 const chosenSectionComponent = computed(() => {
   switch (store.stockSectionMode) {
     case 'stock-list':
       return StockListTab;
+
+    case 'wiki-list':
+      return WikiListTab;
 
     case 'stock-generator':
       return StockGeneratorTab;
@@ -83,7 +111,8 @@ function chooseSection(sectionId: SectionMode) {
 
 .section_modes {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
+
   gap: 0.5em;
 
   margin-bottom: 0.5em;
@@ -108,6 +137,12 @@ function chooseSection(sectionId: SectionMode) {
     &[data-selected='true']::after {
       width: 100%;
     }
+  }
+}
+
+@media screen and (max-width: 650px) {
+  .section_modes {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   }
 }
 </style>

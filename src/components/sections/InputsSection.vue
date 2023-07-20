@@ -107,10 +107,8 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
-import { IStock } from '../../types';
 import imageMixin from '../../mixins/imageMixin';
 import { useStore } from '../../store';
-import { isLocomotive } from '../../utils/vehicleUtils';
 import stockPreviewMixin from '../../mixins/stockPreviewMixin';
 import stockMixin from '../../mixins/stockMixin';
 
@@ -197,22 +195,8 @@ export default defineComponent({
 
       if (!vehicle) return;
 
-      const stockObj: IStock = {
-        id: `${Date.now()}`,
-        useType: isLocomotive(vehicle) ? vehicle.power : vehicle.useType,
-        type: vehicle.type,
-        length: vehicle.length,
-        mass: vehicle.mass,
-        maxSpeed: vehicle.maxSpeed,
-        isLoco: isLocomotive(vehicle),
-        cargo:
-          !isLocomotive(vehicle) && vehicle.loadable && this.store.chosenCargo ? this.store.chosenCargo : undefined,
-        count: 1,
-        imgSrc: vehicle.imageSrc,
-        supportersOnly: vehicle.supportersOnly,
-      };
-
-      this.store.stockList[this.store.chosenStockListIndex] = stockObj;
+      const stockObject = this.getStockObject(vehicle, this.store.chosenCargo);
+      this.store.stockList[this.store.chosenStockListIndex] = stockObject;
     },
   },
 });

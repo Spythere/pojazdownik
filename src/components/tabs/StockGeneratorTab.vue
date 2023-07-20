@@ -265,7 +265,7 @@ export default defineComponent({
 .generator_vehicles {
   display: grid;
   gap: 0.5em;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
 
   button {
     position: relative;
@@ -314,13 +314,6 @@ export default defineComponent({
   text-align: justify;
   font-weight: bold;
   color: black;
-}
-
-@media only screen and (max-width: 470px) {
-  .generator_cargo,
-  .generator_vehicles {
-    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-  }
 }
 </style>
 

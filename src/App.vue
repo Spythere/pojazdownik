@@ -1,111 +1,37 @@
 <template>
-  <div class="image-preview" v-if="store.vehiclePreviewSrc != ''" @click="() => (store.vehiclePreviewSrc = '')">
-    <img :src="store.vehiclePreviewSrc" alt="preview" />
-  </div>
-
-  <div class="g-card-dimmer" v-if="store.isRandomizerCardOpen" @click="store.isRandomizerCardOpen = false"></div>
-  <div class="g-card-dimmer" v-if="store.isRealStockListCardOpen" @click="store.isRealStockListCardOpen = false"></div>
-
-  <keep-alive>
-    <RealStockCard v-if="store.isRealStockListCardOpen" />
-  </keep-alive>
-  <!-- <transition name="card-appear"> -->
-  <!-- </transition> -->
-
-  <div class="app_container">
-    <main>
-      <LogoSection />
-
-      <InputsSection />
-
-      <TrainImageSection />
-
-      <StockSection />
-    </main>
-
-    <footer>
-      <div class="text--grayed" style="margin-bottom: 0.25em">
-        Ta strona ma charakter informacyjny. Autor nie ponosi odpowiedzialności za tworzenie pociągów niezgodnych z
-        <a
-          style="color: #ccc"
-          href="https://docs.google.com/document/d/1UAAPUtN0d_RoS4RgOzEzllJZJhA0VcizzCzKW4QylbY/edit"
-          target="_blank"
-        >
-          regulaminem symulatora Train Driver 2</a
-        >!
-      </div>
-      <div class="text--grayed" style="margin-bottom: 0.25em" v-if="store.stockData">
-        Strona jest kompletna dla wersji {{ store.stockData.version }} symulatora TD2
-      </div>
-      &copy;
-      <a href="https://td2.info.pl/profile/?u=20777" target="_blank">Spythere</a>
-      {{ new Date().getUTCFullYear() }} | v{{ VERSION }}{{ !isOnProductionHost ? 'dev' : '' }}
-    </footer>
-  </div>
+  <AppModals />
+  <ImageFullscreenPreview v-if="store.vehiclePreviewSrc" />
+  <AppContainerView />
 </template>
 
 <script lang="ts">
-import packageInfo from '.././package.json';
-
 import { defineComponent } from 'vue';
-
-import InputsSection from './components/sections/InputsSection.vue';
-
 import { useStore } from './store';
-import TrainImageSection from './components/sections/TrainImageSection.vue';
-import LogoSection from './components/sections/LogoSection.vue';
-import RealStockCard from './components/cards/RealStockCard.vue';
-import StockSection from './components/sections/StockSection.vue';
+import ImageFullscreenPreview from './components/utils/ImageFullscreenPreview.vue';
+import AppContainerView from './views/AppContainerView.vue';
+import AppModals from './components/app/AppModals.vue';
 
 export default defineComponent({
-  components: {
-    StockSection,
-    InputsSection,
-    TrainImageSection,
-    LogoSection,
-    RealStockCard,
+  data() {
+    return {
+      store: useStore(),
+    };
   },
-
-  data: () => ({
-    VERSION: packageInfo.version,
-    store: useStore(),
-    isOnProductionHost: location.hostname == 'pojazdownik-td2.web.app',
-  }),
-
   async created() {
     /* dev info testing */
     // if (import.meta.env['VITE_STOCK_DEV'] == '1') {
     //   const data = await import('../stockInfoDev.json');
     //   this.store.stockData = data.default as any;
     // }
-    const stockData = await (await fetch(`https://spythere.github.io/api/td2/data/stockInfo.json`)).json();
-    this.store.stockData = stockData;
-
-    // routing
-    switch (window.location.pathname) {
-      case '/numgnr':
-        this.store.stockSectionMode = 'number-generator';
-        break;
-      case '/stockgnr':
-        this.store.stockSectionMode = 'stock-generator';
-        break;
-      default:
-        break;
-    }
+    this.store.fetchStockInfoData();
+    this.store.handleRouting();
   },
+  components: { ImageFullscreenPreview, AppContainerView, AppModals },
 });
 </script>
 
 <style lang="scss">
-@import './styles/global';
-
-.app_container {
-  min-height: 100vh;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+@import './styles/global.scss';
 
 /* APP */
 #app {
@@ -134,64 +60,9 @@ h2 {
   color: #d1d1d1;
 }
 
-.image-preview {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 99;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  width: 100%;
-  height: 100%;
-
-  background: rgba(black, 0.85);
-
-  img {
-    width: 90%;
-    max-width: 800px;
-  }
-}
-
-/* MAIN SECTION */
-
-main {
-  display: grid;
-  gap: 1em 3em;
-
-  width: 100%;
-  max-width: 1300px;
-  min-height: 75vh;
-
-  grid-template-columns: 1fr 2fr;
-  grid-template-rows: auto 360px minmax(400px, 1fr);
-
-  // padding: 0 1em;
-  margin-bottom: 2em;
-}
-
-/* FOOTER SECTION */
-
-footer {
-  margin-top: auto;
-  text-align: center;
-  padding: 0 1em;
-}
-
-/* MOBILE VIEWS */
-
 @media screen and (max-width: $breakpointMd) {
   #app {
     font-size: calc(0.7rem + 0.75vw);
-  }
-
-  main {
-    display: flex;
-    flex-direction: column;
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr;
   }
 }
 </style>

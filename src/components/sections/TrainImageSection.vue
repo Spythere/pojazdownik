@@ -144,7 +144,7 @@ export default defineComponent({
       width: 100%;
       height: 100%;
 
-      cursor: pointer;
+      cursor: zoom-in;
     }
 
     .empty-message,

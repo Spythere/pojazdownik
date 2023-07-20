@@ -5,8 +5,9 @@ export interface IStore {
   chosenCar: ICarWagon | null;
   chosenLoco: ILocomotive | null;
   chosenCargo: ICargo | null;
-
   chosenVehicle: Vehicle | null;
+
+  isColdStart: boolean;
 
   showSupporter: boolean;
   imageLoading: boolean;
@@ -27,7 +28,7 @@ export interface IStore {
   isRandomizerCardOpen: boolean;
   isRealStockListCardOpen: boolean;
 
-  stockSectionMode: 'stock-list' | 'stock-generator' | 'number-generator';
+  stockSectionMode: 'stock-list' | 'stock-generator' | 'number-generator' | 'wiki-list';
   stockData?: IStockData;
 }
 
@@ -42,7 +43,7 @@ export interface IStockProps {
 
 export interface IStockData {
   version: string;
-  
+
   generator: {
     passenger: any;
     cargo: {
@@ -99,8 +100,9 @@ export interface ICargo {
 
 export interface IStock {
   id: string;
-  useType: string;
   type: string;
+  useType: string;
+  constructionType: string;
   length: number;
   mass: number;
   maxSpeed: number;
