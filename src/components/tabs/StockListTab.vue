@@ -35,19 +35,33 @@
 
     <div class="stock_actions">
       <label class="file-label">
-        <div class="btn">WCZYTAJ</div>
+        <div class="btn btn--image">
+          <img src="/images/icon-upload.svg" alt="" />
+          WCZYTAJ
+        </div>
+
         <input type="file" @change="uploadStock" ref="conFile" accept=".con,.txt" />
       </label>
 
-      <button class="btn" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="downloadStock">POBIERZ</button>
+      <button class="btn btn--image" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="downloadStock">
+        <img src="/images/icon-download.svg" alt="download icon" />
+        POBIERZ
+      </button>
 
-      <button class="btn" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="copyToClipboard">
+      <button class="btn btn--image" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="copyToClipboard">
+        <img src="/images/icon-copy.svg" alt="copy icon" />
         SKOPIUJ
       </button>
 
-      <button class="btn" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="resetStock">ZRESETUJ</button>
+      <button class="btn btn--image" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="resetStock">
+        <img src="/images/icon-reset.svg" alt="reset icon" />
+        ZRESETUJ
+      </button>
 
-      <button class="btn" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="shuffleCars">PRZETASUJ</button>
+      <button class="btn btn--image" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="shuffleCars">
+        <img src="/images/icon-shuffle.svg" alt="shuffle icon" />
+        PRZETASUJ
+      </button>
     </div>
 
     <div class="stock_specs">
@@ -182,8 +196,9 @@ export default defineComponent({
 
   data: () => ({
     imageOffsetY: 0,
-
     draggedVehicleID: -1,
+
+    stockActions: [{}],
   }),
 
   computed: {
