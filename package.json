@@ -8,6 +8,7 @@
     "preview": "yarn build && vite preview --port 4174"
   },
   "dependencies": {
+    "axios": "^1.4.0",
     "pinia": "^2.0.17",
     "vue": "^3.2.37",
     "vue-i18n": "9"
