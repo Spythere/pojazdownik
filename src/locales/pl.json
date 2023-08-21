@@ -1,0 +1,102 @@
+{
+  "app": {
+    "title": "EDYTOR SKŁADÓW ONLINE"
+  },
+  "footer": {
+    "disclaimer": "Ta strona ma charakter informacyjny. Autor nie ponosi odpowiedzialności za tworzenie pociągów niezgodnych z {href}!",
+    "tos": "regulaminem symulatora Train Driver 2",
+    "version-check": "Strona jest kompletna dla wersji {version} symulatora TD2"
+  },
+  "inputs": {
+    "title": "WYBIERZ POJAZDY / WAGONY",
+    "input-vehicle": "Wybierz pojazd trakcyjny",
+    "input-carwagon": "Wybierz wagon",
+    "cargo-title": "Ładunek (tylko wybrane towarowe)",
+    "no-cargo-available": "brak dostępnych ładunków",
+    "cargo-empty": "próżny",
+    "loco-e": "ELEKTR.",
+    "loco-s": "SPAL.",
+    "loco-ezt": "EZT",
+    "loco-szt": "SZT",
+    "car-passenger": "PASAŻERSKIE",
+    "car-cargo": "TOWAROWE",
+    "action-add": "DODAJ NOWY",
+    "action-swap": "ZAMIEŃ ZA",
+    "real-stock": "REALNE ZESTAWIENIA"
+  },
+  "preview": {
+    "title": "PODGLĄD WYBRANEGO POJAZDU",
+    "desc": "Wybierz pojazd lub wagon, aby zobaczyć jego podgląd powyżej",
+    "loco-e": "ELEKTROWÓZ",
+    "loco-s": "SPALINOWÓZ",
+    "loco-ezt": "EZT",
+    "loco-szt": "SZT",
+    "car-passenger": "WAGON PASAŻERSKI",
+    "car-cargo": "WAGON TOWAROWY"
+  },
+  "topbar": {
+    "stock-list": "SKŁAD",
+    "wiki-list": "POJAZDY",
+    "number-generator": "GNR NUMERU",
+    "stock-generator": "GNR SKŁADU"
+  },
+  "stocklist": {
+    "vehicle-no": "POJAZD NR",
+    "action-move-up": "PRZENIEŚ WYŻEJ",
+    "action-move-down": "PRZENIEŚ NIŻEJ",
+    "action-remove": "USUŃ",
+    "action-upload": "WCZYTAJ",
+    "action-download": "POBIERZ",
+    "action-copy": "SKOPIUJ",
+    "action-reset": "ZRESETUJ",
+    "action-shuffle": "PRZETASUJ",
+    "mass": "Masa",
+    "mass-accepted": "Masa dopuszczalna",
+    "length": "Długość",
+    "vmax": "vMax",
+    "coldstart-info": "Zimny start lokomotywy czołowej (tylko elektrowozy typów 303E i 203E)",
+    "list-empty-warning": "Lista pojazdów jest pusta!"
+  },
+  "stockgen": {
+    "title": "GENERATOR SKŁADU TOWAROWEGO",
+    "properties-title": "WŁAŚCIWOŚCI SKŁADU",
+    "properties-desc": "⇐ Dodaj lokomotywę na pierwsze miejsce listy, aby uwzględnić ją przy losowaniu składu!",
+    "input-mass": "Maksymalna masa (t)",
+    "input-length": "Maks. długość (m)",
+    "input-carcount": "Maks. liczba wagonów",
+    "cargo-title": "ŁADUNEK",
+    "cargo-desc": "Wybierz ładunki, którymi chcesz wypełnić dostępne wagony:",
+    "chosen-title": "WAGONY Z WYBRANYMI ŁADUNKAMI",
+    "chosen-empty-warning": "Wybierz co najmniej jeden ładunek, aby zobaczyć wagony, które go posiadają!",
+    "chosen-warning": "Wagony posiadające wybrane ładunki. Najedź na nazwę, aby zobaczyć podgląd wagonu. Kliknij, aby wyłączyć z losowania (tylko podświetlone nazwy będą uwzględnione).",
+    "action-generate": "WYGENERUJ",
+    "action-generate-empty": "WYGENERUJ PRÓŻNE WAGONY",
+    "action-reset": "ZRESETUJ ŁADUNKI"
+  },
+  "cargo": {
+    "kontenery": "kontenery",
+    "chłodnia": "chłodnia",
+    "drobnica": "drobnica",
+    "węgiel": "węgiel",
+    "ruda": "ruda",
+    "piasek": "piasek",
+    "kreda": "kreda",
+    "kamień": "kamień",
+    "złom": "złom",
+    "paliwo": "paliwo",
+    "melasa": "melasa",
+    "żwir": "żwir",
+    "koła": "koła",
+    "drewno": "drewno",
+    "szyny": "szyny",
+    "kable": "kable",
+    "kruszywo": "kruszywo",
+    "techniczne": "techniczne",
+    "poczta": "poczta",
+    "cement": "cement",
+    "wapno": "wapno",
+    "soda": "soda",
+    "pszenica": "pszenica",
+    "kukurydza": "kukurydza"
+  }
+}
