@@ -1,62 +1,61 @@
 <template>
   <div class="stock-generator tab">
     <div class="tab_header">
-      <h2>GENERATOR SKŁADU TOWAROWEGO</h2>
+      <h2>{{ $t('stockgen.title') }}</h2>
     </div>
 
     <div class="tab_content">
       <div>
-        <h2>WŁAŚCIWOŚCI SKŁADU</h2>
+        <h2>{{ $t('stockgen.properties-title') }}</h2>
 
         <b class="text--accent">
-          &lArr; Dodaj lokomotywę na pierwsze miejsce listy, aby uwzględnić ją przy losowaniu składu!
+          {{ $t('stockgen.properties-desc') }}
         </b>
 
         <div class="tab_attributes">
           <label>
-            Maksymalna masa (t)
+            {{ $t('stockgen.input-mass') }}
             <input type="number" v-model="maxMass" step="100" max="4000" min="0" />
           </label>
 
           <label>
-            Maks. długość (m)
+            {{ $t('stockgen.input-length') }}
             <input type="number" v-model="maxLength" step="25" max="650" min="0" />
           </label>
 
           <label>
-            Maks. liczba wagonów
+            {{ $t('stockgen.input-carcount') }}
             <input type="number" v-model="maxCarCount" step="1" max="60" min="1" />
           </label>
         </div>
       </div>
 
       <div>
-        <h2>ŁADUNEK</h2>
-        <b>Wybierz ładunki, którymi chcesz wypełnić dostępne wagony:</b>
+        <h2>{{ $t('stockgen.cargo-title') }}</h2>
+        <b>{{ $t('stockgen.cargo-desc') }}</b>
       </div>
 
       <div class="generator_cargo">
         <button
           class="btn"
-          :data-chosen="chosenCargoTypes.includes(k.toString())"
-          v-for="(v, k) in store.stockData?.generator.cargo"
-          @click="toggleCargoChosen(k.toString(), v)"
+          :data-chosen="chosenCargoTypes.includes(cargoName.toString())"
+          v-for="(cargoArray, cargoName) in store.stockData?.generator.cargo"
+          @click="toggleCargoChosen(cargoName.toString(), cargoArray)"
         >
-          {{ k }}
+          {{ $t(`cargo.${cargoName}`) }}
         </button>
       </div>
 
       <div>
-        <h2>WAGONY Z WYBRANYMI ŁADUNKAMI</h2>
+        <h2>{{ $t('stockgen.chosen-title') }}</h2>
 
         <div class="generator_warning">
           <span v-if="computedChosenCarTypes.size == 0">
-            Wybierz co najmniej jeden ładunek, aby zobaczyć wagony, które go posiadają!
+            {{ $t('stockgen.chosen-empty-warning') }}
           </span>
 
           <span v-else>
-            Wagony posiadające wybrane ładunki. Najedź na nazwę, aby zobaczyć podgląd wagonu. Kliknij, aby wyłączyć z
-            losowania (tylko podświetlone nazwy będą uwzględnione).
+            {{ $t('stockgen.chosen-warning') }}
           </span>
         </div>
       </div>
@@ -80,14 +79,15 @@
 
       <div class="tab_actions">
         <button class="btn" :data-disabled="computedChosenCarTypes.size == 0" @click="generateStock()">
-          WYGENERUJ
+          {{ $t('stockgen.action-generate') }}
         </button>
+
         <button class="btn" :data-disabled="computedChosenCarTypes.size == 0" @click="generateStock(true)">
-          WYGENERUJ PRÓŻNE WAGONY
+          {{ $t('stockgen.action-generate-empty') }}
         </button>
 
         <button class="btn" :data-disabled="computedChosenCarTypes.size == 0" @click="resetChosenCargo">
-          ZRESETUJ ŁADUNKI
+          {{ $t('stockgen.action-reset') }}
         </button>
       </div>
     </div>

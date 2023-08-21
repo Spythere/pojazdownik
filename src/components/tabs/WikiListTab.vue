@@ -1,18 +1,22 @@
 <template>
   <section class="wiki-list tab">
     <div class="tab_header">
-      <h2>LISTA DOSTĘPNYCH POJAZDÓW</h2>
+      <h2>{{ $t('wiki.title') }}</h2>
     </div>
 
     <div class="tab_content">
       <div class="actions-panel">
         <div class="actions-panel_vehicles">
-          <button class="btn btn--choice" @click="changeWikiMode('locomotives')">POJ. TRAKCYJNE</button>
-          <button class="btn btn--choice" @click="changeWikiMode('carWagons')">WAGONY</button>
+          <button class="btn btn--choice" @click="changeWikiMode('locomotives')">
+            {{ $t('wiki.action-vehicles') }}
+          </button>
+          <button class="btn btn--choice" @click="changeWikiMode('carWagons')">
+            {{ $t('wiki.action-carriages') }}
+          </button>
         </div>
 
         <div class="actions-panel_search">
-          <input type="text" placeholder="Wyszukaj pojazd..." v-model="searchedVehicleTypeName" />
+          <input type="text" :placeholder="$t('wiki.search')" v-model="searchedVehicleTypeName" />
         </div>
       </div>
 
@@ -21,7 +25,7 @@
           <thead>
             <tr>
               <th v-for="header in wikiMode == 'locomotives' ? locoHeaders : carHeaders" @click="toggleSorter(header)">
-                {{ header.name }}
+                {{ $t(`wiki.header.${header.id}`) }}
 
                 <span v-if="currentModeSorter.id == header.id">
                   {{ currentModeSorter.direction == 1 ? `&uArr;` : `&dArr;` }}
@@ -47,7 +51,7 @@
               </td>
 
               <td>{{ loco.type }}</td>
-              <td>{{ vehicleTypes[loco.power] }}</td>
+              <td>{{ $t(`wiki.${loco.power}`) }}</td>
               <td>{{ loco.constructionType }}</td>
               <td>{{ locoSupportsColdStart(loco.constructionType) ? `&check;` : '&cross;' }}</td>
               <td>{{ loco.length }}m</td>
@@ -108,38 +112,30 @@ type SorterID =
   | 'coldStart';
 
 interface WikiHeader {
-  name: string;
   id: SorterID;
   sortable: boolean;
 }
 
 const locoHeaders: WikiHeader[] = [
-  { name: 'Zdjęcie', id: 'image', sortable: false },
-  { name: 'Nazwa', id: 'type', sortable: true },
-  { name: 'Rodzaj', id: 'power', sortable: true },
-  { name: 'Konstrukcja', id: 'constructionType', sortable: true },
-  { name: 'Zimny start', id: 'coldStart', sortable: true },
-  { name: 'Długość', id: 'length', sortable: true },
-  { name: 'Masa', id: 'mass', sortable: true },
-  { name: 'Prędkość', id: 'maxSpeed', sortable: true },
+  { id: 'image', sortable: false },
+  { id: 'type', sortable: true },
+  { id: 'power', sortable: true },
+  { id: 'constructionType', sortable: true },
+  { id: 'coldStart', sortable: true },
+  { id: 'length', sortable: true },
+  { id: 'mass', sortable: true },
+  { id: 'maxSpeed', sortable: true },
 ];
 
 const carHeaders: WikiHeader[] = [
-  { name: 'Zdjęcie', id: 'image', sortable: false },
-  { name: 'Nazwa', id: 'type', sortable: true },
-  { name: 'Konstrukcja', id: 'constructionType', sortable: true },
-  { name: 'Długość', id: 'length', sortable: true },
-  { name: 'Masa', id: 'mass', sortable: true },
-  { name: 'Prędkość', id: 'maxSpeed', sortable: true },
-  { name: 'Ładunki', id: 'cargoCount', sortable: true },
+  { id: 'image', sortable: false },
+  { id: 'type', sortable: true },
+  { id: 'constructionType', sortable: true },
+  { id: 'length', sortable: true },
+  { id: 'mass', sortable: true },
+  { id: 'maxSpeed', sortable: true },
+  { id: 'cargoCount', sortable: true },
 ];
-
-const vehicleTypes: { [key: string]: string } = {
-  'loco-ezt': 'EZT',
-  'loco-szt': 'SZT',
-  'loco-s': 'Spalinowóz',
-  'loco-e': 'Elektrowóz',
-};
 
 export default defineComponent({
   mixins: [stockPreviewMixin, stockMixin],
@@ -149,7 +145,6 @@ export default defineComponent({
       store: useStore(),
       locoHeaders,
       carHeaders,
-      vehicleTypes,
 
       locosScrollTop: 0,
       carsScrollTop: 0,
@@ -348,7 +343,7 @@ export default defineComponent({
     align-items: stretch;
     flex-direction: column;
   }
-  
+
   .actions-panel_vehicles {
     display: grid;
     grid-template-columns: 1fr 1fr;

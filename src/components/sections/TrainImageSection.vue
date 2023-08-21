@@ -1,14 +1,14 @@
 <template>
   <section class="train-image-section">
     <div class="train-image__wrapper">
-      <div class="train-image__content" :class="{'supporter': store.chosenVehicle?.supportersOnly}">
+      <div class="train-image__content" :class="{ supporter: store.chosenVehicle?.supportersOnly }">
         <transition name="img-message-anim">
           <div class="empty-message" v-if="store.imageLoading && store.chosenVehicle?.imageSrc">
-            ŁADOWANIE OBRAZU...
+            {{ $t('preview.loading') }}
           </div>
         </transition>
 
-        <div class="no-img" v-if="!store.chosenVehicle">PODGLĄD WYBRANEGO POJAZDU</div>
+        <div class="no-img" v-if="!store.chosenVehicle">{{ $t('preview.title') }}</div>
 
         <img
           v-if="store.chosenVehicle"
@@ -23,11 +23,11 @@
 
       <div class="train-image__info" v-if="store.chosenVehicle">
         <b class="text--accent">{{ store.chosenVehicle.type }}</b> &bull;
-        <b style="color: #ccc">{{
-          vehicleTypes[
-            isLocomotive(store.chosenVehicle) ? store.chosenVehicle.power : store.chosenVehicle.useType || 'loco-e'
-          ]
-        }}</b>
+        <b style="color: #ccc">
+          {{
+            $t(`preview.${isLocomotive(store.chosenVehicle) ? store.chosenVehicle.power : store.chosenVehicle.useType}`)
+          }}
+        </b>
 
         <div style="color: #ccc">
           <div>
@@ -35,21 +35,23 @@
             {{ store.chosenVehicle.maxSpeed }} km/h
           </div>
 
-          <div v-if="isLocomotive(store.chosenVehicle)">Typ kabiny: {{ store.chosenVehicle.cabinType }}</div>
+          <div v-if="isLocomotive(store.chosenVehicle)">
+            {{ $t('preview.cabin') }} {{ store.chosenVehicle.cabinType }}
+          </div>
 
           <div v-else>
             {{
-              store.chosenVehicle.useType == 'car-cargo'
-                ? store.stockData?.usage[store.chosenVehicle.constructionType]
-                : 'Typ konstrukcji: ' + store.chosenVehicle.constructionType
+              store.chosenVehicle.useType == 'car-cargo' // ? store.stockData?.usage[store.chosenVehicle.constructionType]
+                ? $t(`usage.${store.chosenVehicle.constructionType}`)
+                : `${$t('preview.construction')} ${store.chosenVehicle.constructionType}`
             }}
           </div>
 
-          <b style="color: salmon;" v-if="store.chosenVehicle.supportersOnly">* TYLKO DLA SPONSORÓW</b>
+          <b style="color: salmon" v-if="store.chosenVehicle.supportersOnly">{{ $t('preview.sponsor-only') }}</b>
         </div>
       </div>
 
-      <div class="train-image__info" v-else>Wybierz pojazd lub wagon, aby zobaczyć jego podgląd powyżej</div>
+      <div class="train-image__info" v-else>{{ $t('preview.desc') }}</div>
     </div>
   </section>
 </template>
@@ -67,19 +69,6 @@ export default defineComponent({
     return {
       store,
       chosenVehicle: computed(() => store.chosenVehicle),
-    };
-  },
-
-  data() {
-    return {
-      vehicleTypes: {
-        'loco-e': 'ELEKTROWÓZ',
-        'loco-s': 'SPALINOWÓZ',
-        'loco-ezt': 'EZT',
-        'loco-szt': 'SZT',
-        'car-passenger': 'WAGON PASAŻERSKI',
-        'car-cargo': 'WAGON TOWAROWY',
-      } as { [key: string]: string },
     };
   },
 

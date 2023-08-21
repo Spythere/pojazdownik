@@ -1,19 +1,15 @@
 <template>
   <footer>
     <i18n-t keypath="footer.disclaimer" tag="div" class="text--grayed">
-      <template #href>
-        <a
-          style="color: #ccc"
-          href="https://docs.google.com/document/d/1UAAPUtN0d_RoS4RgOzEzllJZJhA0VcizzCzKW4QylbY/edit"
-          target="_blank"
-        >
+      <template #tos>
+        <a style="color: #ccc" :href="$t('footer.tos-href')" target="_blank">
           {{ $t('footer.tos') }}
         </a>
       </template>
     </i18n-t>
 
     <div class="text--grayed" v-if="store.stockData">
-      Strona jest kompletna dla wersji {{ store.stockData.version }} symulatora TD2
+      {{ $t('footer.version-check', { version: store.stockData.version }) }}
     </div>
 
     <div>

@@ -1,45 +1,45 @@
 <template>
   <div class="number-generator tab">
     <div class="tab_header">
-      <h2>GENERATOR NUMERU POCIĄGU</h2>
+      <h2>{{ $t('numgen.title') }}</h2>
     </div>
 
     <div class="tab_content">
       <div class="options">
         <select v-model="beginRegionName" @change="randomizeTrainNumber()">
-          <option :value="null" disabled>Początkowy obszar konstrukcyjny</option>
+          <option :value="null" disabled>{{ $t('numgen.start-region') }}</option>
           <option v-for="(_, name) in genData.regionNumbers" :value="name">{{ name }}</option>
         </select>
 
         <select v-model="endRegionName" @change="randomizeTrainNumber()">
-          <option :value="null" disabled>Końcowy obszar konstrukcyjny</option>
+          <option :value="null" disabled>{{ $t('numgen.end-region') }}</option>
           <option v-for="(_, name) in genData.regionNumbers" :value="name">{{ name }}</option>
         </select>
 
         <select v-model="categoryRules" @change="randomizeTrainNumber()">
-          <option :value="null" disabled>Kategoria pociągu</option>
-          <option v-for="(rules, category) in genData.categories" :value="rules">{{ category }}</option>
+          <option :value="null" disabled>{{ $t('numgen.train-category') }}</option>
+          <option v-for="(rules, category) in genData.categories" :value="rules">{{ $t(`numgen.categories.${category}`) }}</option>
         </select>
       </div>
 
       <div class="generated-number" @click="copyNumber">
         <span v-if="trainNumber">
-          Wygenerowany numer pociągu: <b class="text--accent">{{ trainNumber }}</b>
+          {{ $t('numgen.number-info') }} <b class="text--accent">{{ trainNumber }}</b>
         </span>
-        <span v-else>Wybierz kategorię oraz obszary konstrukcyjne (opcjonalnie)</span>
+        <span v-else>{{ $t('numgen.warning') }}</span>
       </div>
 
       <div class="tab_links">
-        <a href="https://wiki.td2.info.pl/index.php?title=Zasady_numeracji_poci%C4%85g%C3%B3w" target="_blank">
-          > Szczegółowe zasady numeracji (wikipedia TD2)
+        <a :href="$t('numgen.td2-wiki-link')" target="_blank">
+          {{ $t('numgen.td2-wiki') }}
         </a>
       </div>
 
       <hr />
 
       <div class="tab_actions">
-        <button class="btn" @click="randomizeTrainNumber(true)">LOSUJ OBSZARY</button>
-        <button class="btn" @click="randomizeTrainNumber(false)">LOSUJ NUMER</button>
+        <button class="btn" @click="randomizeTrainNumber(true)">{{ $t('numgen.action-random-region') }}</button>
+        <button class="btn" @click="randomizeTrainNumber(false)">{{ $t('numgen.action-random-number') }}</button>
       </div>
     </div>
   </div>
