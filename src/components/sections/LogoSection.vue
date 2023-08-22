@@ -38,6 +38,7 @@ export default {
 
     chooseLocale(locale: string) {
       this.$i18n.locale = locale;
+      window.localStorage.setItem('locale', locale);
     },
   },
 };

@@ -11,8 +11,10 @@ const locales: { [key in LocaleKey]: LocaleMessageSchema } = {
   pl: localePL,
 };
 
+const locale = window.localStorage.getItem('locale') || (/^pl\b/.test(navigator.language) ? 'pl' : 'en');
+
 const i18n = createI18n<[LocaleMessageSchema], 'en' | 'pl'>({
-  locale: /^pl\b/.test(navigator.language) ? 'pl' : 'en',
+  locale,
   fallbackLocale: 'pl',
   legacy: false,
   globalInjection: true,
