@@ -126,5 +126,11 @@
     "loco-szt": "SZT",
     "loco-s": "Spalinowóz",
     "loco-e": "Elektrowóz"
+  },
+  "realstock": {
+    "title": "ZESTAWIENIA REALNE by",
+    "search-name": "Szukaj po nazwie",
+    "search-stock": "Szukaj po pojazdach",
+    "action-reset": "RESETUJ"
   }
 }

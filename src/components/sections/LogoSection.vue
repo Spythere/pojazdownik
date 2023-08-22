@@ -1,6 +1,6 @@
 <template>
   <section class="logo-section">
-    <img src="/images/logo.svg" alt="logo pojazdownik" @click="navigate" />
+    <img :src="`/logo-${$i18n.locale}.svg`" alt="logo pojazdownik" @click="navigate" />
 
     <div class="actions">
       <button
