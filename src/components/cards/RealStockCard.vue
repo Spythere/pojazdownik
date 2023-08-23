@@ -6,13 +6,17 @@
       <div class="card_nav">
         <div class="top-pane">
           <h1>
-            ZESTAWIENIA REALNE by <a href="https://td2.info.pl/profile/?u=17708" target="_blank">Railtrains997</a>
+            {{ $t('realstock.title') }} <a href="https://td2.info.pl/profile/?u=17708" target="_blank">Railtrains997</a>
           </h1>
           <button class="btn exit-btn" @click="store.isRealStockListCardOpen = false">&Cross;</button>
         </div>
 
         <div class="filters" ref="focus" tabindex="0">
-          <input list="readyStockDataList" v-model="searchedReadyStockName" placeholder="Szukaj po nazwie" />
+          <input
+            list="readyStockDataList"
+            v-model="searchedReadyStockName"
+            :placeholder="$t('realstock.search-name')"
+          />
 
           <datalist id="readyStockDataList">
             <option v-for="stock in store.readyStockList" :value="stock.stockId">
@@ -20,7 +24,11 @@
             </option>
           </datalist>
 
-          <input list="readyStockStringList" v-model="searchedReadyStockString" placeholder="Szukaj po pojazdach" />
+          <input
+            list="readyStockStringList"
+            v-model="searchedReadyStockString"
+            :placeholder="$t('realstock.search-stock')"
+          />
 
           <datalist id="readyStockStringList">
             <option v-for="stock in computedAvailableStockTypes" :value="stock">
@@ -28,7 +36,7 @@
             </option>
           </datalist>
 
-          <button class="btn" @click="resetStockFilters">RESETUJ</button>
+          <button class="btn" @click="resetStockFilters">{{ $t('realstock.action-reset') }}</button>
         </div>
       </div>
 

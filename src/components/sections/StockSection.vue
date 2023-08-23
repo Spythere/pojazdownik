@@ -4,11 +4,11 @@
       <button
         class="btn"
         ref="sectionButtonRefs"
-        v-for="(id, name, i) in sectionModes"
+        v-for="(id, i) in sectionModes"
         @click="chooseSection(id)"
         :data-selected="store.stockSectionMode == id"
       >
-        <span class="text--accent">{{ i + 1 }}.</span> {{ name }}
+        <span class="text--accent">{{ i + 1 }}.</span> {{ $t(`topbar.${id}`) }}
         <span v-if="id == 'stock-list'">({{ store.stockList.length }})</span>
       </button>
     </div>
@@ -34,19 +34,7 @@ const sectionButtonRefs = ref([]);
 const store = useStore();
 type SectionMode = typeof store.stockSectionMode;
 
-const sectionModes: { [key: string]: SectionMode } = {
-  SKŁAD: 'stock-list',
-  POJAZDY: 'wiki-list',
-  'GNR NUMERU': 'number-generator',
-  'GNR SKŁADU': 'stock-generator',
-};
-
-const sectionKeyIndexes: { [key: number]: SectionMode } = {
-  1: 'stock-list',
-  2: 'wiki-list',
-  3: 'number-generator',
-  4: 'stock-generator',
-};
+const sectionModes: SectionMode[] = ['stock-list', 'wiki-list', 'number-generator', 'stock-generator'];
 
 onMounted(() => {
   window.addEventListener('keydown', (e) => {
@@ -54,7 +42,7 @@ onMounted(() => {
 
     if (/[1234]/.test(e.key)) {
       const keyNum = Number(e.key);
-      store.stockSectionMode = sectionKeyIndexes[keyNum];
+      store.stockSectionMode = sectionModes[keyNum - 1];
       (sectionButtonRefs.value[keyNum - 1] as HTMLButtonElement).focus();
     }
   });
@@ -115,7 +103,7 @@ function chooseSection(sectionId: SectionMode) {
 
   gap: 0.5em;
 
-  margin-bottom: 0.5em;
+  margin-bottom: 1em;
 
   button {
     position: relative;

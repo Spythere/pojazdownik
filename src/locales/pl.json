@@ -1,0 +1,150 @@
+{
+  "app": {
+    "title": "EDYTOR SKŁADÓW ONLINE"
+  },
+  "footer": {
+    "disclaimer": "Ta strona ma charakter informacyjny. Autor nie ponosi odpowiedzialności za tworzenie pociągów niezgodnych z {tos}!",
+    "tos": "regulaminem symulatora Train Driver 2",
+    "tos-href": "https://docs.google.com/document/d/1UAAPUtN0d_RoS4RgOzEzllJZJhA0VcizzCzKW4QylbY/edit",
+    "version-check": "Strona jest kompletna dla wersji {version} symulatora TD2"
+  },
+  "inputs": {
+    "title": "WYBIERZ POJAZD SZYNOWY",
+    "input-vehicle": "Wybierz pojazd trakcyjny",
+    "input-carwagon": "Wybierz wagon",
+    "cargo-title": "Ładunek (tylko wybrane towarowe)",
+    "no-cargo-available": "brak dostępnych ładunków",
+    "cargo-empty": "próżny",
+    "loco-e": "ELEKTR.",
+    "loco-s": "SPAL.",
+    "loco-ezt": "EZT",
+    "loco-szt": "SZT",
+    "car-passenger": "PASAŻERSKIE",
+    "car-cargo": "TOWAROWE",
+    "action-add": "DODAJ NOWY",
+    "action-swap": "ZAMIEŃ ZA",
+    "real-stock": "REALNE ZESTAWIENIA"
+  },
+  "preview": {
+    "title": "PODGLĄD WYBRANEGO POJAZDU",
+    "loading": "ŁADOWANIE OBRAZU...",
+    "desc": "Wybierz pojazd lub wagon, aby zobaczyć jego podgląd powyżej",
+    "sponsor-only": "* TYLKO DLA SPONSORÓW",
+    "loco-e": "ELEKTROWÓZ",
+    "loco-s": "SPALINOWÓZ",
+    "loco-ezt": "EZT",
+    "loco-szt": "SZT",
+    "car-passenger": "WAGON PASAŻERSKI",
+    "car-cargo": "WAGON TOWAROWY",
+    "cabin": "Typ kabiny:",
+    "construction": "Typ konstrukcji:"
+  },
+  "topbar": {
+    "stock-list": "SKŁAD",
+    "wiki-list": "POJAZDY",
+    "number-generator": "GNR NUMERU",
+    "stock-generator": "GNR SKŁADU"
+  },
+  "stocklist": {
+    "title": "EDYTOR SKŁADU",
+    "alert-copied": "Skład został skopiowany do twojego schowka!",
+    "alert-empty": "Lista pojazdów jest pusta!",
+    "prompt-file": "Nazwij plik, a następnie pobierz do folderu Presets (Dokumenty/TTSK/TrainDriver2):",
+    "vehicle-no": "POJAZD NR",
+    "no-vehicle-chosen": "NIE WYBRANO POJAZDU",
+    "action-move-up": "PRZENIEŚ WYŻEJ",
+    "action-move-down": "PRZENIEŚ NIŻEJ",
+    "action-remove": "USUŃ",
+    "action-upload": "WCZYTAJ",
+    "action-download": "POBIERZ",
+    "action-copy": "SKOPIUJ",
+    "action-reset": "ZRESETUJ",
+    "action-shuffle": "PRZETASUJ",
+    "mass": "Masa",
+    "mass-accepted": "dopuszczalna",
+    "length": "Długość",
+    "vmax": "vMax",
+    "coldstart-info": "Zimny start lokomotywy czołowej (tylko elektrowozy typów 303E i 203E)",
+    "list-empty": "Lista pojazdów jest pusta!",
+    "warning-not-suitable": "Lokomotywy EP07 i EP08 są przeznaczone jedynie do ruchu pasażerskiego!",
+    "warning-passenger-too-long": "Maksymalna długość składów pasażerskich nie może przekraczać 350m!",
+    "warning-freight-too-long": "Maksymalna długość składów innych niż pasażerskie nie może przekraczać 650m!",
+    "warning-too-many-locos": "Ten skład posiada za dużo pojazdów trakcyjnych!",
+    "warning-too-heavy": "Ten skład jest za ciężki! Sprawdź {href}",
+    "acceptable-mass-docs": "dopuszczalne masy składów"
+  },
+  "stockgen": {
+    "title": "GENERATOR SKŁADU TOWAROWEGO",
+    "properties-title": "WŁAŚCIWOŚCI SKŁADU",
+    "properties-desc": "⇐ Dodaj lokomotywę na pierwsze miejsce listy, aby uwzględnić ją przy losowaniu składu!",
+    "input-mass": "Maksymalna masa (t)",
+    "input-length": "Maks. długość (m)",
+    "input-carcount": "Maks. liczba wagonów",
+    "cargo-title": "ŁADUNEK",
+    "cargo-desc": "Wybierz ładunki, którymi chcesz wypełnić dostępne wagony:",
+    "chosen-title": "WAGONY Z WYBRANYMI ŁADUNKAMI",
+    "chosen-empty-warning": "Wybierz co najmniej jeden ładunek, aby zobaczyć wagony, które go posiadają!",
+    "chosen-warning": "Wagony posiadające wybrane ładunki. Najedź na nazwę, aby zobaczyć podgląd wagonu. Kliknij, aby wyłączyć z losowania (tylko podświetlone nazwy będą uwzględnione).",
+    "action-generate": "WYGENERUJ",
+    "action-generate-empty": "WYGENERUJ PRÓŻNE WAGONY",
+    "action-reset": "ZRESETUJ ŁADUNKI"
+  },
+  "numgen": {
+    "title": "GENERATOR NUMERU POCIĄGU",
+    "alert": "Numer został skopiowany do twojego schowka!",
+    "start-region": "Początkowy obszar konstrukcyjny",
+    "end-region": "Końcowy obszar konstrukcyjny",
+    "train-category": "Kategoria pociągu",
+    "number-info": "Wygenerowany numer pociągu:",
+    "warning": "Wybierz kategorię oraz (opcjonalnie) obszary konstrukcyjne",
+    "td2-wiki": "> Szczegółowe zasady numeracji (wikipedia TD2)",
+    "td2-wiki-link": "https://wiki.td2.info.pl/index.php?title=Zasady_numeracji_poci%C4%85g%C3%B3w",
+    "action-random-region": "LOSUJ OBSZARY",
+    "action-random-number": "LOSUJ NUMER",
+    "categories": {
+      "EI": "ekspres krajowy (EI)",
+      "MP/RP": "(między)wojewódzki pośpieszny (MP/RP)",
+      "RO": "wojewódzki osobowy (RO)",
+      "PW": "próżny \"służbowy\" (PW)",
+      "TM": "towarowy do przewozów masowych (TM)",
+      "TK": "towarowy do obsługi stacji (TK)",
+      "LT": "lokomotywa luzem (LT)"
+    },
+    "rules": {
+      "EI": "4 cyfry - końcówka z przedziału 00-99",
+      "MP/RP": "5 cyfr - końcówka z przedziału 050-169",
+      "RO": "5 cyfr - końcówka z przedziału 200-999",
+      "PW": "6 cyfr - '6' na 3. miejscu; końcówka z przedziału 000-899",
+      "TM": "6 cyfr - '4' na 3. miejscu; końcówka z przedziału 000-899",
+      "TK": "6 cyfr - '3' na 3. miejscu; końcówka z przedziału 000-899",
+      "LT": "6 cyfr - '5' na 3. miejscu; końcówka z przedziału 000-899"
+    }
+  },
+  "wiki": {
+    "title": "LISTA DOSTĘPNYCH POJAZDÓW",
+    "action-vehicles": "POJ. TRAKCYJNE",
+    "action-carriages": "WAGONY",
+    "search": "Wyszukaj pojazd...",
+    "header": {
+      "image": "Zdjęcie",
+      "type": "Nazwa",
+      "power": "Rodzaj",
+      "constructionType": "Konstrukcja",
+      "coldStart": "Zimny start",
+      "length": "Długość",
+      "mass": "Masa",
+      "maxSpeed": "Prędkość",
+      "cargoCount": "Ładunki"
+    },
+    "loco-ezt": "EZT",
+    "loco-szt": "SZT",
+    "loco-s": "Spalinowóz",
+    "loco-e": "Elektrowóz"
+  },
+  "realstock": {
+    "title": "ZESTAWIENIA REALNE by",
+    "search-name": "Szukaj po nazwie",
+    "search-stock": "Szukaj po pojazdach",
+    "action-reset": "RESETUJ"
+  }
+}

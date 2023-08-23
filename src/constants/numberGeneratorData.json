@@ -26,13 +26,13 @@
     "Rezerwa": [89, 92, 98]
   },
   "categories": {
-    "ekspres krajowy (EI)": "2:00-99:2",
-    "(między)wojewódzki pośpieszny (MP/RP)": "2:050-169:3",
-    "wojewódzki osobowy (RO)": "2:200-999:3",
-    "próżny \"służbowy\" (PW)": "2:6;3:0-899:3",
-    "towarowy do przewozów masowych (TM)": "2:4;3:0-899:3",
-    "towarowy do obsługi stacji (TK)": "2:3;3:0-899:3",
-    "lokomotywa luzem (LT)": "2:5;3:0-899:3"
+    "EI": "2:00-99:2",
+    "MP/RP": "2:050-169:3",
+    "RO": "2:200-999:3",
+    "PW": "2:6;3:0-899:3",
+    "TM": "2:4;3:0-899:3",
+    "TK": "2:3;3:0-899:3",
+    "LT": "2:5;3:0-899:3"
   }
 }
 

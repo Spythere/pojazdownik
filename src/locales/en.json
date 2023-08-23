@@ -1,0 +1,150 @@
+{
+  "app": {
+    "title": "ROLLING STOCK EDITOR"
+  },
+  "footer": {
+    "disclaimer": "This site has only an informational intent. The author does not carry any responsibility for creating trains against {tos}!",
+    "tos": "Train Driver 2 simulator rules",
+    "tos-href": "https://docs.google.com/document/d/1UAAPUtN0d_RoS4RgOzEzllJZJhA0VcizzCzKW4QylbY/edit#heading=h.1ldcvhomwjp9",
+    "version-check": "Site is complete for version {version} of Train Driver 2 simulator"
+  },
+  "inputs": {
+    "title": "CHOOSE A VEHICLE",
+    "input-vehicle": "Choose a traction unit",
+    "input-carwagon": "Choose a carriage",
+    "cargo-title": "Cargo (only selected freight cars)",
+    "no-cargo-available": "no cargo available",
+    "cargo-empty": "empty",
+    "loco-e": "ELECTR.",
+    "loco-s": "DIESEL",
+    "loco-ezt": "EMU",
+    "loco-szt": "DMU",
+    "car-passenger": "PASSENGER",
+    "car-cargo": "FREIGHT",
+    "action-add": "ADD NEW",
+    "action-swap": "SWAP WITH",
+    "real-stock": "POLISH TRAIN COMPOSITIONS"
+  },
+  "preview": {
+    "title": "RAILWAY VEHICLE PREVIEW",
+    "loading": "IMAGE LOADING...",
+    "desc": "Choose a railway vehicle above to see its preview",
+    "sponsor-only": "* SPONSORS ONLY",
+    "loco-e": "ELECTRIC LOCO",
+    "loco-s": "DIESEL LOCO",
+    "loco-ezt": "ELECTRIC M.U.",
+    "loco-szt": "DIESEL M.U.",
+    "car-passenger": "PASSENGER CARRIAGE",
+    "car-cargo": "FREIGHT CAR",
+    "cabin": "Cabin type:",
+    "construction": "Construction type:"
+  },
+  "topbar": {
+    "stock-list": "STOCK",
+    "wiki-list": "VEHICLES",
+    "number-generator": "NUMBER GEN.",
+    "stock-generator": "STOCK GEN."
+  },
+  "stocklist": {
+    "title": "STOCK EDITOR",
+    "alert-copied": "The rolling stock has been copied to your clipboard!",
+    "alert-empty": "Lista pojazdów jest pusta!",
+    "prompt-file": "Name a file and download it to the Presets folder (Documents/TTSK/TrainDriver2):",
+    "vehicle-no": "VEHICLE NO.",
+    "no-vehicle-chosen": "NO VEHICLE CHOSEN",
+    "action-move-up": "MOVE UP",
+    "action-move-down": "MOVE DOWN",
+    "action-remove": "REMOVE",
+    "action-upload": "LOAD",
+    "action-download": "DOWNLOAD",
+    "action-copy": "COPY",
+    "action-reset": "RESET",
+    "action-shuffle": "SHUFFLE",
+    "mass": "Mass",
+    "mass-accepted": "accepted",
+    "length": "Length",
+    "vmax": "vMax",
+    "coldstart-info": "Cold start heading locomotive (only locos 303E & 203E type)",
+    "list-empty": "Stock list is empty!",
+    "warning-not-suitable": "EP07 & EP08 type locomotives are designed for passenger traffic only!",
+    "warning-passenger-too-long": "Maximum length of a passenger train may not be greater than 350m!",
+    "warning-freight-too-long": "Maximum length of a freight train may not be greater than 650m!",
+    "warning-too-many-locos": "This train has too many traction units!",
+    "warning-too-heavy": "This train is too heavy! Check {href}",
+    "acceptable-mass-docs": "acceptable rolling stock masses (PL)"
+  },
+  "stockgen": {
+    "title": "FREIGHT TRAIN GENERATOR",
+    "properties-title": "ROLLING STOCK PROPERTIES",
+    "properties-desc": "⇐ Add a locomotive in the first place of the stock list to include it in a drawing!",
+    "input-mass": "Max. mass (t)",
+    "input-length": "Max. length (m)",
+    "input-carcount": "Max. car count",
+    "cargo-title": "CARGO",
+    "cargo-desc": "Choose cargo you want to fill available cars with:",
+    "chosen-title": "CARS WITH CHOSEN CARGO",
+    "chosen-empty-warning": "Choose at least one cargo type to see available cars!",
+    "chosen-warning": "Cars containing chosen cargo are shown below. Hover over a type to see a preview of the car. Click it to include/exclude it from a drawing (only highlighted types will be included).",
+    "action-generate": "GENERATE",
+    "action-generate-empty": "GENERATE EMPTY",
+    "action-reset": "RESET CARGO"
+  },
+  "numgen": {
+    "title": "TRAIN NUMBER GENERATOR",
+    "alert": "The number has been copied to your clipboard!",
+    "start-region": "Beginning construction region",
+    "end-region": "Terminating construction region",
+    "train-category": "Train category",
+    "number-info": "Generated train number:",
+    "warning": "Choose category and (optionally) construction regions",
+    "td2-wiki": "> Polish rules of train numbering (TD2 wiki)",
+    "td2-wiki-link": "https://wiki.td2.info.pl/index.php?title=Zasady_numeracji_poci%C4%85g%C3%B3w/en",
+    "action-random-region": "DRAW REGIONS",
+    "action-random-number": "DRAW A NUMBER",
+    "categories": {
+      "EI": "domestic express (EI)",
+      "MP/RP": "(inter)voivodeship bullet (MP/RP)",
+      "RO": "regional passenger (RO)",
+      "PW": "empty passenger (PW)",
+      "TM": "mass transport freight (TM)",
+      "TK": "non-mass transport freight (TK)",
+      "LT": "locomotive alone (LT)"
+    },
+    "rules": {
+      "EI": "4 digits - ends within the range of 00-99",
+      "MP/RP": "5 digits - ends within the range of 050-169",
+      "RO": "5 digits - ends within the range of 200-999",
+      "PW": "6 digits - '6' on the 3rd place; ends within the range of 000-899",
+      "TM": "6 digits - '4' on the 3rd place; ends within the range of 000-899",
+      "TK": "6 digits - '3' on the 3rd place; ends within the range of 000-899",
+      "LT": "6 digits - '5' on the 3rd place; ends within the range of 000-899"
+    }
+  },
+  "wiki": {
+    "title": "LIST OF AVAILABLE VEHICLES",
+    "action-vehicles": "TRACTION UNITS",
+    "action-carriages": "CARRIAGES",
+    "search": "Search for a vehicle...",
+    "header": {
+      "image": "Image",
+      "type": "Name",
+      "power": "Type",
+      "constructionType": "Construction",
+      "coldStart": "Cold start",
+      "length": "Length",
+      "mass": "Mass",
+      "maxSpeed": "Speed",
+      "cargoCount": "Cargo count"
+    },
+    "loco-ezt": "EMU",
+    "loco-szt": "DMU",
+    "loco-s": "Diesel locomotive",
+    "loco-e": "Electric locomotive"
+  },
+  "realstock": {
+    "title": "POLISH TRAIN COMPOSITIONS by",
+    "search-name": "Search by name",
+    "search-stock": "Search by vehicles",
+    "action-reset": "RESET"
+  }
+}

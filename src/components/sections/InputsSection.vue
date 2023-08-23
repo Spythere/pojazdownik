@@ -1,7 +1,7 @@
 <template>
   <section class="inputs-section">
     <div class="input_container">
-      <h2 class="input_header">WYBIERZ POJAZDY / WAGONY</h2>
+      <h2 class="input_header">{{ $t('inputs.title') }}</h2>
 
       <div class="input_list type">
         <div class="vehicle-types locos">
@@ -11,7 +11,7 @@
             :data-selected="locoType.id == store.chosenLocoPower"
             @click="selectLocoType(locoType.id)"
           >
-            {{ locoType.value }}
+            {{ $t(`inputs.${locoType.id}`) }}
           </button>
         </div>
 
@@ -23,7 +23,7 @@
           @keydown.enter.prevent="addOrSwitchVehicle"
           @keydown.backspace="removeVehicle"
         >
-          <option :value="null" disabled>Wybierz pojazd trakcyjny</option>
+          <option :value="null" disabled>{{ $t('inputs.input-vehicle') }}</option>
           <option v-for="loco in locoOptions" :value="loco" :key="loco.type">
             {{ loco.type }}<b v-if="loco.supportersOnly">*</b>
           </option>
@@ -38,7 +38,7 @@
             :data-selected="carType.id == store.chosenCarUseType"
             @click="selectCarWagonType(carType.id)"
           >
-            {{ carType.value }}
+            {{ $t(`inputs.${carType.id}`) }}
           </button>
         </div>
 
@@ -50,7 +50,7 @@
           @keydown.enter.prevent="addOrSwitchVehicle"
           @keydown.backspace="removeVehicle"
         >
-          <option :value="null" disabled>Wybierz wagon</option>
+          <option :value="null" disabled>{{ $t('inputs.input-carwagon') }}</option>
 
           <option v-for="car in carOptions" :value="car" :key="car.type">
             {{ car.type }}<b v-if="car.supportersOnly">*</b>
@@ -59,7 +59,7 @@
       </div>
 
       <div class="input_list cargo">
-        <label for="cargo-select">Ładunek (tylko wybrane towarowe)</label>
+        <label for="cargo-select">{{ $t('inputs.cargo-title') }}</label>
         <select
           id="cargo-select"
           :disabled="
@@ -75,8 +75,10 @@
           @keydown.enter.prevent="addOrSwitchVehicle"
           @keydown.backspace="removeVehicle"
         >
-          <option :value="null" v-if="!store.chosenCar || !store.chosenCar.loadable">brak dostępnych ładunków</option>
-          <option :value="null" v-else>próżny</option>
+          <option :value="null" v-if="!store.chosenCar || !store.chosenCar.loadable">
+            {{ $t('inputs.no-cargo-available') }}
+          </option>
+          <option :value="null" v-else>{{ $t('inputs.cargo-empty') }}</option>
 
           <option v-for="cargo in store.chosenCar?.cargoList" :value="cargo" :key="cargo.id">
             {{ cargo.id }}
@@ -85,20 +87,24 @@
       </div>
 
       <div class="input_actions">
-        <button class="btn" @click="addVehicle(store.chosenVehicle, store.chosenCargo)">DODAJ NOWY</button>
+        <button class="btn" @click="addVehicle(store.chosenVehicle, store.chosenCargo)">
+          {{ $t('inputs.action-add') }}
+        </button>
         <button
           class="btn"
           @click="switchVehicles"
           :disabled="store.chosenStockListIndex == -1"
           :data-disabled="store.chosenStockListIndex == -1"
         >
-          ZAMIEŃ ZA
+          {{ $t('inputs.action-swap') }}
           <b class="text--accent">
             {{ store.chosenStockListIndex == -1 ? '' : `${store.chosenStockListIndex + 1}.` }}
           </b>
         </button>
 
-        <button class="btn" @click="store.isRealStockListCardOpen = true"><b>REALNE ZESTAWIENIA</b></button>
+        <button class="btn" @click="store.isRealStockListCardOpen = true">
+          <b>{{ $t('inputs.real-stock') }}</b>
+        </button>
       </div>
     </div>
   </section>
@@ -112,12 +118,6 @@ import { useStore } from '../../store';
 import stockPreviewMixin from '../../mixins/stockPreviewMixin';
 import stockMixin from '../../mixins/stockMixin';
 
-interface ILocoType {
-  id: string;
-  value: string;
-  desc: string;
-}
-
 export default defineComponent({
   mixins: [imageMixin, stockPreviewMixin, stockMixin],
 
@@ -125,35 +125,29 @@ export default defineComponent({
     locomotiveTypeList: [
       {
         id: 'loco-e',
-        value: 'ELEKTR',
         desc: 'ELEKTRYCZNE',
       },
       {
         id: 'loco-s',
-        value: 'SPAL',
         desc: 'SPALINOWE',
       },
       {
         id: 'loco-ezt',
-        value: 'EZT',
         desc: 'ELEKTR. ZESPOŁY TRAKCYJNE',
       },
       {
         id: 'loco-szt',
-        value: 'SZT',
         desc: 'SPAL. ZESPOŁY TRAKCYJNE',
       },
-    ] as ILocoType[],
+    ],
 
     carTypeList: [
       {
         id: 'car-passenger',
-        value: 'PAS',
         desc: 'PASAŻERSKIE',
       },
       {
         id: 'car-cargo',
-        value: 'TOW',
         desc: 'TOWAROWE',
       },
     ],

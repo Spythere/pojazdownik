@@ -1,18 +1,15 @@
 <template>
   <footer>
-    <div class="text--grayed">
-      Ta strona ma charakter informacyjny. Autor nie ponosi odpowiedzialności za tworzenie pociągów niezgodnych z
-      <a
-        style="color: #ccc"
-        href="https://docs.google.com/document/d/1UAAPUtN0d_RoS4RgOzEzllJZJhA0VcizzCzKW4QylbY/edit"
-        target="_blank"
-      >
-        regulaminem symulatora Train Driver 2</a
-      >!
-    </div>
+    <i18n-t keypath="footer.disclaimer" tag="div" class="text--grayed">
+      <template #tos>
+        <a style="color: #ccc" :href="$t('footer.tos-href')" target="_blank">
+          {{ $t('footer.tos') }}
+        </a>
+      </template>
+    </i18n-t>
 
     <div class="text--grayed" v-if="store.stockData">
-      Strona jest kompletna dla wersji {{ store.stockData.version }} symulatora TD2
+      {{ $t('footer.version-check', { version: store.stockData.version }) }}
     </div>
 
     <div>

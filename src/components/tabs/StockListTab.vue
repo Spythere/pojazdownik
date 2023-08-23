@@ -1,8 +1,47 @@
 <template>
   <section class="stock-list-tab">
+    <div class="tab_header">
+      <h2>{{ $t('stocklist.title') }}</h2>
+    </div>
+
+    <div class="stock_actions">
+      <label class="file-label">
+        <div class="btn btn--image">
+          <img src="/images/icon-upload.svg" alt="" />
+          {{ $t('stocklist.action-upload') }}
+        </div>
+
+        <input type="file" @change="uploadStock" ref="conFile" accept=".con,.txt" />
+      </label>
+
+      <button class="btn btn--image" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="downloadStock">
+        <img src="/images/icon-download.svg" alt="download icon" />
+        {{ $t('stocklist.action-download') }}
+      </button>
+
+      <button class="btn btn--image" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="copyToClipboard">
+        <img src="/images/icon-copy.svg" alt="copy icon" />
+        {{ $t('stocklist.action-copy') }}
+      </button>
+
+      <button class="btn btn--image" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="resetStock">
+        <img src="/images/icon-reset.svg" alt="reset icon" />
+        {{ $t('stocklist.action-reset') }}
+      </button>
+
+      <button class="btn btn--image" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="shuffleCars">
+        <img src="/images/icon-shuffle.svg" alt="shuffle icon" />
+        {{ $t('stocklist.action-shuffle') }}
+      </button>
+    </div>
+
     <div class="stock_controls" :data-disabled="store.chosenStockListIndex == -1">
-      <b class="no">
-        POJAZD NR <span class="text--accent">{{ store.chosenStockListIndex + 1 }}</span> &nbsp;
+      <b v-if="store.chosenStockListIndex >= 0">
+        {{ $t('stocklist.vehicle-no') }} <span class="text--accent">{{ store.chosenStockListIndex + 1 }}</span> &nbsp;
+      </b>
+
+      <b v-else>
+        {{ $t('stocklist.no-vehicle-chosen') }}
       </b>
 
       <button
@@ -11,7 +50,7 @@
         @click="moveUpStock(store.chosenStockListIndex)"
       >
         <img :src="getIconURL('higher')" alt="move up vehicle" />
-        PRZENIEŚ WYŻEJ
+        {{ $t('stocklist.action-move-up') }}
       </button>
 
       <button
@@ -20,7 +59,7 @@
         @click="moveDownStock(store.chosenStockListIndex)"
       >
         <img :src="getIconURL('lower')" alt="move down vehicle" />
-        PRZENIEŚ NIŻEJ
+        {{ $t('stocklist.action-move-down') }}
       </button>
 
       <button
@@ -29,25 +68,8 @@
         @click="removeStock(store.chosenStockListIndex)"
       >
         <img :src="getIconURL('remove')" alt="remove vehicle" />
-        USUŃ
+        {{ $t('stocklist.action-remove') }}
       </button>
-    </div>
-
-    <div class="stock_actions">
-      <label class="file-label">
-        <div class="btn">WCZYTAJ</div>
-        <input type="file" @change="uploadStock" ref="conFile" accept=".con,.txt" />
-      </label>
-
-      <button class="btn" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="downloadStock">POBIERZ</button>
-
-      <button class="btn" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="copyToClipboard">
-        SKOPIUJ
-      </button>
-
-      <button class="btn" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="resetStock">ZRESETUJ</button>
-
-      <button class="btn" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="shuffleCars">PRZETASUJ</button>
     </div>
 
     <div class="stock_specs">
@@ -60,11 +82,12 @@
       </b>
 
       <span>
-        Masa: <span class="text--accent">{{ store.totalMass }}t</span> (dopuszczalna:
-        <span class="text--accent">{{ store.acceptableMass ? store.acceptableMass + 't' : '-' }}</span
-        >) - Długość:
+        {{ $t('stocklist.mass') }} <span class="text--accent">{{ store.totalMass }}t</span> ({{
+          $t('stocklist.mass-accepted')
+        }}: <span class="text--accent">{{ store.acceptableMass ? store.acceptableMass + 't' : '-' }}</span
+        >) - {{ $t('stocklist.length') }}:
         <span class="text--accent">{{ store.totalLength }}m</span>
-        - vMax: <span class="text--accent">{{ store.maxStockSpeed }} km/h</span>
+        - {{ $t('stocklist.vmax') }}: <span class="text--accent">{{ store.maxStockSpeed }} km/h</span>
       </span>
     </div>
 
@@ -75,34 +98,38 @@
           v-model="store.isColdStart"
           :disabled="!locoSupportsColdStart(store.stockList[0]?.constructionType || '')"
         />
-        Zimny start lokomotywy czołowej (tylko elektrowozy typów 303E i 203E)
+        {{ $t('stocklist.coldstart-info') }}
       </label>
     </div>
 
     <div class="stock_warnings" v-if="stockHasWarnings">
-      <div class="warning" v-if="locoNotSuitable">
-        Lokomotywy EP07 i EP08 są przeznaczone jedynie do ruchu pasażerskiego!
-      </div>
+      <div class="warning" v-if="locoNotSuitable">(!) {{ $t('stocklist.warning-not-suitable') }}</div>
 
       <div class="warning" v-if="trainTooLong && store.isTrainPassenger">
-        Maksymalna długość składów pasażerskich nie może przekraczać 350m!
+        (!) {{ $t('stocklist.warning-passenger-too-long') }}
       </div>
 
       <div class="warning" v-if="trainTooLong && !store.isTrainPassenger">
-        Maksymalna długość składów innych niż pasażerskie nie może przekraczać 650m!
+        (!) {{ $t('stocklist.warning-freight-too-long') }}
       </div>
 
       <div class="warning" v-if="trainTooHeavy">
-        Ten skład jest za ciężki! Sprawdź
-        <a
-          target="_blank"
-          href="https://docs.google.com/spreadsheets/d/1bFXUsHsAu4youmNz-46Q1HslZaaoklvfoBDS553TnNk/edit"
-        >
-          dopuszczalne masy składów
-        </a>
+        (!)
+        <i18n-t keypath="stocklist.warning-too-heavy">
+          <template #href>
+            <a
+              target="_blank"
+              href="https://docs.google.com/spreadsheets/d/1bFXUsHsAu4youmNz-46Q1HslZaaoklvfoBDS553TnNk/edit"
+            >
+              {{ $t('stocklist.acceptable-mass-docs') }}
+            </a>
+          </template>
+        </i18n-t>
       </div>
 
-      <div class="warning" v-if="tooManyLocomotives">Ten skład posiada za dużo pojazdów trakcyjnych!</div>
+      <div class="warning" v-if="tooManyLocomotives">
+        {{ $t('stocklist.warning-too-many-locos') }}
+      </div>
     </div>
 
     <StockThumbnails :onListItemClick="onListItemClick" />
@@ -110,7 +137,7 @@
     <!-- Stock list -->
     <ul ref="stock_list">
       <li v-if="stockIsEmpty" class="list-empty">
-        <div class="stock-info">Lista pojazdów jest pusta!</div>
+        <div class="stock-info">{{ $t('stocklist.list-empty') }}</div>
       </li>
 
       <TransitionGroup name="stock-list-anim">
@@ -182,8 +209,9 @@ export default defineComponent({
 
   data: () => ({
     imageOffsetY: 0,
-
     draggedVehicleID: -1,
+
+    stockActions: [{}],
   }),
 
   computed: {
@@ -219,7 +247,7 @@ export default defineComponent({
       navigator.clipboard.writeText(this.stockString);
 
       setTimeout(() => {
-        alert('Pociąg został skopiowany do schowka!');
+        alert(this.$t('stocklist.alert-copied'));
       }, 20);
     },
 
@@ -322,16 +350,13 @@ export default defineComponent({
     },
 
     downloadStock() {
-      if (this.store.stockList.length == 0) return alert('Lista pojazdów jest pusta!');
+      if (this.store.stockList.length == 0) return alert(this.$t('stocklist.alert-empty'));
 
       const defaultName = `${this.store.chosenRealStockName || this.store.stockList[0].type} ${
         this.store.totalMass
       }t; ${this.store.totalLength}m; vmax ${this.store.maxStockSpeed}`;
 
-      const fileName = prompt(
-        'Nazwij plik, a następnie pobierz do folderu Presets (Dokumenty/TTSK/TrainDriver2):',
-        defaultName
-      );
+      const fileName = prompt(this.$t('stocklist.prompt-file'), defaultName);
 
       if (!fileName) return;
 
@@ -398,6 +423,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @import '../../styles/global';
+@import '../../styles/tab.scss';
 
 .stock-list-tab {
   display: grid;
@@ -459,7 +485,7 @@ export default defineComponent({
   display: grid;
   gap: 0.5em;
 
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 
   label.file-label {
     text-align: center;
