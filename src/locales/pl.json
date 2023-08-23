@@ -47,6 +47,9 @@
   },
   "stocklist": {
     "title": "EDYTOR SKŁADU",
+    "alert-copied": "Skład został skopiowany do twojego schowka!",
+    "alert-empty": "Lista pojazdów jest pusta!",
+    "prompt-file": "Nazwij plik, a następnie pobierz do folderu Presets (Dokumenty/TTSK/TrainDriver2):",
     "vehicle-no": "POJAZD NR",
     "no-vehicle-chosen": "NIE WYBRANO POJAZDU",
     "action-move-up": "PRZENIEŚ WYŻEJ",
@@ -88,6 +91,7 @@
   },
   "numgen": {
     "title": "GENERATOR NUMERU POCIĄGU",
+    "alert": "Numer został skopiowany do twojego schowka!",
     "start-region": "Początkowy obszar konstrukcyjny",
     "end-region": "Końcowy obszar konstrukcyjny",
     "train-category": "Kategoria pociągu",

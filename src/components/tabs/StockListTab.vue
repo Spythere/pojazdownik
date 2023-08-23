@@ -247,7 +247,7 @@ export default defineComponent({
       navigator.clipboard.writeText(this.stockString);
 
       setTimeout(() => {
-        alert('Pociąg został skopiowany do schowka!');
+        alert(this.$t('stocklist.alert-copied'));
       }, 20);
     },
 
@@ -350,16 +350,13 @@ export default defineComponent({
     },
 
     downloadStock() {
-      if (this.store.stockList.length == 0) return alert('Lista pojazdów jest pusta!');
+      if (this.store.stockList.length == 0) return alert(this.$t('stocklist.alert-empty'));
 
       const defaultName = `${this.store.chosenRealStockName || this.store.stockList[0].type} ${
         this.store.totalMass
       }t; ${this.store.totalLength}m; vmax ${this.store.maxStockSpeed}`;
 
-      const fileName = prompt(
-        'Nazwij plik, a następnie pobierz do folderu Presets (Dokumenty/TTSK/TrainDriver2):',
-        defaultName
-      );
+      const fileName = prompt(this.$t('stocklist.prompt-file'), defaultName);
 
       if (!fileName) return;
 

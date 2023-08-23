@@ -18,7 +18,9 @@
 
         <select v-model="categoryRules" @change="randomizeTrainNumber()">
           <option :value="null" disabled>{{ $t('numgen.train-category') }}</option>
-          <option v-for="(rules, category) in genData.categories" :value="rules">{{ $t(`numgen.categories.${category}`) }}</option>
+          <option v-for="(rules, category) in genData.categories" :value="rules">
+            {{ $t(`numgen.categories.${category}`) }}
+          </option>
         </select>
       </div>
 
@@ -47,9 +49,11 @@
 
 <script setup lang="ts">
 import { Ref, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import genData from '../../constants/numberGeneratorData.json';
 
+const i18n = useI18n();
 type RegionName = keyof typeof genData.regionNumbers;
 
 const beginRegionName = ref(null) as Ref<RegionName | null>;
@@ -61,7 +65,7 @@ const trainNumber = ref(null) as Ref<string | null>;
 const copyNumber = () => {
   if (trainNumber.value) {
     navigator.clipboard.writeText(trainNumber.value);
-    alert('Skopiowano numer do schowka!');
+    alert(i18n.t('numgen.alert'));
   }
 };
 
