@@ -96,7 +96,7 @@
     "end-region": "Końcowy obszar konstrukcyjny",
     "train-category": "Kategoria pociągu",
     "number-info": "Wygenerowany numer pociągu:",
-    "warning": "Wybierz kategorię oraz obszary konstrukcyjne (opcjonalnie)",
+    "warning": "Wybierz kategorię oraz (opcjonalnie) obszary konstrukcyjne",
     "td2-wiki": "> Szczegółowe zasady numeracji (wikipedia TD2)",
     "td2-wiki-link": "https://wiki.td2.info.pl/index.php?title=Zasady_numeracji_poci%C4%85g%C3%B3w",
     "action-random-region": "LOSUJ OBSZARY",
@@ -109,6 +109,15 @@
       "TM": "towarowy do przewozów masowych (TM)",
       "TK": "towarowy do obsługi stacji (TK)",
       "LT": "lokomotywa luzem (LT)"
+    },
+    "rules": {
+      "EI": "4 cyfry - końcówka z przedziału 00-99",
+      "MP/RP": "5 cyfr - końcówka z przedziału 050-169",
+      "RO": "5 cyfr - końcówka z przedziału 200-999",
+      "PW": "6 cyfr - '6' na 3. miejscu; końcówka z przedziału 000-899",
+      "TM": "6 cyfr - '4' na 3. miejscu; końcówka z przedziału 000-899",
+      "TK": "6 cyfr - '3' na 3. miejscu; końcówka z przedziału 000-899",
+      "LT": "6 cyfr - '5' na 3. miejscu; końcówka z przedziału 000-899"
     }
   },
   "wiki": {

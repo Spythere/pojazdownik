@@ -96,7 +96,7 @@
     "end-region": "Terminating construction region",
     "train-category": "Train category",
     "number-info": "Generated train number:",
-    "warning": "Choose category and construction regions (optionally)",
+    "warning": "Choose category and (optionally) construction regions",
     "td2-wiki": "> Polish rules of train numbering (TD2 wiki)",
     "td2-wiki-link": "https://wiki.td2.info.pl/index.php?title=Zasady_numeracji_poci%C4%85g%C3%B3w/en",
     "action-random-region": "DRAW REGIONS",
@@ -109,6 +109,15 @@
       "TM": "mass transport freight (TM)",
       "TK": "non-mass transport freight (TK)",
       "LT": "locomotive alone (LT)"
+    },
+    "rules": {
+      "EI": "4 digits - ends within the range of 00-99",
+      "MP/RP": "5 digits - ends within the range of 050-169",
+      "RO": "5 digits - ends within the range of 200-999",
+      "PW": "6 digits - '6' on the 3rd place; ends within the range of 000-899",
+      "TM": "6 digits - '4' on the 3rd place; ends within the range of 000-899",
+      "TK": "6 digits - '3' on the 3rd place; ends within the range of 000-899",
+      "LT": "6 digits - '5' on the 3rd place; ends within the range of 000-899"
     }
   },
   "wiki": {
