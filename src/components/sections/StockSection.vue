@@ -103,7 +103,7 @@ function chooseSection(sectionId: SectionMode) {
 
   gap: 0.5em;
 
-  margin-bottom: 0.5em;
+  margin-bottom: 1em;
 
   button {
     position: relative;

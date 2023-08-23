@@ -46,6 +46,7 @@
     "stock-generator": "GNR SKŁADU"
   },
   "stocklist": {
+    "title": "EDYTOR SKŁADU",
     "vehicle-no": "POJAZD NR",
     "no-vehicle-chosen": "NIE WYBRANO POJAZDU",
     "action-move-up": "PRZENIEŚ WYŻEJ",

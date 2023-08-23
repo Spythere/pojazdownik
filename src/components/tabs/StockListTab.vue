@@ -1,5 +1,40 @@
 <template>
   <section class="stock-list-tab">
+    <div class="tab_header">
+      <h2>{{ $t('stocklist.title') }}</h2>
+    </div>
+
+    <div class="stock_actions">
+      <label class="file-label">
+        <div class="btn btn--image">
+          <img src="/images/icon-upload.svg" alt="" />
+          {{ $t('stocklist.action-upload') }}
+        </div>
+
+        <input type="file" @change="uploadStock" ref="conFile" accept=".con,.txt" />
+      </label>
+
+      <button class="btn btn--image" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="downloadStock">
+        <img src="/images/icon-download.svg" alt="download icon" />
+        {{ $t('stocklist.action-download') }}
+      </button>
+
+      <button class="btn btn--image" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="copyToClipboard">
+        <img src="/images/icon-copy.svg" alt="copy icon" />
+        {{ $t('stocklist.action-copy') }}
+      </button>
+
+      <button class="btn btn--image" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="resetStock">
+        <img src="/images/icon-reset.svg" alt="reset icon" />
+        {{ $t('stocklist.action-reset') }}
+      </button>
+
+      <button class="btn btn--image" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="shuffleCars">
+        <img src="/images/icon-shuffle.svg" alt="shuffle icon" />
+        {{ $t('stocklist.action-shuffle') }}
+      </button>
+    </div>
+
     <div class="stock_controls" :data-disabled="store.chosenStockListIndex == -1">
       <b v-if="store.chosenStockListIndex >= 0">
         {{ $t('stocklist.vehicle-no') }} <span class="text--accent">{{ store.chosenStockListIndex + 1 }}</span> &nbsp;
@@ -34,37 +69,6 @@
       >
         <img :src="getIconURL('remove')" alt="remove vehicle" />
         {{ $t('stocklist.action-remove') }}
-      </button>
-    </div>
-
-    <div class="stock_actions">
-      <label class="file-label">
-        <div class="btn btn--image">
-          <img src="/images/icon-upload.svg" alt="" />
-          {{ $t('stocklist.action-upload') }}
-        </div>
-
-        <input type="file" @change="uploadStock" ref="conFile" accept=".con,.txt" />
-      </label>
-
-      <button class="btn btn--image" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="downloadStock">
-        <img src="/images/icon-download.svg" alt="download icon" />
-        {{ $t('stocklist.action-download') }}
-      </button>
-
-      <button class="btn btn--image" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="copyToClipboard">
-        <img src="/images/icon-copy.svg" alt="copy icon" />
-        {{ $t('stocklist.action-copy') }}
-      </button>
-
-      <button class="btn btn--image" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="resetStock">
-        <img src="/images/icon-reset.svg" alt="reset icon" />
-        {{ $t('stocklist.action-reset') }}
-      </button>
-
-      <button class="btn btn--image" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="shuffleCars">
-        <img src="/images/icon-shuffle.svg" alt="shuffle icon" />
-        {{ $t('stocklist.action-shuffle') }}
       </button>
     </div>
 
@@ -422,6 +426,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @import '../../styles/global';
+@import '../../styles/tab.scss';
 
 .stock-list-tab {
   display: grid;
@@ -483,7 +488,7 @@ export default defineComponent({
   display: grid;
   gap: 0.5em;
 
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 
   label.file-label {
     text-align: center;

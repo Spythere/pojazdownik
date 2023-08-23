@@ -46,6 +46,7 @@
     "stock-generator": "STOCK GEN."
   },
   "stocklist": {
+    "title": "STOCK EDITOR",
     "vehicle-no": "VEHICLE NO.",
     "no-vehicle-chosen": "NO VEHICLE CHOSEN",
     "action-move-up": "MOVE UP",
