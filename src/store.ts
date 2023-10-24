@@ -1,5 +1,5 @@
-import { IStore } from './types';
-import { defineStore } from 'pinia';
+import { IStockData, IStore } from "./types";
+import { defineStore } from "pinia";
 import {
   acceptableMass,
   carDataList,
@@ -9,10 +9,11 @@ import {
   maxStockSpeed,
   totalLength,
   totalMass,
-} from './utils/vehicleUtils';
+} from "./utils/vehicleUtils";
+import http from "./http";
 
 export const useStore = defineStore({
-  id: 'store',
+  id: "store",
   state: () =>
     ({
       chosenCar: null,
@@ -25,8 +26,8 @@ export const useStore = defineStore({
       showSupporter: false,
       imageLoading: false,
 
-      chosenLocoPower: 'loco-e',
-      chosenCarUseType: 'car-passenger',
+      chosenLocoPower: "loco-e",
+      chosenCarUseType: "car-passenger",
 
       stockList: [],
       cargoOptions: [],
@@ -38,15 +39,15 @@ export const useStore = defineStore({
       chosenStockListIndex: -1,
       chosenRealStockName: undefined,
 
-      vehiclePreviewSrc: '',
+      vehiclePreviewSrc: "",
 
-      stockSectionMode: 'stock-list',
+      stockSectionMode: "stock-list",
 
       isRandomizerCardOpen: false,
       isRealStockListCardOpen: false,
 
       stockData: undefined,
-    } as IStore),
+    }) as IStore,
 
   getters: {
     locoDataList: (state) => locoDataList(state),
@@ -61,20 +62,21 @@ export const useStore = defineStore({
 
   actions: {
     async fetchStockInfoData() {
-      const stockData = await (await fetch(`https://spythere.github.io/api/td2/data/stockInfo.json`)).json();
+      const stockData = (await http.get<IStockData>("td2/data/stockInfo.json"))
+        .data;
       this.stockData = stockData;
     },
 
     handleRouting() {
       switch (window.location.pathname) {
-        case '/numgnr':
-          this.stockSectionMode = 'number-generator';
+        case "/numgnr":
+          this.stockSectionMode = "number-generator";
           break;
-        case '/stockgnr':
-          this.stockSectionMode = 'stock-generator';
+        case "/stockgnr":
+          this.stockSectionMode = "stock-generator";
           break;
-        case '/vehicles':
-          this.stockSectionMode = 'wiki-list';
+        case "/vehicles":
+          this.stockSectionMode = "wiki-list";
           break;
         default:
           break;
@@ -82,5 +84,3 @@ export const useStore = defineStore({
     },
   },
 });
-
-

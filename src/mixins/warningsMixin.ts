@@ -1,5 +1,5 @@
-import { defineComponent } from 'vue';
-import { useStore } from '../store';
+import { defineComponent } from "vue";
+import { useStore } from "../store";
 
 export default defineComponent({
   setup() {
@@ -18,7 +18,10 @@ export default defineComponent({
     },
 
     trainTooHeavy() {
-      return this.store.acceptableMass && this.store.totalMass > this.store.acceptableMass;
+      return (
+        this.store.acceptableMass &&
+        this.store.totalMass > this.store.acceptableMass
+      );
     },
 
     locoNotSuitable() {
@@ -26,15 +29,19 @@ export default defineComponent({
         !this.store.isTrainPassenger &&
         this.store.stockList.length > 1 &&
         !this.store.stockList.every((stock) => stock.isLoco) &&
-        this.store.stockList.some((stock) => stock.isLoco && stock.type.startsWith('EP'))
+        this.store.stockList.some(
+          (stock) => stock.isLoco && stock.type.startsWith("EP"),
+        )
       );
     },
 
     tooManyLocomotives() {
-      return this.store.stockList.reduce((acc, stock) => {
-        if (stock.isLoco) acc += stock.count;
-        return acc;
-      }, 0) > 2;
+      return (
+        this.store.stockList.reduce((acc, stock) => {
+          if (stock.isLoco) acc += stock.count;
+          return acc;
+        }, 0) > 2
+      );
     },
   },
 });

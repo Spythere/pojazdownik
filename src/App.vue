@@ -18,11 +18,6 @@ export default defineComponent({
     };
   },
   async created() {
-    /* dev info testing */
-    // if (import.meta.env['VITE_STOCK_DEV'] == '1') {
-    //   const data = await import('../stockInfoDev.json');
-    //   this.store.stockData = data.default as any;
-    // }
     this.store.fetchStockInfoData();
     this.store.handleRouting();
   },
@@ -66,4 +61,3 @@ h2 {
   }
 }
 </style>
-

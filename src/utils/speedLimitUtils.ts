@@ -1,14 +1,19 @@
-import speedLimitTable from '../constants/speedLimits.json';
+import speedLimitTable from "../constants/speedLimits.json";
 export type LocoType = keyof typeof speedLimitTable;
 
-export const calculateSpeedLimit = (locoType: LocoType, stockMass: number, isTrainPassenger: boolean) => {
-  const speedTable = speedLimitTable[locoType][isTrainPassenger ? 'passenger' : 'cargo'];
+export const calculateSpeedLimit = (
+  locoType: LocoType,
+  stockMass: number,
+  isTrainPassenger: boolean,
+) => {
+  const speedTable =
+    speedLimitTable[locoType][isTrainPassenger ? "passenger" : "cargo"];
 
   if (!speedTable) return undefined;
 
   let speedLimit = 0;
-  for (let mass in speedTable) if (stockMass > Number(mass)) speedLimit = (speedTable as any)[mass];
+  for (const mass in speedTable)
+    if (stockMass > Number(mass)) speedLimit = (speedTable as any)[mass];
 
   return speedLimit;
 };
-

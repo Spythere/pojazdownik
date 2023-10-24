@@ -1,12 +1,13 @@
 <template>
   <section class="inputs-section">
     <div class="input_container">
-      <h2 class="input_header">{{ $t('inputs.title') }}</h2>
+      <h2 class="input_header">{{ $t("inputs.title") }}</h2>
 
       <div class="input_list type">
         <div class="vehicle-types locos">
           <button
             v-for="locoType in locomotiveTypeList"
+            :key="locoType.id"
             class="btn btn--choice"
             :data-selected="locoType.id == store.chosenLocoPower"
             @click="selectLocoType(locoType.id)"
@@ -23,7 +24,9 @@
           @keydown.enter.prevent="addOrSwitchVehicle"
           @keydown.backspace="removeVehicle"
         >
-          <option :value="null" disabled>{{ $t('inputs.input-vehicle') }}</option>
+          <option :value="null" disabled>
+            {{ $t("inputs.input-vehicle") }}
+          </option>
           <option v-for="loco in locoOptions" :value="loco" :key="loco.type">
             {{ loco.type }}<b v-if="loco.supportersOnly">*</b>
           </option>
@@ -34,6 +37,7 @@
         <div class="vehicle-types carwagons">
           <button
             v-for="carType in carTypeList"
+            :key="carType.id"
             class="btn btn--choice"
             :data-selected="carType.id == store.chosenCarUseType"
             @click="selectCarWagonType(carType.id)"
@@ -50,7 +54,9 @@
           @keydown.enter.prevent="addOrSwitchVehicle"
           @keydown.backspace="removeVehicle"
         >
-          <option :value="null" disabled>{{ $t('inputs.input-carwagon') }}</option>
+          <option :value="null" disabled>
+            {{ $t("inputs.input-carwagon") }}
+          </option>
 
           <option v-for="car in carOptions" :value="car" :key="car.type">
             {{ car.type }}<b v-if="car.supportersOnly">*</b>
@@ -59,7 +65,7 @@
       </div>
 
       <div class="input_list cargo">
-        <label for="cargo-select">{{ $t('inputs.cargo-title') }}</label>
+        <label for="cargo-select">{{ $t("inputs.cargo-title") }}</label>
         <select
           id="cargo-select"
           :disabled="
@@ -75,20 +81,30 @@
           @keydown.enter.prevent="addOrSwitchVehicle"
           @keydown.backspace="removeVehicle"
         >
-          <option :value="null" v-if="!store.chosenCar || !store.chosenCar.loadable">
-            {{ $t('inputs.no-cargo-available') }}
+          <option
+            :value="null"
+            v-if="!store.chosenCar || !store.chosenCar.loadable"
+          >
+            {{ $t("inputs.no-cargo-available") }}
           </option>
-          <option :value="null" v-else>{{ $t('inputs.cargo-empty') }}</option>
+          <option :value="null" v-else>{{ $t("inputs.cargo-empty") }}</option>
 
-          <option v-for="cargo in store.chosenCar?.cargoList" :value="cargo" :key="cargo.id">
+          <option
+            v-for="cargo in store.chosenCar?.cargoList"
+            :value="cargo"
+            :key="cargo.id"
+          >
             {{ cargo.id }}
           </option>
         </select>
       </div>
 
       <div class="input_actions">
-        <button class="btn" @click="addVehicle(store.chosenVehicle, store.chosenCargo)">
-          {{ $t('inputs.action-add') }}
+        <button
+          class="btn"
+          @click="addVehicle(store.chosenVehicle, store.chosenCargo)"
+        >
+          {{ $t("inputs.action-add") }}
         </button>
         <button
           class="btn"
@@ -96,14 +112,18 @@
           :disabled="store.chosenStockListIndex == -1"
           :data-disabled="store.chosenStockListIndex == -1"
         >
-          {{ $t('inputs.action-swap') }}
+          {{ $t("inputs.action-swap") }}
           <b class="text--accent">
-            {{ store.chosenStockListIndex == -1 ? '' : `${store.chosenStockListIndex + 1}.` }}
+            {{
+              store.chosenStockListIndex == -1
+                ? ""
+                : `${store.chosenStockListIndex + 1}.`
+            }}
           </b>
         </button>
 
         <button class="btn" @click="store.isRealStockListCardOpen = true">
-          <b>{{ $t('inputs.real-stock') }}</b>
+          <b>{{ $t("inputs.real-stock") }}</b>
         </button>
       </div>
     </div>
@@ -111,12 +131,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent } from "vue";
 
-import imageMixin from '../../mixins/imageMixin';
-import { useStore } from '../../store';
-import stockPreviewMixin from '../../mixins/stockPreviewMixin';
-import stockMixin from '../../mixins/stockMixin';
+import imageMixin from "../../mixins/imageMixin";
+import { useStore } from "../../store";
+import stockPreviewMixin from "../../mixins/stockPreviewMixin";
+import stockMixin from "../../mixins/stockMixin";
 
 export default defineComponent({
   mixins: [imageMixin, stockPreviewMixin, stockMixin],
@@ -124,31 +144,31 @@ export default defineComponent({
   data: () => ({
     locomotiveTypeList: [
       {
-        id: 'loco-e',
-        desc: 'ELEKTRYCZNE',
+        id: "loco-e",
+        desc: "ELEKTRYCZNE",
       },
       {
-        id: 'loco-s',
-        desc: 'SPALINOWE',
+        id: "loco-s",
+        desc: "SPALINOWE",
       },
       {
-        id: 'loco-ezt',
-        desc: 'ELEKTR. ZESPOŁY TRAKCYJNE',
+        id: "loco-ezt",
+        desc: "ELEKTR. ZESPOŁY TRAKCYJNE",
       },
       {
-        id: 'loco-szt',
-        desc: 'SPAL. ZESPOŁY TRAKCYJNE',
+        id: "loco-szt",
+        desc: "SPAL. ZESPOŁY TRAKCYJNE",
       },
     ],
 
     carTypeList: [
       {
-        id: 'car-passenger',
-        desc: 'PASAŻERSKIE',
+        id: "car-passenger",
+        desc: "PASAŻERSKIE",
       },
       {
-        id: 'car-cargo',
-        desc: 'TOWAROWE',
+        id: "car-cargo",
+        desc: "TOWAROWE",
       },
     ],
   }),
@@ -169,7 +189,8 @@ export default defineComponent({
     addOrSwitchVehicle() {
       if (!this.store.chosenVehicle) return;
 
-      if (this.store.chosenStockListIndex == -1) this.addVehicle(this.store.chosenVehicle, this.store.chosenCargo);
+      if (this.store.chosenStockListIndex == -1)
+        this.addVehicle(this.store.chosenVehicle, this.store.chosenCargo);
       else this.switchVehicles();
     },
 
@@ -197,7 +218,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '../../styles/global';
+@import "../../styles/global";
 
 .inputs-section {
   display: flex;
@@ -215,7 +236,7 @@ button.btn--choice {
   font-size: 0.9em;
   padding: 0.3em 0.6em;
 
-  &[data-selected='true'] {
+  &[data-selected="true"] {
     background-color: $accentColor;
     color: black;
   }
@@ -267,4 +288,3 @@ button.btn--choice {
   }
 }
 </style>
-

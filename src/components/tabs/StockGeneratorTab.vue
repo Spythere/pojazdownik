@@ -1,45 +1,64 @@
 <template>
   <div class="stock-generator tab">
     <div class="tab_header">
-      <h2>{{ $t('stockgen.title') }}</h2>
+      <h2>{{ $t("stockgen.title") }}</h2>
     </div>
 
     <div class="tab_content">
       <div>
-        <h2>{{ $t('stockgen.properties-title') }}</h2>
+        <h2>{{ $t("stockgen.properties-title") }}</h2>
 
         <b class="text--accent">
-          {{ $t('stockgen.properties-desc') }}
+          {{ $t("stockgen.properties-desc") }}
         </b>
 
         <div class="tab_attributes">
           <label>
-            {{ $t('stockgen.input-mass') }}
-            <input type="number" v-model="maxMass" step="100" max="4000" min="0" />
+            {{ $t("stockgen.input-mass") }}
+            <input
+              type="number"
+              v-model="maxMass"
+              step="100"
+              max="4000"
+              min="0"
+            />
           </label>
 
           <label>
-            {{ $t('stockgen.input-length') }}
-            <input type="number" v-model="maxLength" step="25" max="650" min="0" />
+            {{ $t("stockgen.input-length") }}
+            <input
+              type="number"
+              v-model="maxLength"
+              step="25"
+              max="650"
+              min="0"
+            />
           </label>
 
           <label>
-            {{ $t('stockgen.input-carcount') }}
-            <input type="number" v-model="maxCarCount" step="1" max="60" min="1" />
+            {{ $t("stockgen.input-carcount") }}
+            <input
+              type="number"
+              v-model="maxCarCount"
+              step="1"
+              max="60"
+              min="1"
+            />
           </label>
         </div>
       </div>
 
       <div>
-        <h2>{{ $t('stockgen.cargo-title') }}</h2>
-        <b>{{ $t('stockgen.cargo-desc') }}</b>
+        <h2>{{ $t("stockgen.cargo-title") }}</h2>
+        <b>{{ $t("stockgen.cargo-desc") }}</b>
       </div>
 
       <div class="generator_cargo">
         <button
+          v-for="(cargoArray, cargoName) in store.stockData?.generator.cargo"
+          :key="cargoName"
           class="btn"
           :data-chosen="chosenCargoTypes.includes(cargoName.toString())"
-          v-for="(cargoArray, cargoName) in store.stockData?.generator.cargo"
           @click="toggleCargoChosen(cargoName.toString(), cargoArray)"
         >
           {{ $t(`cargo.${cargoName}`) }}
@@ -47,15 +66,15 @@
       </div>
 
       <div>
-        <h2>{{ $t('stockgen.chosen-title') }}</h2>
+        <h2>{{ $t("stockgen.chosen-title") }}</h2>
 
         <div class="generator_warning">
           <span v-if="computedChosenCarTypes.size == 0">
-            {{ $t('stockgen.chosen-empty-warning') }}
+            {{ $t("stockgen.chosen-empty-warning") }}
           </span>
 
           <span v-else>
-            {{ $t('stockgen.chosen-warning') }}
+            {{ $t("stockgen.chosen-warning") }}
           </span>
         </div>
       </div>
@@ -78,16 +97,28 @@
       <hr />
 
       <div class="tab_actions">
-        <button class="btn" :data-disabled="computedChosenCarTypes.size == 0" @click="generateStock()">
-          {{ $t('stockgen.action-generate') }}
+        <button
+          class="btn"
+          :data-disabled="computedChosenCarTypes.size == 0"
+          @click="generateStock()"
+        >
+          {{ $t("stockgen.action-generate") }}
         </button>
 
-        <button class="btn" :data-disabled="computedChosenCarTypes.size == 0" @click="generateStock(true)">
-          {{ $t('stockgen.action-generate-empty') }}
+        <button
+          class="btn"
+          :data-disabled="computedChosenCarTypes.size == 0"
+          @click="generateStock(true)"
+        >
+          {{ $t("stockgen.action-generate-empty") }}
         </button>
 
-        <button class="btn" :data-disabled="computedChosenCarTypes.size == 0" @click="resetChosenCargo">
-          {{ $t('stockgen.action-reset') }}
+        <button
+          class="btn"
+          :data-disabled="computedChosenCarTypes.size == 0"
+          @click="resetChosenCargo"
+        >
+          {{ $t("stockgen.action-reset") }}
         </button>
       </div>
     </div>
@@ -95,15 +126,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { useStore } from '../../store';
+import { defineComponent } from "vue";
+import { useStore } from "../../store";
 
-import stockMixin from '../../mixins/stockMixin';
-import { ICargo, ICarWagon, IStock } from '../../types';
-import warningsMixin from '../../mixins/warningsMixin';
+import stockMixin from "../../mixins/stockMixin";
+import { ICargo, ICarWagon, IStock } from "../../types";
+import warningsMixin from "../../mixins/warningsMixin";
 
 export default defineComponent({
-  name: 'stock-generator',
+  name: "stock-generator",
 
   mixins: [stockMixin, warningsMixin],
 
@@ -126,7 +157,9 @@ export default defineComponent({
 
   computed: {
     computedChosenCarTypes() {
-      return new Set<string>(this.chosenCarTypes.sort((c1, c2) => (c1 > c2 ? 1 : -1)));
+      return new Set<string>(
+        this.chosenCarTypes.slice().sort((c1, c2) => (c1 > c2 ? 1 : -1)),
+      );
     },
   },
 
@@ -150,53 +183,84 @@ export default defineComponent({
     },
 
     generateStock(empty = false) {
-      const generatedChosenStockList = this.chosenCargoTypes.reduce((acc, type) => {
-        this.store.stockData?.generator.cargo[type]
-          .filter((c) => !this.excludedCarTypes.includes(c.split(':')[0]))
-          .forEach((c) => {
-            const [type, cargoType] = c.split(':');
+      const generatedChosenStockList = this.chosenCargoTypes.reduce(
+        (acc, type) => {
+          this.store.stockData?.generator.cargo[type]
+            .filter((c) => !this.excludedCarTypes.includes(c.split(":")[0]))
+            .forEach((c) => {
+              const [type, cargoType] = c.split(":");
 
-            const carWagonObjs = this.store.carDataList.filter((cw) => cw.type.startsWith(type));
-            const cargoObjs = [] as (ICargo | undefined)[];
+              const carWagonObjs = this.store.carDataList.filter((cw) =>
+                cw.type.startsWith(type),
+              );
+              const cargoObjs = [] as (ICargo | undefined)[];
 
-            if (!cargoType || empty) cargoObjs.push(undefined);
-            else if (cargoType == 'all') cargoObjs.push(...carWagonObjs[0]?.cargoList);
-            else cargoObjs.push(carWagonObjs[0]?.cargoList.find((cargo) => cargo.id == cargoType));
+              if (!cargoType || empty) cargoObjs.push(undefined);
+              else if (cargoType == "all")
+                cargoObjs.push(...carWagonObjs[0]!.cargoList);
+              else
+                cargoObjs.push(
+                  carWagonObjs[0]?.cargoList.find(
+                    (cargo) => cargo.id == cargoType,
+                  ),
+                );
 
-            carWagonObjs.forEach((cw) => {
-              cargoObjs.forEach((cargoObj) => {
-                const chosenStock = acc.find((a) => a.constructionType.includes(cw.constructionType));
+              carWagonObjs.forEach((cw) => {
+                cargoObjs.forEach((cargoObj) => {
+                  const chosenStock = acc.find((a) =>
+                    a.constructionType.includes(cw.constructionType),
+                  );
 
-                if (!chosenStock)
-                  acc.push({
-                    constructionType: cw.constructionType,
-                    carPool: [{ carWagon: cw, cargo: cargoObj }],
-                  });
-                else chosenStock.carPool.push({ carWagon: cw, cargo: cargoObj });
+                  if (!chosenStock)
+                    acc.push({
+                      constructionType: cw.constructionType,
+                      carPool: [{ carWagon: cw, cargo: cargoObj }],
+                    });
+                  else
+                    chosenStock.carPool.push({ carWagon: cw, cargo: cargoObj });
+                });
               });
             });
-          });
 
-        return acc;
-      }, [] as { constructionType: string; carPool: { carWagon: ICarWagon; cargo?: ICargo }[] }[]);
+          return acc;
+        },
+        [] as {
+          constructionType: string;
+          carPool: { carWagon: ICarWagon; cargo?: ICargo }[];
+        }[],
+      );
 
-      let bestGeneration: { stockList: IStock[]; value: number } = { stockList: [], value: 0 };
+      let bestGeneration: { stockList: IStock[]; value: number } = {
+        stockList: [],
+        value: 0,
+      };
 
       for (let i = 0; i < 10; i++) {
-        const headingLoco = this.store.stockList[0]?.isLoco ? this.store.stockList[0] : undefined;
+        const headingLoco = this.store.stockList[0]?.isLoco
+          ? this.store.stockList[0]
+          : undefined;
         this.store.stockList.length = headingLoco ? 1 : 0;
 
         const maxMass =
-          this.store.acceptableMass > 0 ? Math.min(this.store.acceptableMass, this.maxMass) : this.maxMass;
+          this.store.acceptableMass > 0
+            ? Math.min(this.store.acceptableMass, this.maxMass)
+            : this.maxMass;
 
         let exceeded = false;
 
         while (!exceeded) {
-          const randomStockType = generatedChosenStockList[~~(Math.random() * generatedChosenStockList.length)];
-          const { carWagon, cargo } = randomStockType.carPool[~~(Math.random() * randomStockType.carPool.length)];
+          const randomStockType =
+            generatedChosenStockList[
+              ~~(Math.random() * generatedChosenStockList.length)
+            ];
+          const { carWagon, cargo } =
+            randomStockType.carPool[
+              ~~(Math.random() * randomStockType.carPool.length)
+            ];
 
           if (
-            this.store.totalMass + (cargo?.totalMass || carWagon.mass) > maxMass ||
+            this.store.totalMass + (cargo?.totalMass || carWagon.mass) >
+              maxMass ||
             this.store.totalLength + carWagon.length > this.maxLength ||
             this.store.stockList.length > this.maxCarCount
           ) {
@@ -207,7 +271,10 @@ export default defineComponent({
           this.addCarWagon(carWagon, cargo);
         }
 
-        const currentGenerationValue = this.store.totalLength + this.store.totalMass + this.store.stockList.length;
+        const currentGenerationValue =
+          this.store.totalLength +
+          this.store.totalMass +
+          this.store.stockList.length;
 
         if (bestGeneration.value < currentGenerationValue) {
           bestGeneration.stockList = this.store.stockList;
@@ -216,11 +283,12 @@ export default defineComponent({
       }
 
       this.store.stockList = bestGeneration.stockList;
-      this.store.stockSectionMode = 'stock-list';
+      this.store.stockSectionMode = "stock-list";
     },
 
     previewCar(type: string) {
-      const c = this.store.carDataList.find((c) => c.type.startsWith(type)) || null;
+      const c =
+        this.store.carDataList.find((c) => c.type.startsWith(type)) || null;
 
       this.store.chosenVehicle = c;
       this.store.chosenCar = c;
@@ -233,33 +301,38 @@ export default defineComponent({
     toggleCargoChosen(cargoType: string, vehicles: string[]) {
       if (this.chosenCargoTypes.includes(cargoType)) {
         vehicles.forEach((v) => {
-          const [type] = v.split(':');
+          const [type] = v.split(":");
           this.chosenCarTypes.splice(this.chosenCarTypes.indexOf(type), 1);
         });
 
-        this.chosenCargoTypes.splice(this.chosenCargoTypes.indexOf(cargoType), 1);
+        this.chosenCargoTypes.splice(
+          this.chosenCargoTypes.indexOf(cargoType),
+          1,
+        );
         return;
       }
 
       this.chosenCargoTypes.push(cargoType);
 
       vehicles.forEach((v) => {
-        const [type] = v.split(':');
+        const [type] = v.split(":");
         this.chosenCarTypes.push(type);
       });
     },
 
     toggleCarExclusion(type: string) {
-      if (!this.excludedCarTypes.includes(type)) this.excludedCarTypes.push(type);
-      else this.excludedCarTypes = this.excludedCarTypes.filter((c) => c != type);
+      if (!this.excludedCarTypes.includes(type))
+        this.excludedCarTypes.push(type);
+      else
+        this.excludedCarTypes = this.excludedCarTypes.filter((c) => c != type);
     },
   },
 });
 </script>
 
 <style lang="scss" scoped>
-@import '../../styles/global.scss';
-@import '../../styles/tab.scss';
+@import "../../styles/global.scss";
+@import "../../styles/tab.scss";
 
 .generator_cargo,
 .generator_vehicles {
@@ -277,14 +350,14 @@ export default defineComponent({
 
     background-color: $secondaryColor;
 
-    &[data-chosen='true'] {
+    &[data-chosen="true"] {
       background-color: $accentColor;
       color: black;
 
       box-shadow: 0 0 5px 1px $accentColor;
     }
 
-    &[data-excluded='true'] {
+    &[data-excluded="true"] {
       background-color: gray;
       box-shadow: none;
     }
@@ -316,4 +389,3 @@ export default defineComponent({
   color: black;
 }
 </style>
-

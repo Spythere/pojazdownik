@@ -1,18 +1,26 @@
 <template>
   <section class="train-image-section">
     <div class="train-image__wrapper">
-      <div class="train-image__content" :class="{ supporter: store.chosenVehicle?.supportersOnly }">
+      <div
+        class="train-image__content"
+        :class="{ supporter: store.chosenVehicle?.supportersOnly }"
+      >
         <transition name="img-message-anim">
-          <div class="empty-message" v-if="store.imageLoading && store.chosenVehicle?.imageSrc">
-            {{ $t('preview.loading') }}
+          <div
+            class="empty-message"
+            v-if="store.imageLoading && store.chosenVehicle?.imageSrc"
+          >
+            {{ $t("preview.loading") }}
           </div>
         </transition>
 
-        <div class="no-img" v-if="!store.chosenVehicle">{{ $t('preview.title') }}</div>
+        <div class="no-img" v-if="!store.chosenVehicle">
+          {{ $t("preview.title") }}
+        </div>
 
         <img
           v-if="store.chosenVehicle"
-          :src="`https://spythere.github.io/api/td2/images/${store.chosenVehicle.type}--300px.jpg`"
+          :src="getThumbnailURL(store.chosenVehicle.type, 'small')"
           :alt="store.chosenVehicle.type"
           @load="onImageLoad"
           @click="onImageClick"
@@ -25,44 +33,57 @@
         <b class="text--accent">{{ store.chosenVehicle.type }}</b> &bull;
         <b style="color: #ccc">
           {{
-            $t(`preview.${isLocomotive(store.chosenVehicle) ? store.chosenVehicle.power : store.chosenVehicle.useType}`)
+            $t(
+              `preview.${
+                isLocomotive(store.chosenVehicle)
+                  ? store.chosenVehicle.power
+                  : store.chosenVehicle.useType
+              }`,
+            )
           }}
         </b>
 
         <div style="color: #ccc">
           <div>
-            {{ store.chosenVehicle.length }}m | {{ store.chosenVehicle.mass }}t |
-            {{ store.chosenVehicle.maxSpeed }} km/h
+            {{ store.chosenVehicle.length }}m | {{ store.chosenVehicle.mass }}t
+            | {{ store.chosenVehicle.maxSpeed }} km/h
           </div>
 
           <div v-if="isLocomotive(store.chosenVehicle)">
-            {{ $t('preview.cabin') }} {{ store.chosenVehicle.cabinType }}
+            {{ $t("preview.cabin") }} {{ store.chosenVehicle.cabinType }}
           </div>
 
           <div v-else>
             {{
-              store.chosenVehicle.useType == 'car-cargo' // ? store.stockData?.usage[store.chosenVehicle.constructionType]
+              store.chosenVehicle.useType == "car-cargo" // ? store.stockData?.usage[store.chosenVehicle.constructionType]
                 ? $t(`usage.${store.chosenVehicle.constructionType}`)
-                : `${$t('preview.construction')} ${store.chosenVehicle.constructionType}`
+                : `${$t("preview.construction")} ${
+                    store.chosenVehicle.constructionType
+                  }`
             }}
           </div>
 
-          <b style="color: salmon" v-if="store.chosenVehicle.supportersOnly">{{ $t('preview.sponsor-only') }}</b>
+          <b style="color: salmon" v-if="store.chosenVehicle.supportersOnly">{{
+            $t("preview.sponsor-only")
+          }}</b>
         </div>
       </div>
 
-      <div class="train-image__info" v-else>{{ $t('preview.desc') }}</div>
+      <div class="train-image__info" v-else>{{ $t("preview.desc") }}</div>
     </div>
   </section>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue';
-import { useStore } from '../../store';
-import { isLocomotive } from '../../utils/vehicleUtils';
-import { ILocomotive, Vehicle } from '../../types';
+import { computed, defineComponent } from "vue";
+import { useStore } from "../../store";
+import { isLocomotive } from "../../utils/vehicleUtils";
+import { ILocomotive, Vehicle } from "../../types";
+import imageMixin from "../../mixins/imageMixin";
 
 export default defineComponent({
+  mixins: [imageMixin],
+
   setup() {
     const store = useStore();
 
@@ -94,14 +115,17 @@ export default defineComponent({
 
       if (!chosenVehicle) return;
 
-      this.store.vehiclePreviewSrc = `https://spythere.github.io/api/td2/images/${chosenVehicle.type}--800px.jpg`;
+      this.store.vehiclePreviewSrc = this.getThumbnailURL(
+        chosenVehicle.type,
+        "large",
+      );
     },
   },
 });
 </script>
 
 <style lang="scss" scoped>
-@import '../../styles/global.scss';
+@import "../../styles/global.scss";
 
 .train-image-section {
   grid-row: 3;
@@ -185,4 +209,3 @@ export default defineComponent({
   }
 }
 </style>
-

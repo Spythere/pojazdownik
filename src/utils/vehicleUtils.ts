@@ -1,8 +1,10 @@
-import { EVehicleUseType } from '../enums/EVehicleUseType';
-import { ICarWagon, ILocomotive, IStore, TStockInfoKey } from '../types';
-import { LocoType, calculateSpeedLimit } from './speedLimitUtils';
+import { EVehicleUseType } from "../enums/EVehicleUseType";
+import { ICarWagon, ILocomotive, IStore } from "../types";
+import { LocoType, calculateSpeedLimit } from "./speedLimitUtils";
 
-export function isLocomotive(vehicle: ILocomotive | ICarWagon): vehicle is ILocomotive {
+export function isLocomotive(
+  vehicle: ILocomotive | ICarWagon,
+): vehicle is ILocomotive {
   return (vehicle as ILocomotive).power !== undefined;
 }
 
@@ -12,15 +14,21 @@ export function locoDataList(state: IStore) {
   const stockData = state.stockData;
 
   return Object.keys(stockData.info).reduce((acc, vehiclePower) => {
-    if (!vehiclePower.startsWith('loco')) return acc;
+    if (!vehiclePower.startsWith("loco")) return acc;
 
-    const locoVehiclesData = stockData.info[vehiclePower as 'loco-e' | 'loco-s' | 'loco-ezt' | 'loco-szt'];
+    const locoVehiclesData =
+      stockData.info[
+        vehiclePower as "loco-e" | "loco-s" | "loco-ezt" | "loco-szt"
+      ];
 
     locoVehiclesData.forEach((loco) => {
       if (state.showSupporter && !loco[4]) return;
 
-      const [type, constructionType, cabinType, maxSpeed, supportersOnly] = loco;
-      const locoProps = stockData.props.find((prop) => constructionType == prop.type);
+      const [type, constructionType, cabinType, maxSpeed, supportersOnly] =
+        loco;
+      const locoProps = stockData.props.find(
+        (prop) => constructionType == prop.type,
+      );
 
       acc.push({
         power: vehiclePower,
@@ -29,10 +37,16 @@ export function locoDataList(state: IStore) {
         cabinType,
         maxSpeed: Number(maxSpeed),
         supportersOnly,
-        imageSrc: '',
+        imageSrc: "",
 
-        length: locoProps?.length && type.startsWith('2EN') ? locoProps.length * 2 : locoProps?.length || 0,
-        mass: locoProps?.mass && type.startsWith('2EN') ? 253 : locoProps?.mass || 0,
+        length:
+          locoProps?.length && type.startsWith("2EN")
+            ? locoProps.length * 2
+            : locoProps?.length || 0,
+        mass:
+          locoProps?.mass && type.startsWith("2EN")
+            ? 253
+            : locoProps?.mass || 0,
       });
     });
 
@@ -46,29 +60,32 @@ export function carDataList(state: IStore) {
   const stockData = state.stockData;
 
   return Object.keys(stockData.info).reduce((acc, vehicleUseType) => {
-    if (!vehicleUseType.startsWith('car')) return acc;
+    if (!vehicleUseType.startsWith("car")) return acc;
 
-    const carVehiclesData = stockData.info[vehicleUseType as 'car-passenger' | 'car-cargo'];
+    const carVehiclesData =
+      stockData.info[vehicleUseType as "car-passenger" | "car-cargo"];
 
     carVehiclesData.forEach((car) => {
       if (state.showSupporter && !car[3]) return;
 
-      const carPropsData = stockData.props.find((v) => car[0].toString().startsWith(v.type));
+      const carPropsData = stockData.props.find((v) =>
+        car[0].toString().startsWith(v.type),
+      );
 
       acc.push({
-        useType: vehicleUseType as 'car-passenger' | 'car-cargo',
+        useType: vehicleUseType as "car-passenger" | "car-cargo",
         type: car[0],
         constructionType: car[1],
         loadable: car[2],
         supportersOnly: car[3],
         maxSpeed: Number(car[4]),
-        imageSrc: '',
+        imageSrc: "",
         cargoList:
           !carPropsData || carPropsData.cargo === null
             ? []
-            : carPropsData.cargo.split(';').map((cargo) => ({
-                id: cargo.split(':')[0],
-                totalMass: Number(cargo.split(':')[1]),
+            : carPropsData.cargo.split(";").map((cargo) => ({
+                id: cargo.split(":")[0],
+                totalMass: Number(cargo.split(":")[1]),
               })),
 
         mass: carPropsData?.mass || 0,
@@ -82,33 +99,45 @@ export function carDataList(state: IStore) {
 
 export function totalMass(state: IStore) {
   return ~~state.stockList.reduce(
-    (acc, stock) => acc + (stock.cargo ? stock.cargo.totalMass : stock.mass) * stock.count,
-    0
+    (acc, stock) =>
+      acc + (stock.cargo ? stock.cargo.totalMass : stock.mass) * stock.count,
+    0,
   );
 }
 
 export function totalLength(state: IStore) {
-  return state.stockList.reduce((acc, stock) => acc + stock.length * stock.count, 0);
+  return state.stockList.reduce(
+    (acc, stock) => acc + stock.length * stock.count,
+    0,
+  );
 }
 
 export function maxStockSpeed(state: IStore) {
   const stockSpeedLimit = state.stockList.reduce(
     (acc, stock) => (stock.maxSpeed < acc || acc == 0 ? stock.maxSpeed : acc),
-    0
+    0,
   );
-  const headingLoco = state.stockList[0]?.isLoco ? state.stockList[0] : undefined;
+  const headingLoco = state.stockList[0]?.isLoco
+    ? state.stockList[0]
+    : undefined;
 
   if (!headingLoco) return stockSpeedLimit;
 
-  const locoType = headingLoco.type.split('-')[0];
+  const locoType = headingLoco.type.split("-")[0];
 
   if (/^(EN|2EN|SN)/.test(locoType)) return stockSpeedLimit;
 
   const stockMass = totalMass(state);
 
-  const speedLimitByMass = calculateSpeedLimit(locoType as LocoType, stockMass, isTrainPassenger(state));
+  const speedLimitByMass = calculateSpeedLimit(
+    locoType as LocoType,
+    stockMass,
+    isTrainPassenger(state),
+  );
 
-  return speedLimitByMass ? Math.min(stockSpeedLimit, speedLimitByMass) : stockSpeedLimit;
+  return speedLimitByMass
+    ? Math.min(stockSpeedLimit, speedLimitByMass)
+    : stockSpeedLimit;
 }
 
 export function acceptableMass(state: IStore) {
@@ -150,12 +179,13 @@ export function chosenRealStock(state: IStore) {
       for (let i = 0; i < stock.count; i++) acc.push(stock.type);
       return acc;
     }, [] as string[])
-    .join(';');
+    .join(";");
 
-  const realStockObj = state.readyStockList.find((readyStock) => readyStock.stockString == currentStockString);
+  const realStockObj = state.readyStockList.find(
+    (readyStock) => readyStock.stockString == currentStockString,
+  );
 
   state.chosenRealStockName = realStockObj?.stockId ?? undefined;
 
   return realStockObj;
 }
-

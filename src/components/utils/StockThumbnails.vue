@@ -2,6 +2,7 @@
   <div class="stock_thumbnails" ref="thumbnailsRef">
     <div
       v-for="(stock, stockIndex) in store.stockList"
+      :key="stockIndex"
       :data-selected="store.chosenStockListIndex == stockIndex"
       draggable="true"
       @dragstart="onDragStart(stockIndex)"
@@ -28,18 +29,18 @@
 </template>
 
 <script setup lang="ts">
-import { Ref, computed, nextTick, ref, watch } from 'vue';
-import { useStore } from '../../store';
-import { IStock } from '../../types';
+import { Ref, computed, nextTick, ref, watch } from "vue";
+import { useStore } from "../../store";
+import { IStock } from "../../types";
 
 const store = useStore();
-const emit = defineEmits(['listItemClick']);
+const emit = defineEmits(["listItemClick"]);
 
 const thumbnailsRef = ref() as Ref<HTMLElement>;
 const draggedIndex = ref(-1);
 
 const onListItemClick = (index: number) => {
-  emit('listItemClick', index);
+  emit("listItemClick", index);
 };
 
 const stockImageError = (e: Event, stock: IStock) => {
@@ -54,9 +55,13 @@ watch(
     nextTick(() => {
       (thumbnailsRef.value as HTMLElement)
         .querySelector(`div:nth-child(${index + 1})`)
-        ?.scrollIntoView({ block: 'nearest', inline: 'start', behavior: 'smooth' });
+        ?.scrollIntoView({
+          block: "nearest",
+          inline: "start",
+          behavior: "smooth",
+        });
     });
-  }
+  },
 );
 
 // Dragging images
@@ -67,7 +72,9 @@ const onDragStart = (vehicleIndex: number) => {
 const onDrop = (e: DragEvent, vehicleIndex: number) => {
   e.preventDefault();
 
-  let targetEl = thumbnailsRef.value.querySelector(`div:nth-child(${vehicleIndex + 1})`);
+  let targetEl = thumbnailsRef.value.querySelector(
+    `div:nth-child(${vehicleIndex + 1})`,
+  );
 
   if (!targetEl && draggedIndex.value != -1) return;
 
@@ -95,7 +102,7 @@ const allowDrop = (e: DragEvent) => {
     cursor: pointer;
     min-height: 100px;
 
-    &[data-selected='true'] {
+    &[data-selected="true"] {
       background-color: rebeccapurple;
     }
 
@@ -122,4 +129,3 @@ const allowDrop = (e: DragEvent) => {
   color: salmon;
 }
 </style>
-

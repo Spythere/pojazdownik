@@ -1,47 +1,77 @@
 <template>
   <section class="stock-list-tab">
     <div class="tab_header">
-      <h2>{{ $t('stocklist.title') }}</h2>
+      <h2>{{ $t("stocklist.title") }}</h2>
     </div>
 
     <div class="stock_actions">
       <label class="file-label">
         <div class="btn btn--image">
           <img src="/images/icon-upload.svg" alt="" />
-          {{ $t('stocklist.action-upload') }}
+          {{ $t("stocklist.action-upload") }}
         </div>
 
-        <input type="file" @change="uploadStock" ref="conFile" accept=".con,.txt" />
+        <input
+          type="file"
+          @change="uploadStock"
+          ref="conFile"
+          accept=".con,.txt"
+        />
       </label>
 
-      <button class="btn btn--image" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="downloadStock">
+      <button
+        class="btn btn--image"
+        :data-disabled="stockIsEmpty"
+        :disabled="stockIsEmpty"
+        @click="downloadStock"
+      >
         <img src="/images/icon-download.svg" alt="download icon" />
-        {{ $t('stocklist.action-download') }}
+        {{ $t("stocklist.action-download") }}
       </button>
 
-      <button class="btn btn--image" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="copyToClipboard">
+      <button
+        class="btn btn--image"
+        :data-disabled="stockIsEmpty"
+        :disabled="stockIsEmpty"
+        @click="copyToClipboard"
+      >
         <img src="/images/icon-copy.svg" alt="copy icon" />
-        {{ $t('stocklist.action-copy') }}
+        {{ $t("stocklist.action-copy") }}
       </button>
 
-      <button class="btn btn--image" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="resetStock">
+      <button
+        class="btn btn--image"
+        :data-disabled="stockIsEmpty"
+        :disabled="stockIsEmpty"
+        @click="resetStock"
+      >
         <img src="/images/icon-reset.svg" alt="reset icon" />
-        {{ $t('stocklist.action-reset') }}
+        {{ $t("stocklist.action-reset") }}
       </button>
 
-      <button class="btn btn--image" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="shuffleCars">
+      <button
+        class="btn btn--image"
+        :data-disabled="stockIsEmpty"
+        :disabled="stockIsEmpty"
+        @click="shuffleCars"
+      >
         <img src="/images/icon-shuffle.svg" alt="shuffle icon" />
-        {{ $t('stocklist.action-shuffle') }}
+        {{ $t("stocklist.action-shuffle") }}
       </button>
     </div>
 
-    <div class="stock_controls" :data-disabled="store.chosenStockListIndex == -1">
+    <div
+      class="stock_controls"
+      :data-disabled="store.chosenStockListIndex == -1"
+    >
       <b v-if="store.chosenStockListIndex >= 0">
-        {{ $t('stocklist.vehicle-no') }} <span class="text--accent">{{ store.chosenStockListIndex + 1 }}</span> &nbsp;
+        {{ $t("stocklist.vehicle-no") }}
+        <span class="text--accent">{{ store.chosenStockListIndex + 1 }}</span>
+        &nbsp;
       </b>
 
       <b v-else>
-        {{ $t('stocklist.no-vehicle-chosen') }}
+        {{ $t("stocklist.no-vehicle-chosen") }}
       </b>
 
       <button
@@ -50,7 +80,7 @@
         @click="moveUpStock(store.chosenStockListIndex)"
       >
         <img :src="getIconURL('higher')" alt="move up vehicle" />
-        {{ $t('stocklist.action-move-up') }}
+        {{ $t("stocklist.action-move-up") }}
       </button>
 
       <button
@@ -59,7 +89,7 @@
         @click="moveDownStock(store.chosenStockListIndex)"
       >
         <img :src="getIconURL('lower')" alt="move down vehicle" />
-        {{ $t('stocklist.action-move-down') }}
+        {{ $t("stocklist.action-move-down") }}
       </button>
 
       <button
@@ -68,26 +98,34 @@
         @click="removeStock(store.chosenStockListIndex)"
       >
         <img :src="getIconURL('remove')" alt="remove vehicle" />
-        {{ $t('stocklist.action-remove') }}
+        {{ $t("stocklist.action-remove") }}
       </button>
     </div>
 
     <div class="stock_specs">
       <b class="real-stock-info" v-if="store.chosenRealStock">
         <span class="text--accent">
-          <img :src="getIconURL(store.chosenRealStock.type)" :alt="store.chosenRealStock.type" />
+          <img
+            :src="getIconURL(store.chosenRealStock.type)"
+            :alt="store.chosenRealStock.type"
+          />
           {{ store.chosenRealStock.number }} {{ store.chosenRealStock.name }}
         </span>
         |
       </b>
 
       <span>
-        {{ $t('stocklist.mass') }} <span class="text--accent">{{ store.totalMass }}t</span> ({{
-          $t('stocklist.mass-accepted')
-        }}: <span class="text--accent">{{ store.acceptableMass ? store.acceptableMass + 't' : '-' }}</span
-        >) - {{ $t('stocklist.length') }}:
+        {{ $t("stocklist.mass") }}
+        <span class="text--accent">{{ store.totalMass }}t</span> ({{
+          $t("stocklist.mass-accepted")
+        }}:
+        <span class="text--accent">{{
+          store.acceptableMass ? store.acceptableMass + "t" : "-"
+        }}</span
+        >) - {{ $t("stocklist.length") }}:
         <span class="text--accent">{{ store.totalLength }}m</span>
-        - {{ $t('stocklist.vmax') }}: <span class="text--accent">{{ store.maxStockSpeed }} km/h</span>
+        - {{ $t("stocklist.vmax") }}:
+        <span class="text--accent">{{ store.maxStockSpeed }} km/h</span>
       </span>
     </div>
 
@@ -96,21 +134,25 @@
         <input
           type="checkbox"
           v-model="store.isColdStart"
-          :disabled="!locoSupportsColdStart(store.stockList[0]?.constructionType || '')"
+          :disabled="
+            !locoSupportsColdStart(store.stockList[0]?.constructionType || '')
+          "
         />
-        {{ $t('stocklist.coldstart-info') }}
+        {{ $t("stocklist.coldstart-info") }}
       </label>
     </div>
 
     <div class="stock_warnings" v-if="stockHasWarnings">
-      <div class="warning" v-if="locoNotSuitable">(!) {{ $t('stocklist.warning-not-suitable') }}</div>
+      <div class="warning" v-if="locoNotSuitable">
+        (!) {{ $t("stocklist.warning-not-suitable") }}
+      </div>
 
       <div class="warning" v-if="trainTooLong && store.isTrainPassenger">
-        (!) {{ $t('stocklist.warning-passenger-too-long') }}
+        (!) {{ $t("stocklist.warning-passenger-too-long") }}
       </div>
 
       <div class="warning" v-if="trainTooLong && !store.isTrainPassenger">
-        (!) {{ $t('stocklist.warning-freight-too-long') }}
+        (!) {{ $t("stocklist.warning-freight-too-long") }}
       </div>
 
       <div class="warning" v-if="trainTooHeavy">
@@ -121,14 +163,14 @@
               target="_blank"
               href="https://docs.google.com/spreadsheets/d/1bFXUsHsAu4youmNz-46Q1HslZaaoklvfoBDS553TnNk/edit"
             >
-              {{ $t('stocklist.acceptable-mass-docs') }}
+              {{ $t("stocklist.acceptable-mass-docs") }}
             </a>
           </template>
         </i18n-t>
       </div>
 
       <div class="warning" v-if="tooManyLocomotives">
-        {{ $t('stocklist.warning-too-many-locos') }}
+        {{ $t("stocklist.warning-too-many-locos") }}
       </div>
     </div>
 
@@ -137,7 +179,7 @@
     <!-- Stock list -->
     <ul ref="stock_list">
       <li v-if="stockIsEmpty" class="list-empty">
-        <div class="stock-info">{{ $t('stocklist.list-empty') }}</div>
+        <div class="stock-info">{{ $t("stocklist.list-empty") }}</div>
       </li>
 
       <TransitionGroup name="stock-list-anim">
@@ -160,18 +202,28 @@
             @dragover="allowDrop"
             draggable="true"
           >
-            <span class="stock-info__no" :data-selected="i == store.chosenStockListIndex">
+            <span
+              class="stock-info__no"
+              :data-selected="i == store.chosenStockListIndex"
+            >
               <span v-if="i == store.chosenStockListIndex">&bull;&nbsp;</span>
               {{ i + 1 }}.
             </span>
 
-            <span class="stock-info__type" :class="{ supporter: stock.supportersOnly }">
+            <span
+              class="stock-info__type"
+              :class="{ supporter: stock.supportersOnly }"
+            >
               {{ stock.isLoco ? stock.type : getCarSpecFromType(stock.type) }}
             </span>
 
-            <span class="stock-info__cargo" v-if="stock.cargo"> {{ stock.cargo.id }} </span>
+            <span class="stock-info__cargo" v-if="stock.cargo">
+              {{ stock.cargo.id }}
+            </span>
             <span class="stock-info__length"> {{ stock.length }}m </span>
-            <span class="stock-info__mass">{{ stock.cargo ? stock.cargo.totalMass : stock.mass }}t </span>
+            <span class="stock-info__mass"
+              >{{ stock.cargo ? stock.cargo.totalMass : stock.mass }}t
+            </span>
             <span class="stock-info__speed"> {{ stock.maxSpeed }}km/h </span>
           </div>
         </li>
@@ -181,21 +233,20 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import TrainImage from '../sections/TrainImageSection.vue';
+import { defineComponent } from "vue";
 
-import { useStore } from '../../store';
+import { useStore } from "../../store";
 
-import { locoSupportsColdStart } from '../../utils/locoUtils';
-import warningsMixin from '../../mixins/warningsMixin';
-import imageMixin from '../../mixins/imageMixin';
-import stockPreviewMixin from '../../mixins/stockPreviewMixin';
-import StockThumbnails from '../utils/StockThumbnails.vue';
-import stockMixin from '../../mixins/stockMixin';
+import { locoSupportsColdStart } from "../../utils/locoUtils";
+import warningsMixin from "../../mixins/warningsMixin";
+import imageMixin from "../../mixins/imageMixin";
+import stockPreviewMixin from "../../mixins/stockPreviewMixin";
+import StockThumbnails from "../utils/StockThumbnails.vue";
+import stockMixin from "../../mixins/stockMixin";
 
 export default defineComponent({
-  name: 'stock-list',
-  components: { TrainImage, StockThumbnails },
+  name: "stock-list",
+  components: { StockThumbnails },
 
   mixins: [warningsMixin, imageMixin, stockMixin, stockPreviewMixin],
 
@@ -218,13 +269,20 @@ export default defineComponent({
     stockString() {
       return this.store.stockList
         .map((stock, i) => {
-          let stockTypeStr = stock.isLoco || !stock.cargo ? stock.type : `${stock.type}:${stock.cargo.id}`;
+          let stockTypeStr =
+            stock.isLoco || !stock.cargo
+              ? stock.type
+              : `${stock.type}:${stock.cargo.id}`;
           let coldStart =
-            i == 0 && this.store.isColdStart && locoSupportsColdStart(stock.constructionType || '') ? ',c' : '';
+            i == 0 &&
+            this.store.isColdStart &&
+            locoSupportsColdStart(stock.constructionType || "")
+              ? ",c"
+              : "";
 
           return stockTypeStr + coldStart;
         })
-        .join(';');
+        .join(";");
     },
 
     stockIsEmpty() {
@@ -232,11 +290,18 @@ export default defineComponent({
     },
 
     chosenStockVehicle() {
-      return this.store.chosenStockListIndex == -1 ? undefined : this.store.stockList[this.store.chosenStockListIndex];
+      return this.store.chosenStockListIndex == -1
+        ? undefined
+        : this.store.stockList[this.store.chosenStockListIndex];
     },
 
     stockHasWarnings() {
-      return this.tooManyLocomotives || this.trainTooHeavy || this.trainTooLong || this.locoNotSuitable;
+      return (
+        this.tooManyLocomotives ||
+        this.trainTooHeavy ||
+        this.trainTooLong ||
+        this.locoNotSuitable
+      );
     },
   },
 
@@ -247,7 +312,7 @@ export default defineComponent({
       navigator.clipboard.writeText(this.stockString);
 
       setTimeout(() => {
-        alert(this.$t('stocklist.alert-copied'));
+        alert(this.$t("stocklist.alert-copied"));
       }, 20);
     },
 
@@ -255,7 +320,10 @@ export default defineComponent({
       const stock = this.store.stockList[stockID];
 
       this.store.chosenStockListIndex =
-        this.store.chosenStockListIndex == stockID && this.store.chosenVehicle?.type == stock.type ? -1 : stockID;
+        this.store.chosenStockListIndex == stockID &&
+        this.store.chosenVehicle?.type == stock.type
+          ? -1
+          : stockID;
 
       if (this.store.chosenStockListIndex == -1) {
         this.store.chosenVehicle = null;
@@ -268,12 +336,13 @@ export default defineComponent({
     },
 
     getCarSpecFromType(typeStr: string) {
-      const specArray = typeStr.split('_');
+      const specArray = typeStr.split("_");
 
       if (specArray.length == 0) return null;
 
       /* 111a_Grafitti_1 */
-      if (specArray.length == 3) return `${specArray[0]} ${specArray[1]}-${specArray[2]}`;
+      if (specArray.length == 3)
+        return `${specArray[0]} ${specArray[1]}-${specArray[2]}`;
 
       /* 111a_PKP_Bnouz_01 */
       return `${specArray[0]} ${specArray[2]}-${specArray[3]} (${specArray[1]})`;
@@ -301,9 +370,12 @@ export default defineComponent({
     removeStock(index: number) {
       if (index == -1) return;
 
-      this.store.stockList = this.store.stockList.filter((stock, i) => i != index);
+      this.store.stockList = this.store.stockList.filter(
+        (stock, i) => i != index,
+      );
 
-      if (this.store.stockList.length < index + 1) this.store.chosenStockListIndex = -1;
+      if (this.store.stockList.length < index + 1)
+        this.store.chosenStockListIndex = -1;
     },
 
     moveUpStock(index: number) {
@@ -341,7 +413,8 @@ export default defineComponent({
 
         availableIndexes.splice(i, -1);
 
-        const randAvailableIndex = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
+        const randAvailableIndex =
+          availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
         const tempSwap = this.store.stockList[randAvailableIndex];
 
         this.store.stockList[randAvailableIndex] = this.store.stockList[i];
@@ -350,30 +423,33 @@ export default defineComponent({
     },
 
     downloadStock() {
-      if (this.store.stockList.length == 0) return alert(this.$t('stocklist.alert-empty'));
+      if (this.store.stockList.length == 0)
+        return alert(this.$t("stocklist.alert-empty"));
 
-      const defaultName = `${this.store.chosenRealStockName || this.store.stockList[0].type} ${
-        this.store.totalMass
-      }t; ${this.store.totalLength}m; vmax ${this.store.maxStockSpeed}`;
+      const defaultName = `${
+        this.store.chosenRealStockName || this.store.stockList[0].type
+      } ${this.store.totalMass}t; ${this.store.totalLength}m; vmax ${
+        this.store.maxStockSpeed
+      }`;
 
-      const fileName = prompt(this.$t('stocklist.prompt-file'), defaultName);
+      const fileName = prompt(this.$t("stocklist.prompt-file"), defaultName);
 
       if (!fileName) return;
 
       const blob = new Blob([this.stockString]);
-      const file = fileName + '.con';
+      const file = fileName + ".con";
 
-      var e = document.createEvent('MouseEvents'),
-        a = document.createElement('a');
+      var e = document.createEvent("MouseEvents"),
+        a = document.createElement("a");
       a.download = file;
       a.href = window.URL.createObjectURL(blob);
-      a.dataset.downloadurl = ['', a.download, a.href].join(':');
-      e.initEvent('click', true, false);
+      a.dataset.downloadurl = ["", a.download, a.href].join(":");
+      e.initEvent("click", true, false);
       a.dispatchEvent(e);
     },
 
     uploadStock() {
-      const inputEl = this.$refs['conFile'] as HTMLInputElement;
+      const inputEl = this.$refs["conFile"] as HTMLInputElement;
       const files = inputEl.files;
 
       if (files?.length != 1) return;
@@ -385,14 +461,14 @@ export default defineComponent({
       reader.onload = (res) => {
         const stockString = res.target?.result;
 
-        if (!stockString || typeof stockString !== 'string') return;
+        if (!stockString || typeof stockString !== "string") return;
 
         this.loadStockFromString(stockString);
       };
 
       reader.onerror = (err) => console.log(err);
 
-      inputEl.value = '';
+      inputEl.value = "";
     },
 
     onDragStart(vehicleIndex: number) {
@@ -402,13 +478,14 @@ export default defineComponent({
     onDrop(e: DragEvent, vehicleIndex: number) {
       e.preventDefault();
 
-      let targetEl = (this.$refs['itemRefs'] as Element[])[vehicleIndex];
+      let targetEl = (this.$refs["itemRefs"] as Element[])[vehicleIndex];
 
       if (!targetEl) return;
 
       const tempVehicle = this.store.stockList[vehicleIndex];
 
-      this.store.stockList[vehicleIndex] = this.store.stockList[this.draggedVehicleID];
+      this.store.stockList[vehicleIndex] =
+        this.store.stockList[this.draggedVehicleID];
       this.store.stockList[this.draggedVehicleID] = tempVehicle;
 
       this.store.chosenStockListIndex = vehicleIndex;
@@ -422,8 +499,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '../../styles/global';
-@import '../../styles/tab.scss';
+@import "../../styles/global";
+@import "../../styles/tab.scss";
 
 .stock-list-tab {
   display: grid;
@@ -455,7 +532,7 @@ export default defineComponent({
 
   background-color: #353a57;
 
-  &[data-disabled='true'] {
+  &[data-disabled="true"] {
     opacity: 0.8;
 
     user-select: none;
@@ -567,7 +644,7 @@ li > .stock-info {
     min-width: 3.5em;
     text-align: right;
 
-    &[data-selected='true'] {
+    &[data-selected="true"] {
       color: $accentColor;
     }
   }
@@ -610,4 +687,3 @@ li > .stock-info {
   }
 }
 </style>
-

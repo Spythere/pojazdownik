@@ -24,7 +24,7 @@
         <table>
           <thead>
             <tr>
-              <th v-for="header in wikiMode == 'locomotives' ? locoHeaders : carHeaders" @click="toggleSorter(header)">
+              <th v-for="header in wikiMode == 'locomotives' ? locoHeaders : carHeaders" @click="toggleSorter(header)" :key="header.id">
                 {{ $t(`wiki.header.${header.id}`) }}
 
                 <span v-if="currentModeSorter.id == header.id">
@@ -37,23 +37,25 @@
           <tbody v-if="wikiMode == 'locomotives'">
             <tr
               v-for="loco in computedLocoList"
+              :key="loco.type"
               @click="previewLocomotive(loco)"
               @keydown.enter="previewLocomotive(loco)"
               @dblclick="addLocomotive(loco)"
               tabindex="0"
             >
               <td>
-                <img
-                  :src="`https://spythere.github.io/api/td2/images/${loco.type}--300px.jpg`"
-                  loading="lazy"
-                  :alt="`Lokomotywa ${loco.type}`"
-                />
+                <object :data="getThumbnailURL(loco.type, 'small')" type="image/jpeg">
+                  <!-- <img src="default.jpg" /> -->
+                  <div>?</div>
+                </object>
               </td>
 
               <td>{{ loco.type }}</td>
               <td>{{ $t(`wiki.${loco.power}`) }}</td>
               <td>{{ loco.constructionType }}</td>
-              <td>{{ locoSupportsColdStart(loco.constructionType) ? `&check;` : '&cross;' }}</td>
+              <td>
+                {{ locoSupportsColdStart(loco.constructionType) ? `&check;` : '&cross;' }}
+              </td>
               <td>{{ loco.length }}m</td>
               <td>{{ loco.mass }}t</td>
               <td>{{ loco.maxSpeed }}km/h</td>
@@ -63,17 +65,22 @@
           <tbody v-else>
             <tr
               v-for="car in computedCarList"
+              :key="car.type"
               @keydow.enter="previewCarWagon(car)"
               @click="previewCarWagon(car)"
               @dblclick="addCarWagon(car)"
               tabindex="0"
             >
               <td>
-                <img
-                  :src="`https://spythere.github.io/api/td2/images/${car.type}--300px.jpg`"
+                <!-- <img
+                  :src="getThumbnailURL(car.type, 'small')"
                   loading="lazy"
-                  :alt="`Lokomotywa ${car.type}`"
-                />
+                  :alt="`${car.type}`"
+                /> -->
+                <object :data="getThumbnailURL(car.type, 'small')" type="image/jpeg" loading="lazy">
+                  <!-- <img src="default.jpg" /> -->
+                  <div>?</div>
+                </object>
               </td>
 
               <td>{{ car.type }}</td>
@@ -81,7 +88,9 @@
               <td>{{ car.length }}m</td>
               <td>{{ car.mass }}t</td>
               <td>{{ car.maxSpeed }}km/h</td>
-              <td>{{ car.cargoList.length == 0 ? '-' : car.cargoList.length }}</td>
+              <td>
+                {{ car.cargoList.length == 0 ? '-' : car.cargoList.length }}
+              </td>
             </tr>
           </tbody>
         </table>
@@ -97,19 +106,11 @@ import stockPreviewMixin from '../../mixins/stockPreviewMixin';
 import { Vehicle } from '../../types';
 import { isLocomotive } from '../../utils/vehicleUtils';
 import stockMixin from '../../mixins/stockMixin';
+import imageMixin from '../../mixins/imageMixin';
 import { locoSupportsColdStart } from '../../utils/locoUtils';
 
 type WikiMode = 'locomotives' | 'carWagons';
-type SorterID =
-  | 'type'
-  | 'constructionType'
-  | 'image'
-  | 'length'
-  | 'mass'
-  | 'maxSpeed'
-  | 'cargoCount'
-  | 'power'
-  | 'coldStart';
+type SorterID = 'type' | 'constructionType' | 'image' | 'length' | 'mass' | 'maxSpeed' | 'cargoCount' | 'power' | 'coldStart';
 
 interface WikiHeader {
   id: SorterID;
@@ -138,7 +139,7 @@ const carHeaders: WikiHeader[] = [
 ];
 
 export default defineComponent({
-  mixins: [stockPreviewMixin, stockMixin],
+  mixins: [stockPreviewMixin, stockMixin, imageMixin],
 
   data() {
     return {
@@ -166,7 +167,9 @@ export default defineComponent({
 
   activated() {
     const tableWrapperRef = this.$refs['table-wrapper'] as HTMLElement;
-    tableWrapperRef.scrollTo({ top: this.wikiMode == 'locomotives' ? this.locosScrollTop : this.carsScrollTop });
+    tableWrapperRef.scrollTo({
+      top: this.wikiMode == 'locomotives' ? this.locosScrollTop : this.carsScrollTop,
+    });
   },
 
   methods: {
@@ -208,13 +211,11 @@ export default defineComponent({
 
         case 'cargoCount':
           if (vehiclesAreCars) return Math.sign((vA.cargoList.length || -1) - (vB.cargoList.length || -1)) * direction;
+          break;
 
         case 'coldStart':
-          if (vehiclesAreLocos)
-            return (
-              (locoSupportsColdStart(vA.constructionType) > locoSupportsColdStart(vB.constructionType) ? 1 : -1) *
-              direction
-            );
+          if (vehiclesAreLocos) return (locoSupportsColdStart(vA.constructionType) > locoSupportsColdStart(vB.constructionType) ? 1 : -1) * direction;
+          break;
 
         default:
           break;
@@ -232,17 +233,13 @@ export default defineComponent({
     computedLocoList() {
       const trimmedSearchValue = this.searchedVehicleTypeName.trim();
 
-      return this.store.locoDataList
-        .filter((loco) => new RegExp(`${trimmedSearchValue}`, 'i').test(loco.type))
-        .sort(this.sortVehicles);
+      return this.store.locoDataList.filter((loco) => new RegExp(`${trimmedSearchValue}`, 'i').test(loco.type)).sort(this.sortVehicles);
     },
 
     computedCarList() {
       const trimmedSearchValue = this.searchedVehicleTypeName.trim();
 
-      return this.store.carDataList
-        .filter((car) => new RegExp(`${trimmedSearchValue}`, 'i').test(car.type))
-        .sort(this.sortVehicles);
+      return this.store.carDataList.filter((car) => new RegExp(`${trimmedSearchValue}`, 'i').test(car.type)).sort(this.sortVehicles);
     },
   },
 });
@@ -319,9 +316,14 @@ export default defineComponent({
     width: 120px;
   }
 
-  td img {
-    display: block;
-    width: 120px;
+  td object[type='image/jpeg'] {
+    display: flex;
+    max-width: 120px;
+    min-height: 60px;
+
+    div {
+      margin: auto;
+    }
   }
 }
 
