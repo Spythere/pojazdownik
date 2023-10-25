@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap');
 
 $breakpointMd: 960px;
 $breakpointSm: 550px;
@@ -32,7 +32,7 @@ html {
   margin: 0;
   padding: 0;
 
-  font-family: "Lato", sans-serif;
+  font-family: 'Lato', sans-serif;
 
   background-color: $bgColor;
   overflow-x: hidden;
@@ -64,7 +64,7 @@ select,
 option,
 input,
 button {
-  font-family: "Lato", sans-serif;
+  font-family: 'Lato', sans-serif;
   font-size: 1em;
 }
 
@@ -94,7 +94,9 @@ button {
   border-radius: 8px;
   font-weight: bold;
 
-  transition: all 250ms;
+  transition:
+    color 150ms,
+    background-color 150ms;
 
   &:hover {
     color: $accentColor;
@@ -111,7 +113,14 @@ button {
     outline: 1px solid white;
   }
 
-  &[data-disabled="true"] {
+  &[data-chosen='true'] {
+    background-color: $accentColor;
+    color: black;
+
+    box-shadow: 0 0 5px 1px $accentColor;
+  }
+
+  &[data-disabled='true'] {
     user-select: none;
     pointer-events: none;
     -moz-user-select: none;
@@ -146,8 +155,8 @@ button {
 }
 
 select,
-input[type="text"],
-input[type="number"] {
+input[type='text'],
+input[type='number'] {
   background: none;
   border: 2px solid #aaa;
   outline: none;

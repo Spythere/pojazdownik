@@ -35,7 +35,7 @@
     "loco-ezt": "ELECTRIC M.U.",
     "loco-szt": "DIESEL M.U.",
     "car-passenger": "PASSENGER CARRIAGE",
-    "car-cargo": "FREIGHT CAR",
+    "car-cargo": "FREIGHT CARRIAGE",
     "cabin": "Cabin type:",
     "construction": "Construction type:"
   },
@@ -139,7 +139,9 @@
     "loco-ezt": "EMU",
     "loco-szt": "DMU",
     "loco-s": "Diesel locomotive",
-    "loco-e": "Electric locomotive"
+    "loco-e": "Electric locomotive",
+    "car-passenger": "Passenger carriage",
+    "car-cargo": "Frieght carriage"
   },
   "realstock": {
     "title": "POLISH TRAIN COMPOSITIONS by",

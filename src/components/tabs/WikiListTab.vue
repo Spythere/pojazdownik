@@ -7,10 +7,10 @@
     <div class="tab_content">
       <div class="actions-panel">
         <div class="actions-panel_vehicles">
-          <button class="btn btn--choice" @click="changeWikiMode('locomotives')">
+          <button class="btn" :data-chosen="filters.tractions" @click="toggleFilter('tractions')">
             {{ $t('wiki.action-vehicles') }}
           </button>
-          <button class="btn btn--choice" @click="changeWikiMode('carWagons')">
+          <button class="btn" :data-chosen="filters.carriages" @click="toggleFilter('carriages')">
             {{ $t('wiki.action-carriages') }}
           </button>
         </div>
@@ -20,79 +20,52 @@
         </div>
       </div>
 
-      <div class="table-wrapper" @scroll="scrollEvent" ref="table-wrapper">
+      <div class="table-wrapper" ref="table-wrapper">
         <table>
           <thead>
             <tr>
-              <th v-for="header in wikiMode == 'locomotives' ? locoHeaders : carHeaders" @click="toggleSorter(header)" :key="header.id">
+              <th v-for="header in visibleHeaders" @click="toggleSorter(header)" :key="header.id">
                 {{ $t(`wiki.header.${header.id}`) }}
 
-                <span v-if="currentModeSorter.id == header.id">
-                  {{ currentModeSorter.direction == 1 ? `&uArr;` : `&dArr;` }}
+                <span v-if="currentSorter.id == header.id">
+                  {{ currentSorter.direction == 1 ? `&uArr;` : `&dArr;` }}
                 </span>
               </th>
             </tr>
           </thead>
 
-          <tbody v-if="wikiMode == 'locomotives'">
-            <tr
-              v-for="loco in computedLocoList"
-              :key="loco.type"
-              @click="previewLocomotive(loco)"
-              @keydown.enter="previewLocomotive(loco)"
-              @dblclick="addLocomotive(loco)"
-              tabindex="0"
-            >
-              <td>
-                <object :data="getThumbnailURL(loco.type, 'small')" type="image/jpeg">
-                  <!-- <img src="default.jpg" /> -->
-                  <div>?</div>
-                </object>
-              </td>
-
-              <td>{{ loco.type }}</td>
-              <td>{{ $t(`wiki.${loco.power}`) }}</td>
-              <td>{{ loco.constructionType }}</td>
-              <td>
-                {{ locoSupportsColdStart(loco.constructionType) ? `&check;` : '&cross;' }}
-              </td>
-              <td>{{ loco.length }}m</td>
-              <td>{{ loco.mass }}t</td>
-              <td>{{ loco.maxSpeed }}km/h</td>
-            </tr>
-          </tbody>
-
-          <tbody v-else>
-            <tr
-              v-for="car in computedCarList"
-              :key="car.type"
-              @keydow.enter="previewCarWagon(car)"
-              @click="previewCarWagon(car)"
-              @dblclick="addCarWagon(car)"
-              tabindex="0"
-            >
-              <td>
-                <!-- <img
-                  :src="getThumbnailURL(car.type, 'small')"
+          <!--     @click="previewLocomotive(vehicle)"
+              @keydown.enter="previewLocomotive(vehicle)"
+              @dblclick="addLocomotive(vehicle)"
+             -->
+          <tbody>
+            <tr v-for="vehicle in computedVehicleList" v-show="vehicle.show" :key="vehicle.type" tabindex="0">
+              <td style="width: 120px">
+                <img
+                  width="120"
+                  :src="getThumbnailURL(vehicle.type, 'small')"
+                  :alt="`${vehicle.type}`"
                   loading="lazy"
-                  :alt="`${car.type}`"
-                /> -->
-                <object :data="getThumbnailURL(car.type, 'small')" type="image/jpeg" loading="lazy">
-                  <!-- <img src="default.jpg" /> -->
-                  <div>?</div>
-                </object>
+                  @error="(e) => ((e.target as HTMLElement).style.display = 'none')"
+                />
               </td>
 
-              <td>{{ car.type }}</td>
-              <td>{{ car.constructionType }}</td>
-              <td>{{ car.length }}m</td>
-              <td>{{ car.mass }}t</td>
-              <td>{{ car.maxSpeed }}km/h</td>
-              <td>
-                {{ car.cargoList.length == 0 ? '-' : car.cargoList.length }}
+              <td>{{ vehicle.type }}</td>
+              <!-- <td>{{ $t(`wiki.${vehicle.power || vehicle.}`) }}</td> -->
+              <td v-if="isLocomotive(vehicle)">{{ $t(`wiki.${vehicle.power}`) }}</td>
+              <td v-else>{{ $t(`wiki.${vehicle.useType}`) }}</td>
+              <td>{{ vehicle.constructionType }}</td>
+              <td>{{ vehicle.length }}m</td>
+              <td>{{ vehicle.mass }}t</td>
+              <td>{{ vehicle.maxSpeed }}km/h</td>
+              <td v-if="!filters.tractions && filters.carriages">{{ !isLocomotive(vehicle) ? vehicle.cargoList.length ?? '---' : 'niedost.' }}</td>
+              <td v-if="filters.tractions && !filters.carriages">
+                {{ isLocomotive(vehicle) ? (locoSupportsColdStart(vehicle.constructionType) ? `&check;` : '&cross;') : '---' }}
               </td>
             </tr>
           </tbody>
+
+          <span ref="table-bottom"></span>
         </table>
       </div>
     </div>
@@ -109,34 +82,35 @@ import stockMixin from '../../mixins/stockMixin';
 import imageMixin from '../../mixins/imageMixin';
 import { locoSupportsColdStart } from '../../utils/locoUtils';
 
-type WikiMode = 'locomotives' | 'carWagons';
 type SorterID = 'type' | 'constructionType' | 'image' | 'length' | 'mass' | 'maxSpeed' | 'cargoCount' | 'power' | 'coldStart';
 
 interface WikiHeader {
   id: SorterID;
   sortable: boolean;
+  for: 'all' | 'carriages' | 'tractions';
 }
 
-const locoHeaders: WikiHeader[] = [
-  { id: 'image', sortable: false },
-  { id: 'type', sortable: true },
-  { id: 'power', sortable: true },
-  { id: 'constructionType', sortable: true },
-  { id: 'coldStart', sortable: true },
-  { id: 'length', sortable: true },
-  { id: 'mass', sortable: true },
-  { id: 'maxSpeed', sortable: true },
+const headers: WikiHeader[] = [
+  { id: 'image', sortable: false, for: 'all' },
+  { id: 'type', sortable: true, for: 'all' },
+  { id: 'power', sortable: true, for: 'all' },
+  { id: 'constructionType', sortable: true, for: 'all' },
+  { id: 'length', sortable: true, for: 'all' },
+  { id: 'mass', sortable: true, for: 'all' },
+  { id: 'maxSpeed', sortable: true, for: 'all' },
+  { id: 'coldStart', sortable: true, for: 'tractions' },
+  { id: 'cargoCount', sortable: true, for: 'carriages' },
 ];
 
-const carHeaders: WikiHeader[] = [
-  { id: 'image', sortable: false },
-  { id: 'type', sortable: true },
-  { id: 'constructionType', sortable: true },
-  { id: 'length', sortable: true },
-  { id: 'mass', sortable: true },
-  { id: 'maxSpeed', sortable: true },
-  { id: 'cargoCount', sortable: true },
-];
+// const carHeaders: WikiHeader[] = [
+//   { id: 'image', sortable: false },
+//   { id: 'type', sortable: true },
+//   { id: 'constructionType', sortable: true },
+//   { id: 'length', sortable: true },
+//   { id: 'mass', sortable: true },
+//   { id: 'maxSpeed', sortable: true },
+//   { id: 'cargoCount', sortable: true },
+// ];
 
 export default defineComponent({
   mixins: [stockPreviewMixin, stockMixin, imageMixin],
@@ -144,58 +118,50 @@ export default defineComponent({
   data() {
     return {
       store: useStore(),
-      locoHeaders,
-      carHeaders,
+      headers,
 
       locosScrollTop: 0,
       carsScrollTop: 0,
 
-      wikiMode: 'locomotives' as WikiMode,
       searchedVehicleTypeName: '',
 
-      currentLocoSorter: {
+      currentSorter: {
         id: 'type' as SorterID,
         direction: 1,
       },
 
-      currentCarSorter: {
-        id: 'type' as SorterID,
-        direction: 1,
+      filters: {
+        tractions: true,
+        carriages: true,
       },
     };
   },
 
   activated() {
     const tableWrapperRef = this.$refs['table-wrapper'] as HTMLElement;
-    tableWrapperRef.scrollTo({
-      top: this.wikiMode == 'locomotives' ? this.locosScrollTop : this.carsScrollTop,
-    });
+
+    // tableWrapperRef.scrollTo({
+    //   top: this.wikiMode == 'locomotives' ? this.locosScrollTop : this.carsScrollTop,
+    // });
   },
 
   methods: {
     locoSupportsColdStart,
+    isLocomotive,
 
-    scrollEvent(e: Event) {
-      const tableScrollTop = (e.target as HTMLElement).scrollTop;
-
-      if (this.wikiMode == 'locomotives') this.locosScrollTop = tableScrollTop;
-      else this.carsScrollTop = tableScrollTop;
-    },
-
-    changeWikiMode(wikiMode: WikiMode) {
-      this.searchedVehicleTypeName = '';
-      this.wikiMode = wikiMode;
+    toggleFilter(name: keyof typeof this.filters) {
+      this.filters[name] = !this.filters[name];
     },
 
     toggleSorter(header: WikiHeader) {
       if (!header.sortable) return;
 
-      if (header.id == this.currentModeSorter.id) this.currentModeSorter.direction *= -1;
-      this.currentModeSorter.id = header.id;
+      if (header.id == this.currentSorter.id) this.currentSorter.direction *= -1;
+      this.currentSorter.id = header.id;
     },
 
     sortVehicles(vA: Vehicle, vB: Vehicle) {
-      const { id, direction } = this.currentModeSorter;
+      const { id, direction } = this.currentSorter;
       const vehiclesAreLocos = isLocomotive(vA) && isLocomotive(vB);
       const vehiclesAreCars = !isLocomotive(vA) && !isLocomotive(vB);
 
@@ -226,21 +192,33 @@ export default defineComponent({
   },
 
   computed: {
-    currentModeSorter() {
-      return this.wikiMode == 'carWagons' ? this.currentCarSorter : this.currentLocoSorter;
+    computedVehicleList() {
+      return this.store.vehicleDataList
+        .map((vehicle) => ({
+          ...vehicle,
+          show:
+            new RegExp(`${this.searchedVehicleTypeName.trim()}`, 'i').test(vehicle.type) &&
+            ((this.filters.tractions && isLocomotive(vehicle)) || (this.filters.carriages && !isLocomotive(vehicle))),
+        }))
+        .sort(this.sortVehicles);
     },
 
-    computedLocoList() {
-      const trimmedSearchValue = this.searchedVehicleTypeName.trim();
+    visibleHeaders() {
+      const filtersActive =
+        this.filters.carriages && this.filters.tractions ? 'all' : this.filters.carriages ? 'carriages' : this.filters.tractions ? 'tractions' : null;
 
-      return this.store.locoDataList.filter((loco) => new RegExp(`${trimmedSearchValue}`, 'i').test(loco.type)).sort(this.sortVehicles);
+      console.log(filtersActive);
+
+      return this.headers.filter((header) => header.for == 'all' || header.for == filtersActive);
     },
 
-    computedCarList() {
-      const trimmedSearchValue = this.searchedVehicleTypeName.trim();
+    // computedCarList() {
+    //   const trimmedSearchValue = this.searchedVehicleTypeName.trim();
 
-      return this.store.carDataList.filter((car) => new RegExp(`${trimmedSearchValue}`, 'i').test(car.type)).sort(this.sortVehicles);
-    },
+    //   return this.store.carDataList.map((car) =>({
+
+    //   })).sort(this.sortVehicles);
+    // },
   },
 });
 </script>
@@ -297,6 +275,10 @@ export default defineComponent({
     cursor: pointer;
     background-color: #333;
 
+    &:first-child {
+      min-width: 120px;
+    }
+
     &:nth-child(odd) {
       background-color: #444;
     }
@@ -308,34 +290,18 @@ export default defineComponent({
 
   td {
     text-align: center;
-    padding: 0.25em;
-    height: 85px;
-  }
-
-  td:first-child {
-    width: 120px;
-  }
-
-  td object[type='image/jpeg'] {
-    display: flex;
-    max-width: 120px;
-    min-height: 60px;
-
-    div {
-      margin: auto;
-    }
+    height: 70px;
   }
 }
 
 @media screen and (max-width: $breakpointMd) {
   .wiki-list table {
-    td {
-      width: 100px;
-      height: auto;
+    th {
+      min-width: 100px;
+    }
 
-      img {
-        width: 6em;
-      }
+    img {
+      max-width: 100px;
     }
   }
 }

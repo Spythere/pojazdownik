@@ -52,6 +52,7 @@ export const useStore = defineStore({
   getters: {
     locoDataList: (state) => locoDataList(state),
     carDataList: (state) => carDataList(state),
+    vehicleDataList: (state) => ([...locoDataList(state), ...carDataList(state)]),
     totalMass: (state) => totalMass(state),
     totalLength: (state) => totalLength(state),
     maxStockSpeed: (state) => maxStockSpeed(state),

@@ -139,7 +139,9 @@
     "loco-ezt": "EZT",
     "loco-szt": "SZT",
     "loco-s": "Spalinowóz",
-    "loco-e": "Elektrowóz"
+    "loco-e": "Elektrowóz",
+    "car-passenger": "Wagon pasażerski",
+    "car-cargo": "Wagon towarowy" 
   },
   "realstock": {
     "title": "ZESTAWIENIA REALNE by",
