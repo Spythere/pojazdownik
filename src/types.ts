@@ -1,5 +1,5 @@
 export type Vehicle = ILocomotive | ICarWagon;
-export type StockSectionMode = "STOCK_LIST" | "STOCK_GENERATOR";
+export type StockSectionMode = 'STOCK_LIST' | 'STOCK_GENERATOR';
 
 export interface IStore {
   chosenCar: ICarWagon | null;
@@ -28,21 +28,14 @@ export interface IStore {
   isRandomizerCardOpen: boolean;
   isRealStockListCardOpen: boolean;
 
-  stockSectionMode:
-    | "stock-list"
-    | "stock-generator"
-    | "number-generator"
-    | "wiki-list";
+  stockSectionMode: 'stock-list' | 'stock-generator' | 'number-generator' | 'wiki-list';
   stockData?: IStockData;
+
+  lastFocusedElement: HTMLElement | null;
 }
 
-export type TStockInfoKey =
-  | "loco-e"
-  | "loco-s"
-  | "loco-ezt"
-  | "loco-szt"
-  | "car-passenger"
-  | "car-cargo";
+export type TLocoGroup = 'loco-e' | 'loco-s' | 'loco-ezt' | 'loco-szt';
+export type TCarWagonGroup = 'car-passenger' | 'car-cargo';
 
 export interface IStockProps {
   type: string;
@@ -62,12 +55,12 @@ export interface IStockData {
   };
 
   info: {
-    "car-cargo": [string, string, boolean, boolean, string][];
-    "car-passenger": [string, string, boolean, boolean, string][];
-    "loco-e": [string, string, string, string, boolean][];
-    "loco-s": [string, string, string, string, boolean][];
-    "loco-szt": [string, string, string, string, boolean][];
-    "loco-ezt": [string, string, string, string, boolean][];
+    'car-cargo': [string, string, boolean, number | null, string][];
+    'car-passenger': [string, string, boolean, number | null, string][];
+    'loco-e': [string, string, string, string, number | null][];
+    'loco-s': [string, string, string, string, number | null][];
+    'loco-szt': [string, string, string, string, number | null][];
+    'loco-ezt': [string, string, string, string, number | null][];
   };
 
   props: IStockProps[];
@@ -77,11 +70,13 @@ export interface IStockData {
 
 export interface ILocomotive {
   type: string;
-  power: string;
+  power: TLocoGroup;
+  group: TLocoGroup;
   constructionType: string;
   cabinType: string;
   maxSpeed: number;
-  supportersOnly: boolean;
+  isSponsorsOnly: boolean;
+  sponsorsOnlyTimestamp: number;
   imageSrc: string;
 
   mass: number;
@@ -90,10 +85,12 @@ export interface ILocomotive {
 
 export interface ICarWagon {
   type: string;
-  useType: "car-passenger" | "car-cargo";
+  useType: TCarWagonGroup;
+  group: TCarWagonGroup;
   constructionType: string;
   loadable: boolean;
-  supportersOnly: boolean;
+  isSponsorsOnly: boolean;
+  sponsorsOnlyTimestamp: number;
   maxSpeed: number;
   imageSrc: string;
 
@@ -117,7 +114,8 @@ export interface IStock {
   maxSpeed: number;
   cargo?: { id: string; totalMass: number };
   isLoco: boolean;
-  supportersOnly: boolean;
+  isSponsorsOnly: boolean;
+  sponsorsOnlyTimestamp: number;
   count: number;
   imgSrc?: string;
 }

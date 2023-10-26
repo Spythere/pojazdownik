@@ -54,10 +54,4 @@ h2 {
 
   color: #d1d1d1;
 }
-
-@media screen and (max-width: $breakpointMd) {
-  #app {
-    font-size: calc(0.7rem + 0.75vw);
-  }
-}
 </style>

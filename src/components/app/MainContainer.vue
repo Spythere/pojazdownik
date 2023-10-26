@@ -27,7 +27,7 @@ main {
   gap: 1em;
 
   width: 100%;
-  max-width: 1500px;
+  max-width: 1300px;
   min-height: 75vh;
 
   grid-template-columns: 1fr 2fr;

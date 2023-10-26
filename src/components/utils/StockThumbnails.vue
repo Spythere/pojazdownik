@@ -10,7 +10,7 @@
       @dragover="allowDrop"
     >
       <span @click="onListItemClick(stockIndex)" :key="stock.id">
-        <b :class="{ supporter: stock.supportersOnly }">
+        <b :class="{ sponsor: stock.isSponsorsOnly }">
           {{ stock.type }}
         </b>
 
@@ -29,18 +29,18 @@
 </template>
 
 <script setup lang="ts">
-import { Ref, computed, nextTick, ref, watch } from "vue";
-import { useStore } from "../../store";
-import { IStock } from "../../types";
+import { Ref, computed, nextTick, ref, watch } from 'vue';
+import { useStore } from '../../store';
+import { IStock } from '../../types';
 
 const store = useStore();
-const emit = defineEmits(["listItemClick"]);
+const emit = defineEmits(['listItemClick']);
 
 const thumbnailsRef = ref() as Ref<HTMLElement>;
 const draggedIndex = ref(-1);
 
 const onListItemClick = (index: number) => {
-  emit("listItemClick", index);
+  emit('listItemClick', index);
 };
 
 const stockImageError = (e: Event, stock: IStock) => {
@@ -53,15 +53,13 @@ watch(
     if (index < 0) return;
 
     nextTick(() => {
-      (thumbnailsRef.value as HTMLElement)
-        .querySelector(`div:nth-child(${index + 1})`)
-        ?.scrollIntoView({
-          block: "nearest",
-          inline: "start",
-          behavior: "smooth",
-        });
+      (thumbnailsRef.value as HTMLElement).querySelector(`div:nth-child(${index + 1})`)?.scrollIntoView({
+        block: 'nearest',
+        inline: 'start',
+        behavior: 'smooth',
+      });
     });
-  },
+  }
 );
 
 // Dragging images
@@ -72,9 +70,7 @@ const onDragStart = (vehicleIndex: number) => {
 const onDrop = (e: DragEvent, vehicleIndex: number) => {
   e.preventDefault();
 
-  let targetEl = thumbnailsRef.value.querySelector(
-    `div:nth-child(${vehicleIndex + 1})`,
-  );
+  let targetEl = thumbnailsRef.value.querySelector(`div:nth-child(${vehicleIndex + 1})`);
 
   if (!targetEl && draggedIndex.value != -1) return;
 
@@ -102,7 +98,7 @@ const allowDrop = (e: DragEvent) => {
     cursor: pointer;
     min-height: 100px;
 
-    &[data-selected="true"] {
+    &[data-selected='true'] {
       background-color: rebeccapurple;
     }
 
@@ -125,7 +121,7 @@ const allowDrop = (e: DragEvent) => {
   }
 }
 
-.supporter {
+.sponsor {
   color: salmon;
 }
 </style>
