@@ -7,6 +7,7 @@
         <div class="vehicle-types locos">
           <button
             v-for="locoType in locomotiveTypeList"
+            :key="locoType.id"
             class="btn btn--choice"
             :data-selected="locoType.id == store.chosenLocoPower"
             @click="selectLocoType(locoType.id)"
@@ -23,10 +24,10 @@
           @keydown.enter.prevent="addOrSwitchVehicle"
           @keydown.backspace="removeVehicle"
         >
-          <option :value="null" disabled>{{ $t('inputs.input-vehicle') }}</option>
-          <option v-for="loco in locoOptions" :value="loco" :key="loco.type">
-            {{ loco.type }}<b v-if="loco.supportersOnly">*</b>
+          <option :value="null" disabled>
+            {{ $t('inputs.input-vehicle') }}
           </option>
+          <option v-for="loco in locoOptions" :value="loco" :key="loco.type">{{ loco.type }}<b v-if="loco.isSponsorsOnly">*</b></option>
         </select>
       </div>
 
@@ -34,6 +35,7 @@
         <div class="vehicle-types carwagons">
           <button
             v-for="carType in carTypeList"
+            :key="carType.id"
             class="btn btn--choice"
             :data-selected="carType.id == store.chosenCarUseType"
             @click="selectCarWagonType(carType.id)"
@@ -50,11 +52,11 @@
           @keydown.enter.prevent="addOrSwitchVehicle"
           @keydown.backspace="removeVehicle"
         >
-          <option :value="null" disabled>{{ $t('inputs.input-carwagon') }}</option>
-
-          <option v-for="car in carOptions" :value="car" :key="car.type">
-            {{ car.type }}<b v-if="car.supportersOnly">*</b>
+          <option :value="null" disabled>
+            {{ $t('inputs.input-carwagon') }}
           </option>
+
+          <option v-for="car in carOptions" :value="car" :key="car.type">{{ car.type }}<b v-if="car.isSponsorsOnly">*</b></option>
         </select>
       </div>
 
@@ -63,9 +65,7 @@
         <select
           id="cargo-select"
           :disabled="
-            (store.chosenCar && !store.chosenCar.loadable) ||
-            (store.chosenCar && store.chosenCar.useType == 'car-passenger') ||
-            !store.chosenCar
+            (store.chosenCar && !store.chosenCar.loadable) || (store.chosenCar && store.chosenCar.useType == 'car-passenger') || !store.chosenCar
           "
           data-select="cargo"
           data-ignore-outside="1"
@@ -90,12 +90,7 @@
         <button class="btn" @click="addVehicle(store.chosenVehicle, store.chosenCargo)">
           {{ $t('inputs.action-add') }}
         </button>
-        <button
-          class="btn"
-          @click="switchVehicles"
-          :disabled="store.chosenStockListIndex == -1"
-          :data-disabled="store.chosenStockListIndex == -1"
-        >
+        <button class="btn" @click="switchVehicles" :disabled="store.chosenStockListIndex == -1" :data-disabled="store.chosenStockListIndex == -1">
           {{ $t('inputs.action-swap') }}
           <b class="text--accent">
             {{ store.chosenStockListIndex == -1 ? '' : `${store.chosenStockListIndex + 1}.` }}
@@ -122,6 +117,7 @@ export default defineComponent({
   mixins: [imageMixin, stockPreviewMixin, stockMixin],
 
   data: () => ({
+    store: useStore(),
     locomotiveTypeList: [
       {
         id: 'loco-e',
@@ -153,12 +149,20 @@ export default defineComponent({
     ],
   }),
 
-  setup() {
-    const store = useStore();
+  computed: {
+    locoOptions() {
+      return this.store.locoDataList
+        .slice()
+        .sort((a, b) => (a.type > b.type ? 1 : -1))
+        .filter((loco) => loco.power == this.store.chosenLocoPower);
+    },
 
-    return {
-      store,
-    };
+    carOptions() {
+      return this.store.carDataList
+        .slice()
+        .sort((a, b) => (a.type > b.type ? 1 : -1))
+        .filter((car) => car.useType == this.store.chosenCarUseType);
+    },
   },
 
   methods: {
@@ -192,6 +196,29 @@ export default defineComponent({
       const stockObject = this.getStockObject(vehicle, this.store.chosenCargo);
       this.store.stockList[this.store.chosenStockListIndex] = stockObject;
     },
+
+    selectLocoType(locoTypeId: string) {
+      this.store.chosenLocoPower = locoTypeId;
+      this.store.chosenVehicle = this.locoOptions[0];
+      this.store.chosenLoco = this.locoOptions[0];
+    },
+
+    selectCarWagonType(carWagonTypeId: string) {
+      this.store.chosenCarUseType = carWagonTypeId;
+      this.store.chosenVehicle = this.carOptions[0];
+      this.store.chosenCar = this.carOptions[0];
+      this.store.chosenCargo = null;
+    },
+
+    previewVehicleByType(type: 'loco' | 'car' | 'cargo') {
+      this.$nextTick(() => {
+        if (!this.store.chosenLoco && !this.store.chosenCar) return;
+
+        this.store.chosenVehicle = type == 'loco' ? this.store.chosenLoco : this.store.chosenCar;
+
+        this.store.chosenCargo = this.store.chosenCar?.cargoList.find((cargo) => cargo.id == this.store.chosenCargo?.id) || null;
+      });
+    },
   },
 });
 </script>
@@ -205,6 +232,11 @@ export default defineComponent({
 
   grid-row: 2;
   grid-column: 1;
+}
+
+.input_container {
+  width: 100%;
+  max-width: 380px;
 }
 
 .input_header {
@@ -225,6 +257,10 @@ button.btn--choice {
 
 .input_list {
   margin: 0.5em 0;
+
+  select {
+    width: 100%;
+  }
 
   label {
     display: block;
@@ -267,4 +303,3 @@ button.btn--choice {
   }
 }
 </style>
-

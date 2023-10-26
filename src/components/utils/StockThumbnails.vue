@@ -2,6 +2,7 @@
   <div class="stock_thumbnails" ref="thumbnailsRef">
     <div
       v-for="(stock, stockIndex) in store.stockList"
+      :key="stockIndex"
       :data-selected="store.chosenStockListIndex == stockIndex"
       draggable="true"
       @dragstart="onDragStart(stockIndex)"
@@ -9,7 +10,7 @@
       @dragover="allowDrop"
     >
       <span @click="onListItemClick(stockIndex)" :key="stock.id">
-        <b :class="{ supporter: stock.supportersOnly }">
+        <b :class="{ sponsor: stock.isSponsorsOnly }">
           {{ stock.type }}
         </b>
 
@@ -52,9 +53,11 @@ watch(
     if (index < 0) return;
 
     nextTick(() => {
-      (thumbnailsRef.value as HTMLElement)
-        .querySelector(`div:nth-child(${index + 1})`)
-        ?.scrollIntoView({ block: 'nearest', inline: 'start', behavior: 'smooth' });
+      (thumbnailsRef.value as HTMLElement).querySelector(`div:nth-child(${index + 1})`)?.scrollIntoView({
+        block: 'nearest',
+        inline: 'start',
+        behavior: 'smooth',
+      });
     });
   }
 );
@@ -118,8 +121,7 @@ const allowDrop = (e: DragEvent) => {
   }
 }
 
-.supporter {
+.sponsor {
   color: salmon;
 }
 </style>
-

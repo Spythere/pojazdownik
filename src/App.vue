@@ -18,11 +18,6 @@ export default defineComponent({
     };
   },
   async created() {
-    /* dev info testing */
-    // if (import.meta.env['VITE_STOCK_DEV'] == '1') {
-    //   const data = await import('../stockInfoDev.json');
-    //   this.store.stockData = data.default as any;
-    // }
     this.store.fetchStockInfoData();
     this.store.handleRouting();
   },
@@ -59,11 +54,4 @@ h2 {
 
   color: #d1d1d1;
 }
-
-@media screen and (max-width: $breakpointMd) {
-  #app {
-    font-size: calc(0.7rem + 0.75vw);
-  }
-}
 </style>
-

@@ -1,4 +1,4 @@
-import { IStore } from './types';
+import { IStockData, IStore } from './types';
 import { defineStore } from 'pinia';
 import {
   acceptableMass,
@@ -10,6 +10,7 @@ import {
   totalLength,
   totalMass,
 } from './utils/vehicleUtils';
+import http from './http';
 
 export const useStore = defineStore({
   id: 'store',
@@ -46,11 +47,14 @@ export const useStore = defineStore({
       isRealStockListCardOpen: false,
 
       stockData: undefined,
-    } as IStore),
+
+      lastFocusedElement: null,
+    }) as IStore,
 
   getters: {
     locoDataList: (state) => locoDataList(state),
     carDataList: (state) => carDataList(state),
+    vehicleDataList: (state) => [...locoDataList(state), ...carDataList(state)],
     totalMass: (state) => totalMass(state),
     totalLength: (state) => totalLength(state),
     maxStockSpeed: (state) => maxStockSpeed(state),
@@ -61,7 +65,7 @@ export const useStore = defineStore({
 
   actions: {
     async fetchStockInfoData() {
-      const stockData = await (await fetch(`https://spythere.github.io/api/td2/data/stockInfo.json`)).json();
+      const stockData = (await http.get<IStockData>('td2/data/stockInfo.json')).data;
       this.stockData = stockData;
     },
 
@@ -82,5 +86,3 @@ export const useStore = defineStore({
     },
   },
 });
-
-

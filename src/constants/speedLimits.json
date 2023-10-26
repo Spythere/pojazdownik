@@ -27,6 +27,12 @@
     },
     "cargo": null
   },
+  "EP09": {
+    "passenger": {
+      "650": 160
+    },
+    "cargo": null
+  },
   "ET41": {
     "passenger": {
       "700": 125
@@ -58,5 +64,3 @@
     }
   }
 }
-
-

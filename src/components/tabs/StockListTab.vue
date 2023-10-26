@@ -5,14 +5,11 @@
     </div>
 
     <div class="stock_actions">
-      <label class="file-label">
-        <div class="btn btn--image">
-          <img src="/images/icon-upload.svg" alt="" />
-          {{ $t('stocklist.action-upload') }}
-        </div>
-
+      <button class="btn btn--image" @click="clickFileInput">
         <input type="file" @change="uploadStock" ref="conFile" accept=".con,.txt" />
-      </label>
+        <img src="/images/icon-upload.svg" alt="upload icon" />
+        {{ $t('stocklist.action-upload') }}
+      </button>
 
       <button class="btn btn--image" :data-disabled="stockIsEmpty" :disabled="stockIsEmpty" @click="downloadStock">
         <img src="/images/icon-download.svg" alt="download icon" />
@@ -37,36 +34,26 @@
 
     <div class="stock_controls" :data-disabled="store.chosenStockListIndex == -1">
       <b v-if="store.chosenStockListIndex >= 0">
-        {{ $t('stocklist.vehicle-no') }} <span class="text--accent">{{ store.chosenStockListIndex + 1 }}</span> &nbsp;
+        {{ $t('stocklist.vehicle-no') }}
+        <span class="text--accent">{{ store.chosenStockListIndex + 1 }}</span>
+        &nbsp;
       </b>
 
       <b v-else>
         {{ $t('stocklist.no-vehicle-chosen') }}
       </b>
 
-      <button
-        class="btn"
-        :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
-        @click="moveUpStock(store.chosenStockListIndex)"
-      >
+      <button class="btn" :tabindex="store.chosenStockListIndex == -1 ? -1 : 0" @click="moveUpStock(store.chosenStockListIndex)">
         <img :src="getIconURL('higher')" alt="move up vehicle" />
         {{ $t('stocklist.action-move-up') }}
       </button>
 
-      <button
-        class="btn"
-        :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
-        @click="moveDownStock(store.chosenStockListIndex)"
-      >
+      <button class="btn" :tabindex="store.chosenStockListIndex == -1 ? -1 : 0" @click="moveDownStock(store.chosenStockListIndex)">
         <img :src="getIconURL('lower')" alt="move down vehicle" />
         {{ $t('stocklist.action-move-down') }}
       </button>
 
-      <button
-        class="btn"
-        :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
-        @click="removeStock(store.chosenStockListIndex)"
-      >
+      <button class="btn" :tabindex="store.chosenStockListIndex == -1 ? -1 : 0" @click="removeStock(store.chosenStockListIndex)">
         <img :src="getIconURL('remove')" alt="remove vehicle" />
         {{ $t('stocklist.action-remove') }}
       </button>
@@ -82,22 +69,19 @@
       </b>
 
       <span>
-        {{ $t('stocklist.mass') }} <span class="text--accent">{{ store.totalMass }}t</span> ({{
-          $t('stocklist.mass-accepted')
-        }}: <span class="text--accent">{{ store.acceptableMass ? store.acceptableMass + 't' : '-' }}</span
+        {{ $t('stocklist.mass') }}
+        <span class="text--accent">{{ store.totalMass }}t</span> ({{ $t('stocklist.mass-accepted') }}:
+        <span class="text--accent">{{ store.acceptableMass ? store.acceptableMass + 't' : '-' }}</span
         >) - {{ $t('stocklist.length') }}:
         <span class="text--accent">{{ store.totalLength }}m</span>
-        - {{ $t('stocklist.vmax') }}: <span class="text--accent">{{ store.maxStockSpeed }} km/h</span>
+        - {{ $t('stocklist.vmax') }}:
+        <span class="text--accent">{{ store.maxStockSpeed }} km/h</span>
       </span>
     </div>
 
     <div class="stock_cold-start">
       <label>
-        <input
-          type="checkbox"
-          v-model="store.isColdStart"
-          :disabled="!locoSupportsColdStart(store.stockList[0]?.constructionType || '')"
-        />
+        <input type="checkbox" v-model="store.isColdStart" :disabled="!locoSupportsColdStart(store.stockList[0]?.constructionType || '')" />
         {{ $t('stocklist.coldstart-info') }}
       </label>
     </div>
@@ -105,22 +89,15 @@
     <div class="stock_warnings" v-if="stockHasWarnings">
       <div class="warning" v-if="locoNotSuitable">(!) {{ $t('stocklist.warning-not-suitable') }}</div>
 
-      <div class="warning" v-if="trainTooLong && store.isTrainPassenger">
-        (!) {{ $t('stocklist.warning-passenger-too-long') }}
-      </div>
+      <div class="warning" v-if="trainTooLong && store.isTrainPassenger">(!) {{ $t('stocklist.warning-passenger-too-long') }}</div>
 
-      <div class="warning" v-if="trainTooLong && !store.isTrainPassenger">
-        (!) {{ $t('stocklist.warning-freight-too-long') }}
-      </div>
+      <div class="warning" v-if="trainTooLong && !store.isTrainPassenger">(!) {{ $t('stocklist.warning-freight-too-long') }}</div>
 
       <div class="warning" v-if="trainTooHeavy">
         (!)
         <i18n-t keypath="stocklist.warning-too-heavy">
           <template #href>
-            <a
-              target="_blank"
-              href="https://docs.google.com/spreadsheets/d/1bFXUsHsAu4youmNz-46Q1HslZaaoklvfoBDS553TnNk/edit"
-            >
+            <a target="_blank" href="https://docs.google.com/spreadsheets/d/1bFXUsHsAu4youmNz-46Q1HslZaaoklvfoBDS553TnNk/edit">
               {{ $t('stocklist.acceptable-mass-docs') }}
             </a>
           </template>
@@ -153,23 +130,19 @@
           @keydown.backspace="removeStock(i)"
           ref="itemRefs"
         >
-          <div
-            class="stock-info"
-            @dragstart="onDragStart(i)"
-            @drop="onDrop($event, i)"
-            @dragover="allowDrop"
-            draggable="true"
-          >
+          <div class="stock-info" @dragstart="onDragStart(i)" @drop="onDrop($event, i)" @dragover="allowDrop" draggable="true">
             <span class="stock-info__no" :data-selected="i == store.chosenStockListIndex">
               <span v-if="i == store.chosenStockListIndex">&bull;&nbsp;</span>
               {{ i + 1 }}.
             </span>
 
-            <span class="stock-info__type" :class="{ supporter: stock.supportersOnly }">
+            <span class="stock-info__type" :class="{ sponsor: stock.isSponsorsOnly }">
               {{ stock.isLoco ? stock.type : getCarSpecFromType(stock.type) }}
             </span>
 
-            <span class="stock-info__cargo" v-if="stock.cargo"> {{ stock.cargo.id }} </span>
+            <span class="stock-info__cargo" v-if="stock.cargo">
+              {{ stock.cargo.id }}
+            </span>
             <span class="stock-info__length"> {{ stock.length }}m </span>
             <span class="stock-info__mass">{{ stock.cargo ? stock.cargo.totalMass : stock.mass }}t </span>
             <span class="stock-info__speed"> {{ stock.maxSpeed }}km/h </span>
@@ -182,7 +155,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import TrainImage from '../sections/TrainImageSection.vue';
 
 import { useStore } from '../../store';
 
@@ -195,7 +167,7 @@ import stockMixin from '../../mixins/stockMixin';
 
 export default defineComponent({
   name: 'stock-list',
-  components: { TrainImage, StockThumbnails },
+  components: { StockThumbnails },
 
   mixins: [warningsMixin, imageMixin, stockMixin, stockPreviewMixin],
 
@@ -219,8 +191,7 @@ export default defineComponent({
       return this.store.stockList
         .map((stock, i) => {
           let stockTypeStr = stock.isLoco || !stock.cargo ? stock.type : `${stock.type}:${stock.cargo.id}`;
-          let coldStart =
-            i == 0 && this.store.isColdStart && locoSupportsColdStart(stock.constructionType || '') ? ',c' : '';
+          let coldStart = i == 0 && this.store.isColdStart && locoSupportsColdStart(stock.constructionType || '') ? ',c' : '';
 
           return stockTypeStr + coldStart;
         })
@@ -251,11 +222,14 @@ export default defineComponent({
       }, 20);
     },
 
+    clickFileInput() {
+      (this.$refs['conFile'] as HTMLInputElement).click();
+    },
+
     onListItemClick(stockID: number) {
       const stock = this.store.stockList[stockID];
 
-      this.store.chosenStockListIndex =
-        this.store.chosenStockListIndex == stockID && this.store.chosenVehicle?.type == stock.type ? -1 : stockID;
+      this.store.chosenStockListIndex = this.store.chosenStockListIndex == stockID && this.store.chosenVehicle?.type == stock.type ? -1 : stockID;
 
       if (this.store.chosenStockListIndex == -1) {
         this.store.chosenVehicle = null;
@@ -352,9 +326,9 @@ export default defineComponent({
     downloadStock() {
       if (this.store.stockList.length == 0) return alert(this.$t('stocklist.alert-empty'));
 
-      const defaultName = `${this.store.chosenRealStockName || this.store.stockList[0].type} ${
-        this.store.totalMass
-      }t; ${this.store.totalLength}m; vmax ${this.store.maxStockSpeed}`;
+      const defaultName = `${this.store.chosenRealStockName || this.store.stockList[0].type} ${this.store.totalMass}t; ${
+        this.store.totalLength
+      }m; vmax ${this.store.maxStockSpeed}`;
 
       const fileName = prompt(this.$t('stocklist.prompt-file'), defaultName);
 
@@ -487,12 +461,13 @@ export default defineComponent({
 
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 
-  label.file-label {
-    text-align: center;
-    cursor: pointer;
+  button {
+    width: 100%;
 
     input {
-      display: none;
+      opacity: 0;
+      width: 0;
+      height: 0;
     }
   }
 }
@@ -549,7 +524,7 @@ li > .stock-info {
   }
 }
 
-.supporter {
+.sponsor {
   color: salmon;
 }
 
@@ -610,4 +585,3 @@ li > .stock-info {
   }
 }
 </style>
-

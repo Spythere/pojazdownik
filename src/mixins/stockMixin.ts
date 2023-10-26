@@ -29,8 +29,9 @@ export default defineComponent({
         count,
         imgSrc: vehicle.imageSrc,
         useType: isLoco ? vehicle.power : vehicle.useType,
-        supportersOnly: vehicle.supportersOnly,
+        isSponsorsOnly: vehicle.isSponsorsOnly,
         constructionType: vehicle.constructionType,
+        sponsorsOnlyTimestamp: vehicle.sponsorsOnlyTimestamp,
       };
     },
 
@@ -91,4 +92,3 @@ export default defineComponent({
     },
   },
 });
-

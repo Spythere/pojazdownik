@@ -37,9 +37,10 @@
 
       <div class="generator_cargo">
         <button
+          v-for="(cargoArray, cargoName) in store.stockData?.generator.cargo"
+          :key="cargoName"
           class="btn"
           :data-chosen="chosenCargoTypes.includes(cargoName.toString())"
-          v-for="(cargoArray, cargoName) in store.stockData?.generator.cargo"
           @click="toggleCargoChosen(cargoName.toString(), cargoArray)"
         >
           {{ $t(`cargo.${cargoName}`) }}
@@ -126,7 +127,7 @@ export default defineComponent({
 
   computed: {
     computedChosenCarTypes() {
-      return new Set<string>(this.chosenCarTypes.sort((c1, c2) => (c1 > c2 ? 1 : -1)));
+      return new Set<string>(this.chosenCarTypes.slice().sort((c1, c2) => (c1 > c2 ? 1 : -1)));
     },
   },
 
@@ -150,44 +151,52 @@ export default defineComponent({
     },
 
     generateStock(empty = false) {
-      const generatedChosenStockList = this.chosenCargoTypes.reduce((acc, type) => {
-        this.store.stockData?.generator.cargo[type]
-          .filter((c) => !this.excludedCarTypes.includes(c.split(':')[0]))
-          .forEach((c) => {
-            const [type, cargoType] = c.split(':');
+      const generatedChosenStockList = this.chosenCargoTypes.reduce(
+        (acc, type) => {
+          this.store.stockData?.generator.cargo[type]
+            .filter((c) => !this.excludedCarTypes.includes(c.split(':')[0]))
+            .forEach((c) => {
+              const [type, cargoType] = c.split(':');
 
-            const carWagonObjs = this.store.carDataList.filter((cw) => cw.type.startsWith(type));
-            const cargoObjs = [] as (ICargo | undefined)[];
+              const carWagonObjs = this.store.carDataList.filter((cw) => cw.type.startsWith(type));
+              const cargoObjs = [] as (ICargo | undefined)[];
 
-            if (!cargoType || empty) cargoObjs.push(undefined);
-            else if (cargoType == 'all') cargoObjs.push(...carWagonObjs[0]?.cargoList);
-            else cargoObjs.push(carWagonObjs[0]?.cargoList.find((cargo) => cargo.id == cargoType));
+              if (!cargoType || empty) cargoObjs.push(undefined);
+              else if (cargoType == 'all') cargoObjs.push(...carWagonObjs[0]!.cargoList);
+              else cargoObjs.push(carWagonObjs[0]?.cargoList.find((cargo) => cargo.id == cargoType));
 
-            carWagonObjs.forEach((cw) => {
-              cargoObjs.forEach((cargoObj) => {
-                const chosenStock = acc.find((a) => a.constructionType.includes(cw.constructionType));
+              carWagonObjs.forEach((cw) => {
+                cargoObjs.forEach((cargoObj) => {
+                  const chosenStock = acc.find((a) => a.constructionType.includes(cw.constructionType));
 
-                if (!chosenStock)
-                  acc.push({
-                    constructionType: cw.constructionType,
-                    carPool: [{ carWagon: cw, cargo: cargoObj }],
-                  });
-                else chosenStock.carPool.push({ carWagon: cw, cargo: cargoObj });
+                  if (!chosenStock)
+                    acc.push({
+                      constructionType: cw.constructionType,
+                      carPool: [{ carWagon: cw, cargo: cargoObj }],
+                    });
+                  else chosenStock.carPool.push({ carWagon: cw, cargo: cargoObj });
+                });
               });
             });
-          });
 
-        return acc;
-      }, [] as { constructionType: string; carPool: { carWagon: ICarWagon; cargo?: ICargo }[] }[]);
+          return acc;
+        },
+        [] as {
+          constructionType: string;
+          carPool: { carWagon: ICarWagon; cargo?: ICargo }[];
+        }[]
+      );
 
-      let bestGeneration: { stockList: IStock[]; value: number } = { stockList: [], value: 0 };
+      let bestGeneration: { stockList: IStock[]; value: number } = {
+        stockList: [],
+        value: 0,
+      };
 
       for (let i = 0; i < 10; i++) {
         const headingLoco = this.store.stockList[0]?.isLoco ? this.store.stockList[0] : undefined;
         this.store.stockList.length = headingLoco ? 1 : 0;
 
-        const maxMass =
-          this.store.acceptableMass > 0 ? Math.min(this.store.acceptableMass, this.maxMass) : this.maxMass;
+        const maxMass = this.store.acceptableMass > 0 ? Math.min(this.store.acceptableMass, this.maxMass) : this.maxMass;
 
         let exceeded = false;
 
@@ -277,13 +286,6 @@ export default defineComponent({
 
     background-color: $secondaryColor;
 
-    &[data-chosen='true'] {
-      background-color: $accentColor;
-      color: black;
-
-      box-shadow: 0 0 5px 1px $accentColor;
-    }
-
     &[data-excluded='true'] {
       background-color: gray;
       box-shadow: none;
@@ -316,4 +318,3 @@ export default defineComponent({
   color: black;
 }
 </style>
-

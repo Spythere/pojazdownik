@@ -29,7 +29,7 @@
     "title": "PODGLĄD WYBRANEGO POJAZDU",
     "loading": "ŁADOWANIE OBRAZU...",
     "desc": "Wybierz pojazd lub wagon, aby zobaczyć jego podgląd powyżej",
-    "sponsor-only": "* TYLKO DLA SPONSORÓW",
+    "sponsor-only":  "* TYLKO DLA SPONSORÓW DO {0}",
     "loco-e": "ELEKTROWÓZ",
     "loco-s": "SPALINOWÓZ",
     "loco-ezt": "EZT",
@@ -128,7 +128,7 @@
     "header": {
       "image": "Zdjęcie",
       "type": "Nazwa",
-      "power": "Rodzaj",
+      "group": "Rodzaj",
       "constructionType": "Konstrukcja",
       "coldStart": "Zimny start",
       "length": "Długość",
@@ -139,7 +139,9 @@
     "loco-ezt": "EZT",
     "loco-szt": "SZT",
     "loco-s": "Spalinowóz",
-    "loco-e": "Elektrowóz"
+    "loco-e": "Elektrowóz",
+    "car-passenger": "Wagon pasażerski",
+    "car-cargo": "Wagon towarowy" 
   },
   "realstock": {
     "title": "ZESTAWIENIA REALNE by",

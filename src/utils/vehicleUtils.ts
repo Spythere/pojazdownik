@@ -1,5 +1,5 @@
 import { EVehicleUseType } from '../enums/EVehicleUseType';
-import { ICarWagon, ILocomotive, IStore, TStockInfoKey } from '../types';
+import { ICarWagon, ILocomotive, IStore, TCarWagonGroup, TLocoGroup } from '../types';
 import { LocoType, calculateSpeedLimit } from './speedLimitUtils';
 
 export function isLocomotive(vehicle: ILocomotive | ICarWagon): vehicle is ILocomotive {
@@ -14,21 +14,23 @@ export function locoDataList(state: IStore) {
   return Object.keys(stockData.info).reduce((acc, vehiclePower) => {
     if (!vehiclePower.startsWith('loco')) return acc;
 
-    const locoVehiclesData = stockData.info[vehiclePower as 'loco-e' | 'loco-s' | 'loco-ezt' | 'loco-szt'];
+    const locoVehiclesData = stockData.info[vehiclePower as TLocoGroup];
 
     locoVehiclesData.forEach((loco) => {
       if (state.showSupporter && !loco[4]) return;
 
-      const [type, constructionType, cabinType, maxSpeed, supportersOnly] = loco;
+      const [type, constructionType, cabinType, maxSpeed, sponsorsTimestamp] = loco;
       const locoProps = stockData.props.find((prop) => constructionType == prop.type);
 
       acc.push({
-        power: vehiclePower,
+        power: vehiclePower as TLocoGroup,
+        group: vehiclePower as TLocoGroup,
         type,
         constructionType,
         cabinType,
         maxSpeed: Number(maxSpeed),
-        supportersOnly,
+        isSponsorsOnly: Number(sponsorsTimestamp) > Date.now(),
+        sponsorsOnlyTimestamp: Number(sponsorsTimestamp),
         imageSrc: '',
 
         length: locoProps?.length && type.startsWith('2EN') ? locoProps.length * 2 : locoProps?.length || 0,
@@ -48,20 +50,24 @@ export function carDataList(state: IStore) {
   return Object.keys(stockData.info).reduce((acc, vehicleUseType) => {
     if (!vehicleUseType.startsWith('car')) return acc;
 
-    const carVehiclesData = stockData.info[vehicleUseType as 'car-passenger' | 'car-cargo'];
+    const carVehiclesData = stockData.info[vehicleUseType as TCarWagonGroup];
 
     carVehiclesData.forEach((car) => {
-      if (state.showSupporter && !car[3]) return;
+      const [type, constructionType, loadable, sponsorsOnlyTimestamp, maxSpeed] = car;
 
-      const carPropsData = stockData.props.find((v) => car[0].toString().startsWith(v.type));
+      if (state.showSupporter && Number(sponsorsOnlyTimestamp) <= Date.now()) return;
+
+      const carPropsData = stockData.props.find((v) => type.toString().startsWith(v.type));
 
       acc.push({
-        useType: vehicleUseType as 'car-passenger' | 'car-cargo',
-        type: car[0],
-        constructionType: car[1],
-        loadable: car[2],
-        supportersOnly: car[3],
-        maxSpeed: Number(car[4]),
+        useType: vehicleUseType as TCarWagonGroup,
+        group: vehicleUseType as TCarWagonGroup,
+        type,
+        constructionType,
+        loadable,
+        isSponsorsOnly: Number(sponsorsOnlyTimestamp) > Date.now(),
+        sponsorsOnlyTimestamp: Number(sponsorsOnlyTimestamp),
+        maxSpeed: Number(maxSpeed),
         imageSrc: '',
         cargoList:
           !carPropsData || carPropsData.cargo === null
@@ -81,10 +87,7 @@ export function carDataList(state: IStore) {
 }
 
 export function totalMass(state: IStore) {
-  return ~~state.stockList.reduce(
-    (acc, stock) => acc + (stock.cargo ? stock.cargo.totalMass : stock.mass) * stock.count,
-    0
-  );
+  return ~~state.stockList.reduce((acc, stock) => acc + (stock.cargo ? stock.cargo.totalMass : stock.mass) * stock.count, 0);
 }
 
 export function totalLength(state: IStore) {
@@ -92,10 +95,7 @@ export function totalLength(state: IStore) {
 }
 
 export function maxStockSpeed(state: IStore) {
-  const stockSpeedLimit = state.stockList.reduce(
-    (acc, stock) => (stock.maxSpeed < acc || acc == 0 ? stock.maxSpeed : acc),
-    0
-  );
+  const stockSpeedLimit = state.stockList.reduce((acc, stock) => (stock.maxSpeed < acc || acc == 0 ? stock.maxSpeed : acc), 0);
   const headingLoco = state.stockList[0]?.isLoco ? state.stockList[0] : undefined;
 
   if (!headingLoco) return stockSpeedLimit;
@@ -139,9 +139,7 @@ export function isTrainPassenger(state: IStore) {
   if (state.stockList.length == 0) return false;
   if (state.stockList.every((stock) => stock.isLoco)) return false;
 
-  return state.stockList
-    .filter((stock) => !stock.isLoco)
-    .every((stock) => stock.useType === EVehicleUseType.CAR_PASSENGER);
+  return state.stockList.filter((stock) => !stock.isLoco).every((stock) => stock.useType === EVehicleUseType.CAR_PASSENGER);
 }
 
 export function chosenRealStock(state: IStore) {
@@ -158,4 +156,3 @@ export function chosenRealStock(state: IStore) {
 
   return realStockObj;
 }
-

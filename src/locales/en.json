@@ -29,13 +29,13 @@
     "title": "RAILWAY VEHICLE PREVIEW",
     "loading": "IMAGE LOADING...",
     "desc": "Choose a railway vehicle above to see its preview",
-    "sponsor-only": "* SPONSORS ONLY",
+    "sponsor-only": "* SPONSORS ONLY UNTIL {0}",
     "loco-e": "ELECTRIC LOCO",
     "loco-s": "DIESEL LOCO",
     "loco-ezt": "ELECTRIC M.U.",
     "loco-szt": "DIESEL M.U.",
     "car-passenger": "PASSENGER CARRIAGE",
-    "car-cargo": "FREIGHT CAR",
+    "car-cargo": "FREIGHT CARRIAGE",
     "cabin": "Cabin type:",
     "construction": "Construction type:"
   },
@@ -128,7 +128,7 @@
     "header": {
       "image": "Image",
       "type": "Name",
-      "power": "Type",
+      "group": "Type group",
       "constructionType": "Construction",
       "coldStart": "Cold start",
       "length": "Length",
@@ -139,7 +139,9 @@
     "loco-ezt": "EMU",
     "loco-szt": "DMU",
     "loco-s": "Diesel locomotive",
-    "loco-e": "Electric locomotive"
+    "loco-e": "Electric locomotive",
+    "car-passenger": "Passenger carriage",
+    "car-cargo": "Frieght carriage"
   },
   "realstock": {
     "title": "POLISH TRAIN COMPOSITIONS by",
