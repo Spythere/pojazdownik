@@ -1,7 +1,7 @@
-import { defineComponent } from "vue";
-import { useStore } from "../store";
-import { ICargo, ICarWagon, ILocomotive, IStock, Vehicle } from "../types";
-import { isLocomotive } from "../utils/vehicleUtils";
+import { defineComponent } from 'vue';
+import { useStore } from '../store';
+import { ICargo, ICarWagon, ILocomotive, IStock, Vehicle } from '../types';
+import { isLocomotive } from '../utils/vehicleUtils';
 
 export default defineComponent({
   setup() {
@@ -31,6 +31,7 @@ export default defineComponent({
         useType: isLoco ? vehicle.power : vehicle.useType,
         isSponsorsOnly: vehicle.isSponsorsOnly,
         constructionType: vehicle.constructionType,
+        sponsorsOnlyTimestamp: vehicle.sponsorsOnlyTimestamp,
       };
     },
 
@@ -39,16 +40,14 @@ export default defineComponent({
 
       const stock = this.getStockObject(vehicle, cargo);
 
-      if (stock.isLoco && !this.store.stockList[0]?.isLoco)
-        this.store.stockList.unshift(stock);
+      if (stock.isLoco && !this.store.stockList[0]?.isLoco) this.store.stockList.unshift(stock);
       else this.store.stockList.push(stock);
     },
 
     addLocomotive(loco: ILocomotive) {
       const stockObj = this.getStockObject(loco);
 
-      if (this.store.stockList.length > 0 && !this.store.stockList[0].isLoco)
-        this.store.stockList.unshift(stockObj);
+      if (this.store.stockList.length > 0 && !this.store.stockList[0].isLoco) this.store.stockList.unshift(stockObj);
       else this.store.stockList.push(stockObj);
     },
 
@@ -59,7 +58,7 @@ export default defineComponent({
     },
 
     loadStockFromString(stockString: string) {
-      const stockArray = stockString.trim().split(";");
+      const stockArray = stockString.trim().split(';');
 
       this.store.stockList.length = 0;
       this.store.chosenVehicle = null;
@@ -75,23 +74,18 @@ export default defineComponent({
         let vehicleCargo: ICargo | null = null;
 
         if (/^(EU|EP|ET|SM|EN|2EN|SN)/.test(type)) {
-          const [locoType, coldStart] = type.split(",");
-          vehicle =
-            this.store.locoDataList.find((loco) => loco.type == locoType) ||
-            null;
+          const [locoType, coldStart] = type.split(',');
+          vehicle = this.store.locoDataList.find((loco) => loco.type == locoType) || null;
 
-          if (i == 0 && coldStart == "c") this.store.isColdStart = true;
+          if (i == 0 && coldStart == 'c') this.store.isColdStart = true;
         } else {
-          const [carType, cargo] = type.split(":");
-          vehicle =
-            this.store.carDataList.find((car) => car.type == carType) || null;
+          const [carType, cargo] = type.split(':');
+          vehicle = this.store.carDataList.find((car) => car.type == carType) || null;
 
-          if (cargo)
-            vehicleCargo =
-              vehicle?.cargoList.find((c) => c.id == cargo) || null;
+          if (cargo) vehicleCargo = vehicle?.cargoList.find((c) => c.id == cargo) || null;
         }
 
-        if (!vehicle) console.log("Brak pojazdu:", type);
+        if (!vehicle) console.log('Brak pojazdu:', type);
 
         this.addVehicle(vehicle, vehicleCargo);
       });

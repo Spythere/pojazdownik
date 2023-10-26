@@ -11,7 +11,7 @@
         type="image/jpeg"
       />
 
-      <img v-else src="images/placeholder.jpg" alt="placeholder" />
+      <img v-else src="/images/placeholder.jpg" alt="placeholder" />
     </div>
 
     <div class="train-image__info" v-if="store.chosenVehicle">
