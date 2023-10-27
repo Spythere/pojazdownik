@@ -16,37 +16,29 @@
 
     <transition name="tab-change" mode="out-in">
       <keep-alive>
-        <component
-          :is="chosenSectionComponent"
-          :key="chosenSectionComponent"
-        ></component>
+        <component :is="chosenSectionComponent"></component>
       </keep-alive>
     </transition>
   </section>
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref } from "vue";
-import { useStore } from "../../store";
-import StockListTab from "../tabs/StockListTab.vue";
-import StockGeneratorTab from "../tabs/StockGeneratorTab.vue";
-import NumberGeneratorTab from "../tabs/NumberGeneratorTab.vue";
-import WikiListTab from "../tabs/WikiListTab.vue";
+import { computed, onMounted, ref } from 'vue';
+import { useStore } from '../../store';
+import StockListTab from '../tabs/StockListTab.vue';
+import StockGeneratorTab from '../tabs/StockGeneratorTab.vue';
+import NumberGeneratorTab from '../tabs/NumberGeneratorTab.vue';
+import WikiListTab from '../tabs/WikiListTab.vue';
 
 const sectionButtonRefs = ref([]);
 
 const store = useStore();
 type SectionMode = typeof store.stockSectionMode;
 
-const sectionModes: SectionMode[] = [
-  "stock-list",
-  "wiki-list",
-  "number-generator",
-  "stock-generator",
-];
+const sectionModes: SectionMode[] = ['stock-list', 'wiki-list', 'number-generator', 'stock-generator'];
 
 onMounted(() => {
-  window.addEventListener("keydown", (e) => {
+  window.addEventListener('keydown', (e) => {
     if (e.target instanceof HTMLInputElement) return;
 
     if (/[1234]/.test(e.key)) {
@@ -59,16 +51,16 @@ onMounted(() => {
 
 const chosenSectionComponent = computed(() => {
   switch (store.stockSectionMode) {
-    case "stock-list":
+    case 'stock-list':
       return StockListTab;
 
-    case "wiki-list":
+    case 'wiki-list':
       return WikiListTab;
 
-    case "stock-generator":
+    case 'stock-generator':
       return StockGeneratorTab;
 
-    case "number-generator":
+    case 'number-generator':
       return NumberGeneratorTab;
 
     default:
@@ -82,7 +74,7 @@ function chooseSection(sectionId: SectionMode) {
 </script>
 
 <style lang="scss">
-@import "../../styles/global.scss";
+@import '../../styles/global.scss';
 
 // Tab change animation
 .tab-change {
@@ -124,14 +116,14 @@ function chooseSection(sectionId: SectionMode) {
       left: 50%;
       transform: translateX(-50%);
 
-      content: "";
+      content: '';
       width: 0;
       height: 2px;
       transition: all 100ms;
       background-color: $accentColor;
     }
 
-    &[data-selected="true"]::after {
+    &[data-selected='true']::after {
       width: 100%;
     }
   }

@@ -20,6 +20,12 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
 
+      devOptions: {
+        suppressWarnings: true,
+        enabled: true,
+        type: 'classic',
+      },
+
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,svg,img,woff,woff2}'],
 
@@ -44,6 +50,7 @@ export default defineConfig({
             options: {
               cacheName: 'spythere-api-cache',
               expiration: {
+                maxEntries: 150,
                 maxAgeSeconds: 60 * 60 * 24, // <== 1 day
               },
               cacheableResponse: {
