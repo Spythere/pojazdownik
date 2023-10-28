@@ -73,11 +73,17 @@ export default defineComponent({
         let vehicle: Vehicle | null = null;
         let vehicleCargo: ICargo | null = null;
 
-        if (/^(EU|EP|ET|SM|EN|2EN|SN)/.test(type)) {
-          const [locoType, coldStart] = type.split(',');
+        const isLoco = /^(EU|EP|ET|SM|EN|2EN|SN)/.test(type);
+
+        if (isLoco) {
+          const [locoType, spawnProps] = type.split(',');
           vehicle = this.store.locoDataList.find((loco) => loco.type == locoType) || null;
 
-          if (i == 0 && coldStart == 'c') this.store.isColdStart = true;
+          // Spawn settings
+          if (i == 0 && spawnProps) {
+            this.store.isColdStart = spawnProps.includes('c');
+            this.store.isDoubleManned = spawnProps.includes('d');
+          }
         } else {
           const [carType, cargo] = type.split(':');
           vehicle = this.store.carDataList.find((car) => car.type == carType) || null;
@@ -85,7 +91,7 @@ export default defineComponent({
           if (cargo) vehicleCargo = vehicle?.cargoList.find((c) => c.id == cargo) || null;
         }
 
-        if (!vehicle) console.log('Brak pojazdu:', type);
+        if (!vehicle) console.log('Brak pojazdu / rodzaj pojazdu źle wczytany:', type);
 
         this.addVehicle(vehicle, vehicleCargo);
       });
