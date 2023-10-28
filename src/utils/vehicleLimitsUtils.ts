@@ -16,5 +16,7 @@ export function calculateSpeedLimit(locoType: SpeedLimitLocoType, stockMass: num
 }
 
 export function calculateMassLimit(locoType: MassLimitLocoType, isTrainPassenger: boolean) {
+  if(massLimits[locoType] === undefined) return 0;
+  
   return massLimits[locoType][isTrainPassenger ? 0 : 1] || 0;
 }

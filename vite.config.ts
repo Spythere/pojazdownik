@@ -32,7 +32,7 @@ export default defineConfig({
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/rj.td2.info.pl\/dist\/img\/thumbnails\/.*/i,
-            handler: 'CacheFirst',
+            handler: 'NetworkFirst',
             options: {
               cacheName: 'swdr-images-cache',
               expiration: {
@@ -46,7 +46,7 @@ export default defineConfig({
           },
           {
             urlPattern: /^https:\/\/spythere.github.io\/api\/td2\/.*/i,
-            handler: 'CacheFirst',
+            handler: 'NetworkFirst',
             options: {
               cacheName: 'spythere-api-cache',
               expiration: {

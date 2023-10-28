@@ -33,8 +33,11 @@ export function locoDataList(state: IStore) {
         sponsorsOnlyTimestamp: Number(sponsorsTimestamp),
         imageSrc: '',
 
-        length: locoProps?.length && type.startsWith('2EN') ? locoProps.length * 2 : locoProps?.length || 0,
-        mass: locoProps?.mass && type.startsWith('2EN') ? 253 : locoProps?.mass || 0,
+        length: locoProps?.length && type.startsWith('2EN') ? locoProps.length * 2 : locoProps?.length ?? 0,
+        mass: locoProps?.mass && type.startsWith('2EN') ? 253 : locoProps?.mass ?? 0,
+
+        coldStart: locoProps?.coldStart ?? false,
+        doubleManned: locoProps?.doubleManned ?? false,
       });
     });
 
@@ -70,12 +73,10 @@ export function carDataList(state: IStore) {
         maxSpeed: Number(maxSpeed),
         imageSrc: '',
         cargoList:
-          !carPropsData || carPropsData.cargo === null
-            ? []
-            : carPropsData.cargo.split(';').map((cargo) => ({
-                id: cargo.split(':')[0],
-                totalMass: Number(cargo.split(':')[1]),
-              })),
+          carPropsData?.cargo?.split(';').map((cargo) => ({
+            id: cargo.split(':')[0],
+            totalMass: Number(cargo.split(':')[1]),
+          })) || [],
 
         mass: carPropsData?.mass || 0,
         length: carPropsData?.length || 0,

@@ -66,7 +66,7 @@
 
               <td v-if="currentFilterMode == 'carriages'">{{ !isLocomotive(vehicle) ? vehicle.cargoList.length : '---' }}</td>
               <td v-if="currentFilterMode == 'tractions'">
-                {{ isLocomotive(vehicle) ? (locoSupportsColdStart(vehicle.constructionType) ? `&check;` : '&cross;') : '---' }}
+                {{ isLocomotive(vehicle) ? (vehicle.coldStart ? `&check;` : '&cross;') : '---' }}
               </td>
             </tr>
           </tbody>
@@ -86,7 +86,6 @@ import { Vehicle } from '../../types';
 import { isLocomotive } from '../../utils/vehicleUtils';
 import stockMixin from '../../mixins/stockMixin';
 import imageMixin from '../../mixins/imageMixin';
-import { locoSupportsColdStart } from '../../utils/locoUtils';
 
 type SorterID = 'type' | 'constructionType' | 'image' | 'length' | 'mass' | 'maxSpeed' | 'cargoCount' | 'group' | 'coldStart';
 
@@ -143,7 +142,6 @@ export default defineComponent({
   },
 
   methods: {
-    locoSupportsColdStart,
     isLocomotive,
 
     toggleFilter(name: typeof this.currentFilterMode) {
@@ -180,7 +178,10 @@ export default defineComponent({
           );
 
         case 'coldStart':
-          return (locoSupportsColdStart(row1.vehicle.constructionType) > locoSupportsColdStart(row2.vehicle.constructionType) ? 1 : -1) * direction;
+          return (
+            ((isLocomotive(row1.vehicle) && row1.vehicle.coldStart ? 1 : -1) - (isLocomotive(row2.vehicle) && row2.vehicle.coldStart ? 1 : -1)) *
+            direction
+          );
 
         default:
           break;
@@ -200,8 +201,6 @@ export default defineComponent({
             (this.currentFilterMode == 'all' ||
               (this.currentFilterMode == 'tractions' && isLocomotive(vehicle)) ||
               (this.currentFilterMode == 'carriages' && !isLocomotive(vehicle))),
-
-          // ((this.filters.tractions && isLocomotive(vehicle)) || (this.filters.carriages && !isLocomotive(vehicle))),
         }))
         .sort((a, b) => this.sortTableRows(a, b));
     },

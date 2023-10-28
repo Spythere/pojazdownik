@@ -79,11 +79,20 @@
       </span>
     </div>
 
-    <div class="stock_cold-start">
-      <label>
-        <input type="checkbox" v-model="store.isColdStart" :disabled="!locoSupportsColdStart(store.stockList[0]?.constructionType || '')" />
+    <div class="stock_spawn-settings">
+      <label v-if="store.stockSupportsColdStart">
+        <input type="checkbox" v-model="store.isColdStart" />
         {{ $t('stocklist.coldstart-info') }}
       </label>
+
+      <label v-if="store.stockSupportsDoubleManning">
+        <input type="checkbox" v-model="store.isDoubleManned" />
+        {{ $t('stocklist.doublemanning-info') }}
+      </label>
+      <!-- <label v-if="store.stockList.length > 0 && locoSupportsDoubleManning(store.stockList[0].constructionType)">
+        <input type="checkbox" v-model="store.isDoubleManned" />
+        {{ $t('stocklist.coldstart-info') }}
+      </label> -->
     </div>
 
     <div class="stock_warnings" v-if="stockHasWarnings">
@@ -158,7 +167,6 @@ import { defineComponent } from 'vue';
 
 import { useStore } from '../../store';
 
-import { locoSupportsColdStart } from '../../utils/locoUtils';
 import warningsMixin from '../../mixins/warningsMixin';
 import imageMixin from '../../mixins/imageMixin';
 import stockPreviewMixin from '../../mixins/stockPreviewMixin';
@@ -188,12 +196,19 @@ export default defineComponent({
 
   computed: {
     stockString() {
+      if (this.store.stockList.length == 0) return '';
+
+      const includeColdStart = this.store.isColdStart && this.store.stockSupportsColdStart;
+      const includeDoubleManned = this.store.isDoubleManned && this.store.stockSupportsDoubleManning;
+
       return this.store.stockList
         .map((stock, i) => {
           let stockTypeStr = stock.isLoco || !stock.cargo ? stock.type : `${stock.type}:${stock.cargo.id}`;
-          let coldStart = i == 0 && this.store.isColdStart && locoSupportsColdStart(stock.constructionType || '') ? ',c' : '';
 
-          return stockTypeStr + coldStart;
+          if (i == 0 && (includeColdStart || includeDoubleManned))
+            return `${stockTypeStr},${includeColdStart ? 'c' : ''}${includeDoubleManned ? 'd' : ''}`;
+
+          return stockTypeStr;
         })
         .join(';');
     },
@@ -212,8 +227,6 @@ export default defineComponent({
   },
 
   methods: {
-    locoSupportsColdStart,
-
     copyToClipboard() {
       navigator.clipboard.writeText(this.stockString);
 

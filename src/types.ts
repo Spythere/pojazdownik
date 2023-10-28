@@ -8,6 +8,7 @@ export interface IStore {
   chosenVehicle: Vehicle | null;
 
   isColdStart: boolean;
+  isDoubleManned: boolean;
 
   showSupporter: boolean;
   imageLoading: boolean;
@@ -41,7 +42,9 @@ export interface IStockProps {
   type: string;
   length: number;
   mass: number;
-  cargo: string;
+  cargo?: string | null;
+  coldStart?: boolean;
+  doubleManned?: boolean;
 }
 
 export interface IStockData {
@@ -64,8 +67,6 @@ export interface IStockData {
   };
 
   props: IStockProps[];
-
-  usage: { [key: string]: string };
 }
 
 export interface ILocomotive {
@@ -81,6 +82,8 @@ export interface ILocomotive {
 
   mass: number;
   length: number;
+  coldStart: boolean;
+  doubleManned: boolean;
 }
 
 export interface ICarWagon {

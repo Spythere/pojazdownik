@@ -22,6 +22,7 @@ export const useStore = defineStore({
       chosenVehicle: null,
 
       isColdStart: false,
+      isDoubleManned: false,
 
       showSupporter: false,
       imageLoading: false,
@@ -61,6 +62,24 @@ export const useStore = defineStore({
     isTrainPassenger: (state) => isTrainPassenger(state),
     chosenRealStock: (state) => chosenRealStock(state),
     acceptableMass: (state) => acceptableMass(state),
+
+    stockSupportsColdStart: (state) => {
+      if (state.stockList.length == 0) return false;
+      if (!state.stockList[0].isLoco) return false;
+
+      const headingLoco = state.stockList[0];
+
+      return state.stockData?.props.find((stock) => stock.type == headingLoco.constructionType)?.coldStart ?? false;
+    },
+
+    stockSupportsDoubleManning: (state) => {
+      if (state.stockList.length == 0) return false;
+      if (!state.stockList[0].isLoco) return false;
+
+      const headingLoco = state.stockList[0];
+
+      return state.stockData?.props.find((stock) => stock.type == headingLoco.constructionType)?.doubleManned ?? false;
+    },
   },
 
   actions: {
