@@ -97,7 +97,7 @@
         (!)
         <i18n-t keypath="stocklist.warning-too-heavy">
           <template #href>
-            <a target="_blank" href="https://docs.google.com/spreadsheets/d/1bFXUsHsAu4youmNz-46Q1HslZaaoklvfoBDS553TnNk/edit">
+            <a target="_blank" href="https://docs.google.com/spreadsheets/d/1KVa5vn2d8XGkXQFwbavVudwKqUQxbLOucHWs2VYqAUE">
               {{ $t('stocklist.acceptable-mass-docs') }}
             </a>
           </template>
