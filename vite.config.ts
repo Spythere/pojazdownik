@@ -2,18 +2,11 @@ import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 
 import { VitePWA } from 'vite-plugin-pwa';
-import { resolve } from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
     port: 2137,
-  },
-  resolve: {
-    alias: {
-      $fonts: resolve('/fonts'),
-      $images: resolve('/images'),
-    },
   },
   plugins: [
     vue(),
@@ -23,7 +16,6 @@ export default defineConfig({
       devOptions: {
         suppressWarnings: true,
         enabled: true,
-        type: 'classic',
       },
 
       workbox: {
