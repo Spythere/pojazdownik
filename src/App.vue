@@ -36,22 +36,4 @@ export default defineComponent({
   font-size: 1em;
   padding: 1em 0.5em;
 }
-
-/* HEADER SECTION */
-
-h2 {
-  margin: 0;
-  margin-bottom: 0.5em;
-
-  color: $accentColor;
-  font-weight: 700;
-  font-size: 1.2em;
-}
-
-.header-bottom {
-  margin: 0;
-  font-size: 1.5em;
-
-  color: #d1d1d1;
-}
 </style>
