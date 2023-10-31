@@ -1,6 +1,6 @@
 import { EVehicleUseType } from '../enums/EVehicleUseType';
 import { ICarWagon, ILocomotive, IStore, TCarWagonGroup, TLocoGroup } from '../types';
-import { LocoType, calculateSpeedLimit } from './speedLimitUtils';
+import { MassLimitLocoType, SpeedLimitLocoType, calculateMassLimit, calculateSpeedLimit } from './vehicleLimitsUtils';
 
 export function isLocomotive(vehicle: ILocomotive | ICarWagon): vehicle is ILocomotive {
   return (vehicle as ILocomotive).power !== undefined;
@@ -33,8 +33,11 @@ export function locoDataList(state: IStore) {
         sponsorsOnlyTimestamp: Number(sponsorsTimestamp),
         imageSrc: '',
 
-        length: locoProps?.length && type.startsWith('2EN') ? locoProps.length * 2 : locoProps?.length || 0,
-        mass: locoProps?.mass && type.startsWith('2EN') ? 253 : locoProps?.mass || 0,
+        length: locoProps?.length && type.startsWith('2EN') ? locoProps.length * 2 : locoProps?.length ?? 0,
+        mass: locoProps?.mass && type.startsWith('2EN') ? 253 : locoProps?.mass ?? 0,
+
+        coldStart: locoProps?.coldStart ?? false,
+        doubleManned: locoProps?.doubleManned ?? false,
       });
     });
 
@@ -70,12 +73,10 @@ export function carDataList(state: IStore) {
         maxSpeed: Number(maxSpeed),
         imageSrc: '',
         cargoList:
-          !carPropsData || carPropsData.cargo === null
-            ? []
-            : carPropsData.cargo.split(';').map((cargo) => ({
-                id: cargo.split(':')[0],
-                totalMass: Number(cargo.split(':')[1]),
-              })),
+          carPropsData?.cargo?.split(';').map((cargo) => ({
+            id: cargo.split(':')[0],
+            totalMass: Number(cargo.split(':')[1]),
+          })) || [],
 
         mass: carPropsData?.mass || 0,
         length: carPropsData?.length || 0,
@@ -106,33 +107,19 @@ export function maxStockSpeed(state: IStore) {
 
   const stockMass = totalMass(state);
 
-  const speedLimitByMass = calculateSpeedLimit(locoType as LocoType, stockMass, isTrainPassenger(state));
+  const speedLimitByMass = calculateSpeedLimit(locoType as SpeedLimitLocoType, stockMass, isTrainPassenger(state));
 
   return speedLimitByMass ? Math.min(stockSpeedLimit, speedLimitByMass) : stockSpeedLimit;
 }
 
 export function acceptableMass(state: IStore) {
   if (state.stockList.length == 0 || !state.stockList[0].isLoco) return 0;
-  const activeLocomotiveType = state.stockList[0].type;
 
-  if (/^SM/.test(activeLocomotiveType)) return 2400;
+  const activeLocomotiveType = state.stockList[0].type.split('-')[0];
 
-  // Elektryczne EU07 / EP07 / EP08 / ET41
+  const locoMassLimit = calculateMassLimit(activeLocomotiveType as MassLimitLocoType, isTrainPassenger(state));
 
-  // Pasażerski elektr.
-  if (isTrainPassenger(state)) {
-    if (/^(EU|EP)/.test(activeLocomotiveType)) return 650;
-    if (/^ET/.test(activeLocomotiveType)) return 700;
-
-    return 0;
-  }
-
-  // Towarowy / inny elektr.
-  if (/^EU/.test(activeLocomotiveType)) return 2000;
-  if (/^ET/.test(activeLocomotiveType)) return 4000;
-  if (/^EP/.test(activeLocomotiveType)) return 650;
-
-  return 0;
+  return locoMassLimit;
 }
 
 export function isTrainPassenger(state: IStore) {

@@ -2,16 +2,13 @@
   <section class="train-image-section">
     <div class="train-image__content" :class="{ sponsor: store.chosenVehicle?.isSponsorsOnly }">
       <img
-        v-if="store.chosenVehicle"
         tabindex="0"
-        :src="getThumbnailURL(store.chosenVehicle.type, 'small')"
+        :src="store.chosenVehicle ? getThumbnailURL(store.chosenVehicle.type, 'small') : '/images/placeholder.jpg'"
         @click="onImageClick"
         @keydown.enter="onImageClick"
         @error="onImageError"
         type="image/jpeg"
       />
-
-      <img v-else src="/images/placeholder.jpg" alt="placeholder" />
     </div>
 
     <div class="train-image__info" v-if="store.chosenVehicle">

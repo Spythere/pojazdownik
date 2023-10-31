@@ -79,10 +79,15 @@
       </span>
     </div>
 
-    <div class="stock_cold-start">
-      <label>
-        <input type="checkbox" v-model="store.isColdStart" :disabled="!locoSupportsColdStart(store.stockList[0]?.constructionType || '')" />
+    <div class="stock_spawn-settings">
+      <label v-if="store.stockSupportsColdStart" :data-checked="store.isColdStart">
+        <input type="checkbox" v-model="store.isColdStart" />
         {{ $t('stocklist.coldstart-info') }}
+      </label>
+
+      <label v-if="store.stockSupportsDoubleManning" :data-checked="store.isDoubleManned">
+        <input type="checkbox" v-model="store.isDoubleManned" />
+        {{ $t('stocklist.doublemanning-info') }}
       </label>
     </div>
 
@@ -97,7 +102,7 @@
         (!)
         <i18n-t keypath="stocklist.warning-too-heavy">
           <template #href>
-            <a target="_blank" href="https://docs.google.com/spreadsheets/d/1bFXUsHsAu4youmNz-46Q1HslZaaoklvfoBDS553TnNk/edit">
+            <a target="_blank" href="https://docs.google.com/spreadsheets/d/1KVa5vn2d8XGkXQFwbavVudwKqUQxbLOucHWs2VYqAUE">
               {{ $t('stocklist.acceptable-mass-docs') }}
             </a>
           </template>
@@ -158,7 +163,6 @@ import { defineComponent } from 'vue';
 
 import { useStore } from '../../store';
 
-import { locoSupportsColdStart } from '../../utils/locoUtils';
 import warningsMixin from '../../mixins/warningsMixin';
 import imageMixin from '../../mixins/imageMixin';
 import stockPreviewMixin from '../../mixins/stockPreviewMixin';
@@ -188,12 +192,19 @@ export default defineComponent({
 
   computed: {
     stockString() {
+      if (this.store.stockList.length == 0) return '';
+
+      const includeColdStart = this.store.isColdStart && this.store.stockSupportsColdStart;
+      const includeDoubleManned = this.store.isDoubleManned && this.store.stockSupportsDoubleManning;
+
       return this.store.stockList
         .map((stock, i) => {
           let stockTypeStr = stock.isLoco || !stock.cargo ? stock.type : `${stock.type}:${stock.cargo.id}`;
-          let coldStart = i == 0 && this.store.isColdStart && locoSupportsColdStart(stock.constructionType || '') ? ',c' : '';
 
-          return stockTypeStr + coldStart;
+          if (i == 0 && (includeColdStart || includeDoubleManned))
+            return `${stockTypeStr},${includeColdStart ? 'c' : ''}${includeDoubleManned ? 'd' : ''}`;
+
+          return stockTypeStr;
         })
         .join(';');
     },
@@ -212,8 +223,6 @@ export default defineComponent({
   },
 
   methods: {
-    locoSupportsColdStart,
-
     copyToClipboard() {
       navigator.clipboard.writeText(this.stockString);
 
@@ -468,6 +477,44 @@ export default defineComponent({
       opacity: 0;
       width: 0;
       height: 0;
+    }
+  }
+}
+
+.stock_spawn-settings {
+  display: flex;
+  gap: 0.5em;
+
+  label > input {
+    position: absolute;
+    clip: rect(1px, 1px, 1px, 1px);
+    padding: 0;
+    border: 0;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+  }
+
+  label {
+    padding: 0.25em 0.5em;
+    border-radius: 0.25em;
+    background-color: #222;
+    color: #aaa;
+    cursor: pointer;
+
+    text-transform: uppercase;
+    transition: color 200ms;
+
+    &::before {
+      content: '\2716';
+    }
+  }
+
+  label[data-checked='true'] {
+    color: palegreen;
+
+    &::before {
+      content: '\2714';
     }
   }
 }
