@@ -9,8 +9,8 @@ $accentColor: #e4c428;
 @font-face {
   font-family: 'Lato';
   src:
-    url('$fonts/Lato-Light.woff2') format('woff2'),
-    url('$fonts/Lato-Light.woff') format('woff');
+    url('/fonts/Lato-Light.woff2') format('woff2'),
+    url('/fonts/Lato-Light.woff') format('woff');
   font-weight: 300;
   font-style: normal;
   font-display: swap;
@@ -19,8 +19,8 @@ $accentColor: #e4c428;
 @font-face {
   font-family: 'Lato';
   src:
-    url('$fonts/Lato-Bold.woff2') format('woff2'),
-    url('$fonts/Lato-Bold.woff') format('woff');
+    url('/fonts/Lato-Bold.woff2') format('woff2'),
+    url('/fonts/Lato-Bold.woff') format('woff');
   font-weight: bold;
   font-style: normal;
   font-display: swap;
@@ -29,8 +29,8 @@ $accentColor: #e4c428;
 @font-face {
   font-family: 'Lato';
   src:
-    url('$fonts/Lato-Regular.woff2') format('woff2'),
-    url('$fonts/Lato-Regular.woff') format('woff');
+    url('/fonts/Lato-Regular.woff2') format('woff2'),
+    url('/fonts/Lato-Regular.woff') format('woff');
   font-weight: normal;
   font-style: normal;
   font-display: swap;

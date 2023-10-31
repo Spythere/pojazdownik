@@ -80,19 +80,15 @@
     </div>
 
     <div class="stock_spawn-settings">
-      <label v-if="store.stockSupportsColdStart">
+      <label v-if="store.stockSupportsColdStart" :data-checked="store.isColdStart">
         <input type="checkbox" v-model="store.isColdStart" />
         {{ $t('stocklist.coldstart-info') }}
       </label>
 
-      <label v-if="store.stockSupportsDoubleManning">
+      <label v-if="store.stockSupportsDoubleManning" :data-checked="store.isDoubleManned">
         <input type="checkbox" v-model="store.isDoubleManned" />
         {{ $t('stocklist.doublemanning-info') }}
       </label>
-      <!-- <label v-if="store.stockList.length > 0 && locoSupportsDoubleManning(store.stockList[0].constructionType)">
-        <input type="checkbox" v-model="store.isDoubleManned" />
-        {{ $t('stocklist.coldstart-info') }}
-      </label> -->
     </div>
 
     <div class="stock_warnings" v-if="stockHasWarnings">
@@ -481,6 +477,44 @@ export default defineComponent({
       opacity: 0;
       width: 0;
       height: 0;
+    }
+  }
+}
+
+.stock_spawn-settings {
+  display: flex;
+  gap: 0.5em;
+
+  label > input {
+    position: absolute;
+    clip: rect(1px, 1px, 1px, 1px);
+    padding: 0;
+    border: 0;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+  }
+
+  label {
+    padding: 0.25em 0.5em;
+    border-radius: 0.25em;
+    background-color: #222;
+    color: #aaa;
+    cursor: pointer;
+
+    text-transform: uppercase;
+    transition: color 200ms;
+
+    &::before {
+      content: '\2716';
+    }
+  }
+
+  label[data-checked='true'] {
+    color: palegreen;
+
+    &::before {
+      content: '\2714';
     }
   }
 }
