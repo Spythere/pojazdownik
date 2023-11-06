@@ -35,5 +35,13 @@ export default defineComponent({
   color: $textColor;
   font-size: 1em;
   padding: 1em 0.5em;
+
+  @media screen and (max-width: $breakpointMd) {
+    font-size: calc(0.7rem + 0.75vw);
+  }
+
+  @media screen and (orientation: landscape) and (max-width: $breakpointMd) {
+    font-size: calc(0.75rem + 0.4vw);
+  }
 }
 </style>
