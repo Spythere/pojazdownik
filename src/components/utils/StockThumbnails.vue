@@ -1,29 +1,28 @@
 <template>
-  <div class="stock_thumbnails" ref="thumbnailsRef">
+  <div class="stock-thumbnails" ref="thumbnailsRef">
     <div
+      class="thumbnail-item"
       v-for="(stock, stockIndex) in store.stockList"
       :key="stockIndex"
       :data-selected="store.chosenStockListIndex == stockIndex"
+      :data-sponsor="stock.isSponsorsOnly"
       draggable="true"
       @dragstart="onDragStart(stockIndex)"
       @drop="onDrop($event, stockIndex)"
       @dragover="allowDrop"
+      @click="onListItemClick(stockIndex)"
     >
-      <span @click="onListItemClick(stockIndex)" :key="stock.id">
-        <b :class="{ sponsor: stock.isSponsorsOnly }">
-          {{ stock.type }}
-        </b>
+      <b>
+        {{ stock.type }}
+      </b>
 
-        <span>
-          <img
-            draggable="false"
-            :src="`https://rj.td2.info.pl/dist/img/thumbnails/${stock.type}.png`"
-            :alt="stock.type"
-            :title="stock.type"
-            @error="stockImageError($event, stock)"
-          />
-        </span>
-      </span>
+      <img
+        draggable="false"
+        :src="`https://rj.td2.info.pl/dist/img/thumbnails/${stock.type}.png`"
+        :alt="stock.type"
+        :title="stock.type"
+        @error="stockImageError($event, stock)"
+      />
     </div>
   </div>
 </template>
@@ -87,41 +86,45 @@ const allowDrop = (e: DragEvent) => {
 </script>
 
 <style lang="scss" scoped>
-.stock_thumbnails {
+.stock-thumbnails {
   display: flex;
   overflow: auto;
   background-color: #353a57;
+}
 
-  > div {
-    display: flex;
-    align-items: flex-end;
-    cursor: pointer;
-    min-height: 100px;
+.thumbnail-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
-    &[data-selected='true'] {
-      background-color: rebeccapurple;
-    }
+  flex-direction: column;
+  gap: 0.5em;
 
-    > span {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5em;
-      padding: 0.5em 0;
+  padding-top: 0.5em;
 
-      text-align: center;
+  cursor: pointer;
+  min-height: 100px;
+  font-size: 0.85em;
 
-      font-size: 0.85em;
-      user-select: none;
-      -moz-user-select: none;
-    }
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+
+  &[data-selected='true'] {
+    background-color: rebeccapurple;
+  }
+
+  b {
+    color: #ccc;
+    margin: 0 1em;
+  }
+
+  &[data-sponsor='true'] > b {
+    color: salmon;
   }
 
   img {
     max-height: 60px;
   }
-}
-
-.sponsor {
-  color: salmon;
 }
 </style>
