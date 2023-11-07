@@ -37,13 +37,13 @@
 
       <div class="generator_cargo">
         <button
-          v-for="(cargoArray, cargoName) in store.stockData?.generator.cargo"
-          :key="cargoName"
+          v-for="cargo in computedCargoData"
+          :key="cargo.name"
           class="btn"
-          :data-chosen="chosenCargoTypes.includes(cargoName.toString())"
-          @click="toggleCargoChosen(cargoName.toString(), cargoArray)"
+          :data-chosen="chosenCargoTypes.includes(cargo.name)"
+          @click="toggleCargoChosen(cargo.name, cargo.cargoList)"
         >
-          {{ $t(`cargo.${cargoName}`) }}
+          {{ $t(`cargo.${cargo.name}`) }}
         </button>
       </div>
 
@@ -128,6 +128,19 @@ export default defineComponent({
   computed: {
     computedChosenCarTypes() {
       return new Set<string>(this.chosenCarTypes.slice().sort((c1, c2) => (c1 > c2 ? 1 : -1)));
+    },
+
+    computedCargoData() {
+      if (!this.store.stockData?.generator.cargo) return [];
+
+      const cargoGeneratorData = this.store.stockData.generator.cargo;
+
+      return Object.keys(cargoGeneratorData)
+        .sort((v1, v2) => this.$t(`cargo.${v1}`).localeCompare(this.$t(`cargo.${v2}`)))
+        .map((v) => ({
+          name: v,
+          cargoList: cargoGeneratorData[v],
+        }));
     },
   },
 
