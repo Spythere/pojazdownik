@@ -5,6 +5,10 @@ export type SpeedLimitLocoType = keyof typeof speedLimits;
 export type MassLimitLocoType = keyof typeof massLimits;
 
 export function calculateSpeedLimit(locoType: SpeedLimitLocoType, stockMass: number, isTrainPassenger: boolean) {
+  console.log(speedLimits[locoType]);
+
+  if (speedLimits[locoType] === undefined) return 0;
+
   const speedTable = speedLimits[locoType][isTrainPassenger ? 'passenger' : 'cargo'];
 
   if (!speedTable) return undefined;
@@ -16,7 +20,7 @@ export function calculateSpeedLimit(locoType: SpeedLimitLocoType, stockMass: num
 }
 
 export function calculateMassLimit(locoType: MassLimitLocoType, isTrainPassenger: boolean) {
-  if(massLimits[locoType] === undefined) return 0;
-  
+  if (massLimits[locoType] === undefined) return 0;
+
   return massLimits[locoType][isTrainPassenger ? 0 : 1] || 0;
 }
