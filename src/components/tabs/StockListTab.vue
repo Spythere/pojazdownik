@@ -33,27 +33,17 @@
     </div>
 
     <div class="stock_controls" :data-disabled="store.chosenStockListIndex == -1">
-      <b v-if="store.chosenStockListIndex >= 0">
-        {{ $t('stocklist.vehicle-no') }}
-        <span class="text--accent">{{ store.chosenStockListIndex + 1 }}</span>
-        &nbsp;
-      </b>
-
-      <b v-else>
-        {{ $t('stocklist.no-vehicle-chosen') }}
-      </b>
-
-      <button class="btn" :tabindex="store.chosenStockListIndex == -1 ? -1 : 0" @click="moveUpStock(store.chosenStockListIndex)">
+      <button class="btn btn--image" :tabindex="store.chosenStockListIndex == -1 ? -1 : 0" @click="moveUpStock(store.chosenStockListIndex)">
         <img :src="getIconURL('higher')" alt="move up vehicle" />
         {{ $t('stocklist.action-move-up') }}
       </button>
 
-      <button class="btn" :tabindex="store.chosenStockListIndex == -1 ? -1 : 0" @click="moveDownStock(store.chosenStockListIndex)">
+      <button class="btn btn--image" :tabindex="store.chosenStockListIndex == -1 ? -1 : 0" @click="moveDownStock(store.chosenStockListIndex)">
         <img :src="getIconURL('lower')" alt="move down vehicle" />
         {{ $t('stocklist.action-move-down') }}
       </button>
 
-      <button class="btn" :tabindex="store.chosenStockListIndex == -1 ? -1 : 0" @click="removeStock(store.chosenStockListIndex)">
+      <button class="btn btn--image" :tabindex="store.chosenStockListIndex == -1 ? -1 : 0" @click="removeStock(store.chosenStockListIndex)">
         <img :src="getIconURL('remove')" alt="remove vehicle" />
         {{ $t('stocklist.action-remove') }}
       </button>
@@ -80,15 +70,13 @@
     </div>
 
     <div class="stock_spawn-settings">
-      <label v-if="store.stockSupportsColdStart" :data-checked="store.isColdStart">
-        <input type="checkbox" v-model="store.isColdStart" />
+      <Checkbox v-if="store.stockSupportsColdStart" v-model="store.isColdStart">
         {{ $t('stocklist.coldstart-info') }}
-      </label>
+      </Checkbox>
 
-      <label v-if="store.stockSupportsDoubleManning" :data-checked="store.isDoubleManned">
-        <input type="checkbox" v-model="store.isDoubleManned" />
+      <Checkbox v-if="store.stockSupportsDoubleManning" v-model="store.isDoubleManned">
         {{ $t('stocklist.doublemanning-info') }}
-      </label>
+      </Checkbox>
     </div>
 
     <div class="stock_warnings" v-if="stockHasWarnings">
@@ -122,7 +110,7 @@
         <div class="stock-info">{{ $t('stocklist.list-empty') }}</div>
       </li>
 
-      <TransitionGroup name="stock-list-anim">
+      <TransitionGroup name="stock-list-anim" v-else>
         <li
           v-for="(stock, i) in store.stockList"
           :key="stock.id"
@@ -168,10 +156,11 @@ import imageMixin from '../../mixins/imageMixin';
 import stockPreviewMixin from '../../mixins/stockPreviewMixin';
 import StockThumbnails from '../utils/StockThumbnails.vue';
 import stockMixin from '../../mixins/stockMixin';
+import Checkbox from '../common/Checkbox.vue';
 
 export default defineComponent({
   name: 'stock-list',
-  components: { StockThumbnails },
+  components: { StockThumbnails, Checkbox },
 
   mixins: [warningsMixin, imageMixin, stockMixin, stockPreviewMixin],
 
@@ -409,8 +398,9 @@ export default defineComponent({
 @import '../../styles/tab.scss';
 
 .stock-list-tab {
-  display: grid;
-  grid-gap: 0.5em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
 }
 
 .warning {
@@ -430,9 +420,9 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-wrap: wrap;
 
   gap: 0.5em;
-  flex-wrap: wrap;
 
   padding: 0.5em;
 
@@ -446,21 +436,6 @@ export default defineComponent({
     -webkit-user-select: none;
 
     pointer-events: none;
-  }
-
-  input#stock-count {
-    width: 3em;
-
-    margin: 0;
-    padding: 0.25em;
-    outline: none;
-    border: none;
-  }
-
-  button {
-    img {
-      margin-right: 0.25em;
-    }
   }
 }
 
@@ -484,39 +459,6 @@ export default defineComponent({
 .stock_spawn-settings {
   display: flex;
   gap: 0.5em;
-
-  label > input {
-    position: absolute;
-    clip: rect(1px, 1px, 1px, 1px);
-    padding: 0;
-    border: 0;
-    height: 1px;
-    width: 1px;
-    overflow: hidden;
-  }
-
-  label {
-    padding: 0.25em 0.5em;
-    border-radius: 0.25em;
-    background-color: #222;
-    color: #aaa;
-    cursor: pointer;
-
-    text-transform: uppercase;
-    transition: color 200ms;
-
-    &::before {
-      content: '\2716';
-    }
-  }
-
-  label[data-checked='true'] {
-    color: palegreen;
-
-    &::before {
-      content: '\2714';
-    }
-  }
 }
 
 .real-stock-info {

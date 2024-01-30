@@ -3,7 +3,7 @@ $breakpointSm: 550px;
 
 $bgColor: #2b3552;
 $textColor: #fff;
-$secondaryColor: #222;
+$secondaryColor: #1b1b1b;
 $accentColor: #e4c428;
 
 @font-face {
@@ -118,7 +118,7 @@ button {
   padding: 0.4em 0.75em;
 
   outline: none;
-  background-color: #222;
+  background-color: $secondaryColor;
   border-radius: 8px;
   font-weight: bold;
 
@@ -225,6 +225,13 @@ ul {
   &--grayed {
     color: #aaa;
   }
+}
+
+hr {
+  height: 3px;
+  background-color: white;
+  outline: none;
+  margin: 0;
 }
 
 .g-card {

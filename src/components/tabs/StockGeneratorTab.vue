@@ -28,6 +28,12 @@
             <input type="number" v-model="maxCarCount" step="1" max="60" min="1" />
           </label>
         </div>
+
+        <!-- <hr style="margin: 1em 0" /> -->
+
+        <!-- <div class="generator_options">
+          <Checkbox v-model="isCarGroupingEnabled">Grupuj wylosowane wagony (ustawia podobne wagony obok siebie w składzie)</Checkbox>
+        </div>  -->
       </div>
 
       <div>
@@ -105,7 +111,6 @@ import warningsMixin from '../../mixins/warningsMixin';
 
 export default defineComponent({
   name: 'stock-generator',
-
   mixins: [stockMixin, warningsMixin],
 
   data() {
@@ -120,6 +125,8 @@ export default defineComponent({
       maxMass: 3000,
       maxLength: 650,
       maxCarCount: 50,
+
+      isCarGroupingEnabled: false,
 
       store: useStore(),
     };
@@ -161,6 +168,15 @@ export default defineComponent({
       this.chosenCargoTypes.length = 0;
       this.chosenCarTypes.length = 0;
       this.excludedCarTypes.length = 0;
+    },
+
+    // WIP
+    groupStock(stockList: IStock[]) {
+      if (!this.isCarGroupingEnabled) return false;
+
+      stockList.sort((s1, s2) => {
+        return (s1.constructionType + s1.cargo?.id).localeCompare(s2.constructionType + s2.cargo?.id);
+      });
     },
 
     generateStock(empty = false) {
@@ -237,6 +253,10 @@ export default defineComponent({
         }
       }
 
+      const bestStockList = bestGeneration.stockList;
+
+      this.groupStock(bestStockList);
+
       this.store.stockList = bestGeneration.stockList;
       this.store.stockSectionMode = 'stock-list';
     },
@@ -283,6 +303,11 @@ export default defineComponent({
 @import '../../styles/global.scss';
 @import '../../styles/tab.scss';
 
+h2 {
+  margin-top: 0;
+  margin-bottom: 0.5em;
+}
+
 .generator_cargo,
 .generator_vehicles {
   display: grid;
@@ -321,6 +346,12 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   gap: 1em;
+}
+
+.generator_options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
 }
 
 .generator_warning {

@@ -6,11 +6,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { useStore } from "../store";
+import { defineComponent } from 'vue';
+import { useStore } from '../store';
 
-import MainContainer from "../components/app/MainContainer.vue";
-import FooterVue from "../components/app/Footer.vue";
+import MainContainer from '../components/app/MainContainer.vue';
+import FooterVue from '../components/app/Footer.vue';
 
 export default defineComponent({
   components: {
@@ -31,5 +31,7 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  padding: 0.5em;
 }
 </style>
