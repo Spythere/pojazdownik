@@ -26,12 +26,12 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .app-container {
-  min-height: 100vh;
-
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
+  flex-direction: column;
 
+  min-height: 100vh;
   padding: 0.5em;
 }
 </style>

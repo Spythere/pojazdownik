@@ -470,7 +470,7 @@ export default defineComponent({
 ul {
   position: relative;
   overflow: auto;
-  height: 500px;
+  height: 550px;
 }
 
 ul > li {
