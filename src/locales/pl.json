@@ -99,8 +99,8 @@
     "train-category": "Kategoria pociągu",
     "number-info": "Wygenerowany numer pociągu:",
     "warning": "Wybierz kategorię oraz (opcjonalnie) obszary konstrukcyjne",
-    "td2-wiki": "> Szczegółowe zasady numeracji (wikipedia TD2)",
-    "td2-wiki-link": "https://wiki.td2.info.pl/index.php?title=Zasady_numeracji_poci%C4%85g%C3%B3w",
+    "td2-wiki": "> Szczegółowe zasady numeracji (wątek forum)",
+    "td2-wiki-link": "https://td2.info.pl/ogloszenia/nowe-kategorie-pociagow-w-symulatorze/",
     "action-random-region": "LOSUJ OBSZARY",
     "action-random-number": "LOSUJ NUMER",
     "categories": {
@@ -118,8 +118,8 @@
       "RM": "RM - wojewódzki osobowy międzynarodowy",
       "RA": "RA - wojewódzki osobowy algomeracyjny",
 
-      "PW": "PW - próżny \"służbowy\"",
-      "PX": "PX - próżny próbny",
+      "PW": "PW - pasażerski próżny (\"służbowy\")",
+      "PX": "PX - pasażerski próżny próbny",
 
       "TC": "TC - towarowy międzynarodowy intermodalny",
       "TG": "TG - towarowy międzynarodowy masowy",
@@ -128,10 +128,10 @@
       "TM": "TM - towarowy krajowy masowy",
       "TN": "TN - towarowy krajowy niemasowy",
       "TK": "TK - towarowy do obsługi stacji i bocznic",
-      "TS": "TS - próżny próbny skład towarowy",
+      "TS": "TS - towarowy próżny próbny",
 
       "LT": "LT - lokomotywa towarowa luzem",
-      "LP": "LP -lokomotywa pasażerska luzem",
+      "LP": "LP - lokomotywa pasażerska luzem",
 
       "ZN": "ZN - inspekcyjny / diagnostyczny"
     }
