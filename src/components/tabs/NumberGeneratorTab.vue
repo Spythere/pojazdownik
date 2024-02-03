@@ -1,77 +1,102 @@
 <template>
   <div class="number-generator tab">
     <div class="tab_header">
-      <h2>{{ $t("numgen.title") }}</h2>
+      <h2>{{ $t('numgen.title') }}</h2>
+      <h3>{{ $t('numgen.subtitle') }}</h3>
     </div>
 
     <div class="tab_content">
-      <div class="options">
-        <select v-model="chosenCategory" @change="randomizeTrainNumber()">
+      <div class="category-select">
+        <label for="category"> {{ $t('numgen.train-category') }}</label>
+        <select id="category" v-model="chosenCategory" @change="randomizeTrainNumber()">
           <option :value="null" disabled>
-            {{ $t("numgen.train-category") }}
+            {{ $t('numgen.train-category') }}
           </option>
-          <option
-            v-for="(_, category) in genData.categories"
-            :key="category"
-            :value="category"
-          >
+          <option v-for="(_, category) in genData.categoriesRules" :key="category" :value="category">
             {{ $t(`numgen.categories.${category}`) }}
           </option>
         </select>
+      </div>
 
-        <select v-model="beginRegionName" @change="randomizeTrainNumber()">
-          <option :value="null" disabled>
-            {{ $t("numgen.start-region") }}
-          </option>
-          <option
-            v-for="(_, name) in genData.regionNumbers"
-            :key="name"
-            :value="name"
-          >
-            {{ name }}
-          </option>
-        </select>
+      <div class="regions-select">
+        <div>
+          <label for="begin-region"> {{ $t('numgen.start-region') }}</label>
+          <select id="begin-region" v-model="beginRegionName" @change="randomizeTrainNumber()">
+            <option :value="null" disabled>
+              {{ $t('numgen.start-region') }}
+            </option>
+            <option v-for="(_, name) in genData.regionNumbers" :key="name" :value="name">
+              {{ name }}
+            </option>
+          </select>
+        </div>
 
-        <select v-model="endRegionName" @change="randomizeTrainNumber()">
-          <option :value="null" disabled>{{ $t("numgen.end-region") }}</option>
-          <option
-            v-for="(_, name) in genData.regionNumbers"
-            :key="name"
-            :value="name"
-          >
-            {{ name }}
-          </option>
-        </select>
+        <div>
+          <label for="end-region"> {{ $t('numgen.end-region') }}</label>
+          <select id="end-region" v-model="endRegionName" @change="randomizeTrainNumber()">
+            <option :value="null" disabled>{{ $t('numgen.end-region') }}</option>
+            <option v-for="(_, name) in genData.regionNumbers" :key="name" :value="name">
+              {{ name }}
+            </option>
+          </select>
+        </div>
       </div>
 
       <div class="generated-number" @click="copyNumber">
         <span v-if="trainNumber">
-          {{ $t("numgen.number-info") }}
+          {{ $t('numgen.number-info') }}
           <b class="text--accent">{{ trainNumber }}</b>
         </span>
-        <span v-else>{{ $t("numgen.warning") }}</span>
+        <span v-else>{{ $t('numgen.warning') }}</span>
       </div>
 
-      <!-- <div v-if="chosenCategory">
-        Current numbering rules: {{ $t(`numgen.rules.${chosenCategory}`) }};
+      <div class="category-rules" v-if="chosenCategory && categoryRules && trainNumber">
+        <!-- First & second digit (the same regions)  -->
+        <div v-if="beginRegionName && endRegionName && beginRegionName == endRegionName">
+          <b>Dwie pierwsze cyfry:</b> z puli
+          <b class="text--accent">{{ genData.sameRegions[beginRegionName].join(', ') }}</b>
+          dla obszaru {{ beginRegionName }}
+        </div>
 
-        <span v-if="beginRegionName && endRegionName">
-          <span v-if="beginRegionName == endRegionName">
-            pierwsze dwie cyfry:
-            {{ genData.sameRegions[beginRegionName].join(', ') }}
-            (numer w obrębie obszaru {{ beginRegionName }})
-          </span>
+        <!-- First & second digit (different regions)  -->
+        <div v-else>
+          <div>
+            <b>
+              Pierwsza cyfra: <span class="text--accent">{{ trainNumber[0] }}</span>
+            </b>
+            <span v-if="beginRegionName"> dla początkowego obszaru konstrukcyjnego {{ beginRegionName }}</span>
+            <span v-else>wybierz początkowy obszar konstrukcyjny</span>
+          </div>
 
-          <span v-else>
-            pierwsza cyfra: {{ genData.regionNumbers[beginRegionName] }}; druga cyfra:
-            {{ genData.regionNumbers[endRegionName] }}
-          </span>
-        </span>
-      </div> -->
+          <div>
+            <b>
+              Druga cyfra: <span class="text--accent">{{ trainNumber[1] }}</span>
+            </b>
+            <span v-if="endRegionName"> dla końcowego obszaru konstrukcyjnego {{ endRegionName }}</span>
+            <span v-else>wybierz początkowy obszar konstrukcyjny</span>
+          </div>
+        </div>
+
+        <!-- Third digit (non-passenger only) -->
+        <div v-if="categoryRules[0] != null">
+          <b>
+            Trzecia cyfra: <span class="text--accent">{{ categoryRules[0] }}</span>
+          </b>
+          dla kategorii {{ chosenCategory }}
+        </div>
+
+        <div>
+          <b> {{ categoryRules[1]?.length == 3 ? 'Trzy' : 'Dwie' }} ostatnie cyfry:</b>
+          z przedziału
+          <b class="text--accent">{{ categoryRules[1] }}-{{ categoryRules[2] }}</b>
+        </div>
+      </div>
+
+      <hr />
 
       <div class="tab_links">
         <a :href="$t('numgen.td2-wiki-link')" target="_blank">
-          {{ $t("numgen.td2-wiki") }}
+          {{ $t('numgen.td2-wiki') }}
         </a>
       </div>
 
@@ -79,10 +104,13 @@
 
       <div class="tab_actions">
         <button class="btn" @click="randomizeTrainNumber(true)">
-          {{ $t("numgen.action-random-region") }}
+          {{ $t('numgen.action-random-region') }}
         </button>
+
+        <button class="btn" @click="randomizeTrainNumber(true)">LOSUJ KATEGORIĘ</button>
+
         <button class="btn" @click="randomizeTrainNumber(false)">
-          {{ $t("numgen.action-random-number") }}
+          {{ $t('numgen.action-random-number') }}
         </button>
       </div>
     </div>
@@ -90,14 +118,15 @@
 </template>
 
 <script setup lang="ts">
-import { Ref, ref } from "vue";
-import { useI18n } from "vue-i18n";
+import { Ref, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-import genData from "../../constants/numberGeneratorData.json";
+import genData from '../../constants/numberGeneratorData.json';
+import { computed } from 'vue';
 
 const i18n = useI18n();
 type RegionName = keyof typeof genData.regionNumbers;
-type Category = keyof typeof genData.categories;
+type Category = keyof typeof genData.categoriesRules;
 
 const beginRegionName = ref(null) as Ref<RegionName | null>;
 const endRegionName = ref(null) as Ref<RegionName | null>;
@@ -108,31 +137,31 @@ const trainNumber = ref(null) as Ref<string | null>;
 const copyNumber = () => {
   if (trainNumber.value) {
     navigator.clipboard.writeText(trainNumber.value);
-    alert(i18n.t("numgen.alert"));
+    alert(i18n.t('numgen.alert'));
   }
 };
+
+const categoryRules = computed(() => {
+  if (!chosenCategory.value) return null;
+
+  return genData.categoriesRules[chosenCategory.value];
+});
 
 const randomizeTrainNumber = (randomizeRegions = false) => {
   // if (categoryRules.value == null) return;
 
   const regionKeys = Object.keys(genData.regionNumbers);
 
-  if (beginRegionName.value == null || randomizeRegions)
-    beginRegionName.value = regionKeys[
-      (regionKeys.length * Math.random()) << 0
-    ] as RegionName;
+  if (beginRegionName.value == null || randomizeRegions) beginRegionName.value = regionKeys[(regionKeys.length * Math.random()) << 0] as RegionName;
 
-  if (endRegionName.value == null || randomizeRegions)
-    endRegionName.value = regionKeys[
-      (regionKeys.length * Math.random()) << 0
-    ] as RegionName;
+  if (endRegionName.value == null || randomizeRegions) endRegionName.value = regionKeys[(regionKeys.length * Math.random()) << 0] as RegionName;
 
-  let number = "";
+  let number = '';
 
+  // Two first numbers (begin & end regions)
   if (beginRegionName.value == endRegionName.value) {
     const sameRegionsNumbers = genData.sameRegions[beginRegionName.value!];
-    const randRegionNumber =
-      sameRegionsNumbers[Math.floor(Math.random() * sameRegionsNumbers.length)];
+    const randRegionNumber = sameRegionsNumbers[Math.floor(Math.random() * sameRegionsNumbers.length)];
     number += randRegionNumber.toString();
   } else {
     const beginRegionNumber = genData.regionNumbers[beginRegionName.value!];
@@ -147,48 +176,62 @@ const randomizeTrainNumber = (randomizeRegions = false) => {
     return;
   }
 
-  if (chosenCategory.value == null) chosenCategory.value = "EI";
+  // Choose default category if it's not chosen
+  if (chosenCategory.value == null) chosenCategory.value = 'EI';
 
-  const rulesArray = genData.categories[chosenCategory.value]
-    .split(";")
-    .map((r) => ({
-      index: r.split(":")[0],
-      rule: r.split(":")[1],
-      nums: Number(r.split(":")[2] || "1"),
-    }));
+  // Get category rules
+  const [thirdNumber, minRange, maxRange] = categoryRules.value!;
 
-  rulesArray.forEach((r) => {
-    const range = r.rule.split("-");
+  // Third number
+  number += thirdNumber ?? '';
 
-    if (range.length == 1) number += r.rule;
-    else {
-      const [minRange, maxRange] = range;
-      const randRange = Math.floor(
-        Math.random() * (Number(maxRange) - Number(minRange)) +
-          Number(minRange),
-      ).toString();
+  // Remaining numbers
+  const rangeNums = minRange!.length;
+  const randRange = Math.floor(Math.random() * (Number(maxRange) - Number(minRange)) + Number(minRange)).toString();
+  const leadingZeros = new Array(Math.abs(randRange.length - rangeNums)).fill('0').join('');
 
-      number +=
-        new Array(Math.abs(randRange.length - r.nums)).fill("0").join("") +
-        randRange;
-    }
-  });
+  number += `${leadingZeros}${randRange}`;
 
   trainNumber.value = number;
 };
 </script>
 
 <style lang="scss" scoped>
-@import "../../styles/tab.scss";
-@import "../../styles/global.scss";
+@import '../../styles/tab.scss';
+@import '../../styles/global.scss';
 
-.options {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.5em;
+}
+
+.category-select {
+  select {
+    width: auto;
+    min-width: 50%;
+  }
+
+  margin-bottom: 1em;
+}
+
+.regions-select {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 0.5em;
+
+  div {
+    width: 100%;
+  }
 
   select {
     width: 100%;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 0.5em;
   }
 }
 
@@ -204,14 +247,19 @@ const randomizeTrainNumber = (randomizeRegions = false) => {
   background-color: $secondaryColor;
 }
 
+.category-rules {
+  margin-bottom: 0.5em;
+}
+
 .tab_actions {
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   margin: 0.5em 0;
 }
 
 .tab_links {
   display: flex;
   justify-content: flex-end;
+  margin: 0.25em 0;
 }
 
 @media screen and (max-width: $breakpointMd) {
@@ -221,8 +269,20 @@ const randomizeTrainNumber = (randomizeRegions = false) => {
 }
 
 @media screen and (max-width: $breakpointSm) {
-  .options select {
+  .regions-select {
+    flex-wrap: wrap;
+  }
+
+  .regions-select select {
     width: 100%;
+  }
+
+  .category-select select {
+    min-width: 100%;
+  }
+
+  .category-rules {
+    text-align: center;
   }
 }
 </style>

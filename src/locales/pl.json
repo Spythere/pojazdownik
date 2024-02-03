@@ -92,6 +92,7 @@
   },
   "numgen": {
     "title": "GENERATOR NUMERU POCIĄGU",
+    "subtitle": "Generuje realny numer pociągu na podstawie instrukcji Ir-11",
     "alert": "Numer został skopiowany do twojego schowka!",
     "start-region": "Początkowy obszar konstrukcyjny",
     "end-region": "Końcowy obszar konstrukcyjny",
@@ -103,22 +104,36 @@
     "action-random-region": "LOSUJ OBSZARY",
     "action-random-number": "LOSUJ NUMER",
     "categories": {
-      "EI": "ekspres krajowy (EI)",
-      "MP/RP": "(między)wojewódzki pośpieszny (MP/RP)",
-      "RO": "wojewódzki osobowy (RO)",
-      "PW": "próżny \"służbowy\" (PW)",
-      "TM": "towarowy do przewozów masowych (TM)",
-      "TK": "towarowy do obsługi stacji (TK)",
-      "LT": "lokomotywa luzem (LT)"
-    },
-    "rules": {
-      "EI": "4 cyfry - końcówka z przedziału 00-99",
-      "MP/RP": "5 cyfr - końcówka z przedziału 050-169",
-      "RO": "5 cyfr - końcówka z przedziału 200-999",
-      "PW": "6 cyfr - '6' na 3. miejscu; końcówka z przedziału 000-899",
-      "TM": "6 cyfr - '4' na 3. miejscu; końcówka z przedziału 000-899",
-      "TK": "6 cyfr - '3' na 3. miejscu; końcówka z przedziału 000-899",
-      "LT": "6 cyfr - '5' na 3. miejscu; końcówka z przedziału 000-899"
+      "EI": "EI - ekspres krajowy",
+      "EC": "EC - ekspres międzynarodowy",
+      "EN": "EN - ekspres krajowy nocny",
+
+      "MP": "MP - międzywojewódzki pośpieszny",
+      "RP": "RP - wojewódzki pośpieszny",
+      "MO": "MO - międzywojewódzki osobowy",
+      "RO": "RO - wojewódzki osobowy",
+
+      "MM": "MM - międzynarodowy pośpieszny",
+      "MH": "MH - międzywoj. pośpieszny nocny / hotelowy",
+      "RM": "RM - wojewódzki osobowy międzynarodowy",
+      "RA": "RA - wojewódzki osobowy algomeracyjny",
+
+      "PW": "PW - próżny \"służbowy\"",
+      "PX": "PX - próżny próbny",
+
+      "TC": "TC - towarowy międzynarodowy intermodalny",
+      "TG": "TG - towarowy międzynarodowy masowy",
+      "TR": "TR - towarowy międzynarodowy niemasowy",
+      "TD": "TD - towarowy krajowy intermodalny",
+      "TM": "TM - towarowy krajowy masowy",
+      "TN": "TN - towarowy krajowy niemasowy",
+      "TK": "TK - towarowy do obsługi stacji i bocznic",
+      "TS": "TS - próżny próbny skład towarowy",
+
+      "LT": "LT - lokomotywa towarowa luzem",
+      "LP": "LP -lokomotywa pasażerska luzem",
+
+      "ZN": "ZN - inspekcyjny / diagnostyczny"
     }
   },
   "wiki": {

@@ -92,6 +92,7 @@
   },
   "numgen": {
     "title": "TRAIN NUMBER GENERATOR",
+    "subtitle": "Generates real train number based on Polish railway instruction Ir-11",
     "alert": "The number has been copied to your clipboard!",
     "start-region": "Beginning construction region",
     "end-region": "Terminating construction region",
@@ -103,22 +104,36 @@
     "action-random-region": "DRAW REGIONS",
     "action-random-number": "DRAW A NUMBER",
     "categories": {
-      "EI": "domestic express (EI)",
-      "MP/RP": "(inter)voivodeship bullet (MP/RP)",
-      "RO": "regional passenger (RO)",
-      "PW": "empty passenger (PW)",
-      "TM": "mass transport freight (TM)",
-      "TK": "non-mass transport freight (TK)",
-      "LT": "locomotive alone (LT)"
-    },
-    "rules": {
-      "EI": "4 digits - ends within the range of 00-99",
-      "MP/RP": "5 digits - ends within the range of 050-169",
-      "RO": "5 digits - ends within the range of 200-999",
-      "PW": "6 digits - '6' on the 3rd place; ends within the range of 000-899",
-      "TM": "6 digits - '4' on the 3rd place; ends within the range of 000-899",
-      "TK": "6 digits - '3' on the 3rd place; ends within the range of 000-899",
-      "LT": "6 digits - '5' on the 3rd place; ends within the range of 000-899"
+      "EI": "EI - domestic express",
+      "EC": "EC - international express",
+      "EN": "EN - domestic night express",
+
+      "MP": "MP - intervoivodeship bullet",
+      "RP": "RP - voivodeship bullet",
+      "MO": "MO - intervoivodeship regio",
+      "RO": "RO - voivodeship regio",
+
+      "MM": "MM - international bullet",
+      "MH": "MH - intervoivodeship bullet (night / )",
+      "RM": "RM - voivodeship osobowy international",
+      "RA": "RA - voivodeship osobowy algomeracyjny",
+
+      "PW": "PW - empty passenger",
+      "PX": "PX - empty test drive",
+
+      "TC": "TC - international freight (intermodal)",
+      "TG": "TG - international freight (cargo)",
+      "TR": "TR - international freight (no cargo)",
+      "TD": "TD - domestic freight (intermodal)",
+      "TM": "TM - domestic freight (cargo)",
+      "TN": "TN - domestic freight (no cargo)",
+      "TK": "TK - freight (stations & sidings service)",
+      "TS": "TS - empty freight test drive",
+
+      "LT": "LT - freight locomotive only",
+      "LP": "LP - passenger locomotive only",
+
+      "ZN": "ZN - inspection / diagnostic"
     }
   },
   "wiki": {
