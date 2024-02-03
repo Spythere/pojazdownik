@@ -114,9 +114,9 @@
       "RO": "RO - voivodeship regio",
 
       "MM": "MM - international bullet",
-      "MH": "MH - intervoivodeship bullet (night / )",
-      "RM": "RM - voivodeship osobowy international",
-      "RA": "RA - voivodeship osobowy algomeracyjny",
+      "MH": "MH - intervoivodeship bullet (night / hotel)",
+      "RM": "RM - international voivodeship regio",
+      "RA": "RA - voivodeship regio (urban)",
 
       "PW": "PW - empty passenger",
       "PX": "PX - empty test drive",
