@@ -53,41 +53,40 @@
       <div class="category-rules" v-if="chosenCategory && categoryRules && trainNumber">
         <!-- First & second digit (the same regions)  -->
         <div v-if="beginRegionName && endRegionName && beginRegionName == endRegionName">
-          <b>Dwie pierwsze cyfry:</b> z puli
+          <b>{{ $t('numgen.rules.two-first-digits') }}</b> {{ $t('numgen.rules.from-pool') }}
           <b class="text--accent">{{ genData.sameRegions[beginRegionName].join(', ') }}</b>
-          dla obszaru {{ beginRegionName }}
+          {{ $t('numgen.rules.for-region') }} {{ beginRegionName }}
         </div>
 
         <!-- First & second digit (different regions)  -->
         <div v-else>
           <div>
             <b>
-              Pierwsza cyfra: <span class="text--accent">{{ trainNumber[0] }}</span>
+              {{ $t('numgen.rules.first-digit') }} <span class="text--accent">{{ trainNumber[0] }}</span>
             </b>
-            <span v-if="beginRegionName"> dla początkowego obszaru konstrukcyjnego {{ beginRegionName }}</span>
-            <span v-else>wybierz początkowy obszar konstrukcyjny</span>
+            {{ $t('numgen.rules.for-region-begin') }} {{ beginRegionName }}
           </div>
 
           <div>
             <b>
-              Druga cyfra: <span class="text--accent">{{ trainNumber[1] }}</span>
+              {{ $t('numgen.rules.second-digit') }} <span class="text--accent">{{ trainNumber[1] }} </span>
             </b>
-            <span v-if="endRegionName"> dla końcowego obszaru konstrukcyjnego {{ endRegionName }}</span>
-            <span v-else>wybierz początkowy obszar konstrukcyjny</span>
+            {{ $t('numgen.rules.for-region-end') }} {{ endRegionName }}
           </div>
         </div>
 
         <!-- Third digit (non-passenger only) -->
         <div v-if="categoryRules[0] != null">
           <b>
-            Trzecia cyfra: <span class="text--accent">{{ categoryRules[0] }}</span>
+            {{ $t('numgen.rules.third-digit') }} <span class="text--accent">{{ categoryRules[0] }}</span>
           </b>
-          dla kategorii {{ chosenCategory }}
+          {{ $t('numgen.rules.for-category') }} {{ chosenCategory }}
         </div>
 
+        <!-- Last digits  -->
         <div>
-          <b> {{ categoryRules[1]?.length == 3 ? 'Trzy' : 'Dwie' }} ostatnie cyfry:</b>
-          z przedziału
+          <b> {{ $t(`numgen.rules.${categoryRules[1]?.length == 3 ? 'three' : 'two'}-last-digits`) }}</b>
+          {{ $t('numgen.rules.from-range') }}
           <b class="text--accent">{{ categoryRules[1] }}-{{ categoryRules[2] }}</b>
         </div>
       </div>
@@ -107,7 +106,9 @@
           {{ $t('numgen.action-random-region') }}
         </button>
 
-        <button class="btn" @click="randomizeTrainNumber(true)">LOSUJ KATEGORIĘ</button>
+        <button class="btn" @click="randomizeCategory">
+          {{ $t('numgen.action-random-category') }}
+        </button>
 
         <button class="btn" @click="randomizeTrainNumber(false)">
           {{ $t('numgen.action-random-number') }}
@@ -146,6 +147,13 @@ const categoryRules = computed(() => {
 
   return genData.categoriesRules[chosenCategory.value];
 });
+
+const randomizeCategory = () => {
+  const categoryKeys = Object.keys(genData.categoriesRules) as Category[];
+  chosenCategory.value = categoryKeys[~~(Math.random() * categoryKeys.length)];
+
+  randomizeTrainNumber(false);
+};
 
 const randomizeTrainNumber = (randomizeRegions = false) => {
   // if (categoryRules.value == null) return;

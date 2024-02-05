@@ -102,7 +102,24 @@
     "td2-wiki": "> Polish rules of train numbering (forum thread)",
     "td2-wiki-link": "https://td2.info.pl/english-boards/new-train-categories-in-the-simulator/",
     "action-random-region": "DRAW REGIONS",
-    "action-random-number": "DRAW A NUMBER",
+    "action-random-number": "DRAW LAST DIGITS",
+    "action-random-category": "DRAW A CATEGORY",
+
+    "rules": {
+      "first-digit": "First digit:",
+      "second-digit": "Second digit:",
+      "third-digit": "Third digit:",
+      "two-first-digits": "Two first digits:",
+      "two-last-digits": "Two last digits:",
+      "three-last-digits": "Three last digits:",
+      "from-pool": "from pool of",
+      "for-category": "for category",
+      "for-region": "for region",
+      "for-region-begin": "for the beginning construction region",
+      "for-region-end": "for the terminating construction region",
+      "from-range": "from range of"
+    },
+
     "categories": {
       "EI": "EI - domestic express",
       "EC": "EC - international express",

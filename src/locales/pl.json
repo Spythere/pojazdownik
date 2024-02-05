@@ -102,7 +102,24 @@
     "td2-wiki": "> Szczegółowe zasady numeracji (wątek forum)",
     "td2-wiki-link": "https://td2.info.pl/ogloszenia/nowe-kategorie-pociagow-w-symulatorze/",
     "action-random-region": "LOSUJ OBSZARY",
-    "action-random-number": "LOSUJ NUMER",
+    "action-random-number": "LOSUJ KOŃCÓWKĘ",
+    "action-random-category": "LOSUJ KATEGORIĘ",
+
+    "rules": {
+      "first-digit": "Pierwsza cyfra:",
+      "second-digit": "Druga cyfra:",
+      "third-digit": "Trzecia cyfra:",
+      "two-first-digits": "Dwie pierwsze cyfry:",
+      "two-last-digits": "Dwie ostatnie cyfry:",
+      "three-last-digits": "Trzy ostatnie cyfry:",
+      "from-pool": "z puli",
+      "for-category": "dla kategorii",
+      "for-region": "dla obszaru",
+      "for-region-begin": "dla początkowego obszaru konstrukcyjnego",
+      "for-region-end": "dla końcowego obszaru konstrukcyjnego",
+      "from-range": "z przedziału"
+    },
+
     "categories": {
       "EI": "EI - ekspres krajowy",
       "EC": "EC - ekspres międzynarodowy",
