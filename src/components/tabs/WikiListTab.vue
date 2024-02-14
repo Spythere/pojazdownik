@@ -290,6 +290,7 @@ export default defineComponent({
   td {
     text-align: center;
     height: 70px;
+    padding: 0.25em;
 
     &[data-sponsoronly='true'] {
       color: salmon;
