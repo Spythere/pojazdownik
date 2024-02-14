@@ -222,30 +222,29 @@ export default defineComponent({
       };
 
       for (let i = 0; i < 10; i++) {
-        const headingLoco = this.store.stockList[0]?.isLoco ? this.store.stockList[0] : undefined;
-        this.store.stockList.length = headingLoco ? 1 : 0;
+        this.store.stockList.splice(this.store.stockList[0]?.isLoco ? 1 : 0);
+        let carCount = 0;
 
         const maxMass = this.store.acceptableMass > 0 ? Math.min(this.store.acceptableMass, this.maxMass) : this.maxMass;
 
-        let exceeded = false;
-
-        while (!exceeded) {
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
           const randomStockType = generatedChosenStockList[~~(Math.random() * generatedChosenStockList.length)];
           const { carWagon, cargo } = randomStockType.carPool[~~(Math.random() * randomStockType.carPool.length)];
 
           if (
             this.store.totalMass + (cargo?.totalMass || carWagon.mass) > maxMass ||
             this.store.totalLength + carWagon.length > this.maxLength ||
-            this.store.stockList.length > this.maxCarCount
+            carCount >= this.maxCarCount
           ) {
-            exceeded = true;
             break;
           }
 
           this.addCarWagon(carWagon, cargo);
+          carCount++;
         }
 
-        const currentGenerationValue = this.store.totalLength + this.store.totalMass + this.store.stockList.length;
+        const currentGenerationValue = this.store.totalLength + this.store.totalMass + carCount;
 
         if (bestGeneration.value < currentGenerationValue) {
           bestGeneration.stockList = this.store.stockList;
