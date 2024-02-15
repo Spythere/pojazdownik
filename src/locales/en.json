@@ -149,6 +149,7 @@
 
       "LT": "LT - freight locomotive only",
       "LP": "LP - passenger locomotive only",
+      "LS": "LS - shunting locomotive",
 
       "ZN": "ZN - inspection / diagnostic"
     }
