@@ -1,14 +1,14 @@
 import { IStockData, IStore } from './types';
 import { defineStore } from 'pinia';
 import {
-  acceptableMass,
+  acceptableMass as acceptableWeight,
   carDataList,
   chosenRealStock,
   isTrainPassenger,
   locoDataList,
   maxStockSpeed,
   totalLength,
-  totalMass,
+  totalWeight,
 } from './utils/vehicleUtils';
 import http from './http';
 
@@ -56,12 +56,12 @@ export const useStore = defineStore({
     locoDataList: (state) => locoDataList(state),
     carDataList: (state) => carDataList(state),
     vehicleDataList: (state) => [...locoDataList(state), ...carDataList(state)],
-    totalMass: (state) => totalMass(state),
+    totalWeight: (state) => totalWeight(state),
     totalLength: (state) => totalLength(state),
     maxStockSpeed: (state) => maxStockSpeed(state),
     isTrainPassenger: (state) => isTrainPassenger(state),
     chosenRealStock: (state) => chosenRealStock(state),
-    acceptableMass: (state) => acceptableMass(state),
+    acceptableWeight: (state) => acceptableWeight(state),
 
     stockSupportsColdStart: (state) => {
       if (state.stockList.length == 0) return false;

@@ -5,11 +5,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { useStore } from './store';
-import ImageFullscreenPreview from './components/utils/ImageFullscreenPreview.vue';
-import AppContainerView from './views/AppContainerView.vue';
-import AppModals from './components/app/AppModals.vue';
+import { defineComponent } from "vue";
+import { useStore } from "./store";
+import ImageFullscreenPreview from "./components/utils/ImageFullscreenPreview.vue";
+import AppContainerView from "./views/AppContainerView.vue";
+import AppModals from "./components/app/AppModals.vue";
 
 export default defineComponent({
   data() {
@@ -26,7 +26,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import './styles/global.scss';
+@import "./styles/global.scss";
 
 /* APP */
 #app {

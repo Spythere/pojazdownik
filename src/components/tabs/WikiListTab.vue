@@ -54,17 +54,23 @@
                 />
               </td>
 
-              <td :data-sponsoronly="vehicle.isSponsorsOnly">{{ vehicle.type }}</td>
+              <td :data-sponsoronly="vehicle.isSponsorsOnly">
+                {{ vehicle.type }}
+              </td>
 
-              <td v-if="isLocomotive(vehicle)">{{ $t(`wiki.${vehicle.power}`) }}</td>
+              <td v-if="isLocomotive(vehicle)">
+                {{ $t(`wiki.${vehicle.power}`) }}
+              </td>
               <td v-else>{{ $t(`wiki.${vehicle.useType}`) }}</td>
 
               <td>{{ vehicle.constructionType }}</td>
               <td>{{ vehicle.length }}m</td>
-              <td>{{ vehicle.mass }}t</td>
+              <td>{{ (vehicle.weight / 1000).toFixed(1) }}t</td>
               <td>{{ vehicle.maxSpeed }}km/h</td>
 
-              <td v-if="currentFilterMode == 'carriages'">{{ !isLocomotive(vehicle) ? vehicle.cargoList.length : '---' }}</td>
+              <td v-if="currentFilterMode == 'carriages'">
+                {{ !isLocomotive(vehicle) ? vehicle.cargoTypes.length : '---' }}
+              </td>
               <td v-if="currentFilterMode == 'tractions'">
                 {{ isLocomotive(vehicle) ? (vehicle.coldStart ? `&check;` : '&cross;') : '---' }}
               </td>
@@ -87,7 +93,7 @@ import { isLocomotive } from '../../utils/vehicleUtils';
 import stockMixin from '../../mixins/stockMixin';
 import imageMixin from '../../mixins/imageMixin';
 
-type SorterID = 'type' | 'constructionType' | 'image' | 'length' | 'mass' | 'maxSpeed' | 'cargoCount' | 'group' | 'coldStart';
+type SorterID = 'type' | 'constructionType' | 'image' | 'length' | 'weight' | 'maxSpeed' | 'cargoCount' | 'group' | 'coldStart';
 
 interface IWikiHeader {
   id: SorterID;
@@ -106,7 +112,7 @@ const headers: IWikiHeader[] = [
   { id: 'group', sortable: true, for: 'all' },
   { id: 'constructionType', sortable: true, for: 'all' },
   { id: 'length', sortable: true, for: 'all' },
-  { id: 'mass', sortable: true, for: 'all' },
+  { id: 'weight', sortable: true, for: 'all' },
   { id: 'maxSpeed', sortable: true, for: 'all' },
   { id: 'coldStart', sortable: true, for: 'tractions' },
   { id: 'cargoCount', sortable: true, for: 'carriages' },
@@ -166,15 +172,15 @@ export default defineComponent({
         case 'group':
           return direction == 1 ? row1.vehicle[id].localeCompare(row2.vehicle[id]) : row2.vehicle[id].localeCompare(row1.vehicle[id]);
 
-        case 'mass':
+        case 'weight':
         case 'length':
         case 'maxSpeed':
           return Math.sign(row1.vehicle[id] - row2.vehicle[id]) * direction;
 
         case 'cargoCount':
           return (
-            (!isLocomotive(row1.vehicle) ? Math.sign(row1.vehicle.cargoList.length || -1) : -1) -
-            (!isLocomotive(row2.vehicle) ? (row2.vehicle.cargoList.length || -1) * direction : -1)
+            (!isLocomotive(row1.vehicle) ? Math.sign(row1.vehicle.cargoTypes.length || -1) : -1) -
+            (!isLocomotive(row2.vehicle) ? (row2.vehicle.cargoTypes.length || -1) * direction : -1)
           );
 
         case 'coldStart':

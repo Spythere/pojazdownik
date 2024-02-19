@@ -27,7 +27,7 @@ div {
   user-select: none;
 
   &::before {
-    content: '\2716';
+    content: "\2716";
     margin-right: 0.5em;
     color: #aaa;
   }
@@ -51,7 +51,7 @@ input {
 
     &::before {
       color: palegreen;
-      content: '\2714';
+      content: "\2714";
     }
   }
 }

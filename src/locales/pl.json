@@ -166,7 +166,7 @@
       "constructionType": "Konstrukcja",
       "coldStart": "Zimny start",
       "length": "Długość",
-      "mass": "Masa",
+      "weight": "Masa",
       "maxSpeed": "Prędkość",
       "cargoCount": "Ładunki"
     },

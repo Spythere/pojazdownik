@@ -15,7 +15,7 @@
         <div class="tab_attributes">
           <label>
             {{ $t('stockgen.input-mass') }}
-            <input type="number" v-model="maxMass" step="100" max="4000" min="0" />
+            <input type="number" v-model="maxTons" step="100" max="4000" min="0" />
           </label>
 
           <label>
@@ -122,7 +122,7 @@ export default defineComponent({
 
       previewTimeout: -1,
 
-      maxMass: 3000,
+      maxTons: 3000,
       maxLength: 650,
       maxCarCount: 50,
 
@@ -191,8 +191,8 @@ export default defineComponent({
               const cargoObjs = [] as (ICargo | undefined)[];
 
               if (!cargoType || empty) cargoObjs.push(undefined);
-              else if (cargoType == 'all') cargoObjs.push(...carWagonObjs[0]!.cargoList);
-              else cargoObjs.push(carWagonObjs[0]?.cargoList.find((cargo) => cargo.id == cargoType));
+              else if (cargoType == 'all') cargoObjs.push(...carWagonObjs[0]!.cargoTypes);
+              else cargoObjs.push(carWagonObjs[0]?.cargoTypes.find((cargo) => cargo.id == cargoType));
 
               carWagonObjs.forEach((cw) => {
                 cargoObjs.forEach((cargoObj) => {
@@ -223,9 +223,9 @@ export default defineComponent({
 
       for (let i = 0; i < 10; i++) {
         this.store.stockList.splice(this.store.stockList[0]?.isLoco ? 1 : 0);
-        let carCount = 0;
 
-        const maxMass = this.store.acceptableMass > 0 ? Math.min(this.store.acceptableMass, this.maxMass) : this.maxMass;
+        let carCount = 0;
+        const maxWeight = this.store.acceptableWeight > 0 ? Math.min(this.store.acceptableWeight, this.maxTons * 1000) : this.maxTons * 1000;
 
         // eslint-disable-next-line no-constant-condition
         while (true) {
@@ -233,7 +233,7 @@ export default defineComponent({
           const { carWagon, cargo } = randomStockType.carPool[~~(Math.random() * randomStockType.carPool.length)];
 
           if (
-            this.store.totalMass + (cargo?.totalMass || carWagon.mass) > maxMass ||
+            this.store.totalWeight + (carWagon.weight + (cargo?.weight ?? 0)) > maxWeight ||
             this.store.totalLength + carWagon.length > this.maxLength ||
             carCount >= this.maxCarCount
           ) {
@@ -244,7 +244,7 @@ export default defineComponent({
           carCount++;
         }
 
-        const currentGenerationValue = this.store.totalLength + this.store.totalMass + carCount;
+        const currentGenerationValue = this.store.totalLength + this.store.totalWeight + carCount;
 
         if (bestGeneration.value < currentGenerationValue) {
           bestGeneration.stockList = this.store.stockList;

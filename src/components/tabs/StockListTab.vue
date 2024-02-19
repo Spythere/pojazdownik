@@ -60,8 +60,8 @@
 
       <span>
         {{ $t('stocklist.mass') }}
-        <span class="text--accent">{{ store.totalMass }}t</span> ({{ $t('stocklist.mass-accepted') }}:
-        <span class="text--accent">{{ store.acceptableMass ? store.acceptableMass + 't' : '-' }}</span
+        <span class="text--accent">{{ (store.totalWeight / 1000).toFixed(1) }}t</span> ({{ $t('stocklist.mass-accepted') }}:
+        <span class="text--accent">{{ store.acceptableWeight ? `${~~(store.acceptableWeight / 1000)}t` : '-' }}</span
         >) - {{ $t('stocklist.length') }}:
         <span class="text--accent">{{ store.totalLength }}m</span>
         - {{ $t('stocklist.vmax') }}:
@@ -136,9 +136,9 @@
             <span class="stock-info__cargo" v-if="stock.cargo">
               {{ stock.cargo.id }}
             </span>
-            <span class="stock-info__length"> {{ stock.length }}m </span>
-            <span class="stock-info__mass">{{ stock.cargo ? stock.cargo.totalMass : stock.mass }}t </span>
-            <span class="stock-info__speed"> {{ stock.maxSpeed }}km/h </span>
+            <span class="stock-info__length">{{ stock.length }}m</span>
+            <span class="stock-info__mass">{{ ((stock.weight + (stock.cargo?.weight ?? 0)) / 1000).toFixed(1) }}t</span>
+            <span class="stock-info__speed">{{ stock.maxSpeed }}km/h</span>
           </div>
         </li>
       </TransitionGroup>
@@ -324,7 +324,7 @@ export default defineComponent({
     downloadStock() {
       if (this.store.stockList.length == 0) return alert(this.$t('stocklist.alert-empty'));
 
-      const defaultName = `${this.store.chosenRealStockName || this.store.stockList[0].type} ${this.store.totalMass}t; ${
+      const defaultName = `${this.store.chosenRealStockName || this.store.stockList[0].type} ${this.store.totalWeight}t; ${
         this.store.totalLength
       }m; vmax ${this.store.maxStockSpeed}`;
 

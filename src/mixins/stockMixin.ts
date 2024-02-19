@@ -1,6 +1,6 @@
 import { defineComponent } from 'vue';
 import { useStore } from '../store';
-import { ICargo, ICarWagon, ILocomotive, IStock, Vehicle } from '../types';
+import { ICarWagon, ILocomotive, IStock, ICargo, Vehicle } from '../types';
 import { isLocomotive } from '../utils/vehicleUtils';
 
 export default defineComponent({
@@ -22,7 +22,7 @@ export default defineComponent({
         id: this.getStockId(),
         type: vehicle.type,
         length: vehicle.length,
-        mass: vehicle.mass,
+        weight: vehicle.weight,
         maxSpeed: vehicle.maxSpeed,
         isLoco,
         cargo: !isLoco && vehicle.loadable && cargo ? cargo : undefined,
@@ -88,7 +88,7 @@ export default defineComponent({
           const [carType, cargo] = type.split(':');
           vehicle = this.store.carDataList.find((car) => car.type == carType) || null;
 
-          if (cargo) vehicleCargo = vehicle?.cargoList.find((c) => c.id == cargo) || null;
+          if (cargo) vehicleCargo = vehicle?.cargoTypes.find((c) => c.id == cargo) || null;
         }
 
         if (!vehicle) console.log('Brak pojazdu / rodzaj pojazdu źle wczytany:', type);

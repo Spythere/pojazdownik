@@ -166,7 +166,7 @@
       "constructionType": "Construction",
       "coldStart": "Cold start",
       "length": "Length",
-      "mass": "Mass",
+      "weight": "Mass",
       "maxSpeed": "Speed",
       "cargoCount": "Cargo count"
     },
