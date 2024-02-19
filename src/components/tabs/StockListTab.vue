@@ -324,7 +324,7 @@ export default defineComponent({
     downloadStock() {
       if (this.store.stockList.length == 0) return alert(this.$t('stocklist.alert-empty'));
 
-      const defaultName = `${this.store.chosenRealStockName || this.store.stockList[0].type} ${this.store.totalWeight}t; ${
+      const defaultName = `${this.store.chosenRealStockName || this.store.stockList[0].type} ${(this.store.totalWeight / 1000).toFixed(1)}t; ${
         this.store.totalLength
       }m; vmax ${this.store.maxStockSpeed}`;
 
