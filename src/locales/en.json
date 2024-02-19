@@ -147,7 +147,9 @@
       "TK": "TK - freight (stations & sidings service)",
       "TS": "TS - empty freight test drive",
 
-      "LT": "LT - freight locomotive only",
+      "LT": "LT - locomotive only",
+      "LT-new": "LT - freight locomotive only",
+
       "LP": "LP - passenger locomotive only",
       "LS": "LS - shunting locomotive",
 

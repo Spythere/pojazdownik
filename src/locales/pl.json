@@ -147,7 +147,9 @@
       "TK": "TK - towarowy do obsługi stacji i bocznic",
       "TS": "TS - towarowy próżny próbny",
 
-      "LT": "LT - lokomotywa towarowa luzem",
+      "LT": "LT - lokomotywa luzem",
+      "LT-new": "LT - lokomotywa towarowa luzem",
+
       "LP": "LP - lokomotywa pasażerska luzem",
       "LS": "LS - lokomotywa manewrowa",
 
