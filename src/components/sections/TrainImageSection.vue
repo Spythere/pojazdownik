@@ -18,7 +18,7 @@
       </b>
 
       <div style="color: #ccc">
-        <div>{{ store.chosenVehicle.length }}m | {{ store.chosenVehicle.mass }}t | {{ store.chosenVehicle.maxSpeed }} km/h</div>
+        <div>{{ store.chosenVehicle.length }}m | {{ (store.chosenVehicle.weight / 1000).toFixed(1) }}t | {{ store.chosenVehicle.maxSpeed }} km/h</div>
 
         <div v-if="isLocomotive(store.chosenVehicle)">{{ $t('preview.cabin') }} {{ store.chosenVehicle.cabinType }}</div>
 

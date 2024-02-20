@@ -5,7 +5,17 @@
     },
     "cargo": {
       "2000": 70
-    }
+    },
+    "none": 110
+  },
+  "4E": {
+    "passenger": {
+      "650": 125
+    },
+    "cargo": {
+      "2000": 70
+    },
+    "none": 110
   },
   "EU07E": {
     "passenger": {
@@ -13,25 +23,29 @@
     },
     "cargo": {
       "2000": 70
-    }
+    },
+    "none": 110
   },
   "EP07": {
     "passenger": {
       "650": 125
     },
-    "cargo": null
+    "cargo": null,
+    "none": 110
   },
   "EP08": {
     "passenger": {
       "650": 140
     },
-    "cargo": null
+    "cargo": null,
+    "none": 110
   },
   "EP09": {
     "passenger": {
       "650": 160
     },
-    "cargo": null
+    "cargo": null,
+    "none": 160
   },
   "ET41": {
     "passenger": {
@@ -39,7 +53,8 @@
     },
     "cargo": {
       "4000": 70
-    }
+    },
+    "none": 110
   },
   "SM42": {
     "passenger": {
@@ -61,6 +76,7 @@
       "1130": 40,
       "1720": 30,
       "2400": 20
-    }
+    },
+    "none": 90
   }
 }

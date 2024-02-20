@@ -41,10 +41,17 @@ export type TCarWagonGroup = 'car-passenger' | 'car-cargo';
 export interface IStockProps {
   type: string;
   length: number;
-  mass: number;
-  cargo?: string | null;
+  // mass: number;
+  weight: number;
+  // cargo?: string | null;
+  cargoTypes: ICargo[] | null;
   coldStart?: boolean;
   doubleManned?: boolean;
+}
+
+export interface ICargo {
+  id: string;
+  weight: number;
 }
 
 export interface IStockData {
@@ -79,8 +86,7 @@ export interface ILocomotive {
   isSponsorsOnly: boolean;
   sponsorsOnlyTimestamp: number;
   imageSrc: string;
-
-  mass: number;
+  weight: number;
   length: number;
   coldStart: boolean;
   doubleManned: boolean;
@@ -96,15 +102,9 @@ export interface ICarWagon {
   sponsorsOnlyTimestamp: number;
   maxSpeed: number;
   imageSrc: string;
-
-  mass: number;
+  weight: number;
   length: number;
-  cargoList: { id: string; totalMass: number }[];
-}
-
-export interface ICargo {
-  id: string;
-  totalMass: number;
+  cargoTypes: ICargo[];
 }
 
 export interface IStock {
@@ -113,9 +113,10 @@ export interface IStock {
   useType: string;
   constructionType: string;
   length: number;
-  mass: number;
+  // mass: number;
+  weight: number;
   maxSpeed: number;
-  cargo?: { id: string; totalMass: number };
+  cargo?: ICargo;
   isLoco: boolean;
   isSponsorsOnly: boolean;
   sponsorsOnlyTimestamp: number;

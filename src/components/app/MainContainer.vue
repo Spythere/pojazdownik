@@ -27,11 +27,15 @@ main {
   gap: 1em;
 
   width: 100%;
-  max-width: 1300px;
-  min-height: 75vh;
+  max-width: 1350px;
 
   grid-template-columns: 1fr 2fr;
-  grid-template-rows: auto 360px minmax(400px, 1fr);
+  grid-template-rows: auto 360px minmax(300px, 1fr);
+
+  background-color: darken($color: $bgColor, $amount: 5);
+  border-radius: 1em;
+
+  padding: 1em;
 }
 
 @media screen and (max-width: $breakpointMd) {

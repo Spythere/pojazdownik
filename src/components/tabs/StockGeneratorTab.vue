@@ -15,7 +15,7 @@
         <div class="tab_attributes">
           <label>
             {{ $t('stockgen.input-mass') }}
-            <input type="number" v-model="maxMass" step="100" max="4000" min="0" />
+            <input type="number" v-model="maxTons" step="100" max="4000" min="0" />
           </label>
 
           <label>
@@ -28,6 +28,12 @@
             <input type="number" v-model="maxCarCount" step="1" max="60" min="1" />
           </label>
         </div>
+
+        <!-- <hr style="margin: 1em 0" /> -->
+
+        <!-- <div class="generator_options">
+          <Checkbox v-model="isCarGroupingEnabled">Grupuj wylosowane wagony (ustawia podobne wagony obok siebie w składzie)</Checkbox>
+        </div>  -->
       </div>
 
       <div>
@@ -105,7 +111,6 @@ import warningsMixin from '../../mixins/warningsMixin';
 
 export default defineComponent({
   name: 'stock-generator',
-
   mixins: [stockMixin, warningsMixin],
 
   data() {
@@ -117,9 +122,11 @@ export default defineComponent({
 
       previewTimeout: -1,
 
-      maxMass: 3000,
+      maxTons: 3000,
       maxLength: 650,
       maxCarCount: 50,
+
+      isCarGroupingEnabled: false,
 
       store: useStore(),
     };
@@ -163,6 +170,15 @@ export default defineComponent({
       this.excludedCarTypes.length = 0;
     },
 
+    // WIP
+    groupStock(stockList: IStock[]) {
+      if (!this.isCarGroupingEnabled) return false;
+
+      stockList.sort((s1, s2) => {
+        return (s1.constructionType + s1.cargo?.id).localeCompare(s2.constructionType + s2.cargo?.id);
+      });
+    },
+
     generateStock(empty = false) {
       const generatedChosenStockList = this.chosenCargoTypes.reduce(
         (acc, type) => {
@@ -175,8 +191,8 @@ export default defineComponent({
               const cargoObjs = [] as (ICargo | undefined)[];
 
               if (!cargoType || empty) cargoObjs.push(undefined);
-              else if (cargoType == 'all') cargoObjs.push(...carWagonObjs[0]!.cargoList);
-              else cargoObjs.push(carWagonObjs[0]?.cargoList.find((cargo) => cargo.id == cargoType));
+              else if (cargoType == 'all') cargoObjs.push(...carWagonObjs[0]!.cargoTypes);
+              else cargoObjs.push(carWagonObjs[0]?.cargoTypes.find((cargo) => cargo.id == cargoType));
 
               carWagonObjs.forEach((cw) => {
                 cargoObjs.forEach((cargoObj) => {
@@ -206,36 +222,39 @@ export default defineComponent({
       };
 
       for (let i = 0; i < 10; i++) {
-        const headingLoco = this.store.stockList[0]?.isLoco ? this.store.stockList[0] : undefined;
-        this.store.stockList.length = headingLoco ? 1 : 0;
+        this.store.stockList.splice(this.store.stockList[0]?.isLoco ? 1 : 0);
 
-        const maxMass = this.store.acceptableMass > 0 ? Math.min(this.store.acceptableMass, this.maxMass) : this.maxMass;
+        let carCount = 0;
+        const maxWeight = this.store.acceptableWeight > 0 ? Math.min(this.store.acceptableWeight, this.maxTons * 1000) : this.maxTons * 1000;
 
-        let exceeded = false;
-
-        while (!exceeded) {
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
           const randomStockType = generatedChosenStockList[~~(Math.random() * generatedChosenStockList.length)];
           const { carWagon, cargo } = randomStockType.carPool[~~(Math.random() * randomStockType.carPool.length)];
 
           if (
-            this.store.totalMass + (cargo?.totalMass || carWagon.mass) > maxMass ||
+            this.store.totalWeight + (carWagon.weight + (cargo?.weight ?? 0)) > maxWeight ||
             this.store.totalLength + carWagon.length > this.maxLength ||
-            this.store.stockList.length > this.maxCarCount
+            carCount >= this.maxCarCount
           ) {
-            exceeded = true;
             break;
           }
 
           this.addCarWagon(carWagon, cargo);
+          carCount++;
         }
 
-        const currentGenerationValue = this.store.totalLength + this.store.totalMass + this.store.stockList.length;
+        const currentGenerationValue = this.store.totalLength + this.store.totalWeight + carCount;
 
         if (bestGeneration.value < currentGenerationValue) {
           bestGeneration.stockList = this.store.stockList;
           bestGeneration.value = currentGenerationValue;
         }
       }
+
+      const bestStockList = bestGeneration.stockList;
+
+      this.groupStock(bestStockList);
 
       this.store.stockList = bestGeneration.stockList;
       this.store.stockSectionMode = 'stock-list';
@@ -283,6 +302,11 @@ export default defineComponent({
 @import '../../styles/global.scss';
 @import '../../styles/tab.scss';
 
+h2 {
+  margin-top: 0;
+  margin-bottom: 0.5em;
+}
+
 .generator_cargo,
 .generator_vehicles {
   display: grid;
@@ -321,6 +345,12 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   gap: 1em;
+}
+
+.generator_options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
 }
 
 .generator_warning {

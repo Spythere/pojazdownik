@@ -34,7 +34,7 @@ export function locoDataList(state: IStore) {
         imageSrc: '',
 
         length: locoProps?.length && type.startsWith('2EN') ? locoProps.length * 2 : locoProps?.length ?? 0,
-        mass: locoProps?.mass && type.startsWith('2EN') ? 253 : locoProps?.mass ?? 0,
+        weight: locoProps?.weight && type.startsWith('2EN') ? 253000 : locoProps?.weight ?? 0,
 
         coldStart: locoProps?.coldStart ?? false,
         doubleManned: locoProps?.doubleManned ?? false,
@@ -72,13 +72,9 @@ export function carDataList(state: IStore) {
         sponsorsOnlyTimestamp: Number(sponsorsOnlyTimestamp),
         maxSpeed: Number(maxSpeed),
         imageSrc: '',
-        cargoList:
-          carPropsData?.cargo?.split(';').map((cargo) => ({
-            id: cargo.split(':')[0],
-            totalMass: Number(cargo.split(':')[1]),
-          })) || [],
+        cargoTypes: carPropsData?.cargoTypes ?? [],
 
-        mass: carPropsData?.mass || 0,
+        weight: carPropsData?.weight || 0,
         length: carPropsData?.length || 0,
       });
     });
@@ -87,8 +83,8 @@ export function carDataList(state: IStore) {
   }, [] as ICarWagon[]);
 }
 
-export function totalMass(state: IStore) {
-  return ~~state.stockList.reduce((acc, stock) => acc + (stock.cargo ? stock.cargo.totalMass : stock.mass) * stock.count, 0);
+export function totalWeight(state: IStore) {
+  return state.stockList.reduce((acc, stock) => acc + (stock.weight + (stock.cargo?.weight ?? 0)) * stock.count, 0);
 }
 
 export function totalLength(state: IStore) {
@@ -105,9 +101,7 @@ export function maxStockSpeed(state: IStore) {
 
   if (/^(EN|2EN|SN)/.test(locoType)) return stockSpeedLimit;
 
-  const stockMass = totalMass(state);
-
-  const speedLimitByMass = calculateSpeedLimit(locoType as SpeedLimitLocoType, stockMass, isTrainPassenger(state));
+  const speedLimitByMass = calculateSpeedLimit(locoType as SpeedLimitLocoType, totalWeight(state), state.stockList.length, isTrainPassenger(state));
 
   return speedLimitByMass ? Math.min(stockSpeedLimit, speedLimitByMass) : stockSpeedLimit;
 }

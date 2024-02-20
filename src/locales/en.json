@@ -92,33 +92,68 @@
   },
   "numgen": {
     "title": "TRAIN NUMBER GENERATOR",
+    "subtitle": "Generates real train number based on Polish railway instruction Ir-11",
     "alert": "The number has been copied to your clipboard!",
     "start-region": "Beginning construction region",
     "end-region": "Terminating construction region",
     "train-category": "Train category",
     "number-info": "Generated train number:",
     "warning": "Choose category and (optionally) construction regions",
-    "td2-wiki": "> Polish rules of train numbering (TD2 wiki)",
-    "td2-wiki-link": "https://wiki.td2.info.pl/index.php?title=Zasady_numeracji_poci%C4%85g%C3%B3w/en",
+    "td2-wiki": "> Polish rules of train numbering (forum thread)",
+    "td2-wiki-link": "https://td2.info.pl/english-boards/new-train-categories-in-the-simulator/",
     "action-random-region": "DRAW REGIONS",
-    "action-random-number": "DRAW A NUMBER",
-    "categories": {
-      "EI": "domestic express (EI)",
-      "MP/RP": "(inter)voivodeship bullet (MP/RP)",
-      "RO": "regional passenger (RO)",
-      "PW": "empty passenger (PW)",
-      "TM": "mass transport freight (TM)",
-      "TK": "non-mass transport freight (TK)",
-      "LT": "locomotive alone (LT)"
-    },
+    "action-random-number": "DRAW LAST DIGITS",
+    "action-random-category": "DRAW A CATEGORY",
+
     "rules": {
-      "EI": "4 digits - ends within the range of 00-99",
-      "MP/RP": "5 digits - ends within the range of 050-169",
-      "RO": "5 digits - ends within the range of 200-999",
-      "PW": "6 digits - '6' on the 3rd place; ends within the range of 000-899",
-      "TM": "6 digits - '4' on the 3rd place; ends within the range of 000-899",
-      "TK": "6 digits - '3' on the 3rd place; ends within the range of 000-899",
-      "LT": "6 digits - '5' on the 3rd place; ends within the range of 000-899"
+      "first-digit": "First digit:",
+      "second-digit": "Second digit:",
+      "third-digit": "Third digit:",
+      "two-first-digits": "Two first digits:",
+      "two-last-digits": "Two last digits:",
+      "three-last-digits": "Three last digits:",
+      "from-pool": "from pool of",
+      "for-category": "for category",
+      "for-region": "for region",
+      "for-region-begin": "for the beginning construction region",
+      "for-region-end": "for the terminating construction region",
+      "from-range": "from range of"
+    },
+
+    "categories": {
+      "EI": "EI - domestic express",
+      "EC": "EC - international express",
+      "EN": "EN - domestic night express",
+
+      "MP": "MP - intervoivodeship bullet",
+      "RP": "RP - voivodeship bullet",
+      "MO": "MO - intervoivodeship regio",
+      "RO": "RO - voivodeship regio",
+
+      "MM": "MM - international bullet",
+      "MH": "MH - intervoivodeship bullet (night / hotel)",
+      "RM": "RM - international voivodeship regio",
+      "RA": "RA - voivodeship regio (urban)",
+
+      "PW": "PW - empty passenger",
+      "PX": "PX - empty passenger test drive",
+
+      "TC": "TC - international freight (intermodal)",
+      "TG": "TG - international freight (cargo)",
+      "TR": "TR - international freight (no cargo)",
+      "TD": "TD - domestic freight (intermodal)",
+      "TM": "TM - domestic freight (cargo)",
+      "TN": "TN - domestic freight (no cargo)",
+      "TK": "TK - freight (stations & sidings service)",
+      "TS": "TS - empty freight test drive",
+
+      "LT": "LT - locomotive only",
+      "LT-new": "LT - freight locomotive only",
+
+      "LP": "LP - passenger locomotive only",
+      "LS": "LS - shunting locomotive",
+
+      "ZN": "ZN - inspection / diagnostic"
     }
   },
   "wiki": {
@@ -133,7 +168,7 @@
       "constructionType": "Construction",
       "coldStart": "Cold start",
       "length": "Length",
-      "mass": "Mass",
+      "weight": "Mass",
       "maxSpeed": "Speed",
       "cargoCount": "Cargo count"
     },

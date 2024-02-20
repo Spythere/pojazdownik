@@ -80,7 +80,7 @@
           </option>
           <option :value="null" v-else>{{ $t('inputs.cargo-empty') }}</option>
 
-          <option v-for="cargo in store.chosenCar?.cargoList" :value="cargo" :key="cargo.id">
+          <option v-for="cargo in store.chosenCar?.cargoTypes" :value="cargo" :key="cargo.id">
             {{ cargo.id }}
           </option>
         </select>
@@ -216,7 +216,7 @@ export default defineComponent({
 
         this.store.chosenVehicle = type == 'loco' ? this.store.chosenLoco : this.store.chosenCar;
 
-        this.store.chosenCargo = this.store.chosenCar?.cargoList.find((cargo) => cargo.id == this.store.chosenCargo?.id) || null;
+        this.store.chosenCargo = this.store.chosenCar?.cargoTypes.find((cargo) => cargo.id == this.store.chosenCargo?.id) || null;
       });
     },
   },
