@@ -24,7 +24,7 @@ export default defineConfig({
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/rj.td2.info.pl\/dist\/img\/thumbnails\/.*/i,
-            handler: 'NetworkFirst',
+            handler: 'CacheFirst',
             options: {
               cacheName: 'swdr-images-cache',
               expiration: {
@@ -37,10 +37,24 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: /^https:\/\/spythere.github.io\/api\/td2\/.*/i,
+            urlPattern: /^https:\/\/spythere.github.io\/api\/td2\/data\/.*/i,
             handler: 'NetworkFirst',
             options: {
-              cacheName: 'spythere-api-cache',
+              cacheName: 'spythere-api-data-cache',
+              expiration: {
+                maxEntries: 150,
+                maxAgeSeconds: 60 * 60 * 24, // <== 1 day
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
+            urlPattern: /^https:\/\/spythere.github.io\/api\/td2\/images\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'spythere-api-images-cache',
               expiration: {
                 maxEntries: 150,
                 maxAgeSeconds: 60 * 60 * 24, // <== 1 day
