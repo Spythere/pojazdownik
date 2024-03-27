@@ -85,15 +85,27 @@
       <hr />
 
       <div class="tab_actions">
-        <button class="btn" :data-disabled="computedChosenCarTypes.size == 0" @click="generateStock()">
+        <button
+          class="btn"
+          :data-disabled="computedChosenCarTypes.size == 0"
+          @click="generateStock()"
+        >
           {{ $t('stockgen.action-generate') }}
         </button>
 
-        <button class="btn" :data-disabled="computedChosenCarTypes.size == 0" @click="generateStock(true)">
+        <button
+          class="btn"
+          :data-disabled="computedChosenCarTypes.size == 0"
+          @click="generateStock(true)"
+        >
           {{ $t('stockgen.action-generate-empty') }}
         </button>
 
-        <button class="btn" :data-disabled="computedChosenCarTypes.size == 0" @click="resetChosenCargo">
+        <button
+          class="btn"
+          :data-disabled="computedChosenCarTypes.size == 0"
+          @click="resetChosenCargo"
+        >
           {{ $t('stockgen.action-reset') }}
         </button>
       </div>
@@ -138,9 +150,9 @@ export default defineComponent({
     },
 
     computedCargoData() {
-      if (!this.store.stockData?.generator.cargo) return [];
+      if (!this.store.vehiclesAPIData?.generator.cargo) return [];
 
-      const cargoGeneratorData = this.store.stockData.generator.cargo;
+      const cargoGeneratorData = this.store.vehiclesAPIData.generator.cargo;
 
       return Object.keys(cargoGeneratorData)
         .sort((v1, v2) => this.$t(`cargo.${v1}`).localeCompare(this.$t(`cargo.${v2}`)))
@@ -175,14 +187,16 @@ export default defineComponent({
       if (!this.isCarGroupingEnabled) return false;
 
       stockList.sort((s1, s2) => {
-        return (s1.constructionType + s1.cargo?.id).localeCompare(s2.constructionType + s2.cargo?.id);
+        return (s1.constructionType + s1.cargo?.id).localeCompare(
+          s2.constructionType + s2.cargo?.id
+        );
       });
     },
 
     generateStock(empty = false) {
       const generatedChosenStockList = this.chosenCargoTypes.reduce(
         (acc, type) => {
-          this.store.stockData?.generator.cargo[type]
+          this.store.vehiclesAPIData?.generator.cargo[type]
             .filter((c) => !this.excludedCarTypes.includes(c.split(':')[0]))
             .forEach((c) => {
               const [type, cargoType] = c.split(':');
@@ -192,11 +206,14 @@ export default defineComponent({
 
               if (!cargoType || empty) cargoObjs.push(undefined);
               else if (cargoType == 'all') cargoObjs.push(...carWagonObjs[0]!.cargoTypes);
-              else cargoObjs.push(carWagonObjs[0]?.cargoTypes.find((cargo) => cargo.id == cargoType));
+              else
+                cargoObjs.push(carWagonObjs[0]?.cargoTypes.find((cargo) => cargo.id == cargoType));
 
               carWagonObjs.forEach((cw) => {
                 cargoObjs.forEach((cargoObj) => {
-                  const chosenStock = acc.find((a) => a.constructionType.includes(cw.constructionType));
+                  const chosenStock = acc.find((a) =>
+                    a.constructionType.includes(cw.constructionType)
+                  );
 
                   if (!chosenStock)
                     acc.push({
@@ -225,12 +242,17 @@ export default defineComponent({
         this.store.stockList.splice(this.store.stockList[0]?.isLoco ? 1 : 0);
 
         let carCount = 0;
-        const maxWeight = this.store.acceptableWeight > 0 ? Math.min(this.store.acceptableWeight, this.maxTons * 1000) : this.maxTons * 1000;
+        const maxWeight =
+          this.store.acceptableWeight > 0
+            ? Math.min(this.store.acceptableWeight, this.maxTons * 1000)
+            : this.maxTons * 1000;
 
         // eslint-disable-next-line no-constant-condition
         while (true) {
-          const randomStockType = generatedChosenStockList[~~(Math.random() * generatedChosenStockList.length)];
-          const { carWagon, cargo } = randomStockType.carPool[~~(Math.random() * randomStockType.carPool.length)];
+          const randomStockType =
+            generatedChosenStockList[~~(Math.random() * generatedChosenStockList.length)];
+          const { carWagon, cargo } =
+            randomStockType.carPool[~~(Math.random() * randomStockType.carPool.length)];
 
           if (
             this.store.totalWeight + (carWagon.weight + (cargo?.weight ?? 0)) > maxWeight ||

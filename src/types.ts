@@ -1,39 +1,5 @@
-export type Vehicle = ILocomotive | ICarWagon;
+export type IVehicle = ILocomotive | ICarWagon;
 export type StockSectionMode = 'STOCK_LIST' | 'STOCK_GENERATOR';
-
-export interface IStore {
-  chosenCar: ICarWagon | null;
-  chosenLoco: ILocomotive | null;
-  chosenCargo: ICargo | null;
-  chosenVehicle: Vehicle | null;
-
-  isColdStart: boolean;
-  isDoubleManned: boolean;
-
-  showSupporter: boolean;
-  imageLoading: boolean;
-
-  chosenLocoPower: string;
-  chosenCarUseType: string;
-
-  stockList: IStock[];
-  readyStockList: IReadyStockItem[];
-  cargoOptions: any[][];
-
-  chosenStockListIndex: number;
-  chosenRealStockName?: string;
-
-  swapVehicles: boolean;
-  vehiclePreviewSrc: string;
-
-  isRandomizerCardOpen: boolean;
-  isRealStockListCardOpen: boolean;
-
-  stockSectionMode: 'stock-list' | 'stock-generator' | 'number-generator' | 'wiki-list';
-  stockData?: IStockData;
-
-  lastFocusedElement: HTMLElement | null;
-}
 
 export type TLocoGroup = 'loco-e' | 'loco-s' | 'loco-ezt' | 'loco-szt';
 export type TCarWagonGroup = 'car-passenger' | 'car-cargo';
@@ -54,17 +20,16 @@ export interface ICargo {
   weight: number;
 }
 
-export interface IStockData {
+export interface IVehiclesAPI {
   version: string;
 
   generator: {
-    passenger: any;
     cargo: {
       [key: string]: string[];
     };
   };
 
-  info: {
+  vehicleInfo: {
     'car-cargo': [string, string, boolean, number | null, string][];
     'car-passenger': [string, string, boolean, number | null, string][];
     'loco-e': [string, string, string, string, number | null][];
@@ -73,7 +38,20 @@ export interface IStockData {
     'loco-ezt': [string, string, string, string, number | null][];
   };
 
-  props: IStockProps[];
+  vehicleProps: IStockProps[];
+
+  vehicleLocales: {
+    pl: {
+      cargo: Record<string, string>;
+      usage: Record<string, string>;
+    };
+    en: {
+      cargo: Record<string, string>;
+      usage: Record<string, string>;
+    };
+  };
+
+  realCompositions: Record<string, string>;
 }
 
 export interface ILocomotive {
@@ -124,7 +102,7 @@ export interface IStock {
   imgSrc?: string;
 }
 
-export interface IReadyStockItem {
+export interface IRealComposition {
   stockId: string;
   stockString: string;
   type: string;

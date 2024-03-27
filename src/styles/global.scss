@@ -7,30 +7,30 @@ $secondaryColor: #1b1b1b;
 $accentColor: #e4c428;
 
 @font-face {
-  font-family: "Lato";
+  font-family: 'Lato';
   src:
-    url("/fonts/Lato-Light.woff2") format("woff2"),
-    url("/fonts/Lato-Light.woff") format("woff");
+    url('/fonts/Lato-Light.woff2') format('woff2'),
+    url('/fonts/Lato-Light.woff') format('woff');
   font-weight: 300;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "Lato";
+  font-family: 'Lato';
   src:
-    url("/fonts/Lato-Bold.woff2") format("woff2"),
-    url("/fonts/Lato-Bold.woff") format("woff");
+    url('/fonts/Lato-Bold.woff2') format('woff2'),
+    url('/fonts/Lato-Bold.woff') format('woff');
   font-weight: bold;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "Lato";
+  font-family: 'Lato';
   src:
-    url("/fonts/Lato-Regular.woff2") format("woff2"),
-    url("/fonts/Lato-Regular.woff") format("woff");
+    url('/fonts/Lato-Regular.woff2') format('woff2'),
+    url('/fonts/Lato-Regular.woff') format('woff');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -141,14 +141,14 @@ button {
     outline: 1px solid white;
   }
 
-  &[data-chosen="true"] {
+  &[data-chosen='true'] {
     background-color: $accentColor;
     color: black;
 
     box-shadow: 0 0 5px 1px $accentColor;
   }
 
-  &[data-disabled="true"] {
+  &[data-disabled='true'] {
     user-select: none;
     pointer-events: none;
     -moz-user-select: none;
@@ -183,8 +183,8 @@ button {
 }
 
 select,
-input[type="text"],
-input[type="number"] {
+input[type='text'],
+input[type='number'] {
   background: $bgColor;
   border: 2px solid #aaa;
   outline: none;

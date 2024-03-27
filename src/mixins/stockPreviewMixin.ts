@@ -1,6 +1,6 @@
 import { defineComponent } from 'vue';
 import { useStore } from '../store';
-import { ICarWagon, ILocomotive, IStock, Vehicle } from '../types';
+import { ICarWagon, ILocomotive, IStock, IVehicle } from '../types';
 import { isLocomotive } from '../utils/vehicleUtils';
 
 export default defineComponent({
@@ -46,7 +46,7 @@ export default defineComponent({
       this.store.chosenCargo = null;
     },
 
-    previewVehicle(vehicle: Vehicle) {
+    previewVehicle(vehicle: IVehicle) {
       if (isLocomotive(vehicle)) this.previewLocomotive(vehicle);
       else this.previewCarWagon(vehicle);
     },

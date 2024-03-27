@@ -1,10 +1,6 @@
 <template>
   <section class="logo-section">
-    <img
-      :src="`/logo-${$i18n.locale}.svg`"
-      alt="logo pojazdownik"
-      @click="navigate"
-    />
+    <img :src="`/logo-${$i18n.locale}.svg`" alt="logo pojazdownik" @click="navigate" />
 
     <div class="actions">
       <button
@@ -26,31 +22,31 @@ export default {
     return {
       localeActions: [
         {
-          name: "POLSKI",
-          locale: "pl",
+          name: 'POLSKI',
+          locale: 'pl',
         },
         {
-          name: "ENGLISH",
-          locale: "en",
+          name: 'ENGLISH',
+          locale: 'en',
         },
       ],
     };
   },
   methods: {
     navigate() {
-      window.location.pathname = "";
+      window.location.pathname = '';
     },
 
     chooseLocale(locale: string) {
       this.$i18n.locale = locale;
-      window.localStorage.setItem("locale", locale);
+      window.localStorage.setItem('locale', locale);
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-@import "../../styles/global.scss";
+@import '../../styles/global.scss';
 
 .logo-section {
   grid-row: 1;
@@ -69,7 +65,7 @@ export default {
   display: flex;
   gap: 0.5em;
 
-  button[data-selected="true"] {
+  button[data-selected='true'] {
     font-weight: bold;
     color: $accentColor;
     text-decoration: underline;
