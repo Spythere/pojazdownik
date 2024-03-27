@@ -11,7 +11,10 @@ export default defineComponent({
   },
   computed: {
     trainTooLong() {
-      return (this.store.totalLength > 350 && this.store.isTrainPassenger) || (this.store.totalLength > 650 && !this.store.isTrainPassenger);
+      return (
+        (this.store.totalLength > 350 && this.store.isTrainPassenger) ||
+        (this.store.totalLength > 650 && !this.store.isTrainPassenger)
+      );
     },
 
     trainTooHeavy() {

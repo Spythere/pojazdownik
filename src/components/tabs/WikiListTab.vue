@@ -7,10 +7,18 @@
     <div class="tab_content">
       <div class="actions-panel">
         <div class="actions-panel_vehicles">
-          <button class="btn" :data-chosen="currentFilterMode == 'tractions'" @click="toggleFilter('tractions')">
+          <button
+            class="btn"
+            :data-chosen="currentFilterMode == 'tractions'"
+            @click="toggleFilter('tractions')"
+          >
             {{ $t('wiki.action-vehicles') }}
           </button>
-          <button class="btn" :data-chosen="currentFilterMode == 'carriages'" @click="toggleFilter('carriages')">
+          <button
+            class="btn"
+            :data-chosen="currentFilterMode == 'carriages'"
+            @click="toggleFilter('carriages')"
+          >
             {{ $t('wiki.action-carriages') }}
           </button>
         </div>
@@ -88,12 +96,21 @@
 import { defineComponent } from 'vue';
 import { useStore } from '../../store';
 import stockPreviewMixin from '../../mixins/stockPreviewMixin';
-import { Vehicle } from '../../types';
+import { IVehicle } from '../../types';
 import { isLocomotive } from '../../utils/vehicleUtils';
 import stockMixin from '../../mixins/stockMixin';
 import imageMixin from '../../mixins/imageMixin';
 
-type SorterID = 'type' | 'constructionType' | 'image' | 'length' | 'weight' | 'maxSpeed' | 'cargoCount' | 'group' | 'coldStart';
+type SorterID =
+  | 'type'
+  | 'constructionType'
+  | 'image'
+  | 'length'
+  | 'weight'
+  | 'maxSpeed'
+  | 'cargoCount'
+  | 'group'
+  | 'coldStart';
 
 interface IWikiHeader {
   id: SorterID;
@@ -102,7 +119,7 @@ interface IWikiHeader {
 }
 
 interface IWikiRow {
-  vehicle: Vehicle;
+  vehicle: IVehicle;
   show: boolean;
 }
 
@@ -170,7 +187,9 @@ export default defineComponent({
         case 'type':
         case 'constructionType':
         case 'group':
-          return direction == 1 ? row1.vehicle[id].localeCompare(row2.vehicle[id]) : row2.vehicle[id].localeCompare(row1.vehicle[id]);
+          return direction == 1
+            ? row1.vehicle[id].localeCompare(row2.vehicle[id])
+            : row2.vehicle[id].localeCompare(row1.vehicle[id]);
 
         case 'weight':
         case 'length':
@@ -185,7 +204,8 @@ export default defineComponent({
 
         case 'coldStart':
           return (
-            ((isLocomotive(row1.vehicle) && row1.vehicle.coldStart ? 1 : -1) - (isLocomotive(row2.vehicle) && row2.vehicle.coldStart ? 1 : -1)) *
+            ((isLocomotive(row1.vehicle) && row1.vehicle.coldStart ? 1 : -1) -
+              (isLocomotive(row2.vehicle) && row2.vehicle.coldStart ? 1 : -1)) *
             direction
           );
 
@@ -193,7 +213,9 @@ export default defineComponent({
           break;
       }
 
-      return direction == 1 ? row1.vehicle.type.localeCompare(row2.vehicle.type) : row2.vehicle.type.localeCompare(row1.vehicle.type);
+      return direction == 1
+        ? row1.vehicle.type.localeCompare(row2.vehicle.type)
+        : row2.vehicle.type.localeCompare(row1.vehicle.type);
     },
   },
 

@@ -27,7 +27,9 @@
           <option :value="null" disabled>
             {{ $t('inputs.input-vehicle') }}
           </option>
-          <option v-for="loco in locoOptions" :value="loco" :key="loco.type">{{ loco.type }}<b v-if="loco.isSponsorsOnly">*</b></option>
+          <option v-for="loco in locoOptions" :value="loco" :key="loco.type">
+            {{ loco.type }}<b v-if="loco.isSponsorsOnly">*</b>
+          </option>
         </select>
       </div>
 
@@ -56,7 +58,9 @@
             {{ $t('inputs.input-carwagon') }}
           </option>
 
-          <option v-for="car in carOptions" :value="car" :key="car.type">{{ car.type }}<b v-if="car.isSponsorsOnly">*</b></option>
+          <option v-for="car in carOptions" :value="car" :key="car.type">
+            {{ car.type }}<b v-if="car.isSponsorsOnly">*</b>
+          </option>
         </select>
       </div>
 
@@ -65,7 +69,9 @@
         <select
           id="cargo-select"
           :disabled="
-            (store.chosenCar && !store.chosenCar.loadable) || (store.chosenCar && store.chosenCar.useType == 'car-passenger') || !store.chosenCar
+            (store.chosenCar && !store.chosenCar.loadable) ||
+            (store.chosenCar && store.chosenCar.useType == 'car-passenger') ||
+            !store.chosenCar
           "
           data-select="cargo"
           data-ignore-outside="1"
@@ -90,7 +96,12 @@
         <button class="btn" @click="addVehicle(store.chosenVehicle, store.chosenCargo)">
           {{ $t('inputs.action-add') }}
         </button>
-        <button class="btn" @click="switchVehicles" :disabled="store.chosenStockListIndex == -1" :data-disabled="store.chosenStockListIndex == -1">
+        <button
+          class="btn"
+          @click="switchVehicles"
+          :disabled="store.chosenStockListIndex == -1"
+          :data-disabled="store.chosenStockListIndex == -1"
+        >
           {{ $t('inputs.action-swap') }}
           <b class="text--accent">
             {{ store.chosenStockListIndex == -1 ? '' : `${store.chosenStockListIndex + 1}.` }}
@@ -173,7 +184,8 @@ export default defineComponent({
     addOrSwitchVehicle() {
       if (!this.store.chosenVehicle) return;
 
-      if (this.store.chosenStockListIndex == -1) this.addVehicle(this.store.chosenVehicle, this.store.chosenCargo);
+      if (this.store.chosenStockListIndex == -1)
+        this.addVehicle(this.store.chosenVehicle, this.store.chosenCargo);
       else this.switchVehicles();
     },
 
@@ -216,7 +228,10 @@ export default defineComponent({
 
         this.store.chosenVehicle = type == 'loco' ? this.store.chosenLoco : this.store.chosenCar;
 
-        this.store.chosenCargo = this.store.chosenCar?.cargoTypes.find((cargo) => cargo.id == this.store.chosenCargo?.id) || null;
+        this.store.chosenCargo =
+          this.store.chosenCar?.cargoTypes.find(
+            (cargo) => cargo.id == this.store.chosenCargo?.id
+          ) || null;
       });
     },
   },

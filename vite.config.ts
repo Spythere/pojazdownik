@@ -36,34 +36,6 @@ export default defineConfig({
               },
             },
           },
-          {
-            urlPattern: /^https:\/\/spythere.github.io\/api\/td2\/data\/.*/i,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'spythere-api-data-cache',
-              expiration: {
-                maxEntries: 150,
-                maxAgeSeconds: 60 * 60 * 24, // <== 1 day
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
-          {
-            urlPattern: /^https:\/\/spythere.github.io\/api\/td2\/images\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'spythere-api-images-cache',
-              expiration: {
-                maxEntries: 150,
-                maxAgeSeconds: 60 * 60 * 24, // <== 1 day
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
         ],
       },
     }),

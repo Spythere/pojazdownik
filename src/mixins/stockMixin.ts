@@ -1,6 +1,6 @@
 import { defineComponent } from 'vue';
 import { useStore } from '../store';
-import { ICarWagon, ILocomotive, IStock, ICargo, Vehicle } from '../types';
+import { ICarWagon, ILocomotive, IStock, ICargo, IVehicle } from '../types';
 import { isLocomotive } from '../utils/vehicleUtils';
 
 export default defineComponent({
@@ -15,7 +15,7 @@ export default defineComponent({
       return `${Math.random().toString(36).slice(5)}`;
     },
 
-    getStockObject(vehicle: Vehicle, cargo?: ICargo | null, count = 1): IStock {
+    getStockObject(vehicle: IVehicle, cargo?: ICargo | null, count = 1): IStock {
       const isLoco = isLocomotive(vehicle);
 
       return {
@@ -35,7 +35,7 @@ export default defineComponent({
       };
     },
 
-    addVehicle(vehicle: Vehicle | null, cargo?: ICargo | null) {
+    addVehicle(vehicle: IVehicle | null, cargo?: ICargo | null) {
       if (!vehicle) return;
 
       const stock = this.getStockObject(vehicle, cargo);
@@ -47,7 +47,8 @@ export default defineComponent({
     addLocomotive(loco: ILocomotive) {
       const stockObj = this.getStockObject(loco);
 
-      if (this.store.stockList.length > 0 && !this.store.stockList[0].isLoco) this.store.stockList.unshift(stockObj);
+      if (this.store.stockList.length > 0 && !this.store.stockList[0].isLoco)
+        this.store.stockList.unshift(stockObj);
       else this.store.stockList.push(stockObj);
     },
 
@@ -70,7 +71,7 @@ export default defineComponent({
       this.store.swapVehicles = false;
 
       stockArray.forEach((type, i) => {
-        let vehicle: Vehicle | null = null;
+        let vehicle: IVehicle | null = null;
         let vehicleCargo: ICargo | null = null;
 
         const isLoco = /^(EU|EP|ET|SM|EN|2EN|SN)/.test(type);
