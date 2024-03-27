@@ -68,23 +68,6 @@ export const useStore = defineStore({
     isTrainPassenger: (state) => isTrainPassenger(state.stockList),
     acceptableWeight: (state) => acceptableWeight(state.stockList),
 
-    // chosenRealStock: (state) => {
-    //   const currentStockString = state.stockList
-    //     .reduce((acc, stock) => {
-    //       for (let i = 0; i < stock.count; i++) acc.push(stock.type);
-    //       return acc;
-    //     }, [] as string[])
-    //     .join(';');
-
-    //   // const realStockObj = vehilcesData.realCompositions.find((readyStock) => readyStock.stockString == currentStockString);
-
-    //   // state.chosenRealStockName = realStockObj?.stockId ?? undefined;
-
-    //     state
-
-    //   // return state.r.find((readyStock) => readyStock.stockString == currentStockString);
-    // },
-
     realCompositionList: (state) => {
       if (!state.vehiclesAPIData) return [];
 

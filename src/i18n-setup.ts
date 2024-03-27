@@ -21,6 +21,4 @@ const i18n = createI18n<[LocaleMessageSchema], 'en' | 'pl'>({
   messages: locales,
 });
 
-// fetchBackendTranslations();
-
 export default i18n;
