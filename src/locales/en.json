@@ -47,6 +47,7 @@
   },
   "stocklist": {
     "title": "STOCK EDITOR",
+    "disclaimer": "Theorethical value based on vehicles maximum speed in the current composition. It may be inaccurate in relation to the correct operational speed in certain configurations.",
     "alert-copied": "The rolling stock has been copied to your clipboard!",
     "alert-empty": "Lista pojazdów jest pusta!",
     "prompt-file": "Name a file and download it to the Presets folder (Documents/TTSK/TrainDriver2):",

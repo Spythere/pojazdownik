@@ -99,7 +99,8 @@
         }}</span
         >) - {{ $t('stocklist.length') }}:
         <span class="text--accent">{{ store.totalLength }}m</span>
-        - {{ $t('stocklist.vmax') }}:
+        - {{ $t('stocklist.vmax') }}
+        <span tabindex="0" :data-tooltip="$t('stocklist.disclaimer')">(?)</span>:
         <span class="text--accent">{{ store.maxStockSpeed }} km/h</span>
       </span>
     </div>

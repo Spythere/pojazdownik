@@ -40,7 +40,7 @@ export default defineConfig({
             urlPattern: /^https:\/\/static.spythere.eu\/.*/i,
             handler: 'CacheFirst',
             options: {
-              cacheName: 'spythere-api-images-cache',
+              cacheName: 'spythere-api-cache',
               expiration: {
                 maxEntries: 100,
                 maxAgeSeconds: 60 * 60 * 24, // <== 1 day
