@@ -9,7 +9,7 @@
     </i18n-t>
 
     <div class="text--grayed" v-if="store.vehiclesAPIData">
-      {{ $t('footer.version-check', { version: store.vehiclesAPIData.version }) }}
+      {{ $t('footer.version-check', { version: store.vehiclesAPIData.simulatorVersion }) }}
     </div>
 
     <div>
