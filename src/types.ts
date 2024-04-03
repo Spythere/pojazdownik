@@ -21,7 +21,7 @@ export interface ICargo {
 }
 
 export interface IVehiclesAPI {
-  version: string;
+  simulatorVersion: string;
 
   generator: {
     cargo: {
