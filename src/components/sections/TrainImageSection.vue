@@ -3,7 +3,11 @@
     <div class="train-image__content" :class="{ sponsor: store.chosenVehicle?.isSponsorsOnly }">
       <img
         tabindex="0"
-        :src="store.chosenVehicle ? getThumbnailURL(store.chosenVehicle.type, 'small') : '/images/placeholder.jpg'"
+        :src="
+          store.chosenVehicle
+            ? getThumbnailURL(store.chosenVehicle.type, 'small')
+            : '/images/placeholder.jpg'
+        "
         @click="onImageClick"
         @keydown.enter="onImageClick"
         @error="onImageError"
@@ -14,13 +18,22 @@
     <div class="train-image__info" v-if="store.chosenVehicle">
       <b class="text--accent">{{ store.chosenVehicle.type }}</b> &bull;
       <b style="color: #ccc">
-        {{ $t(`preview.${isLocomotive(store.chosenVehicle) ? store.chosenVehicle.power : store.chosenVehicle.useType}`) }}
+        {{
+          $t(
+            `preview.${isLocomotive(store.chosenVehicle) ? store.chosenVehicle.power : store.chosenVehicle.useType}`
+          )
+        }}
       </b>
 
       <div style="color: #ccc">
-        <div>{{ store.chosenVehicle.length }}m | {{ (store.chosenVehicle.weight / 1000).toFixed(1) }}t | {{ store.chosenVehicle.maxSpeed }} km/h</div>
+        <div>
+          {{ store.chosenVehicle.length }}m | {{ (store.chosenVehicle.weight / 1000).toFixed(1) }}t
+          | {{ store.chosenVehicle.maxSpeed }} km/h
+        </div>
 
-        <div v-if="isLocomotive(store.chosenVehicle)">{{ $t('preview.cabin') }} {{ store.chosenVehicle.cabinType }}</div>
+        <div v-if="isLocomotive(store.chosenVehicle)">
+          {{ $t('preview.cabin') }} {{ store.chosenVehicle.cabinType }}
+        </div>
 
         <div v-else>
           {{
@@ -32,7 +45,9 @@
 
         <b style="color: salmon" v-if="store.chosenVehicle.isSponsorsOnly">{{
           $t('preview.sponsor-only', [
-            new Date(store.chosenVehicle.sponsorsOnlyTimestamp).toLocaleDateString($i18n.locale == 'pl' ? 'pl-PL' : 'en-GB'),
+            new Date(store.chosenVehicle.sponsorsOnlyTimestamp).toLocaleDateString(
+              $i18n.locale == 'pl' ? 'pl-PL' : 'en-GB'
+            ),
           ])
         }}</b>
       </div>
@@ -46,7 +61,7 @@
 import { computed, defineComponent } from 'vue';
 import { useStore } from '../../store';
 import { isLocomotive } from '../../utils/vehicleUtils';
-import { ILocomotive, Vehicle } from '../../types';
+import { ILocomotive, IVehicle } from '../../types';
 import imageMixin from '../../mixins/imageMixin';
 
 export default defineComponent({
@@ -68,7 +83,7 @@ export default defineComponent({
   },
 
   watch: {
-    chosenVehicle(vehicle: Vehicle, prevVehicle: Vehicle) {
+    chosenVehicle(vehicle: IVehicle, prevVehicle: IVehicle) {
       if (vehicle && vehicle.type != prevVehicle?.type) {
         this.store.imageLoading = true;
       }
@@ -87,7 +102,7 @@ export default defineComponent({
       el.src = '/images/placeholder.jpg';
     },
 
-    isLocomotive(vehicle: Vehicle): vehicle is ILocomotive {
+    isLocomotive(vehicle: IVehicle): vehicle is ILocomotive {
       return isLocomotive(vehicle);
     },
 

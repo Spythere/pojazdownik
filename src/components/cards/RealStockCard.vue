@@ -1,23 +1,15 @@
 <template>
-  <div
-    class="real-stock-card g-card"
-    @keydown.esc="store.isRealStockListCardOpen = false"
-  >
+  <div class="real-stock-card g-card" @keydown.esc="store.isRealStockListCardOpen = false">
     <div class="g-card_bg" @click="store.isRealStockListCardOpen = false"></div>
 
     <div class="card_content">
       <div class="card_nav">
         <div class="top-pane">
           <h1>
-            {{ $t("realstock.title") }}
-            <a href="https://td2.info.pl/profile/?u=17708" target="_blank"
-              >Railtrains997</a
-            >
+            {{ $t('realstock.title') }}
+            <a href="https://td2.info.pl/profile/?u=17708" target="_blank">Railtrains997</a>
           </h1>
-          <button
-            class="btn exit-btn"
-            @click="store.isRealStockListCardOpen = false"
-          >
+          <button class="btn exit-btn" @click="store.isRealStockListCardOpen = false">
             &Cross;
           </button>
         </div>
@@ -31,7 +23,7 @@
 
           <datalist id="readyStockDataList">
             <option
-              v-for="stock in store.readyStockList"
+              v-for="stock in store.realCompositionList"
               :value="stock.stockId"
               :key="stock.name"
             >
@@ -56,31 +48,22 @@
           </datalist>
 
           <button class="btn" @click="resetStockFilters">
-            {{ $t("realstock.action-reset") }}
+            {{ $t('realstock.action-reset') }}
           </button>
         </div>
       </div>
 
       <ul class="card_list" ref="list" @scroll="onListScroll">
-        <li
-          v-for="rStock in computedReadyStockList"
-          :key="rStock.stockId"
-          :data-last-selected="store.chosenRealStockName === rStock.stockId"
-        >
+        <li v-for="rStock in computedReadyStockList" :key="rStock.stockId">
+          <!-- :data-last-selected="store.ch === rStock.stockId" -->
           <div
             class="stock-title"
             tabindex="0"
             @click="chooseStock(rStock)"
             @keydown.enter="chooseStock(rStock)"
           >
-            <img
-              class="stock-icon"
-              :src="getIconURL(rStock.type)"
-              :alt="rStock.type"
-            />
-            <b class="text--accent" style="margin-left: 5px">
-              {{ rStock.name }}</b
-            >
+            <img class="stock-icon" :src="getIconURL(rStock.type)" :alt="rStock.type" />
+            <b class="text--accent" style="margin-left: 5px"> {{ rStock.name }}</b>
             <div>{{ rStock.number }}</div>
           </div>
 
@@ -111,24 +94,19 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent } from 'vue';
 
-import { useStore } from "../../store";
-import imageMixin from "../../mixins/imageMixin";
-import stockMixin from "../../mixins/stockMixin";
+import { useStore } from '../../store';
+import imageMixin from '../../mixins/imageMixin';
+import stockMixin from '../../mixins/stockMixin';
 
-import { IReadyStockItem } from "../../types";
-import http from "../../http";
-
-interface ResponseJSONData {
-  [key: string]: string;
-}
+import { IRealComposition } from '../../types';
 
 function getVehicleType(stockType: string) {
-  if (/^E/.test(stockType)) return "loco-e";
-  if (/^S/.test(stockType)) return "loco-s";
+  if (/^E/.test(stockType)) return 'loco-e';
+  if (/^S/.test(stockType)) return 'loco-s';
 
-  return "car-passenger";
+  return 'car-passenger';
 }
 
 export default defineComponent({
@@ -136,55 +114,51 @@ export default defineComponent({
 
   data: () => ({
     store: useStore(),
-    responseStatus: "loading",
+    responseStatus: 'loading',
     isMobile:
-      "ontouchstart" in document.documentElement &&
-      navigator.userAgent.match(/Mobi/)
+      'ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/)
         ? true
         : false,
     observer: null as IntersectionObserver | null,
-    searchedReadyStockName: "",
-    searchedReadyStockString: "",
+    searchedReadyStockName: '',
+    searchedReadyStockString: '',
     visibleIndexesTo: 0,
     lastSelectedStockId: null as string | null,
     scrollTop: 0,
   }),
 
-  async mounted() {
+  mounted() {
     this.mountObserver();
-    this.fetchStockListData();
   },
 
   activated() {
-    (this.$refs["focus"] as HTMLElement).focus();
+    (this.$refs['focus'] as HTMLElement).focus();
 
-    (this.$refs["list"] as HTMLElement).scrollTo({
+    (this.$refs['list'] as HTMLElement).scrollTo({
       top: this.scrollTop,
-      behavior: "auto",
+      behavior: 'auto',
     });
   },
 
   computed: {
-    computedReadyStockList() {
-      if (this.searchedReadyStockName == null) return this.store.readyStockList;
-
-      return this.store.readyStockList
+    computedReadyStockList(): IRealComposition[] {
+      return this.store.realCompositionList
         .filter(
-          (rs) =>
-            rs.stockId
+          (rc) =>
+            rc.stockId
               .toLocaleLowerCase()
               .includes(this.searchedReadyStockName.toLocaleLowerCase()) &&
-            rs.stockString
+            rc.stockString
               .toLocaleLowerCase()
-              .includes(this.searchedReadyStockString.toLocaleLowerCase()),
+              .includes(this.searchedReadyStockString.toLocaleLowerCase())
         )
         .filter((_, i) => i <= this.visibleIndexesTo);
     },
 
     computedAvailableStockTypes() {
-      return this.store.readyStockList
+      return this.store.realCompositionList
         .reduce((acc, rs) => {
-          rs.stockString.split(";").forEach((s) => {
+          rs.stockString.split(';').forEach((s) => {
             if (!acc.includes(s)) acc.push(s);
           });
 
@@ -198,7 +172,7 @@ export default defineComponent({
     computedReadyStockList(curr, prev) {
       if (curr.length < prev.length) {
         this.visibleIndexesTo = 20;
-        (this.$refs["list"] as HTMLElement).scrollTo({
+        (this.$refs['list'] as HTMLElement).scrollTo({
           top: 0,
         });
       }
@@ -206,41 +180,12 @@ export default defineComponent({
   },
 
   methods: {
-    async fetchStockListData() {
-      const readyStockJSONData = (
-        await http.get<ResponseJSONData>("td2/data/readyStock.json")
-      ).data;
-
-      if (!readyStockJSONData) {
-        this.responseStatus = "error";
-        return;
-      }
-
-      for (let stockKey in readyStockJSONData) {
-        const [type, number, ...name] = stockKey.split(" ");
-
-        const obj = {
-          number: number.replace(/_/g, "/"),
-          name: name.join(" "),
-          stockString: readyStockJSONData[stockKey],
-          type,
-        };
-
-        this.store.readyStockList.push({
-          ...obj,
-          stockId: `${obj.type} ${obj.number} ${obj.name}`,
-        });
-      }
-
-      this.responseStatus = "loaded";
-    },
-
     mountObserver() {
       this.observer = new IntersectionObserver((entries) => {
         if (entries[0].intersectionRatio > 0) this.visibleIndexesTo += 20;
       });
 
-      this.observer.observe(this.$refs["bottom"] as HTMLElement);
+      this.observer.observe(this.$refs['bottom'] as HTMLElement);
     },
 
     getImageUrl(name: string) {
@@ -248,11 +193,11 @@ export default defineComponent({
     },
 
     resetStockFilters() {
-      this.searchedReadyStockName = "";
-      this.searchedReadyStockString = "";
+      this.searchedReadyStockName = '';
+      this.searchedReadyStockString = '';
     },
 
-    chooseStock(stockItem: IReadyStockItem) {
+    chooseStock(stockItem: IRealComposition) {
       this.loadStockFromString(stockItem.stockString);
       this.lastSelectedStockId = stockItem.stockId;
       this.store.isRealStockListCardOpen = false;
@@ -261,7 +206,7 @@ export default defineComponent({
     onStockItemError(e: Event, stockType: string) {
       const imageEl = e.target as HTMLImageElement;
       imageEl.src = `images/${getVehicleType(stockType)}-unknown.png`;
-      imageEl.style.opacity = "1";
+      imageEl.style.opacity = '1';
     },
 
     onListScroll(e: Event) {
@@ -275,7 +220,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import "../../styles/global.scss";
+@import '../../styles/global.scss';
 
 .exit-btn {
   font-size: 1.2em;
@@ -361,7 +306,7 @@ ul {
     gap: 1rem;
     padding: 0.1em;
 
-    &[data-last-selected="true"] .stock-title {
+    &[data-last-selected='true'] .stock-title {
       border: 1px solid $accentColor;
     }
 

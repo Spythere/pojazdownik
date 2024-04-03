@@ -47,6 +47,7 @@
   },
   "stocklist": {
     "title": "EDYTOR SKŁADU",
+    "disclaimer": "Wartość poglądowa wzorowana na prędkościach maksymalnych poszczególnych pojazdów w zestawieniu. Może nie zgadzać się z prawdziwymi prędkościami eksploatacyjnymi w konkretnych konfiguracjach.",
     "alert-copied": "Skład został skopiowany do twojego schowka!",
     "alert-empty": "Lista pojazdów jest pusta!",
     "prompt-file": "Nazwij plik, a następnie pobierz do folderu Presets (Dokumenty/TTSK/TrainDriver2):",
