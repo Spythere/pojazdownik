@@ -37,7 +37,7 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: /^https:\/\/static.spythere.eu\/.*/i,
+            urlPattern: /^https:\/\/static.spythere.eu\/images\/.*/i,
             handler: 'CacheFirst',
             options: {
               cacheName: 'spythere-api-cache',

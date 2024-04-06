@@ -1,18 +1,19 @@
 export type IVehicle = ILocomotive | ICarWagon;
 export type StockSectionMode = 'STOCK_LIST' | 'STOCK_GENERATOR';
 
-export type TLocoGroup = 'loco-e' | 'loco-s' | 'loco-ezt' | 'loco-szt';
-export type TCarWagonGroup = 'car-passenger' | 'car-cargo';
+export type LocoGroupType = 'loco-electric' | 'loco-diesel' | 'unit-electric' | 'unit-diesel';
+export type WagonGroupType = 'wagon-passenger' | 'wagon-freight';
+export type VehicleGroupType = LocoGroupType & WagonGroupType;
 
-export interface IStockProps {
+export interface IVehicleProps {
   type: string;
+  speed: number;
   length: number;
-  // mass: number;
   weight: number;
-  // cargo?: string | null;
-  cargoTypes: ICargo[] | null;
+  cargoTypes?: ICargo[];
   coldStart?: boolean;
   doubleManned?: boolean;
+  supporterTimestamp?: number;
 }
 
 export interface ICargo {
@@ -29,16 +30,18 @@ export interface IVehiclesAPI {
     };
   };
 
-  vehicleInfo: {
-    'car-cargo': [string, string, boolean, number | null, string][];
-    'car-passenger': [string, string, boolean, number | null, string][];
-    'loco-e': [string, string, string, string, number | null][];
-    'loco-s': [string, string, string, string, number | null][];
-    'loco-szt': [string, string, string, string, number | null][];
-    'loco-ezt': [string, string, string, string, number | null][];
-  };
+  vehicleList: string[][];
 
-  vehicleProps: IStockProps[];
+  // vehiclesList: {
+  //   'loco-electric': string[][];
+  //   'loco-diesel': string[][];
+  //   'unit-electric': string[][];
+  //   'unit-diesel': string[][];
+  //   'wagon-passenger': string[][];
+  //   'wagon-freight': string[][];
+  // };
+
+  vehicleProps: IVehicleProps[];
 
   vehicleLocales: {
     pl: {
@@ -56,14 +59,12 @@ export interface IVehiclesAPI {
 
 export interface ILocomotive {
   type: string;
-  power: TLocoGroup;
-  group: TLocoGroup;
+  group: LocoGroupType;
   constructionType: string;
   cabinType: string;
   maxSpeed: number;
   isSponsorsOnly: boolean;
   sponsorsOnlyTimestamp: number;
-  imageSrc: string;
   weight: number;
   length: number;
   coldStart: boolean;
@@ -72,14 +73,12 @@ export interface ILocomotive {
 
 export interface ICarWagon {
   type: string;
-  useType: TCarWagonGroup;
-  group: TCarWagonGroup;
+  group: WagonGroupType;
   constructionType: string;
   loadable: boolean;
   isSponsorsOnly: boolean;
   sponsorsOnlyTimestamp: number;
   maxSpeed: number;
-  imageSrc: string;
   weight: number;
   length: number;
   cargoTypes: ICargo[];
@@ -88,10 +87,9 @@ export interface ICarWagon {
 export interface IStock {
   id: string;
   type: string;
-  useType: string;
+  group: LocoGroupType | WagonGroupType;
   constructionType: string;
   length: number;
-  // mass: number;
   weight: number;
   maxSpeed: number;
   cargo?: ICargo;
@@ -99,7 +97,6 @@ export interface IStock {
   isSponsorsOnly: boolean;
   sponsorsOnlyTimestamp: number;
   count: number;
-  imgSrc?: string;
 }
 
 export interface IRealComposition {

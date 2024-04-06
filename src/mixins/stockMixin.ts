@@ -1,7 +1,7 @@
 import { defineComponent } from 'vue';
 import { useStore } from '../store';
 import { ICarWagon, ILocomotive, IStock, ICargo, IVehicle } from '../types';
-import { isLocomotive } from '../utils/vehicleUtils';
+import { isTractionUnit } from '../utils/vehicleUtils';
 
 export default defineComponent({
   setup() {
@@ -16,7 +16,7 @@ export default defineComponent({
     },
 
     getStockObject(vehicle: IVehicle, cargo?: ICargo | null, count = 1): IStock {
-      const isLoco = isLocomotive(vehicle);
+      const isLoco = isTractionUnit(vehicle);
 
       return {
         id: this.getStockId(),
@@ -27,8 +27,7 @@ export default defineComponent({
         isLoco,
         cargo: !isLoco && vehicle.loadable && cargo ? cargo : undefined,
         count,
-        imgSrc: vehicle.imageSrc,
-        useType: isLoco ? vehicle.power : vehicle.useType,
+        group: isLoco ? vehicle.group : vehicle.group,
         isSponsorsOnly: vehicle.isSponsorsOnly,
         constructionType: vehicle.constructionType,
         sponsorsOnlyTimestamp: vehicle.sponsorsOnlyTimestamp,

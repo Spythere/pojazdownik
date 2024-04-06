@@ -1,5 +1,11 @@
-import { EVehicleUseType } from '../enums/EVehicleUseType';
-import { ICarWagon, ILocomotive, IStock, IVehiclesAPI, TCarWagonGroup, TLocoGroup } from '../types';
+import {
+  ICarWagon,
+  ILocomotive,
+  IStock,
+  IVehiclesAPI,
+  LocoGroupType,
+  WagonGroupType,
+} from '../types';
 import {
   MassLimitLocoType,
   SpeedLimitLocoType,
@@ -7,44 +13,41 @@ import {
   calculateSpeedLimit,
 } from './vehicleLimitsUtils';
 
-export function isLocomotive(vehicle: ILocomotive | ICarWagon): vehicle is ILocomotive {
-  return (vehicle as ILocomotive).power !== undefined;
+export function isTractionUnit(vehicle: ILocomotive | ICarWagon): vehicle is ILocomotive {
+  return (vehicle as ILocomotive).cabinType !== undefined;
 }
 
 export function locoDataList(vehiclesData: IVehiclesAPI | undefined) {
   if (!vehiclesData) return [];
 
-  return Object.keys(vehiclesData.vehicleInfo).reduce((acc, vehiclePower) => {
-    if (!vehiclePower.startsWith('loco')) return acc;
+  return vehiclesData.vehicleList.reduce((acc, vehicleInfoArray) => {
+    // check if data array has 4 elements (locos & units only)
+    if (vehicleInfoArray.length != 4) return acc;
 
-    const locoVehiclesData = vehiclesData.vehicleInfo[vehiclePower as TLocoGroup];
+    const [type, constructionType, cabinType, group] = vehicleInfoArray;
+    const locoProps = vehiclesData.vehicleProps.find((prop) => constructionType == prop.type);
 
-    locoVehiclesData.forEach((loco) => {
-      // if (!loco[4]) return;
+    if (!locoProps) {
+      console.warn('No loco props', type);
+      return acc;
+    }
 
-      const [type, constructionType, cabinType, maxSpeed, sponsorsTimestamp] = loco;
-      const locoProps = vehiclesData.vehicleProps.find((prop) => constructionType == prop.type);
+    acc.push({
+      group: group as LocoGroupType,
 
-      acc.push({
-        power: vehiclePower as TLocoGroup,
-        group: vehiclePower as TLocoGroup,
-        type,
-        constructionType,
-        cabinType,
-        maxSpeed: Number(maxSpeed),
-        isSponsorsOnly: Number(sponsorsTimestamp) > Date.now(),
-        sponsorsOnlyTimestamp: Number(sponsorsTimestamp),
-        imageSrc: '',
+      type,
+      constructionType,
+      cabinType,
 
-        length:
-          locoProps?.length && type.startsWith('2EN')
-            ? locoProps.length * 2
-            : locoProps?.length ?? 0,
-        weight: locoProps?.weight && type.startsWith('2EN') ? 253000 : locoProps?.weight ?? 0,
+      isSponsorsOnly: (locoProps.supporterTimestamp ?? 0) > Date.now(),
+      sponsorsOnlyTimestamp: locoProps.supporterTimestamp ?? 0,
 
-        coldStart: locoProps?.coldStart ?? false,
-        doubleManned: locoProps?.doubleManned ?? false,
-      });
+      maxSpeed: locoProps.speed,
+      length: locoProps.length,
+      weight: locoProps.weight,
+
+      coldStart: locoProps.coldStart ?? false,
+      doubleManned: locoProps.doubleManned ?? false,
     });
 
     return acc;
@@ -54,35 +57,30 @@ export function locoDataList(vehiclesData: IVehiclesAPI | undefined) {
 export function carDataList(vehiclesData: IVehiclesAPI | undefined) {
   if (!vehiclesData) return [];
 
-  return Object.keys(vehiclesData.vehicleInfo).reduce((acc, vehicleUseType) => {
-    if (!vehicleUseType.startsWith('car')) return acc;
+  return vehiclesData.vehicleList.reduce((acc, vehicleInfoArray) => {
+    // check if data array has 3 elements (wagons only)
+    if (vehicleInfoArray.length != 3) return acc;
 
-    const carVehiclesData = vehiclesData.vehicleInfo[vehicleUseType as TCarWagonGroup];
+    const [type, constructionType, group] = vehicleInfoArray;
+    const wagonProps = vehiclesData.vehicleProps.find((v) => type.toString().startsWith(v.type));
 
-    carVehiclesData.forEach((car) => {
-      const [type, constructionType, loadable, sponsorsOnlyTimestamp, maxSpeed] = car;
+    if (!wagonProps) {
+      console.warn('No wagon props', type);
+      return acc;
+    }
 
-      if (sponsorsOnlyTimestamp && Number(sponsorsOnlyTimestamp) <= Date.now()) return;
+    acc.push({
+      group: group as WagonGroupType,
+      type,
+      constructionType,
+      loadable: wagonProps.cargoTypes ? wagonProps.cargoTypes.length > 0 : false,
+      isSponsorsOnly: (wagonProps.supporterTimestamp ?? 0) > Date.now(),
+      sponsorsOnlyTimestamp: wagonProps.supporterTimestamp ?? 0,
+      cargoTypes: wagonProps?.cargoTypes ?? [],
 
-      const carPropsData = vehiclesData.vehicleProps.find((v) =>
-        type.toString().startsWith(v.type)
-      );
-
-      acc.push({
-        useType: vehicleUseType as TCarWagonGroup,
-        group: vehicleUseType as TCarWagonGroup,
-        type,
-        constructionType,
-        loadable,
-        isSponsorsOnly: Number(sponsorsOnlyTimestamp) > Date.now(),
-        sponsorsOnlyTimestamp: Number(sponsorsOnlyTimestamp),
-        maxSpeed: Number(maxSpeed),
-        imageSrc: '',
-        cargoTypes: carPropsData?.cargoTypes ?? [],
-
-        weight: carPropsData?.weight || 0,
-        length: carPropsData?.length || 0,
-      });
+      maxSpeed: wagonProps.speed,
+      weight: wagonProps?.weight || 0,
+      length: wagonProps?.length || 0,
     });
 
     return acc;
@@ -142,5 +140,5 @@ export function isTrainPassenger(stockList: IStock[]) {
 
   return stockList
     .filter((stock) => !stock.isLoco)
-    .every((stock) => stock.useType === EVehicleUseType.CAR_PASSENGER);
+    .every((stock) => stock.group === 'wagon-passenger');
 }

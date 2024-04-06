@@ -6,6 +6,8 @@ import {
   IVehicle,
   IStock,
   IRealComposition,
+  LocoGroupType,
+  WagonGroupType,
 } from './types';
 import { defineStore } from 'pinia';
 import {
@@ -33,8 +35,8 @@ export const useStore = defineStore({
 
     imageLoading: false,
 
-    chosenLocoPower: 'loco-e',
-    chosenCarUseType: 'car-passenger',
+    chosenLocoGroup: 'loco-electric' as LocoGroupType,
+    chosenCarGroup: 'wagon-passenger' as WagonGroupType,
 
     stockList: [] as IStock[],
     cargoOptions: [] as any[][],
@@ -123,8 +125,10 @@ export const useStore = defineStore({
   actions: {
     async fetchVehiclesAPI() {
       try {
-        const vehiclesData = (await http.get<IVehiclesAPI>('/vehicles.json')).data;
+        const vehiclesData = (await http.get<IVehiclesAPI>('/vehiclesData')).data;
         this.vehiclesAPIData = vehiclesData;
+
+        console.log(vehiclesData);
       } catch (error) {
         console.error(error);
       }

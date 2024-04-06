@@ -43,7 +43,7 @@ const onListItemClick = (index: number) => {
 };
 
 const stockImageError = (e: Event, stock: IStock) => {
-  (e.target as HTMLImageElement).src = `images/${stock.useType}-unknown.png`;
+  (e.target as HTMLImageElement).src = `images/${stock.group}-unknown.png`;
 };
 
 watch(

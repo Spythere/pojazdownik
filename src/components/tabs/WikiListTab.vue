@@ -67,9 +67,9 @@
               </td>
 
               <td v-if="isLocomotive(vehicle)">
-                {{ $t(`wiki.${vehicle.power}`) }}
+                {{ $t(`wiki.${vehicle.group}`) }}
               </td>
-              <td v-else>{{ $t(`wiki.${vehicle.useType}`) }}</td>
+              <td v-else>{{ $t(`wiki.${vehicle.group}`) }}</td>
 
               <td>{{ vehicle.constructionType }}</td>
               <td>{{ vehicle.length }}m</td>
@@ -97,7 +97,7 @@ import { defineComponent } from 'vue';
 import { useStore } from '../../store';
 import stockPreviewMixin from '../../mixins/stockPreviewMixin';
 import { IVehicle } from '../../types';
-import { isLocomotive } from '../../utils/vehicleUtils';
+import { isTractionUnit } from '../../utils/vehicleUtils';
 import stockMixin from '../../mixins/stockMixin';
 import imageMixin from '../../mixins/imageMixin';
 
@@ -165,7 +165,7 @@ export default defineComponent({
   },
 
   methods: {
-    isLocomotive,
+    isLocomotive: isTractionUnit,
 
     toggleFilter(name: typeof this.currentFilterMode) {
       this.currentFilterMode = this.currentFilterMode == name ? 'all' : name;
@@ -198,14 +198,16 @@ export default defineComponent({
 
         case 'cargoCount':
           return (
-            (!isLocomotive(row1.vehicle) ? Math.sign(row1.vehicle.cargoTypes.length || -1) : -1) -
-            (!isLocomotive(row2.vehicle) ? (row2.vehicle.cargoTypes.length || -1) * direction : -1)
+            (!isTractionUnit(row1.vehicle) ? Math.sign(row1.vehicle.cargoTypes.length || -1) : -1) -
+            (!isTractionUnit(row2.vehicle)
+              ? (row2.vehicle.cargoTypes.length || -1) * direction
+              : -1)
           );
 
         case 'coldStart':
           return (
-            ((isLocomotive(row1.vehicle) && row1.vehicle.coldStart ? 1 : -1) -
-              (isLocomotive(row2.vehicle) && row2.vehicle.coldStart ? 1 : -1)) *
+            ((isTractionUnit(row1.vehicle) && row1.vehicle.coldStart ? 1 : -1) -
+              (isTractionUnit(row2.vehicle) && row2.vehicle.coldStart ? 1 : -1)) *
             direction
           );
 
@@ -227,8 +229,8 @@ export default defineComponent({
           show:
             new RegExp(`${this.searchedVehicleTypeName.trim()}`, 'i').test(vehicle.type) &&
             (this.currentFilterMode == 'all' ||
-              (this.currentFilterMode == 'tractions' && isLocomotive(vehicle)) ||
-              (this.currentFilterMode == 'carriages' && !isLocomotive(vehicle))),
+              (this.currentFilterMode == 'tractions' && isTractionUnit(vehicle)) ||
+              (this.currentFilterMode == 'carriages' && !isTractionUnit(vehicle))),
         }))
         .sort((a, b) => this.sortTableRows(a, b));
     },

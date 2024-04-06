@@ -290,7 +290,7 @@ export default defineComponent({
       this.store.chosenLoco = null;
       this.store.chosenCargo = null;
 
-      if (c) this.store.chosenCarUseType = c?.useType;
+      if (c) this.store.chosenCarGroup = c?.group;
     },
 
     toggleCargoChosen(cargoType: string, vehicles: string[]) {

@@ -20,7 +20,7 @@
       <b style="color: #ccc">
         {{
           $t(
-            `preview.${isLocomotive(store.chosenVehicle) ? store.chosenVehicle.power : store.chosenVehicle.useType}`
+            `preview.${isLocomotive(store.chosenVehicle) ? store.chosenVehicle.group : store.chosenVehicle.group}`
           )
         }}
       </b>
@@ -37,7 +37,7 @@
 
         <div v-else>
           {{
-            store.chosenVehicle.useType == 'car-cargo'
+            store.chosenVehicle.group == 'wagon-freight'
               ? $t(`usage.${store.chosenVehicle.constructionType}`)
               : `${$t('preview.construction')} ${store.chosenVehicle.constructionType}`
           }}
@@ -60,7 +60,7 @@
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
 import { useStore } from '../../store';
-import { isLocomotive } from '../../utils/vehicleUtils';
+import { isTractionUnit } from '../../utils/vehicleUtils';
 import { ILocomotive, IVehicle } from '../../types';
 import imageMixin from '../../mixins/imageMixin';
 
@@ -103,7 +103,7 @@ export default defineComponent({
     },
 
     isLocomotive(vehicle: IVehicle): vehicle is ILocomotive {
-      return isLocomotive(vehicle);
+      return isTractionUnit(vehicle);
     },
 
     onImageClick(e: Event) {

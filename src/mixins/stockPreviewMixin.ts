@@ -1,7 +1,7 @@
 import { defineComponent } from 'vue';
 import { useStore } from '../store';
-import { ICarWagon, ILocomotive, IStock, IVehicle } from '../types';
-import { isLocomotive } from '../utils/vehicleUtils';
+import { ICarWagon, ILocomotive, IStock, IVehicle, LocoGroupType, WagonGroupType } from '../types';
+import { isTractionUnit } from '../utils/vehicleUtils';
 
 export default defineComponent({
   setup() {
@@ -14,40 +14,40 @@ export default defineComponent({
 
   methods: {
     previewStock(stock: IStock) {
-      if (this.store.chosenVehicle?.imageSrc != stock.imgSrc) this.store.imageLoading = true;
+      // if (this.store.chosenVehicle?.imageSrc != stock.imgSrc) this.store.imageLoading = true;
 
       if (stock.isLoco) {
         const chosenLoco = this.store.locoDataList.find((v) => v.type == stock.type) || null;
         this.store.chosenVehicle = chosenLoco;
         this.store.chosenLoco = chosenLoco;
         this.store.chosenCargo = null;
-        this.store.chosenLocoPower = stock.useType;
+        this.store.chosenLocoGroup = stock.group as LocoGroupType;
       } else {
         const chosenCar = this.store.carDataList.find((v) => v.type == stock.type) || null;
         this.store.chosenVehicle = chosenCar;
         this.store.chosenCar = chosenCar;
 
         this.store.chosenCargo = stock.cargo || null;
-        this.store.chosenCarUseType = stock.useType;
+        this.store.chosenCarGroup = stock.group as WagonGroupType;
       }
     },
 
     previewLocomotive(loco: ILocomotive) {
       this.store.chosenLoco = loco;
       this.store.chosenVehicle = loco;
-      this.store.chosenLocoPower = loco.power;
+      this.store.chosenLocoGroup = loco.group;
     },
 
     previewCarWagon(carWagon: ICarWagon) {
       this.store.chosenCar = carWagon;
-      this.store.chosenCarUseType = carWagon.useType;
+      this.store.chosenCarGroup = carWagon.group;
       this.store.chosenVehicle = carWagon;
 
       this.store.chosenCargo = null;
     },
 
     previewVehicle(vehicle: IVehicle) {
-      if (isLocomotive(vehicle)) this.previewLocomotive(vehicle);
+      if (isTractionUnit(vehicle)) this.previewLocomotive(vehicle);
       else this.previewCarWagon(vehicle);
     },
 
