@@ -3,7 +3,7 @@ export type StockSectionMode = 'STOCK_LIST' | 'STOCK_GENERATOR';
 
 export type LocoGroupType = 'loco-electric' | 'loco-diesel' | 'unit-electric' | 'unit-diesel';
 export type WagonGroupType = 'wagon-passenger' | 'wagon-freight';
-export type VehicleGroupType = LocoGroupType & WagonGroupType;
+export type VehicleGroupType = LocoGroupType | WagonGroupType;
 
 export interface IVehicleProps {
   type: string;

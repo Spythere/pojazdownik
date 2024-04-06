@@ -10,7 +10,7 @@
             <a href="https://td2.info.pl/profile/?u=17708" target="_blank">Railtrains997</a>
           </h1>
           <button class="btn exit-btn" @click="store.isRealStockListCardOpen = false">
-            &Cross;
+            <img src="/images/icon-exit.svg" alt="" />
           </button>
         </div>
 
@@ -100,13 +100,13 @@ import { useStore } from '../../store';
 import imageMixin from '../../mixins/imageMixin';
 import stockMixin from '../../mixins/stockMixin';
 
-import { IRealComposition } from '../../types';
+import { IRealComposition, VehicleGroupType } from '../../types';
 
-function getVehicleType(stockType: string) {
-  if (/^E/.test(stockType)) return 'loco-e';
-  if (/^S/.test(stockType)) return 'loco-s';
+function getVehicleType(stockType: string): VehicleGroupType {
+  if (/^E/.test(stockType)) return 'loco-electric';
+  if (/^S/.test(stockType)) return 'loco-diesel';
 
-  return 'car-passenger';
+  return 'wagon-passenger';
 }
 
 export default defineComponent({
@@ -223,12 +223,10 @@ export default defineComponent({
 @import '../../styles/global.scss';
 
 .exit-btn {
-  font-size: 1.2em;
-  margin: 0.25em 0;
-}
-
-.btn {
-  background-color: #444;
+  display: flex;
+  background-color: #333;
+  border-radius: 0.25em;
+  padding: 0.5em;
 }
 
 .card_content {
