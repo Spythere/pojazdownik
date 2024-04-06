@@ -227,10 +227,10 @@ export default defineComponent({
 
         case 'cargoCount':
           return (
-            (!isTractionUnit(row1.vehicle) ? Math.sign(row1.vehicle.cargoTypes.length || -1) : -1) -
-            (!isTractionUnit(row2.vehicle)
-              ? (row2.vehicle.cargoTypes.length || -1) * direction
-              : -1)
+            Math.sign(
+              (!isTractionUnit(row1.vehicle) ? row1.vehicle.cargoTypes.length || -1 : -1) -
+                (!isTractionUnit(row2.vehicle) ? row2.vehicle.cargoTypes.length || -1 : -1)
+            ) * direction
           );
 
         case 'coldStart':
