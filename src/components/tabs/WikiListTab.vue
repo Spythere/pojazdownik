@@ -45,42 +45,37 @@
           <tbody>
             <tr
               v-for="{ vehicle, show } in computedTableData"
-              tabindex="0"
               v-show="show"
+              tabindex="0"
               :key="vehicle.type"
               @click="previewVehicle(vehicle)"
               @keydown.enter="previewVehicle(vehicle)"
               @dblclick="addVehicle(vehicle)"
+              ref="itemRefs"
             >
               <td style="width: 120px">
-                <img
-                  width="120"
-                  :src="getThumbnailURL(vehicle.type, 'small')"
-                  :alt="`${vehicle.type}`"
-                  loading="lazy"
-                  @error="(e) => ((e.target as HTMLElement).style.display = 'none')"
-                />
+                <img width="120" src="" :data-src="getThumbnailURL(vehicle.type, 'small')" />
               </td>
 
               <td :data-sponsoronly="vehicle.isSponsorsOnly">
                 {{ vehicle.type }}
               </td>
 
-              <td v-if="isLocomotive(vehicle)">
+              <td v-if="isTractionUnit(vehicle)">
                 {{ $t(`wiki.${vehicle.group}`) }}
               </td>
               <td v-else>{{ $t(`wiki.${vehicle.group}`) }}</td>
 
               <td>{{ vehicle.constructionType }}</td>
-              <td>{{ vehicle.length }}m</td>
-              <td>{{ (vehicle.weight / 1000).toFixed(1) }}t</td>
-              <td>{{ vehicle.maxSpeed }}km/h</td>
+              <td>{{ vehicle.length }}</td>
+              <td>{{ (vehicle.weight / 1000).toFixed(1) }}</td>
+              <td>{{ vehicle.maxSpeed }}</td>
 
               <td v-if="currentFilterMode == 'carriages'">
-                {{ !isLocomotive(vehicle) ? vehicle.cargoTypes.length : '---' }}
+                {{ !isTractionUnit(vehicle) ? vehicle.cargoTypes.length : '---' }}
               </td>
               <td v-if="currentFilterMode == 'tractions'">
-                {{ isLocomotive(vehicle) ? (vehicle.coldStart ? `&check;` : '&cross;') : '---' }}
+                {{ isTractionUnit(vehicle) ? (vehicle.coldStart ? `&check;` : '&cross;') : '---' }}
               </td>
             </tr>
           </tbody>
@@ -121,6 +116,7 @@ interface IWikiHeader {
 interface IWikiRow {
   vehicle: IVehicle;
   show: boolean;
+  showImage: boolean;
 }
 
 const headers: IWikiHeader[] = [
@@ -141,6 +137,7 @@ export default defineComponent({
   data() {
     return {
       store: useStore(),
+      observer: null as IntersectionObserver | null,
       headers,
 
       scrollTop: 0,
@@ -156,6 +153,10 @@ export default defineComponent({
     };
   },
 
+  mounted() {
+    this.mountObserver();
+  },
+
   activated() {
     const tableWrapperRef = this.$refs['table-wrapper'] as HTMLElement;
 
@@ -165,10 +166,38 @@ export default defineComponent({
   },
 
   methods: {
-    isLocomotive: isTractionUnit,
+    isTractionUnit,
+
+    mountObserver() {
+      if (this.observer) return;
+
+      this.observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.intersectionRatio > 0) {
+            entry.target
+              .querySelector('td:first-child > img')!
+              .setAttribute(
+                'src',
+                entry.target.querySelector('td:first-child > img')!.getAttribute('data-src')!
+              );
+            // your observer logic
+            console.log(entry.target.textContent, ':D');
+          } else {
+            console.log(entry.target.textContent, ':(');
+          }
+        });
+      });
+
+      (this.$refs['itemRefs'] as HTMLElement[]).forEach((el) => this.observer?.observe(el));
+    },
 
     toggleFilter(name: typeof this.currentFilterMode) {
       this.currentFilterMode = this.currentFilterMode == name ? 'all' : name;
+      const tableWrapperRef = this.$refs['table-wrapper'] as HTMLElement;
+
+      tableWrapperRef.scrollTo({
+        top: this.scrollTop,
+      });
     },
 
     toggleSorter(header: IWikiHeader) {
@@ -226,6 +255,7 @@ export default defineComponent({
       return this.store.vehicleDataList
         .map((vehicle) => ({
           vehicle,
+          showImage: false,
           show:
             new RegExp(`${this.searchedVehicleTypeName.trim()}`, 'i').test(vehicle.type) &&
             (this.currentFilterMode == 'all' ||
@@ -319,11 +349,15 @@ export default defineComponent({
 
   td {
     text-align: center;
-    height: 70px;
     padding: 0.25em;
+    height: 75px;
 
     &[data-sponsoronly='true'] {
       color: salmon;
+    }
+
+    img {
+      vertical-align: middle;
     }
   }
 }
