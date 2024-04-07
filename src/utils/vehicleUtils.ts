@@ -28,7 +28,7 @@ export function locoDataList(vehiclesData: IVehiclesAPI | undefined) {
     const locoProps = vehiclesData.vehicleProps.find((prop) => constructionType == prop.type);
 
     if (!locoProps) {
-      console.warn('No loco props', type);
+      console.warn('Brak atrybutów dla pojazdu:', type);
       return acc;
     }
 
@@ -65,7 +65,7 @@ export function carDataList(vehiclesData: IVehiclesAPI | undefined) {
     const wagonProps = vehiclesData.vehicleProps.find((v) => type.toString().startsWith(v.type));
 
     if (!wagonProps) {
-      console.warn('No wagon props', type);
+      console.warn('Brak atrybutów dla pojazdu:', type);
       return acc;
     }
 

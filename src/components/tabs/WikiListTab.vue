@@ -180,10 +180,6 @@ export default defineComponent({
                 'src',
                 entry.target.querySelector('td:first-child > img')!.getAttribute('data-src')!
               );
-            // your observer logic
-            console.log(entry.target.textContent, ':D');
-          } else {
-            console.log(entry.target.textContent, ':(');
           }
         });
       });

@@ -91,7 +91,7 @@ export default defineComponent({
           if (cargo) vehicleCargo = vehicle?.cargoTypes.find((c) => c.id == cargo) || null;
         }
 
-        if (!vehicle) console.log('Brak pojazdu / rodzaj pojazdu źle wczytany:', type);
+        if (!vehicle) console.warn('Brak pojazdu / rodzaj pojazdu źle wczytany:', type);
 
         this.addVehicle(vehicle, vehicleCargo);
       });

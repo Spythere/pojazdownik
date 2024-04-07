@@ -431,7 +431,7 @@ export default defineComponent({
         this.loadStockFromString(stockString);
       };
 
-      reader.onerror = (err) => console.log(err);
+      reader.onerror = (err) => console.error(err);
 
       inputEl.value = '';
     },
