@@ -51,7 +51,6 @@ export default {
 .logo-section {
   grid-row: 1;
   grid-column: 1;
-  margin-bottom: 1.5em;
 
   display: flex;
   align-items: center;

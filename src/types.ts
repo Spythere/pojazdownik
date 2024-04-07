@@ -4,6 +4,7 @@ export type StockSectionMode = 'STOCK_LIST' | 'STOCK_GENERATOR';
 export type LocoGroupType = 'loco-electric' | 'loco-diesel' | 'unit-electric' | 'unit-diesel';
 export type WagonGroupType = 'wagon-passenger' | 'wagon-freight';
 export type VehicleGroupType = LocoGroupType | WagonGroupType;
+export type RestrictionType = 'sponsorOnly' | 'teamOnly';
 
 export interface IVehicleProps {
   type: string;
@@ -13,7 +14,6 @@ export interface IVehicleProps {
   cargoTypes?: ICargo[];
   coldStart?: boolean;
   doubleManned?: boolean;
-  supporterTimestamp?: number;
 }
 
 export interface ICargo {
@@ -30,16 +30,7 @@ export interface IVehiclesAPI {
     };
   };
 
-  vehicleList: string[][];
-
-  // vehiclesList: {
-  //   'loco-electric': string[][];
-  //   'loco-diesel': string[][];
-  //   'unit-electric': string[][];
-  //   'unit-diesel': string[][];
-  //   'wagon-passenger': string[][];
-  //   'wagon-freight': string[][];
-  // };
+  vehicleList: any[][];
 
   vehicleProps: IVehicleProps[];
 
@@ -63,8 +54,7 @@ export interface ILocomotive {
   constructionType: string;
   cabinType: string;
   maxSpeed: number;
-  isSponsorsOnly: boolean;
-  sponsorsOnlyTimestamp: number;
+  restrictions: Record<RestrictionType, any>;
   weight: number;
   length: number;
   coldStart: boolean;
@@ -76,8 +66,7 @@ export interface ICarWagon {
   group: WagonGroupType;
   constructionType: string;
   loadable: boolean;
-  isSponsorsOnly: boolean;
-  sponsorsOnlyTimestamp: number;
+  restrictions: Record<RestrictionType, any>;
   maxSpeed: number;
   weight: number;
   length: number;
@@ -94,8 +83,7 @@ export interface IStock {
   maxSpeed: number;
   cargo?: ICargo;
   isLoco: boolean;
-  isSponsorsOnly: boolean;
-  sponsorsOnlyTimestamp: number;
+  restrictions: Record<RestrictionType, any>;
   count: number;
 }
 

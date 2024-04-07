@@ -30,6 +30,7 @@
     "loading": "IMAGE LOADING...",
     "desc": "Choose a railway vehicle above to see its preview",
     "sponsor-only": "* SPONSORS ONLY UNTIL {0}",
+    "team-only": "* TD2 TEAM ONLY",
     "loco-electric": "ELECTRIC LOCO",
     "loco-diesel": "DIESEL LOCO",
     "unit-electric": "ELECTRIC M.U.",
@@ -68,11 +69,13 @@
     "coldstart-info": "Locomotive cold start",
     "doublemanning-info": "Double manning",
     "list-empty": "Stock list is empty!",
+
     "warning-not-suitable": "EP series locomotives are designed for passenger traffic only!",
     "warning-passenger-too-long": "Maximum length of a passenger train may not be greater than 350m!",
     "warning-freight-too-long": "Maximum length of a freight train may not be greater than 650m!",
     "warning-too-many-locos": "This train has too many traction units!",
     "warning-too-heavy": "This train is too heavy! Check {href}",
+    "warning-team-only-vehicle": "There's at least one vehicle available only for TD2 team members in your stock composition! ({0})",
     "acceptable-mass-docs": "acceptable rolling stock masses (PL)"
   },
   "stockgen": {

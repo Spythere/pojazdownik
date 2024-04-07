@@ -119,11 +119,10 @@ import { useStore } from '../../store';
 
 import stockMixin from '../../mixins/stockMixin';
 import { ICargo, ICarWagon, IStock } from '../../types';
-import warningsMixin from '../../mixins/warningsMixin';
 
 export default defineComponent({
   name: 'stock-generator',
-  mixins: [stockMixin, warningsMixin],
+  mixins: [stockMixin],
 
   data() {
     return {

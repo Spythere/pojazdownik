@@ -5,7 +5,7 @@
       v-for="(stock, stockIndex) in store.stockList"
       :key="stockIndex"
       :data-selected="store.chosenStockListIndex == stockIndex"
-      :data-sponsor="stock.isSponsorsOnly"
+      :data-sponsor="stock.restrictions.sponsorOnly"
       draggable="true"
       @dragstart="onDragStart(stockIndex)"
       @drop="onDrop($event, stockIndex)"

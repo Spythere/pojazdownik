@@ -28,7 +28,7 @@
             {{ $t('inputs.input-vehicle') }}
           </option>
           <option v-for="loco in locoOptions" :value="loco" :key="loco.type">
-            {{ loco.type }}<b v-if="loco.isSponsorsOnly">*</b>
+            {{ loco.type }}<b v-if="loco.restrictions['sponsorOnly']">*</b>
           </option>
         </select>
       </div>
@@ -59,7 +59,7 @@
           </option>
 
           <option v-for="car in carOptions" :value="car" :key="car.type">
-            {{ car.type }}<b v-if="car.isSponsorsOnly">*</b>
+            {{ car.type }}<b v-if="car.restrictions['sponsorOnly']">*</b>
           </option>
         </select>
       </div>

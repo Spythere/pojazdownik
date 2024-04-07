@@ -115,20 +115,29 @@
       </Checkbox>
     </div>
 
-    <div class="stock_warnings" v-if="stockHasWarnings">
+    <div class="stock_warnings" v-if="hasAnyWarnings">
       <div class="warning" v-if="locoNotSuitable">
         (!) {{ $t('stocklist.warning-not-suitable') }}
       </div>
 
-      <div class="warning" v-if="trainTooLong && store.isTrainPassenger">
+      <div class="warning" v-if="lengthExceeded && store.isTrainPassenger">
         (!) {{ $t('stocklist.warning-passenger-too-long') }}
       </div>
 
-      <div class="warning" v-if="trainTooLong && !store.isTrainPassenger">
+      <div class="warning" v-if="lengthExceeded && !store.isTrainPassenger">
         (!) {{ $t('stocklist.warning-freight-too-long') }}
       </div>
 
-      <div class="warning" v-if="trainTooHeavy">
+      <div class="warning" v-if="teamOnlyVehicles.length > 0">
+        (!)
+        {{
+          $t('stocklist.warning-team-only-vehicle', [
+            teamOnlyVehicles.map((v) => v.type).join(', '),
+          ])
+        }}
+      </div>
+
+      <div class="warning" v-if="weightExceeded">
         (!)
         <i18n-t keypath="stocklist.warning-too-heavy">
           <template #href>
@@ -142,7 +151,7 @@
         </i18n-t>
       </div>
 
-      <div class="warning" v-if="tooManyLocomotives">
+      <div class="warning" v-if="locoCountExceeded">
         {{ $t('stocklist.warning-too-many-locos') }}
       </div>
     </div>
@@ -150,52 +159,60 @@
     <StockThumbnails :onListItemClick="onListItemClick" />
 
     <!-- Stock list -->
-    <ul ref="stock_list">
-      <li v-if="stockIsEmpty" class="list-empty">
+    <div class="list-wrapper">
+      <div v-if="stockIsEmpty" class="list-empty">
         <div class="stock-info">{{ $t('stocklist.list-empty') }}</div>
-      </li>
+      </div>
 
-      <TransitionGroup name="stock-list-anim" v-else>
-        <li
-          v-for="(stock, i) in store.stockList"
-          :key="stock.id"
-          :class="{ loco: stock.isLoco }"
-          tabindex="0"
-          @click="onListItemClick(i)"
-          @keydown.enter="onListItemClick(i)"
-          @keydown.w="moveUpStock(i)"
-          @keydown.s="moveDownStock(i)"
-          @keydown.backspace="removeStock(i)"
-          ref="itemRefs"
-        >
-          <div
-            class="stock-info"
-            @dragstart="onDragStart(i)"
-            @drop="onDrop($event, i)"
-            @dragover="allowDrop"
-            draggable="true"
+      <ul v-else>
+        <transition-group name="stock-list-anim">
+          <li
+            v-for="(stock, i) in store.stockList"
+            :key="stock.id"
+            :class="{ loco: stock.isLoco }"
+            tabindex="0"
+            @click="onListItemClick(i)"
+            @keydown.enter="onListItemClick(i)"
+            @keydown.w="moveUpStock(i)"
+            @keydown.s="moveDownStock(i)"
+            @keydown.backspace="removeStock(i)"
+            ref="itemRefs"
           >
-            <span class="stock-info__no" :data-selected="i == store.chosenStockListIndex">
-              <span v-if="i == store.chosenStockListIndex">&bull;&nbsp;</span>
-              {{ i + 1 }}.
-            </span>
-
-            <span class="stock-info__type" :class="{ sponsor: stock.isSponsorsOnly }">
-              {{ stock.isLoco ? stock.type : getCarSpecFromType(stock.type) }}
-            </span>
-
-            <span class="stock-info__cargo" v-if="stock.cargo">
-              {{ stock.cargo.id }}
-            </span>
-            <span class="stock-info__length">{{ stock.length }}m</span>
-            <span class="stock-info__mass"
-              >{{ ((stock.weight + (stock.cargo?.weight ?? 0)) / 1000).toFixed(1) }}t</span
+            <div
+              class="stock-info"
+              @dragstart="onDragStart(i)"
+              @drop="onDrop($event, i)"
+              @dragover="allowDrop"
+              draggable="true"
             >
-            <span class="stock-info__speed">{{ stock.maxSpeed }}km/h</span>
-          </div>
-        </li>
-      </TransitionGroup>
-    </ul>
+              <span class="stock-info-no" :data-selected="i == store.chosenStockListIndex">
+                <span v-if="i == store.chosenStockListIndex">&bull;&nbsp;</span>
+                {{ i + 1 }}.
+              </span>
+
+              <span
+                class="stock-info-type"
+                :data-sponsor-only="stock.restrictions.sponsorOnly"
+                :data-team-only="stock.restrictions.teamOnly"
+              >
+                {{ stock.isLoco ? stock.type : getCarSpecFromType(stock.type) }}
+              </span>
+
+              <span class="stock-info-cargo" v-if="stock.cargo">
+                {{ stock.cargo.id }}
+              </span>
+
+              <span class="stock-info-length">{{ stock.length }}m</span>
+
+              <span class="stock-info-mass">
+                {{ ((stock.weight + (stock.cargo?.weight ?? 0)) / 1000).toFixed(1) }}t
+              </span>
+              <span class="stock-info-speed">{{ stock.maxSpeed }}km/h</span>
+            </div>
+          </li>
+        </transition-group>
+      </ul>
+    </div>
   </section>
 </template>
 
@@ -204,7 +221,6 @@ import { defineComponent } from 'vue';
 
 import { useStore } from '../../store';
 
-import warningsMixin from '../../mixins/warningsMixin';
 import imageMixin from '../../mixins/imageMixin';
 import stockPreviewMixin from '../../mixins/stockPreviewMixin';
 import StockThumbnails from '../utils/StockThumbnails.vue';
@@ -215,7 +231,7 @@ export default defineComponent({
   name: 'stock-list',
   components: { StockThumbnails, Checkbox },
 
-  mixins: [warningsMixin, imageMixin, stockMixin, stockPreviewMixin],
+  mixins: [imageMixin, stockMixin, stockPreviewMixin],
 
   setup() {
     const store = useStore();
@@ -233,6 +249,12 @@ export default defineComponent({
   }),
 
   computed: {
+    chosenRealComposition() {
+      const currentStockString = this.store.stockList.map((s) => s.type).join(';');
+
+      return this.store.realCompositionList.find((rc) => rc.stockString == currentStockString);
+    },
+
     stockString() {
       if (this.store.stockList.length == 0) return '';
 
@@ -263,16 +285,47 @@ export default defineComponent({
         : this.store.stockList[this.store.chosenStockListIndex];
     },
 
-    stockHasWarnings() {
+    lengthExceeded() {
       return (
-        this.tooManyLocomotives || this.trainTooHeavy || this.trainTooLong || this.locoNotSuitable
+        (this.store.totalLength > 350 && this.store.isTrainPassenger) ||
+        (this.store.totalLength > 650 && !this.store.isTrainPassenger)
       );
     },
 
-    chosenRealComposition() {
-      const currentStockString = this.store.stockList.map((s) => s.type).join(';');
+    weightExceeded() {
+      return this.store.acceptableWeight && this.store.totalWeight > this.store.acceptableWeight;
+    },
 
-      return this.store.realCompositionList.find((rc) => rc.stockString == currentStockString);
+    locoNotSuitable() {
+      return (
+        !this.store.isTrainPassenger &&
+        this.store.stockList.length > 1 &&
+        !this.store.stockList.every((stock) => stock.isLoco) &&
+        this.store.stockList.some((stock) => stock.isLoco && stock.type.startsWith('EP'))
+      );
+    },
+
+    locoCountExceeded() {
+      return (
+        this.store.stockList.reduce((acc, stock) => {
+          if (stock.isLoco) acc += stock.count;
+          return acc;
+        }, 0) > 2
+      );
+    },
+
+    teamOnlyVehicles() {
+      return this.store.stockList.filter((stock) => stock.restrictions.teamOnly);
+    },
+
+    hasAnyWarnings() {
+      return (
+        this.locoCountExceeded ||
+        this.weightExceeded ||
+        this.lengthExceeded ||
+        this.locoNotSuitable ||
+        this.teamOnlyVehicles
+      );
     },
   },
 
@@ -470,6 +523,7 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   gap: 0.5em;
+  position: relative;
 }
 
 .warning {
@@ -537,10 +591,20 @@ export default defineComponent({
   }
 }
 
-ul {
+.list-wrapper {
   position: relative;
-  overflow: auto;
-  max-height: 500px;
+}
+
+.list-empty {
+  background-color: $secondaryColor;
+  border-radius: 0.5em;
+  padding: 0.75em;
+  font-weight: bold;
+}
+
+ul {
+  overflow-y: scroll;
+  height: 500px;
 }
 
 ul > li {
@@ -557,16 +621,11 @@ ul > li {
   &:focus-visible {
     outline: 1px solid white;
   }
-
-  &.list-empty {
-    background-color: $secondaryColor;
-    border-radius: 0.5em;
-    padding: 0.75em;
-  }
 }
 
 li > .stock-info {
   display: flex;
+  gap: 0.25em;
 
   color: white;
   font-weight: 700;
@@ -575,46 +634,39 @@ li > .stock-info {
 
   & > span {
     padding: 0.5em;
-    margin-right: 0.25em;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
   }
 }
 
-.sponsor {
-  color: salmon;
+.stock-info-no,
+.stock-info-type {
+  background-color: $secondaryColor;
+
+  &[data-team-only='true'] {
+    color: $teamColor;
+  }
+
+  &[data-sponsor-only] {
+    color: $sponsorColor;
+  }
 }
 
-.stock-info {
-  &__no,
-  &__type {
-    background-color: $secondaryColor;
-  }
+.stock-info-no {
+  min-width: 3.5em;
+  text-align: right;
 
-  &__count {
-    background-color: #e04e3e;
+  &[data-selected='true'] {
+    color: $accentColor;
   }
+}
 
-  &__no {
-    min-width: 3.5em;
-    text-align: right;
+.stock-info-cargo {
+  background-color: #333;
+}
 
-    &[data-selected='true'] {
-      color: $accentColor;
-    }
-  }
-
-  &__cargo {
-    background-color: #333;
-  }
-
-  &__length,
-  &__mass,
-  &__speed {
-    background-color: #555;
-  }
+.stock-info-length,
+.stock-info-mass,
+.stock-info-speed {
+  background-color: #555;
 }
 
 .stock-list-anim {

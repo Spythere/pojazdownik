@@ -9,7 +9,7 @@
     "version-check": "Strona jest kompletna dla wersji {version} symulatora TD2"
   },
   "inputs": {
-    "title": "WYBIERZ POJAZD SZYNOWY",
+    "title": "WYBIERZ POJAZD",
     "input-vehicle": "Wybierz pojazd trakcyjny",
     "input-carwagon": "Wybierz wagon",
     "cargo-title": "Ładunek (tylko wybrane towarowe)",
@@ -30,6 +30,7 @@
     "loading": "ŁADOWANIE OBRAZU...",
     "desc": "Wybierz pojazd lub wagon, aby zobaczyć jego podgląd powyżej",
     "sponsor-only": "* TYLKO DLA SPONSORÓW DO {0}",
+    "team-only": "* TYLKO DLA ZESPOŁU TD2",
     "loco-electric": "ELEKTROWÓZ",
     "loco-diesel": "SPALINOWÓZ",
     "unit-electric": "EZT",
@@ -68,11 +69,13 @@
     "coldstart-info": "Zimny start",
     "doublemanning-info": "Podwójna obsada",
     "list-empty": "Lista pojazdów jest pusta!",
+
     "warning-not-suitable": "Lokomotywy serii EP są przeznaczone jedynie do ruchu pasażerskiego!",
     "warning-passenger-too-long": "Maksymalna długość składów pasażerskich nie może przekraczać 350m!",
     "warning-freight-too-long": "Maksymalna długość składów innych niż pasażerskie nie może przekraczać 650m!",
     "warning-too-many-locos": "Ten skład posiada za dużo pojazdów trakcyjnych!",
     "warning-too-heavy": "Ten skład jest za ciężki! Sprawdź {href}",
+    "warning-team-only-vehicle": "W zestawieniu znajduje się co najmniej jeden pojazd dostępny tylko dla członków zespołu TD2! ({0})",
     "acceptable-mass-docs": "dopuszczalne masy składów"
   },
   "stockgen": {

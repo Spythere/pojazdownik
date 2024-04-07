@@ -57,26 +57,19 @@
                 <img width="120" src="" :data-src="getThumbnailURL(vehicle.type, 'small')" />
               </td>
 
-              <td :data-sponsoronly="vehicle.isSponsorsOnly">
-                {{ vehicle.type }}
+              <td
+                :data-sponsor-only="vehicle.restrictions.sponsorOnly > 0"
+                :data-team-only="vehicle.restrictions.teamOnly"
+                style="min-width: 150px"
+              >
+                {{ vehicle.type.replace(/_/g, ' ') }}
               </td>
 
-              <td v-if="isTractionUnit(vehicle)">
-                {{ $t(`wiki.${vehicle.group}`) }}
-              </td>
-              <td v-else>{{ $t(`wiki.${vehicle.group}`) }}</td>
-
+              <td style="min-width: 100px">{{ $t(`wiki.${vehicle.group}`) }}</td>
               <td>{{ vehicle.constructionType }}</td>
               <td>{{ vehicle.length }}</td>
               <td>{{ (vehicle.weight / 1000).toFixed(1) }}</td>
               <td>{{ vehicle.maxSpeed }}</td>
-
-              <td v-if="currentFilterMode == 'carriages'">
-                {{ !isTractionUnit(vehicle) ? vehicle.cargoTypes.length : '---' }}
-              </td>
-              <td v-if="currentFilterMode == 'tractions'">
-                {{ isTractionUnit(vehicle) ? (vehicle.coldStart ? `&check;` : '&cross;') : '---' }}
-              </td>
             </tr>
           </tbody>
 
@@ -127,8 +120,8 @@ const headers: IWikiHeader[] = [
   { id: 'length', sortable: true, for: 'all' },
   { id: 'weight', sortable: true, for: 'all' },
   { id: 'maxSpeed', sortable: true, for: 'all' },
-  { id: 'coldStart', sortable: true, for: 'tractions' },
-  { id: 'cargoCount', sortable: true, for: 'carriages' },
+  // { id: 'coldStart', sortable: true, for: 'tractions' },
+  // { id: 'cargoCount', sortable: true, for: 'carriages' },
 ];
 
 export default defineComponent({
@@ -330,10 +323,6 @@ export default defineComponent({
     cursor: pointer;
     background-color: #333;
 
-    &:first-child {
-      min-width: 120px;
-    }
-
     &:nth-child(odd) {
       background-color: #444;
     }
@@ -348,8 +337,14 @@ export default defineComponent({
     padding: 0.25em;
     height: 75px;
 
-    &[data-sponsoronly='true'] {
-      color: salmon;
+    min-width: 95px;
+
+    &[data-sponsor-only='true'] {
+      color: $sponsorColor;
+    }
+
+    &[data-team-only='true'] {
+      color: $teamColor;
     }
 
     img {

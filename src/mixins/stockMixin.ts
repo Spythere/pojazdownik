@@ -28,9 +28,8 @@ export default defineComponent({
         cargo: !isLoco && vehicle.loadable && cargo ? cargo : undefined,
         count,
         group: isLoco ? vehicle.group : vehicle.group,
-        isSponsorsOnly: vehicle.isSponsorsOnly,
         constructionType: vehicle.constructionType,
-        sponsorsOnlyTimestamp: vehicle.sponsorsOnlyTimestamp,
+        restrictions: vehicle.restrictions,
       };
     },
 

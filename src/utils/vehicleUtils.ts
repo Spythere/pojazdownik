@@ -20,11 +20,11 @@ export function isTractionUnit(vehicle: ILocomotive | ICarWagon): vehicle is ILo
 export function locoDataList(vehiclesData: IVehiclesAPI | undefined) {
   if (!vehiclesData) return [];
 
-  return vehiclesData.vehicleList.reduce((acc, vehicleInfoArray) => {
-    // check if data array has 4 elements (locos & units only)
-    if (vehicleInfoArray.length != 4) return acc;
+  return vehiclesData.vehicleList.reduce<ILocomotive[]>((acc, vehicleInfoArray) => {
+    // check if data array has 5 elements (locos & units only)
+    if (vehicleInfoArray.length != 5) return acc;
 
-    const [type, constructionType, cabinType, group] = vehicleInfoArray;
+    const [type, constructionType, cabinType, group, restrictions] = vehicleInfoArray;
     const locoProps = vehiclesData.vehicleProps.find((prop) => constructionType == prop.type);
 
     if (!locoProps) {
@@ -39,8 +39,7 @@ export function locoDataList(vehiclesData: IVehiclesAPI | undefined) {
       constructionType,
       cabinType,
 
-      isSponsorsOnly: (locoProps.supporterTimestamp ?? 0) > Date.now(),
-      sponsorsOnlyTimestamp: locoProps.supporterTimestamp ?? 0,
+      restrictions: restrictions ?? {},
 
       maxSpeed: locoProps.speed,
       length: locoProps.length,
@@ -51,18 +50,20 @@ export function locoDataList(vehiclesData: IVehiclesAPI | undefined) {
     });
 
     return acc;
-  }, [] as ILocomotive[]);
+  }, []);
 }
 
 export function carDataList(vehiclesData: IVehiclesAPI | undefined) {
   if (!vehiclesData) return [];
 
-  return vehiclesData.vehicleList.reduce((acc, vehicleInfoArray) => {
-    // check if data array has 3 elements (wagons only)
-    if (vehicleInfoArray.length != 3) return acc;
+  console.log(vehiclesData);
 
-    const [type, constructionType, group] = vehicleInfoArray;
-    const wagonProps = vehiclesData.vehicleProps.find((v) => type.toString().startsWith(v.type));
+  return vehiclesData.vehicleList.reduce<ICarWagon[]>((acc, vehicleInfoArray) => {
+    // check if data array has 4 elements (wagons only)
+    if (vehicleInfoArray.length != 4) return acc;
+
+    const [type, constructionType, group, restrictions] = vehicleInfoArray;
+    const wagonProps = vehiclesData.vehicleProps.find((prop) => constructionType == prop.type);
 
     if (!wagonProps) {
       console.warn('Brak atrybutów dla pojazdu:', type);
@@ -74,9 +75,9 @@ export function carDataList(vehiclesData: IVehiclesAPI | undefined) {
       type,
       constructionType,
       loadable: wagonProps.cargoTypes ? wagonProps.cargoTypes.length > 0 : false,
-      isSponsorsOnly: (wagonProps.supporterTimestamp ?? 0) > Date.now(),
-      sponsorsOnlyTimestamp: wagonProps.supporterTimestamp ?? 0,
       cargoTypes: wagonProps?.cargoTypes ?? [],
+
+      restrictions: restrictions ?? {},
 
       maxSpeed: wagonProps.speed,
       weight: wagonProps?.weight || 0,
@@ -84,7 +85,7 @@ export function carDataList(vehiclesData: IVehiclesAPI | undefined) {
     });
 
     return acc;
-  }, [] as ICarWagon[]);
+  }, []);
 }
 
 export function totalWeight(stockList: IStock[]) {
