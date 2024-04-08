@@ -2,7 +2,7 @@ import {
   ICarWagon,
   ILocomotive,
   IStock,
-  IVehiclesAPI,
+  IVehiclesData,
   LocoGroupType,
   WagonGroupType,
 } from '../types';
@@ -17,7 +17,7 @@ export function isTractionUnit(vehicle: ILocomotive | ICarWagon): vehicle is ILo
   return (vehicle as ILocomotive).cabinType !== undefined;
 }
 
-export function locoDataList(vehiclesData: IVehiclesAPI | undefined) {
+export function locoDataList(vehiclesData: IVehiclesData | undefined) {
   if (!vehiclesData) return [];
 
   return vehiclesData.vehicleList.reduce<ILocomotive[]>((acc, vehicleInfoArray) => {
@@ -53,7 +53,7 @@ export function locoDataList(vehiclesData: IVehiclesAPI | undefined) {
   }, []);
 }
 
-export function carDataList(vehiclesData: IVehiclesAPI | undefined) {
+export function carDataList(vehiclesData: IVehiclesData | undefined) {
   if (!vehiclesData) return [];
 
   console.log(vehiclesData);

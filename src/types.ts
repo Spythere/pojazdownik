@@ -21,7 +21,7 @@ export interface ICargo {
   weight: number;
 }
 
-export interface IVehiclesAPI {
+export interface IVehiclesData {
   simulatorVersion: string;
 
   generator: {

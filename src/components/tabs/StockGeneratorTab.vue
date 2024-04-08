@@ -149,9 +149,9 @@ export default defineComponent({
     },
 
     computedCargoData() {
-      if (!this.store.vehiclesAPIData?.generator.cargo) return [];
+      if (!this.store.vehiclesData?.generator.cargo) return [];
 
-      const cargoGeneratorData = this.store.vehiclesAPIData.generator.cargo;
+      const cargoGeneratorData = this.store.vehiclesData.generator.cargo;
 
       return Object.keys(cargoGeneratorData)
         .sort((v1, v2) => this.$t(`cargo.${v1}`).localeCompare(this.$t(`cargo.${v2}`)))
@@ -195,7 +195,7 @@ export default defineComponent({
     generateStock(empty = false) {
       const generatedChosenStockList = this.chosenCargoTypes.reduce(
         (acc, type) => {
-          this.store.vehiclesAPIData?.generator.cargo[type]
+          this.store.vehiclesData?.generator.cargo[type]
             .filter((c) => !this.excludedCarTypes.includes(c.split(':')[0]))
             .forEach((c) => {
               const [type, cargoType] = c.split(':');

@@ -8,8 +8,8 @@
       </template>
     </i18n-t>
 
-    <div class="text--grayed" v-if="store.vehiclesAPIData">
-      {{ $t('footer.version-check', { version: store.vehiclesAPIData.simulatorVersion }) }}
+    <div class="text--grayed" v-if="store.vehiclesData">
+      {{ $t('footer.version-check', { version: store.vehiclesData.simulatorVersion }) }}
     </div>
 
     <div>

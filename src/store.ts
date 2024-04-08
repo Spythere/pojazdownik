@@ -1,5 +1,5 @@
 import {
-  IVehiclesAPI,
+  IVehiclesData,
   ICarWagon,
   ILocomotive,
   ICargo,
@@ -19,8 +19,10 @@ import {
   totalLength,
   totalWeight,
 } from './utils/vehicleUtils';
-import http from './http';
+
 import i18n from './i18n-setup';
+
+import vehiclesData from './data/vehiclesData.json';
 
 export const useStore = defineStore({
   id: 'store',
@@ -52,17 +54,17 @@ export const useStore = defineStore({
     isRandomizerCardOpen: false,
     isRealStockListCardOpen: false,
 
-    vehiclesAPIData: undefined as IVehiclesAPI | undefined,
+    vehiclesData: undefined as IVehiclesData | undefined,
 
     lastFocusedElement: null as HTMLElement | null,
   }),
 
   getters: {
-    locoDataList: (state) => locoDataList(state.vehiclesAPIData),
-    carDataList: (state) => carDataList(state.vehiclesAPIData),
+    locoDataList: (state) => locoDataList(state.vehiclesData),
+    carDataList: (state) => carDataList(state.vehiclesData),
     vehicleDataList: (state) => [
-      ...locoDataList(state.vehiclesAPIData),
-      ...carDataList(state.vehiclesAPIData),
+      ...locoDataList(state.vehiclesData),
+      ...carDataList(state.vehiclesData),
     ],
     totalWeight: (state) => totalWeight(state.stockList),
     totalLength: (state) => totalLength(state.stockList),
@@ -71,16 +73,16 @@ export const useStore = defineStore({
     acceptableWeight: (state) => acceptableWeight(state.stockList),
 
     realCompositionList: (state) => {
-      if (!state.vehiclesAPIData) return [];
+      if (!state.vehiclesData) return [];
 
-      return Object.keys(state.vehiclesAPIData.realCompositions).reduce<IRealComposition[]>(
+      return Object.keys(state.vehiclesData.realCompositions).reduce<IRealComposition[]>(
         (acc, key) => {
           const [type, number, ...name] = key.split(' ');
 
           const obj = {
             number: number.replace(/_/g, '/'),
             name: name.join(' '),
-            stockString: state.vehiclesAPIData!.realCompositions[key],
+            stockString: state.vehiclesData!.realCompositions[key],
             type,
           };
 
@@ -102,9 +104,8 @@ export const useStore = defineStore({
       const headingLoco = state.stockList[0];
 
       return (
-        state.vehiclesAPIData?.vehicleProps.find(
-          (stock) => stock.type == headingLoco.constructionType
-        )?.coldStart ?? false
+        state.vehiclesData?.vehicleProps.find((stock) => stock.type == headingLoco.constructionType)
+          ?.coldStart ?? false
       );
     },
 
@@ -115,33 +116,23 @@ export const useStore = defineStore({
       const headingLoco = state.stockList[0];
 
       return (
-        state.vehiclesAPIData?.vehicleProps.find(
-          (stock) => stock.type == headingLoco.constructionType
-        )?.doubleManned ?? false
+        state.vehiclesData?.vehicleProps.find((stock) => stock.type == headingLoco.constructionType)
+          ?.doubleManned ?? false
       );
     },
   },
 
   actions: {
-    async fetchVehiclesAPI() {
-      try {
-        const vehiclesData = (await http.get<IVehiclesAPI>('/vehiclesData')).data;
-        this.vehiclesAPIData = vehiclesData;
-      } catch (error) {
-        console.error(error);
-      }
-    },
-
     async setupAPIData() {
-      await this.fetchVehiclesAPI();
+      this.vehiclesData = vehiclesData;
       this.mergeBackendTranslations();
     },
 
     async mergeBackendTranslations() {
-      if (!this.vehiclesAPIData) return;
+      if (!this.vehiclesData) return;
 
-      i18n.global.mergeLocaleMessage('pl', this.vehiclesAPIData.vehicleLocales.pl);
-      i18n.global.mergeLocaleMessage('en', this.vehiclesAPIData.vehicleLocales.en);
+      i18n.global.mergeLocaleMessage('pl', this.vehiclesData.vehicleLocales.pl);
+      i18n.global.mergeLocaleMessage('en', this.vehiclesData.vehicleLocales.en);
     },
 
     handleRouting() {
