@@ -7,11 +7,7 @@ export default defineComponent({
     },
 
     getThumbnailURL(vehicleType: string, size: 'small' | 'large') {
-      return `${
-        import.meta.env.VITE_API_DEV === '1'
-          ? 'http://localhost:5500'
-          : 'https://static.spythere.eu'
-      }/images/${vehicleType}--${size == 'small' ? 300 : 800}px.jpg`;
+      return `https://static.spythere.eu/images/${vehicleType}--${size == 'small' ? 300 : 800}px.jpg`;
     },
   },
 });

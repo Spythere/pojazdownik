@@ -21,8 +21,7 @@ import {
 } from './utils/vehicleUtils';
 
 import i18n from './i18n-setup';
-
-import vehiclesData from './data/vehiclesData.json';
+import http from './http';
 
 export const useStore = defineStore({
   id: 'store',
@@ -123,8 +122,19 @@ export const useStore = defineStore({
   },
 
   actions: {
+    async fetchVehiclesAPI() {
+      try {
+        const vehiclesData = (await http.get<IVehiclesData>('/vehicles')).data;
+        this.vehiclesData = vehiclesData;
+
+        console.log(vehiclesData);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
     async setupAPIData() {
-      this.vehiclesData = vehiclesData;
+      await this.fetchVehiclesAPI();
       this.mergeBackendTranslations();
     },
 
