@@ -127,7 +127,6 @@ export const useStore = defineStore({
         const vehiclesData = (await http.get<IVehiclesData>('/vehicles')).data;
         this.vehiclesData = vehiclesData;
 
-        console.log(vehiclesData);
       } catch (error) {
         console.error(error);
       }

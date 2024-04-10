@@ -281,8 +281,6 @@ export default defineComponent({
 
   flex-wrap: wrap;
   gap: 0.5em;
-
-  margin: 0.5em 0;
 }
 
 .actions-panel_vehicles {
@@ -296,9 +294,14 @@ export default defineComponent({
   }
 }
 
+.tab_content {
+  display: grid;
+  grid-template-rows: 30px 700px;
+  gap: 0.5em;
+}
+
 .table-wrapper {
   overflow: auto;
-  height: 750px;
   max-height: 95vh;
 }
 

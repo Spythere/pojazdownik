@@ -56,8 +56,6 @@ export function locoDataList(vehiclesData: IVehiclesData | undefined) {
 export function carDataList(vehiclesData: IVehiclesData | undefined) {
   if (!vehiclesData) return [];
 
-  console.log(vehiclesData);
-
   return vehiclesData.vehicleList.reduce<ICarWagon[]>((acc, vehicleInfoArray) => {
     // check if data array has 4 elements (wagons only)
     if (vehicleInfoArray.length != 4) return acc;
