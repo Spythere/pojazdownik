@@ -35,15 +35,14 @@ main {
   background-color: darken($color: $bgColor, $amount: 5);
   border-radius: 1em;
 
+  min-height: 950px;
+
   padding: 1em;
 }
 
 @media screen and (max-width: $breakpointMd) {
   main {
-    display: flex;
-    flex-direction: column;
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr;
+    display: block;
   }
 }
 </style>
