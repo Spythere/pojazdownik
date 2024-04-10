@@ -9,7 +9,7 @@
             {{ $t('realstock.title') }}
             <a href="https://td2.info.pl/profile/?u=17708" target="_blank">Railtrains997</a>
           </h1>
-          <button class="btn exit-btn" @click="store.isRealStockListCardOpen = false">
+          <button class="btn action-exit" @click="store.isRealStockListCardOpen = false">
             <img src="/images/icon-exit.svg" alt="" />
           </button>
         </div>
@@ -47,7 +47,7 @@
             </option>
           </datalist>
 
-          <button class="btn" @click="resetStockFilters">
+          <button class="btn action-reset" @click="resetStockFilters">
             {{ $t('realstock.action-reset') }}
           </button>
         </div>
@@ -222,11 +222,15 @@ export default defineComponent({
 <style lang="scss" scoped>
 @import '../../styles/global.scss';
 
-.exit-btn {
+.action-exit {
   display: flex;
   background-color: #333;
   border-radius: 0.25em;
   padding: 0.5em;
+}
+
+.action-reset {
+  background-color: #333;
 }
 
 .card_content {
