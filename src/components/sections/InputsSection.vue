@@ -9,7 +9,7 @@
             v-for="locoType in locomotiveTypeList"
             :key="locoType.id"
             class="btn btn--choice"
-            :data-selected="locoType.id == store.chosenLocoPower"
+            :data-selected="locoType.id == store.chosenLocoGroup"
             @click="selectLocoType(locoType.id)"
           >
             {{ $t(`inputs.${locoType.id}`) }}
@@ -28,7 +28,7 @@
             {{ $t('inputs.input-vehicle') }}
           </option>
           <option v-for="loco in locoOptions" :value="loco" :key="loco.type">
-            {{ loco.type }}<b v-if="loco.isSponsorsOnly">*</b>
+            {{ loco.type }}<b v-if="loco.restrictions['sponsorOnly']">*</b>
           </option>
         </select>
       </div>
@@ -39,7 +39,7 @@
             v-for="carType in carTypeList"
             :key="carType.id"
             class="btn btn--choice"
-            :data-selected="carType.id == store.chosenCarUseType"
+            :data-selected="carType.id == store.chosenCarGroup"
             @click="selectCarWagonType(carType.id)"
           >
             {{ $t(`inputs.${carType.id}`) }}
@@ -59,7 +59,7 @@
           </option>
 
           <option v-for="car in carOptions" :value="car" :key="car.type">
-            {{ car.type }}<b v-if="car.isSponsorsOnly">*</b>
+            {{ car.type }}<b v-if="car.restrictions['sponsorOnly']">*</b>
           </option>
         </select>
       </div>
@@ -70,7 +70,7 @@
           id="cargo-select"
           :disabled="
             (store.chosenCar && !store.chosenCar.loadable) ||
-            (store.chosenCar && store.chosenCar.useType == 'car-passenger') ||
+            (store.chosenCar && store.chosenCar.group == 'wagon-passenger') ||
             !store.chosenCar
           "
           data-select="cargo"
@@ -123,6 +123,7 @@ import imageMixin from '../../mixins/imageMixin';
 import { useStore } from '../../store';
 import stockPreviewMixin from '../../mixins/stockPreviewMixin';
 import stockMixin from '../../mixins/stockMixin';
+import { LocoGroupType, WagonGroupType } from '../../types';
 
 export default defineComponent({
   mixins: [imageMixin, stockPreviewMixin, stockMixin],
@@ -131,33 +132,33 @@ export default defineComponent({
     store: useStore(),
     locomotiveTypeList: [
       {
-        id: 'loco-e',
+        id: 'loco-electric',
         desc: 'ELEKTRYCZNE',
       },
       {
-        id: 'loco-s',
+        id: 'loco-diesel',
         desc: 'SPALINOWE',
       },
       {
-        id: 'loco-ezt',
+        id: 'unit-electric',
         desc: 'ELEKTR. ZESPOŁY TRAKCYJNE',
       },
       {
-        id: 'loco-szt',
+        id: 'unit-diesel',
         desc: 'SPAL. ZESPOŁY TRAKCYJNE',
       },
-    ],
+    ] as { id: LocoGroupType; desc: string }[],
 
     carTypeList: [
       {
-        id: 'car-passenger',
+        id: 'wagon-passenger',
         desc: 'PASAŻERSKIE',
       },
       {
-        id: 'car-cargo',
+        id: 'wagon-freight',
         desc: 'TOWAROWE',
       },
-    ],
+    ] as { id: WagonGroupType; desc: string }[],
   }),
 
   computed: {
@@ -165,14 +166,14 @@ export default defineComponent({
       return this.store.locoDataList
         .slice()
         .sort((a, b) => (a.type > b.type ? 1 : -1))
-        .filter((loco) => loco.power == this.store.chosenLocoPower);
+        .filter((loco) => loco.group == this.store.chosenLocoGroup);
     },
 
     carOptions() {
       return this.store.carDataList
         .slice()
         .sort((a, b) => (a.type > b.type ? 1 : -1))
-        .filter((car) => car.useType == this.store.chosenCarUseType);
+        .filter((car) => car.group == this.store.chosenCarGroup);
     },
   },
 
@@ -209,14 +210,14 @@ export default defineComponent({
       this.store.stockList[this.store.chosenStockListIndex] = stockObject;
     },
 
-    selectLocoType(locoTypeId: string) {
-      this.store.chosenLocoPower = locoTypeId;
+    selectLocoType(locoGroupType: LocoGroupType) {
+      this.store.chosenLocoGroup = locoGroupType;
       this.store.chosenVehicle = this.locoOptions[0];
       this.store.chosenLoco = this.locoOptions[0];
     },
 
-    selectCarWagonType(carWagonTypeId: string) {
-      this.store.chosenCarUseType = carWagonTypeId;
+    selectCarWagonType(wagonGroupType: WagonGroupType) {
+      this.store.chosenCarGroup = wagonGroupType;
       this.store.chosenVehicle = this.carOptions[0];
       this.store.chosenCar = this.carOptions[0];
       this.store.chosenCargo = null;

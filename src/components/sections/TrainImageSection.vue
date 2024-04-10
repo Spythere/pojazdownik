@@ -1,26 +1,27 @@
 <template>
   <section class="train-image-section">
-    <div class="train-image__content" :class="{ sponsor: store.chosenVehicle?.isSponsorsOnly }">
+    <div class="image-wrapper">
       <img
-        tabindex="0"
         :src="
           store.chosenVehicle
             ? getThumbnailURL(store.chosenVehicle.type, 'small')
             : '/images/placeholder.jpg'
         "
+        tabindex="0"
+        :data-sponsor-only="store.chosenVehicle?.restrictions.sponsorOnly"
+        :data-team-only="store.chosenVehicle?.restrictions.teamOnly"
         @click="onImageClick"
         @keydown.enter="onImageClick"
         @error="onImageError"
-        type="image/jpeg"
       />
     </div>
 
-    <div class="train-image__info" v-if="store.chosenVehicle">
+    <div class="image-info" v-if="store.chosenVehicle">
       <b class="text--accent">{{ store.chosenVehicle.type }}</b> &bull;
       <b style="color: #ccc">
         {{
           $t(
-            `preview.${isLocomotive(store.chosenVehicle) ? store.chosenVehicle.power : store.chosenVehicle.useType}`
+            `preview.${isLocomotive(store.chosenVehicle) ? store.chosenVehicle.group : store.chosenVehicle.group}`
           )
         }}
       </b>
@@ -37,30 +38,34 @@
 
         <div v-else>
           {{
-            store.chosenVehicle.useType == 'car-cargo'
+            store.chosenVehicle.group == 'wagon-freight'
               ? $t(`usage.${store.chosenVehicle.constructionType}`)
               : `${$t('preview.construction')} ${store.chosenVehicle.constructionType}`
           }}
         </div>
 
-        <b style="color: salmon" v-if="store.chosenVehicle.isSponsorsOnly">{{
+        <b style="color: salmon" v-if="store.chosenVehicle.restrictions['sponsorOnly']">{{
           $t('preview.sponsor-only', [
-            new Date(store.chosenVehicle.sponsorsOnlyTimestamp).toLocaleDateString(
+            new Date(store.chosenVehicle.restrictions['sponsorOnly']).toLocaleDateString(
               $i18n.locale == 'pl' ? 'pl-PL' : 'en-GB'
             ),
           ])
         }}</b>
+
+        <b style="color: gold" v-if="store.chosenVehicle.restrictions['teamOnly']">{{
+          $t('preview.team-only')
+        }}</b>
       </div>
     </div>
 
-    <div class="train-image__info" v-else>{{ $t('preview.desc') }}</div>
+    <div class="image-info" v-else>{{ $t('preview.desc') }}</div>
   </section>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
 import { useStore } from '../../store';
-import { isLocomotive } from '../../utils/vehicleUtils';
+import { isTractionUnit } from '../../utils/vehicleUtils';
 import { ILocomotive, IVehicle } from '../../types';
 import imageMixin from '../../mixins/imageMixin';
 
@@ -103,7 +108,7 @@ export default defineComponent({
     },
 
     isLocomotive(vehicle: IVehicle): vehicle is ILocomotive {
-      return isLocomotive(vehicle);
+      return isTractionUnit(vehicle);
     },
 
     onImageClick(e: Event) {
@@ -121,7 +126,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '../../styles/global.scss';
+@import '../../styles/global';
 
 .train-image-section {
   display: flex;
@@ -135,24 +140,41 @@ export default defineComponent({
   height: 22em;
 }
 
-.train-image {
-  &__content {
-    &.sponsor img {
-      border: 1px solid salmon;
-    }
+img {
+  max-width: 380px;
+  width: 100%;
+  height: 100%;
+  border: 1px solid white;
 
-    img {
-      max-width: 380px;
-      width: 100%;
-      height: 100%;
-      border: 1px solid white;
+  cursor: zoom-in;
 
-      cursor: zoom-in;
-    }
+  &[data-sponsor-only='true'] {
+    border: 1px solid $sponsorColor;
+  }
+
+  &[data-team-only='true'] {
+    border: 1px solid $teamColor;
   }
 }
 
-.train-image__info {
+// .train-image {
+//   &__content {
+//     &.sponsor img {
+//       border: 1px solid salmon;
+//     }
+
+//     img {
+//       max-width: 380px;
+//       width: 100%;
+//       height: 100%;
+//       border: 1px solid white;
+
+//       cursor: zoom-in;
+//     }
+//   }
+// }
+
+.image-info {
   font-size: 1.1em;
   padding: 0.5em;
   margin: 0.5em auto;
@@ -163,19 +185,6 @@ export default defineComponent({
 
   background-color: $secondaryColor;
   font-weight: bold;
-}
-
-// Transition animations
-.img-message-anim {
-  &-enter-from,
-  &-leave-to {
-    opacity: 0;
-  }
-
-  &-enter-active,
-  &-leave-active {
-    transition: opacity 75ms ease-in 100ms;
-  }
 }
 
 @media screen and (max-width: $breakpointMd) {

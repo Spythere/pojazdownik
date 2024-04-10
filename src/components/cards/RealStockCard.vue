@@ -9,8 +9,8 @@
             {{ $t('realstock.title') }}
             <a href="https://td2.info.pl/profile/?u=17708" target="_blank">Railtrains997</a>
           </h1>
-          <button class="btn exit-btn" @click="store.isRealStockListCardOpen = false">
-            &Cross;
+          <button class="btn action-exit" @click="store.isRealStockListCardOpen = false">
+            <img src="/images/icon-exit.svg" alt="" />
           </button>
         </div>
 
@@ -47,7 +47,7 @@
             </option>
           </datalist>
 
-          <button class="btn" @click="resetStockFilters">
+          <button class="btn action-reset" @click="resetStockFilters">
             {{ $t('realstock.action-reset') }}
           </button>
         </div>
@@ -100,13 +100,13 @@ import { useStore } from '../../store';
 import imageMixin from '../../mixins/imageMixin';
 import stockMixin from '../../mixins/stockMixin';
 
-import { IRealComposition } from '../../types';
+import { IRealComposition, VehicleGroupType } from '../../types';
 
-function getVehicleType(stockType: string) {
-  if (/^E/.test(stockType)) return 'loco-e';
-  if (/^S/.test(stockType)) return 'loco-s';
+function getVehicleType(stockType: string): VehicleGroupType {
+  if (/^E/.test(stockType)) return 'loco-electric';
+  if (/^S/.test(stockType)) return 'loco-diesel';
 
-  return 'car-passenger';
+  return 'wagon-passenger';
 }
 
 export default defineComponent({
@@ -222,13 +222,15 @@ export default defineComponent({
 <style lang="scss" scoped>
 @import '../../styles/global.scss';
 
-.exit-btn {
-  font-size: 1.2em;
-  margin: 0.25em 0;
+.action-exit {
+  display: flex;
+  background-color: #333;
+  border-radius: 0.25em;
+  padding: 0.5em;
 }
 
-.btn {
-  background-color: #444;
+.action-reset {
+  background-color: #333;
 }
 
 .card_content {

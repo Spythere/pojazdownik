@@ -45,43 +45,31 @@
           <tbody>
             <tr
               v-for="{ vehicle, show } in computedTableData"
-              tabindex="0"
               v-show="show"
+              tabindex="0"
               :key="vehicle.type"
               @click="previewVehicle(vehicle)"
               @keydown.enter="previewVehicle(vehicle)"
               @dblclick="addVehicle(vehicle)"
+              ref="itemRefs"
             >
               <td style="width: 120px">
-                <img
-                  width="120"
-                  :src="getThumbnailURL(vehicle.type, 'small')"
-                  :alt="`${vehicle.type}`"
-                  loading="lazy"
-                  @error="(e) => ((e.target as HTMLElement).style.display = 'none')"
-                />
+                <img width="120" src="" :data-src="getThumbnailURL(vehicle.type, 'small')" />
               </td>
 
-              <td :data-sponsoronly="vehicle.isSponsorsOnly">
-                {{ vehicle.type }}
+              <td
+                :data-sponsor-only="vehicle.restrictions.sponsorOnly > 0"
+                :data-team-only="vehicle.restrictions.teamOnly"
+                style="min-width: 150px"
+              >
+                {{ vehicle.type.replace(/_/g, ' ') }}
               </td>
 
-              <td v-if="isLocomotive(vehicle)">
-                {{ $t(`wiki.${vehicle.power}`) }}
-              </td>
-              <td v-else>{{ $t(`wiki.${vehicle.useType}`) }}</td>
-
+              <td style="min-width: 100px">{{ $t(`wiki.${vehicle.group}`) }}</td>
               <td>{{ vehicle.constructionType }}</td>
-              <td>{{ vehicle.length }}m</td>
-              <td>{{ (vehicle.weight / 1000).toFixed(1) }}t</td>
-              <td>{{ vehicle.maxSpeed }}km/h</td>
-
-              <td v-if="currentFilterMode == 'carriages'">
-                {{ !isLocomotive(vehicle) ? vehicle.cargoTypes.length : '---' }}
-              </td>
-              <td v-if="currentFilterMode == 'tractions'">
-                {{ isLocomotive(vehicle) ? (vehicle.coldStart ? `&check;` : '&cross;') : '---' }}
-              </td>
+              <td>{{ vehicle.length }}</td>
+              <td>{{ (vehicle.weight / 1000).toFixed(1) }}</td>
+              <td>{{ vehicle.maxSpeed }}</td>
             </tr>
           </tbody>
 
@@ -97,7 +85,7 @@ import { defineComponent } from 'vue';
 import { useStore } from '../../store';
 import stockPreviewMixin from '../../mixins/stockPreviewMixin';
 import { IVehicle } from '../../types';
-import { isLocomotive } from '../../utils/vehicleUtils';
+import { isTractionUnit } from '../../utils/vehicleUtils';
 import stockMixin from '../../mixins/stockMixin';
 import imageMixin from '../../mixins/imageMixin';
 
@@ -121,6 +109,7 @@ interface IWikiHeader {
 interface IWikiRow {
   vehicle: IVehicle;
   show: boolean;
+  showImage: boolean;
 }
 
 const headers: IWikiHeader[] = [
@@ -131,8 +120,8 @@ const headers: IWikiHeader[] = [
   { id: 'length', sortable: true, for: 'all' },
   { id: 'weight', sortable: true, for: 'all' },
   { id: 'maxSpeed', sortable: true, for: 'all' },
-  { id: 'coldStart', sortable: true, for: 'tractions' },
-  { id: 'cargoCount', sortable: true, for: 'carriages' },
+  // { id: 'coldStart', sortable: true, for: 'tractions' },
+  // { id: 'cargoCount', sortable: true, for: 'carriages' },
 ];
 
 export default defineComponent({
@@ -141,6 +130,7 @@ export default defineComponent({
   data() {
     return {
       store: useStore(),
+      observer: null as IntersectionObserver | null,
       headers,
 
       scrollTop: 0,
@@ -156,6 +146,10 @@ export default defineComponent({
     };
   },
 
+  mounted() {
+    this.mountObserver();
+  },
+
   activated() {
     const tableWrapperRef = this.$refs['table-wrapper'] as HTMLElement;
 
@@ -165,10 +159,34 @@ export default defineComponent({
   },
 
   methods: {
-    isLocomotive,
+    isTractionUnit,
+
+    mountObserver() {
+      if (this.observer) return;
+
+      this.observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.intersectionRatio > 0) {
+            entry.target
+              .querySelector('td:first-child > img')!
+              .setAttribute(
+                'src',
+                entry.target.querySelector('td:first-child > img')!.getAttribute('data-src')!
+              );
+          }
+        });
+      });
+
+      (this.$refs['itemRefs'] as HTMLElement[]).forEach((el) => this.observer?.observe(el));
+    },
 
     toggleFilter(name: typeof this.currentFilterMode) {
       this.currentFilterMode = this.currentFilterMode == name ? 'all' : name;
+      const tableWrapperRef = this.$refs['table-wrapper'] as HTMLElement;
+
+      tableWrapperRef.scrollTo({
+        top: this.scrollTop,
+      });
     },
 
     toggleSorter(header: IWikiHeader) {
@@ -198,14 +216,16 @@ export default defineComponent({
 
         case 'cargoCount':
           return (
-            (!isLocomotive(row1.vehicle) ? Math.sign(row1.vehicle.cargoTypes.length || -1) : -1) -
-            (!isLocomotive(row2.vehicle) ? (row2.vehicle.cargoTypes.length || -1) * direction : -1)
+            Math.sign(
+              (!isTractionUnit(row1.vehicle) ? row1.vehicle.cargoTypes.length || -1 : -1) -
+                (!isTractionUnit(row2.vehicle) ? row2.vehicle.cargoTypes.length || -1 : -1)
+            ) * direction
           );
 
         case 'coldStart':
           return (
-            ((isLocomotive(row1.vehicle) && row1.vehicle.coldStart ? 1 : -1) -
-              (isLocomotive(row2.vehicle) && row2.vehicle.coldStart ? 1 : -1)) *
+            ((isTractionUnit(row1.vehicle) && row1.vehicle.coldStart ? 1 : -1) -
+              (isTractionUnit(row2.vehicle) && row2.vehicle.coldStart ? 1 : -1)) *
             direction
           );
 
@@ -224,11 +244,12 @@ export default defineComponent({
       return this.store.vehicleDataList
         .map((vehicle) => ({
           vehicle,
+          showImage: false,
           show:
             new RegExp(`${this.searchedVehicleTypeName.trim()}`, 'i').test(vehicle.type) &&
             (this.currentFilterMode == 'all' ||
-              (this.currentFilterMode == 'tractions' && isLocomotive(vehicle)) ||
-              (this.currentFilterMode == 'carriages' && !isLocomotive(vehicle))),
+              (this.currentFilterMode == 'tractions' && isTractionUnit(vehicle)) ||
+              (this.currentFilterMode == 'carriages' && !isTractionUnit(vehicle))),
         }))
         .sort((a, b) => this.sortTableRows(a, b));
     },
@@ -260,8 +281,6 @@ export default defineComponent({
 
   flex-wrap: wrap;
   gap: 0.5em;
-
-  margin: 0.5em 0;
 }
 
 .actions-panel_vehicles {
@@ -275,10 +294,14 @@ export default defineComponent({
   }
 }
 
+.tab_content {
+  display: grid;
+  grid-template-rows: 30px 770px;
+  gap: 0.5em;
+}
+
 .table-wrapper {
   overflow: auto;
-  height: 750px;
-  max-height: 95vh;
 }
 
 .wiki-list table {
@@ -302,10 +325,6 @@ export default defineComponent({
     cursor: pointer;
     background-color: #333;
 
-    &:first-child {
-      min-width: 120px;
-    }
-
     &:nth-child(odd) {
       background-color: #444;
     }
@@ -317,11 +336,21 @@ export default defineComponent({
 
   td {
     text-align: center;
-    height: 70px;
     padding: 0.25em;
+    height: 75px;
 
-    &[data-sponsoronly='true'] {
-      color: salmon;
+    min-width: 95px;
+
+    &[data-sponsor-only='true'] {
+      color: $sponsorColor;
+    }
+
+    &[data-team-only='true'] {
+      color: $teamColor;
+    }
+
+    img {
+      vertical-align: middle;
     }
   }
 }

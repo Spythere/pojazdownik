@@ -5,7 +5,7 @@
       v-for="(stock, stockIndex) in store.stockList"
       :key="stockIndex"
       :data-selected="store.chosenStockListIndex == stockIndex"
-      :data-sponsor="stock.isSponsorsOnly"
+      :data-sponsor="stock.restrictions.sponsorOnly"
       draggable="true"
       @dragstart="onDragStart(stockIndex)"
       @drop="onDrop($event, stockIndex)"
@@ -43,7 +43,7 @@ const onListItemClick = (index: number) => {
 };
 
 const stockImageError = (e: Event, stock: IStock) => {
-  (e.target as HTMLImageElement).src = `images/${stock.useType}-unknown.png`;
+  (e.target as HTMLImageElement).src = `images/${stock.group}-unknown.png`;
 };
 
 watch(

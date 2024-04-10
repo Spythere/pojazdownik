@@ -1,7 +1,7 @@
 import { defineComponent } from 'vue';
 import { useStore } from '../store';
 import { ICarWagon, ILocomotive, IStock, ICargo, IVehicle } from '../types';
-import { isLocomotive } from '../utils/vehicleUtils';
+import { isTractionUnit } from '../utils/vehicleUtils';
 
 export default defineComponent({
   setup() {
@@ -16,7 +16,7 @@ export default defineComponent({
     },
 
     getStockObject(vehicle: IVehicle, cargo?: ICargo | null, count = 1): IStock {
-      const isLoco = isLocomotive(vehicle);
+      const isLoco = isTractionUnit(vehicle);
 
       return {
         id: this.getStockId(),
@@ -27,11 +27,9 @@ export default defineComponent({
         isLoco,
         cargo: !isLoco && vehicle.loadable && cargo ? cargo : undefined,
         count,
-        imgSrc: vehicle.imageSrc,
-        useType: isLoco ? vehicle.power : vehicle.useType,
-        isSponsorsOnly: vehicle.isSponsorsOnly,
+        group: isLoco ? vehicle.group : vehicle.group,
         constructionType: vehicle.constructionType,
-        sponsorsOnlyTimestamp: vehicle.sponsorsOnlyTimestamp,
+        restrictions: vehicle.restrictions,
       };
     },
 
@@ -92,7 +90,7 @@ export default defineComponent({
           if (cargo) vehicleCargo = vehicle?.cargoTypes.find((c) => c.id == cargo) || null;
         }
 
-        if (!vehicle) console.log('Brak pojazdu / rodzaj pojazdu źle wczytany:', type);
+        if (!vehicle) console.warn('Brak pojazdu / rodzaj pojazdu źle wczytany:', type);
 
         this.addVehicle(vehicle, vehicleCargo);
       });

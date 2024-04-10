@@ -13,6 +13,8 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
 
+      includeAssets: ['/images/*.{png,svg,jpg}', '/fonts/*.{woff,woff2,ttf}'],
+
       devOptions: {
         suppressWarnings: true,
         enabled: true,
@@ -23,7 +25,7 @@ export default defineConfig({
 
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/rj.td2.info.pl\/dist\/img\/thumbnails\/.*/i,
+            urlPattern: new RegExp('^https://rj.td2.info.pl/dist/img/thumbnails/*', 'i'),
             handler: 'CacheFirst',
             options: {
               cacheName: 'swdr-images-cache',
@@ -37,7 +39,7 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: /^https:\/\/static.spythere.eu\/.*/i,
+            urlPattern: new RegExp('^https://static.spythere.eu/images/*', 'i'),
             handler: 'CacheFirst',
             options: {
               cacheName: 'spythere-api-cache',
@@ -47,6 +49,16 @@ export default defineConfig({
               },
               cacheableResponse: {
                 statuses: [200, 302],
+              },
+            },
+          },
+          {
+            urlPattern: new RegExp('^https://stacjownik.spythere.eu/vehicles', 'i'),
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'vehicles-cache',
+              cacheableResponse: {
+                statuses: [200],
               },
             },
           },
