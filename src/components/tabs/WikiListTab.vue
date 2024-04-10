@@ -296,13 +296,12 @@ export default defineComponent({
 
 .tab_content {
   display: grid;
-  grid-template-rows: 30px 700px;
+  grid-template-rows: 30px 770px;
   gap: 0.5em;
 }
 
 .table-wrapper {
   overflow: auto;
-  max-height: 95vh;
 }
 
 .wiki-list table {
