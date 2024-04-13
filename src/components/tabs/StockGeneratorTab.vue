@@ -12,19 +12,19 @@
           {{ $t('stockgen.properties-desc') }}
         </b>
 
-        <div class="tab_attributes">
+        <div class="inputs">
           <label>
-            {{ $t('stockgen.input-mass') }}
+            <span>{{ $t('stockgen.input-mass') }}</span>
             <input type="number" v-model="maxTons" step="100" max="4000" min="0" />
           </label>
 
           <label>
-            {{ $t('stockgen.input-length') }}
+            <span>{{ $t('stockgen.input-length') }}</span>
             <input type="number" v-model="maxLength" step="25" max="650" min="0" />
           </label>
 
           <label>
-            {{ $t('stockgen.input-carcount') }}
+            <span>{{ $t('stockgen.input-carcount') }}</span>
             <input type="number" v-model="maxCarCount" step="1" max="60" min="1" />
           </label>
         </div>
@@ -366,6 +366,28 @@ h2 {
   display: flex;
   flex-direction: column;
   gap: 1em;
+}
+
+.inputs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12em, 1fr));
+
+  flex-wrap: wrap;
+  gap: 0.5em;
+}
+
+.inputs > label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
+
+  span {
+    color: #ccc;
+  }
+
+  input[type='text'] {
+    background-color: white;
+  }
 }
 
 .generator_options {

@@ -7,7 +7,7 @@ $secondaryColor: #1b1b1b;
 $accentColor: #e4c428;
 
 $sponsorColor: salmon;
-$teamColor: gold;
+$teamColor: #ff4848;
 
 @font-face {
   font-family: 'Lato';
@@ -210,6 +210,7 @@ input[type='number'] {
   outline: none;
 
   padding: 0.25em 0.35em;
+  height: 100%;
 
   color: white;
   font-size: 1em;
