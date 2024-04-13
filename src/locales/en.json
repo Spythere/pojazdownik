@@ -162,19 +162,30 @@
   },
   "wiki": {
     "title": "LIST OF AVAILABLE VEHICLES",
-    "action-vehicles": "TRACTION UNITS",
-    "action-carriages": "CARRIAGES",
-    "search": "Search for a vehicle...",
-    "header": {
-      "image": "Image",
+    "labels": {
+      "vehicles": "Vehicles",
+      "sort-by": "Sort by",
+      "sort-direction": "Sort direction",
+      "search-vehicle": "Find a vehicle",
+      "search-vehicle-placeholder": "Input a vehicle name"
+    },
+    "filters": {
+      "vehicles-all": "all",
+      "vehicles-traction": "traction units",
+      "vehicles-wagon": "wagons"
+    },
+    "sort-by": {
       "type": "Name",
       "group": "Type group",
-      "constructionType": "Construction",
-      "coldStart": "Cold start",
       "length": "Length",
       "weight": "Mass",
       "maxSpeed": "Speed",
+      "coldStart": "Cold start",
       "cargoCount": "Cargo count"
+    },
+    "sort-direction": {
+      "asc": "ascending",
+      "desc": "descending"
     },
     "unit-electric": "EMU",
     "unit-diesel": "DMU",

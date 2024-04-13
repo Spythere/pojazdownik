@@ -162,19 +162,30 @@
   },
   "wiki": {
     "title": "LISTA DOSTĘPNYCH POJAZDÓW",
-    "action-vehicles": "POJ. TRAKCYJNE",
-    "action-carriages": "WAGONY",
-    "search": "Wyszukaj pojazd...",
-    "header": {
-      "image": "Zdjęcie",
+    "labels": {
+      "vehicles": "Pojazdy",
+      "sort-by": "Sortuj wg",
+      "sort-direction": "Kierunek sortowania",
+      "search-vehicle": "Wyszukaj pojazd",
+      "search-vehicle-placeholder": "Wpisz nazwę pojazdu"
+    },
+    "filters": {
+      "vehicles-all": "wszystkie",
+      "vehicles-traction": "trakcyjne",
+      "vehicles-wagon": "wagony"
+    },
+    "sort-by": {
       "type": "Nazwa",
       "group": "Rodzaj",
-      "constructionType": "Konstrukcja",
-      "coldStart": "Zimny start",
       "length": "Długość",
       "weight": "Masa",
       "maxSpeed": "Prędkość",
+      "coldStart": "Zimny start",
       "cargoCount": "Ładunki"
+    },
+    "sort-direction": {
+      "asc": "rosnąco",
+      "desc": "malejąco"
     },
     "loco-diesel": "Spalinowóz",
     "loco-electric": "Elektrowóz",

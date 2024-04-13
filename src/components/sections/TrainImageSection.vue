@@ -44,7 +44,7 @@
           }}
         </div>
 
-        <b style="color: salmon" v-if="store.chosenVehicle.restrictions['sponsorOnly']">{{
+        <b v-if="store.chosenVehicle.restrictions.sponsorOnly > 0" class="sponsor-only">{{
           $t('preview.sponsor-only', [
             new Date(store.chosenVehicle.restrictions['sponsorOnly']).toLocaleDateString(
               $i18n.locale == 'pl' ? 'pl-PL' : 'en-GB'
@@ -52,7 +52,7 @@
           ])
         }}</b>
 
-        <b style="color: gold" v-if="store.chosenVehicle.restrictions['teamOnly']">{{
+        <b v-if="store.chosenVehicle.restrictions['teamOnly']" class="team-only">{{
           $t('preview.team-only')
         }}</b>
       </div>
@@ -157,22 +157,13 @@ img {
   }
 }
 
-// .train-image {
-//   &__content {
-//     &.sponsor img {
-//       border: 1px solid salmon;
-//     }
+.sponsor-only {
+  color: $sponsorColor;
+}
 
-//     img {
-//       max-width: 380px;
-//       width: 100%;
-//       height: 100%;
-//       border: 1px solid white;
-
-//       cursor: zoom-in;
-//     }
-//   }
-// }
+.team-only {
+  color: $teamColor;
+}
 
 .image-info {
   font-size: 1.1em;

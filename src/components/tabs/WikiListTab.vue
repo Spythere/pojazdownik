@@ -5,116 +5,65 @@
     </div>
 
     <div class="tab_content">
-      <div class="actions-panel">
-        <div class="actions-panel_vehicles">
-          <button
-            class="btn"
-            :data-chosen="currentFilterMode == 'tractions'"
-            @click="toggleFilter('tractions')"
-          >
-            {{ $t('wiki.action-vehicles') }}
-          </button>
-          <button
-            class="btn"
-            :data-chosen="currentFilterMode == 'carriages'"
-            @click="toggleFilter('carriages')"
-          >
-            {{ $t('wiki.action-carriages') }}
-          </button>
-        </div>
-
-        <div class="actions-panel_search">
-          <select name="" id="">
-            <option v-for="header in visibleHeaders" :key="header.id" :value="header.id">
-              {{ $t(`wiki.header.${header.id}`) }}
+      <div class="actions">
+        <label>
+          <span>Pojazdy</span>
+          <select name="filter-type" id="filter-type" v-model="filterType">
+            <option v-for="filter in filters" :key="filter" :value="filter">
+              {{ $t(`wiki.filters.${filter}`) }}
             </option>
           </select>
+        </label>
 
-          <select name="" id="">
-            <option value="">rosnąco</option>
-            <option value="">malejąco</option>
+        <label>
+          <span>Sortuj wg</span>
+          <select name="sorter-type" id="sorter-type" v-model="sorterType">
+            <option v-for="sorter in sorters" :key="sorter" :value="sorter">
+              {{ $t(`wiki.sort-by.${sorter}`) }}
+            </option>
           </select>
+        </label>
 
-          <input type="text" :placeholder="$t('wiki.search')" v-model="searchedVehicleTypeName" />
-        </div>
+        <label>
+          <span>Kierunek sortowania</span>
+          <select name="sorter-direction" id="sorter-direction" v-model="sorterDirection">
+            <option value="asc">{{ $t('wiki.sort-direction.asc') }}</option>
+            <option value="desc">{{ $t('wiki.sort-direction.desc') }}</option>
+          </select>
+        </label>
+
+        <label>
+          <span>{{ $t('wiki.labels.search-vehicle') }}</span>
+          <input
+            type="text"
+            :placeholder="$t('wiki.labels.search-vehicle-placeholder')"
+            v-model="searchedVehicleTypeName"
+          />
+        </label>
       </div>
 
       <ul class="vehicles" ref="vehicles">
         <li
-          v-for="{ vehicle } in computedTableData"
+          v-for="vehicle in computedVehicles"
           :key="vehicle.type"
           :data-preview="vehicle.type === store.chosenVehicle?.type"
-          tabindex="0"
+          :data-sponsor-only="vehicle.restrictions.sponsorOnly > 0"
+          :data-team-only="vehicle.restrictions.teamOnly"
           @click.prevent="onItemSelect(vehicle)"
           @keydown.enter="onItemSelect(vehicle)"
+          tabindex="0"
         >
-          <img
-            loading="lazy"
-            width="120"
-            :src="getThumbnailURL(vehicle.type, 'small')"
-            :data-src="getThumbnailURL(vehicle.type, 'small')"
-            :data-sponsor-only="vehicle.restrictions.sponsorOnly > 0"
-            :data-team-only="vehicle.restrictions.teamOnly"
-          />
+          <img loading="lazy" width="120" :src="getThumbnailURL(vehicle.type, 'small')" />
 
           <span>
             <b> {{ vehicle.type.replace(/_/g, ' ') }} </b><br />
             {{ $t(`wiki.${vehicle.group}`) }} |
             {{ isTractionUnit(vehicle) ? vehicle.cabinType : vehicle.constructionType }} <br />
-            {{ vehicle.maxSpeed }}km/h | {{ (vehicle.weight / 1000).toFixed(1) }}t |
-            {{ vehicle.length }}m
+            {{ vehicle.length }}m | {{ (vehicle.weight / 1000).toFixed(1) }}t |
+            {{ vehicle.maxSpeed }}km/h
           </span>
         </li>
       </ul>
-
-      <div class="table-wrapper" ref="table-wrapper">
-        <!-- <table>
-          <thead>
-            <tr>
-              <th v-for="header in visibleHeaders" @click="toggleSorter(header)" :key="header.id">
-                {{ $t(`wiki.header.${header.id}`) }}
-
-                <span v-if="currentSorter.id == header.id">
-                  {{ currentSorter.direction == 1 ? `&uArr;` : `&dArr;` }}
-                </span>
-              </th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <tr
-              v-for="{ vehicle, show } in computedTableData"
-              v-show="show"
-              tabindex="0"
-              :key="vehicle.type"
-              @click="previewVehicle(vehicle)"
-              @keydown.enter="previewVehicle(vehicle)"
-              @dblclick="addVehicle(vehicle)"
-              ref="itemRefs"
-            >
-              <td style="width: 120px">
-                <img width="120" src="" :data-src="getThumbnailURL(vehicle.type, 'small')" />
-              </td>
-
-              <td
-                :data-sponsor-only="vehicle.restrictions.sponsorOnly > 0"
-                :data-team-only="vehicle.restrictions.teamOnly"
-                style="min-width: 150px"
-              >
-                {{ vehicle.type.replace(/_/g, ' ') }}
-              </td>
-
-              <td style="min-width: 100px">{{ $t(`wiki.${vehicle.group}`) }}</td>
-              <td>{{ vehicle.constructionType }}</td>
-              <td>{{ vehicle.length }}</td>
-              <td>{{ (vehicle.weight / 1000).toFixed(1) }}</td>
-              <td>{{ vehicle.maxSpeed }}</td>
-            </tr>
-          </tbody>
-
-          <span ref="table-bottom"></span>
-        </table> -->
-      </div>
     </div>
   </section>
 </template>
@@ -128,40 +77,13 @@ import { isTractionUnit } from '../../utils/vehicleUtils';
 import stockMixin from '../../mixins/stockMixin';
 import imageMixin from '../../mixins/imageMixin';
 
-type SorterID =
-  | 'type'
-  | 'constructionType'
-  | 'image'
-  | 'length'
-  | 'weight'
-  | 'maxSpeed'
-  | 'cargoCount'
-  | 'group'
-  | 'coldStart';
+const sorters = ['type', 'group', 'length', 'weight', 'maxSpeed'] as const;
+const filters = ['vehicles-all', 'vehicles-traction', 'vehicles-wagon'] as const;
 
-interface IWikiHeader {
-  id: SorterID;
-  sortable: boolean;
-  for: 'all' | 'carriages' | 'tractions';
-}
+type SorterType = (typeof sorters)[number];
+type SorterDirection = 'asc' | 'desc';
 
-interface IWikiRow {
-  vehicle: IVehicle;
-  show: boolean;
-  showImage: boolean;
-}
-
-const headers: IWikiHeader[] = [
-  { id: 'image', sortable: false, for: 'all' },
-  { id: 'type', sortable: true, for: 'all' },
-  { id: 'group', sortable: true, for: 'all' },
-  { id: 'constructionType', sortable: true, for: 'all' },
-  { id: 'length', sortable: true, for: 'all' },
-  { id: 'weight', sortable: true, for: 'all' },
-  { id: 'maxSpeed', sortable: true, for: 'all' },
-  // { id: 'coldStart', sortable: true, for: 'tractions' },
-  // { id: 'cargoCount', sortable: true, for: 'carriages' },
-];
+type FilterType = (typeof filters)[number];
 
 export default defineComponent({
   mixins: [stockPreviewMixin, stockMixin, imageMixin],
@@ -170,31 +92,27 @@ export default defineComponent({
     return {
       store: useStore(),
       observer: null as IntersectionObserver | null,
-      headers,
 
-      scrollTop: 0,
+      sorters: sorters,
+      filters: filters,
 
       searchedVehicleTypeName: '',
 
-      currentSorter: {
-        id: 'type' as SorterID,
-        direction: 1,
-      },
+      sorterType: 'type' as SorterType,
+      sorterDirection: 'asc' as SorterDirection,
 
-      currentFilterMode: 'all' as 'all' | 'tractions' | 'carriages',
+      filterType: 'vehicles-all' as FilterType,
     };
   },
 
-  mounted() {
-    this.mountObserver();
-  },
+  watch: {
+    computedVehicles() {
+      const vehiclesRef = this.$refs['vehicles'] as HTMLElement;
 
-  activated() {
-    const tableWrapperRef = this.$refs['table-wrapper'] as HTMLElement;
-
-    tableWrapperRef.scrollTo({
-      top: this.scrollTop,
-    });
+      vehiclesRef.scrollTo({
+        top: 0,
+      });
+    },
   },
 
   methods: {
@@ -206,115 +124,59 @@ export default defineComponent({
       this.previewVehicle(vehicle);
     },
 
-    mountObserver() {
-      if (this.observer) return;
+    sortVehicles(v1: IVehicle, v2: IVehicle) {
+      const direction = this.sorterDirection == 'asc' ? 1 : -1;
 
-      this.observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.intersectionRatio > 0) {
-            entry.target
-              .querySelector('img')!
-              .setAttribute('src', entry.target.querySelector('img')!.getAttribute('data-src')!);
-          }
-        });
-      });
-
-      (this.$refs['itemRefs'] as HTMLElement[])?.forEach((el) => this.observer?.observe(el));
-    },
-
-    toggleFilter(name: typeof this.currentFilterMode) {
-      this.currentFilterMode = this.currentFilterMode == name ? 'all' : name;
-      const vehiclesRef = this.$refs['vehicles'] as HTMLElement;
-
-      vehiclesRef.scrollTo({
-        top: this.scrollTop,
-      });
-    },
-
-    toggleSorter(header: IWikiHeader) {
-      if (!header.sortable) return;
-
-      if (header.id == this.currentSorter.id) this.currentSorter.direction *= -1;
-      this.currentSorter.id = header.id;
-    },
-
-    sortTableRows(row1: IWikiRow, row2: IWikiRow) {
-      if (!row1.show) return 0;
-
-      const { id, direction } = this.currentSorter;
-
-      switch (id) {
+      switch (this.sorterType) {
         case 'type':
-        case 'constructionType':
         case 'group':
-          return direction == 1
-            ? row1.vehicle[id].localeCompare(row2.vehicle[id])
-            : row2.vehicle[id].localeCompare(row1.vehicle[id]);
+          return direction * v1[this.sorterType].localeCompare(v2[this.sorterType]);
 
         case 'weight':
         case 'length':
         case 'maxSpeed':
-          return Math.sign(row1.vehicle[id] - row2.vehicle[id]) * direction;
+          return Math.sign(v1[this.sorterType] - v2[this.sorterType]) * direction;
 
-        case 'cargoCount':
-          return (
-            Math.sign(
-              (!isTractionUnit(row1.vehicle) ? row1.vehicle.cargoTypes.length || -1 : -1) -
-                (!isTractionUnit(row2.vehicle) ? row2.vehicle.cargoTypes.length || -1 : -1)
-            ) * direction
-          );
+        // case 'cargoCount':
+        //   return (
+        //     Math.sign(
+        //       (!isTractionUnit(v1) ? v1.cargoTypes.length || -1 : -1) -
+        //         (!isTractionUnit(row2.vehicle) ? row2.vehicle.cargoTypes.length || -1 : -1)
+        //     ) * direction
+        //   );
 
-        case 'coldStart':
-          return (
-            ((isTractionUnit(row1.vehicle) && row1.vehicle.coldStart ? 1 : -1) -
-              (isTractionUnit(row2.vehicle) && row2.vehicle.coldStart ? 1 : -1)) *
-            direction
-          );
+        // case 'coldStart':
+        //   return (
+        //     ((isTractionUnit(v1) && v1.coldStart ? 1 : -1) -
+        //       (isTractionUnit(row2.vehicle) && row2.vehicle.coldStart ? 1 : -1)) *
+        //     direction
+        //   );
 
         default:
-          break;
+          return v1.type.localeCompare(v2.type) * direction;
       }
-
-      return direction == 1
-        ? row1.vehicle.type.localeCompare(row2.vehicle.type)
-        : row2.vehicle.type.localeCompare(row1.vehicle.type);
     },
   },
 
   computed: {
-    computedTableData(): IWikiRow[] {
+    computedVehicles() {
       return this.store.vehicleDataList
         .filter(
           (vehicle) =>
             new RegExp(`${this.searchedVehicleTypeName.trim()}`, 'i').test(vehicle.type) &&
-            (this.currentFilterMode == 'all' ||
-              (this.currentFilterMode == 'tractions' && isTractionUnit(vehicle)) ||
-              (this.currentFilterMode == 'carriages' && !isTractionUnit(vehicle)))
+            (this.filterType == 'vehicles-all' ||
+              (this.filterType == 'vehicles-traction' && isTractionUnit(vehicle)) ||
+              (this.filterType == 'vehicles-wagon' && !isTractionUnit(vehicle)))
         )
-        .map((vehicle) => ({
-          vehicle,
-          showImage: false,
-          show:
-            new RegExp(`${this.searchedVehicleTypeName.trim()}`, 'i').test(vehicle.type) &&
-            (this.currentFilterMode == 'all' ||
-              (this.currentFilterMode == 'tractions' && isTractionUnit(vehicle)) ||
-              (this.currentFilterMode == 'carriages' && !isTractionUnit(vehicle))),
-        }))
-        .sort((a, b) => this.sortTableRows(a, b));
-    },
-
-    visibleHeaders() {
-      const filtersActive = this.currentFilterMode;
-
-      return this.headers.filter((header) => header.for == 'all' || header.for == filtersActive);
+        .sort((v1, v2) => this.sortVehicles(v1, v2));
     },
 
     areTractionVehiclesShown() {
-      return this.currentFilterMode == 'all' || this.currentFilterMode == 'tractions';
+      return this.filterType == 'vehicles-all' || this.filterType == 'vehicles-traction';
     },
 
     areCarriagesShown() {
-      return this.currentFilterMode == 'all' || this.currentFilterMode == 'carriages';
+      return this.filterType == 'vehicles-all' || this.filterType == 'vehicles-wagon';
     },
   },
 });
@@ -323,26 +185,21 @@ export default defineComponent({
 <style lang="scss" scoped>
 @import '../../styles/tab.scss';
 
-.actions-panel {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10em, 1fr));
 
   flex-wrap: wrap;
   gap: 0.5em;
 }
 
-.actions-panel_vehicles {
+.actions > label {
   display: flex;
-  gap: 0.5em;
-}
+  flex-direction: column;
+  gap: 0.25em;
 
-.actions-panel_search {
-  display: flex;
-  gap: 0.5em;
-
-  input {
-    width: auto;
+  span {
+    color: #ccc;
   }
 }
 
@@ -367,80 +224,17 @@ export default defineComponent({
 
   min-height: 75px;
   cursor: pointer;
-}
 
-.vehicles > li[data-preview='true'] {
-  background-color: #364165;
-}
-
-.vehicles > li > img[data-team-only='true'] {
-  border: 3px solid green;
-}
-
-.table-wrapper {
-  overflow: auto;
-}
-
-.wiki-list table {
-  border-collapse: collapse;
-  width: 100%;
-
-  thead {
-    position: sticky;
-    top: 0;
+  &[data-preview='true'] {
+    background-color: #303a58;
   }
 
-  th {
-    background-color: #111;
-    padding: 0.5em;
-    user-select: none;
-    -moz-user-select: none;
-    -webkit-user-select: none;
+  &[data-sponsor-only='true'] {
+    box-shadow: 0 0 5px 0 $sponsorColor;
   }
 
-  tr {
-    cursor: pointer;
-    background-color: #333;
-
-    &:nth-child(odd) {
-      background-color: #444;
-    }
-
-    &:hover {
-      background-color: #666;
-    }
-  }
-
-  td {
-    text-align: center;
-    padding: 0.25em;
-    height: 75px;
-
-    min-width: 95px;
-
-    &[data-sponsor-only='true'] {
-      color: $sponsorColor;
-    }
-
-    &[data-team-only='true'] {
-      color: $teamColor;
-    }
-
-    img {
-      vertical-align: middle;
-    }
-  }
-}
-
-@media screen and (max-width: $breakpointMd) {
-  .wiki-list table {
-    th {
-      min-width: 100px;
-    }
-
-    img {
-      max-width: 100px;
-    }
+  &[data-team-only='true'] {
+    box-shadow: 0 0 5px 0 $teamColor;
   }
 }
 
