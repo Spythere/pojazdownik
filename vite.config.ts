@@ -6,7 +6,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
-    port: 2137,
+    port: 2138,
   },
   plugins: [
     vue(),
