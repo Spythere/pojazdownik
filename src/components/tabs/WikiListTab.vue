@@ -124,6 +124,25 @@ export default defineComponent({
       this.previewVehicle(vehicle);
     },
 
+    filterVehicles(v: IVehicle) {
+      if (this.searchedVehicleTypeName)
+        return v.type
+          .toLocaleLowerCase()
+          .includes(this.searchedVehicleTypeName.toLocaleLowerCase());
+
+      switch (this.filterType) {
+        case 'vehicles-all':
+          return true;
+        case 'vehicles-traction':
+          return isTractionUnit(v);
+        case 'vehicles-wagon':
+          return !isTractionUnit(v);
+
+        default:
+          return false;
+      }
+    },
+
     sortVehicles(v1: IVehicle, v2: IVehicle) {
       const direction = this.sorterDirection == 'asc' ? 1 : -1;
 
@@ -160,15 +179,7 @@ export default defineComponent({
 
   computed: {
     computedVehicles() {
-      return this.store.vehicleDataList
-        .filter(
-          (vehicle) =>
-            new RegExp(`${this.searchedVehicleTypeName.trim()}`, 'i').test(vehicle.type) &&
-            (this.filterType == 'vehicles-all' ||
-              (this.filterType == 'vehicles-traction' && isTractionUnit(vehicle)) ||
-              (this.filterType == 'vehicles-wagon' && !isTractionUnit(vehicle)))
-        )
-        .sort((v1, v2) => this.sortVehicles(v1, v2));
+      return this.store.vehicleDataList.filter(this.filterVehicles).sort(this.sortVehicles);
     },
 
     areTractionVehiclesShown() {
