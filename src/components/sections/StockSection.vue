@@ -46,8 +46,9 @@ onMounted(() => {
   window.addEventListener('keydown', (e) => {
     if (e.target instanceof HTMLInputElement) return;
 
-    if (/[1234]/.test(e.key)) {
+    if (/^[1234]$/.test(e.key)) {
       const keyNum = Number(e.key);
+
       store.stockSectionMode = sectionModes[keyNum - 1];
       (sectionButtonRefs.value[keyNum - 1] as HTMLButtonElement)?.focus();
     }
