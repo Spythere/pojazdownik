@@ -7,7 +7,7 @@
     <div class="tab_content">
       <div class="actions">
         <label>
-          <span>Pojazdy</span>
+          <span>{{ $t('wiki.labels.vehicles') }}</span>
           <select name="filter-type" id="filter-type" v-model="filterType">
             <option v-for="filter in filters" :key="filter" :value="filter">
               {{ $t(`wiki.filters.${filter}`) }}
@@ -16,7 +16,7 @@
         </label>
 
         <label>
-          <span>Sortuj wg</span>
+          <span>{{ $t('wiki.labels.sort-by') }}</span>
           <select name="sorter-type" id="sorter-type" v-model="sorterType">
             <option v-for="sorter in sorters" :key="sorter" :value="sorter">
               {{ $t(`wiki.sort-by.${sorter}`) }}
@@ -25,7 +25,8 @@
         </label>
 
         <label>
-          <span>Kierunek sortowania</span>
+          <span>{{ $t('wiki.labels.sort-direction') }}</span>
+
           <select name="sorter-direction" id="sorter-direction" v-model="sorterDirection">
             <option value="asc">{{ $t('wiki.sort-direction.asc') }}</option>
             <option value="desc">{{ $t('wiki.sort-direction.desc') }}</option>
@@ -49,18 +50,25 @@
           :data-preview="vehicle.type === store.chosenVehicle?.type"
           :data-sponsor-only="vehicle.restrictions.sponsorOnly > 0"
           :data-team-only="vehicle.restrictions.teamOnly"
-          @click.prevent="onItemSelect(vehicle)"
-          @keydown.enter="onItemSelect(vehicle)"
+          @click="previewVehicle(vehicle)"
+          @dblclick="addVehicle(vehicle)"
+          @keydown.enter="previewVehicle(vehicle)"
           tabindex="0"
         >
           <img loading="lazy" width="120" :src="getThumbnailURL(vehicle.type, 'small')" />
 
           <span>
-            <b> {{ vehicle.type.replace(/_/g, ' ') }} </b><br />
-            {{ $t(`wiki.${vehicle.group}`) }} |
-            {{ isTractionUnit(vehicle) ? vehicle.cabinType : vehicle.constructionType }} <br />
-            {{ vehicle.length }}m | {{ (vehicle.weight / 1000).toFixed(1) }}t |
-            {{ vehicle.maxSpeed }}km/h
+            <b class="vehicle-name"> {{ vehicle.type.replace(/_/g, ' ') }} </b>
+
+            <div class="vehicle-group">
+              {{ $t(`wiki.${vehicle.group}`) }} |
+              {{ isTractionUnit(vehicle) ? vehicle.cabinType : vehicle.constructionType }}
+            </div>
+
+            <div class="vehicle-props">
+              {{ vehicle.length }}m | {{ (vehicle.weight / 1000).toFixed(1) }}t |
+              {{ vehicle.maxSpeed }}km/h
+            </div>
           </span>
         </li>
       </ul>
@@ -119,8 +127,6 @@ export default defineComponent({
     isTractionUnit,
 
     onItemSelect(vehicle: IVehicle) {
-      if (this.store.chosenVehicle?.type === vehicle.type) this.addVehicle(vehicle);
-
       this.previewVehicle(vehicle);
     },
 
@@ -181,14 +187,6 @@ export default defineComponent({
     computedVehicles() {
       return this.store.vehicleDataList.filter(this.filterVehicles).sort(this.sortVehicles);
     },
-
-    areTractionVehiclesShown() {
-      return this.filterType == 'vehicles-all' || this.filterType == 'vehicles-traction';
-    },
-
-    areCarriagesShown() {
-      return this.filterType == 'vehicles-all' || this.filterType == 'vehicles-wagon';
-    },
   },
 });
 </script>
@@ -216,11 +214,11 @@ export default defineComponent({
 
 .vehicles {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 0.5em;
   overflow: auto;
 
-  max-height: 750px;
+  max-height: 730px;
 
   margin-top: 0.75em;
   padding: 0.25em;
@@ -237,7 +235,7 @@ export default defineComponent({
   cursor: pointer;
 
   &[data-preview='true'] {
-    background-color: #303a58;
+    background-color: #435288;
   }
 
   &[data-sponsor-only='true'] {
@@ -247,6 +245,23 @@ export default defineComponent({
   &[data-team-only='true'] {
     box-shadow: 0 0 5px 0 $teamColor;
   }
+
+  & > span {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+  }
+}
+
+.vehicle-name {
+  overflow: hidden;
+  text-wrap: nowrap;
+  text-overflow: ellipsis;
+}
+
+.vehicle-props {
+  color: #ccc;
 }
 
 @media screen and (max-width: $breakpointSm) {
