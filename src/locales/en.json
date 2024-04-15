@@ -175,13 +175,13 @@
       "vehicles-wagon": "wagons"
     },
     "sort-by": {
-      "type": "Name",
-      "group": "Type group",
-      "length": "Length",
-      "weight": "Mass",
-      "maxSpeed": "Speed",
-      "coldStart": "Cold start",
-      "cargoCount": "Cargo count"
+      "type": "name",
+      "group": "type group",
+      "length": "length",
+      "weight": "mass",
+      "maxSpeed": "speed",
+      "coldStart": "cold start",
+      "cargoCount": "cargo count"
     },
     "sort-direction": {
       "asc": "ascending",

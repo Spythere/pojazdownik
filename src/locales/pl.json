@@ -175,13 +175,13 @@
       "vehicles-wagon": "wagony"
     },
     "sort-by": {
-      "type": "Nazwa",
-      "group": "Rodzaj",
-      "length": "Długość",
-      "weight": "Masa",
-      "maxSpeed": "Prędkość",
-      "coldStart": "Zimny start",
-      "cargoCount": "Ładunki"
+      "type": "nazwa",
+      "group": "rodzaj",
+      "length": "długość",
+      "weight": "masa",
+      "maxSpeed": "prędkość",
+      "coldStart": "zimny start",
+      "cargoCount": "ładunki"
     },
     "sort-direction": {
       "asc": "rosnąco",
