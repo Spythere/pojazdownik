@@ -14,19 +14,18 @@ export default defineComponent({
 
   methods: {
     previewStock(stock: IStock) {
-      if (stock.isLoco) {
-        const chosenLoco = this.store.locoDataList.find((v) => v.type == stock.type) || null;
-        this.store.chosenVehicle = chosenLoco;
-        this.store.chosenLoco = chosenLoco;
-        this.store.chosenCargo = null;
-        this.store.chosenLocoGroup = stock.group as LocoGroupType;
-      } else {
-        const chosenCar = this.store.carDataList.find((v) => v.type == stock.type) || null;
-        this.store.chosenVehicle = chosenCar;
-        this.store.chosenCar = chosenCar;
+      const vehicleRef = stock.vehicleRef;
 
+      this.store.chosenVehicle = vehicleRef;
+
+      if (isTractionUnit(vehicleRef)) {
+        this.store.chosenLoco = vehicleRef;
+        this.store.chosenCargo = null;
+        this.store.chosenLocoGroup = vehicleRef.group as LocoGroupType;
+      } else {
+        this.store.chosenCar = vehicleRef;
         this.store.chosenCargo = stock.cargo || null;
-        this.store.chosenCarGroup = stock.group as WagonGroupType;
+        this.store.chosenCarGroup = vehicleRef.group as WagonGroupType;
       }
     },
 

@@ -4,8 +4,11 @@
       <img
         :src="getThumbnailURL(store.chosenVehicle.type, 'small')"
         :data-preview-active="store.chosenVehicle !== null"
-        :data-sponsor-only="store.chosenVehicle?.restrictions.sponsorOnly"
-        :data-team-only="store.chosenVehicle?.restrictions.teamOnly"
+        :data-sponsor-only="
+          store.chosenVehicle.sponsorOnlyTimestamp &&
+          store.chosenVehicle.sponsorOnlyTimestamp > Date.now()
+        "
+        :data-team-only="store.chosenVehicle.teamOnly"
         @click="onImageClick"
         @keydown.enter="onImageClick"
         @error="onImageError"
@@ -41,17 +44,23 @@
             }}
           </div>
 
-          <b v-if="store.chosenVehicle.restrictions.sponsorOnly > 0" class="sponsor-only">{{
-            $t('preview.sponsor-only', [
-              new Date(store.chosenVehicle.restrictions['sponsorOnly']).toLocaleDateString(
-                $i18n.locale == 'pl' ? 'pl-PL' : 'en-GB'
-              ),
-            ])
-          }}</b>
+          <b
+            v-if="
+              store.chosenVehicle.sponsorOnlyTimestamp &&
+              store.chosenVehicle.sponsorOnlyTimestamp > Date.now()
+            "
+            class="sponsor-only"
+          >
+            {{
+              $t('preview.sponsor-only', [
+                new Date(store.chosenVehicle.sponsorOnlyTimestamp).toLocaleDateString(
+                  $i18n.locale == 'pl' ? 'pl-PL' : 'en-GB'
+                ),
+              ])
+            }}
+          </b>
 
-          <b v-if="store.chosenVehicle.restrictions['teamOnly']" class="team-only">{{
-            $t('preview.team-only')
-          }}</b>
+          <b v-if="store.chosenVehicle.teamOnly" class="team-only">{{ $t('preview.team-only') }}</b>
         </div>
       </div>
     </div>
@@ -120,8 +129,7 @@ export default defineComponent({
   align-items: center;
   text-align: center;
 
-  margin-top: 1em;
-  height: 250px;
+  min-height: 250px;
 
   & > div {
     max-width: 100%;
@@ -150,6 +158,14 @@ img {
   height: 250px;
 
   background-color: $bgColor;
+}
+
+.sponsor-only {
+  color: $sponsorColor;
+}
+
+.team-only {
+  color: $teamColor;
 }
 
 .image-info {

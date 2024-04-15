@@ -28,7 +28,8 @@
             {{ $t('inputs.input-vehicle') }}
           </option>
           <option v-for="loco in locoOptions" :value="loco" :key="loco.type">
-            {{ loco.type }}<b v-if="loco.restrictions['sponsorOnly']">*</b>
+            {{ loco.type
+            }}<b v-if="loco.sponsorOnlyTimestamp && loco.sponsorOnlyTimestamp > Date.now()">*</b>
           </option>
         </select>
       </div>
@@ -59,7 +60,8 @@
           </option>
 
           <option v-for="car in carOptions" :value="car" :key="car.type">
-            {{ car.type }}<b v-if="car.restrictions['sponsorOnly']">*</b>
+            {{ car.type
+            }}<b v-if="car.sponsorOnlyTimestamp && car.sponsorOnlyTimestamp > Date.now()">*</b>
           </option>
         </select>
       </div>
@@ -84,6 +86,7 @@
           <option :value="null" v-if="!store.chosenCar || !store.chosenCar.loadable">
             {{ $t('inputs.no-cargo-available') }}
           </option>
+
           <option :value="null" v-else>{{ $t('inputs.cargo-empty') }}</option>
 
           <option v-for="cargo in store.chosenCar?.cargoTypes" :value="cargo" :key="cargo.id">
@@ -193,10 +196,7 @@ export default defineComponent({
     removeVehicle() {
       if (this.store.stockList.length == 0) return;
 
-      const lastStock = this.store.stockList.slice(-1)[0];
-
-      if (lastStock.count > 1) lastStock.count--;
-      else this.store.stockList.splice(-1);
+      this.store.stockList.splice(-1);
     },
 
     switchVehicles() {

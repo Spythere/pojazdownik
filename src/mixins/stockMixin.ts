@@ -15,21 +15,11 @@ export default defineComponent({
       return `${Math.random().toString(36).slice(5)}`;
     },
 
-    getStockObject(vehicle: IVehicle, cargo?: ICargo | null, count = 1): IStock {
-      const isLoco = isTractionUnit(vehicle);
-
+    getStockObject(vehicle: IVehicle, cargo?: ICargo | null): IStock {
       return {
         id: this.getStockId(),
-        type: vehicle.type,
-        length: vehicle.length,
-        weight: vehicle.weight,
-        maxSpeed: vehicle.maxSpeed,
-        isLoco,
-        cargo: !isLoco && vehicle.loadable && cargo ? cargo : undefined,
-        count,
-        group: isLoco ? vehicle.group : vehicle.group,
-        constructionType: vehicle.constructionType,
-        restrictions: vehicle.restrictions,
+        vehicleRef: vehicle,
+        cargo: !isTractionUnit(vehicle) && vehicle.loadable && cargo ? cargo : undefined,
       };
     },
 
@@ -38,14 +28,19 @@ export default defineComponent({
 
       const stock = this.getStockObject(vehicle, cargo);
 
-      if (stock.isLoco && !this.store.stockList[0]?.isLoco) this.store.stockList.unshift(stock);
+      if (
+        isTractionUnit(stock.vehicleRef) &&
+        this.store.stockList.length > 0 &&
+        !isTractionUnit(this.store.stockList[0].vehicleRef)
+      )
+        this.store.stockList.unshift(stock);
       else this.store.stockList.push(stock);
     },
 
     addLocomotive(loco: ILocomotive) {
       const stockObj = this.getStockObject(loco);
 
-      if (this.store.stockList.length > 0 && !this.store.stockList[0].isLoco)
+      if (this.store.stockList.length > 0 && !isTractionUnit(this.store.stockList[0].vehicleRef))
         this.store.stockList.unshift(stockObj);
       else this.store.stockList.push(stockObj);
     },
@@ -72,9 +67,9 @@ export default defineComponent({
         let vehicle: IVehicle | null = null;
         let vehicleCargo: ICargo | null = null;
 
-        const isLoco = /^(EU|EP|ET|SM|EN|2EN|SN)/.test(type);
+        const isTractionUnit = /^(EU|EP|ET|SM|EN|2EN|SN)/.test(type);
 
-        if (isLoco) {
+        if (isTractionUnit) {
           const [locoType, spawnProps] = type.split(',');
           vehicle = this.store.locoDataList.find((loco) => loco.type == locoType) || null;
 

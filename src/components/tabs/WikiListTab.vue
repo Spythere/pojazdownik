@@ -48,8 +48,6 @@
           v-for="vehicle in computedVehicles"
           :key="vehicle.type"
           :data-preview="vehicle.type === store.chosenVehicle?.type"
-          :data-sponsor-only="vehicle.restrictions.sponsorOnly > 0"
-          :data-team-only="vehicle.restrictions.teamOnly"
           @click="previewVehicle(vehicle)"
           @dblclick="addVehicle(vehicle)"
           @keydown.enter="previewVehicle(vehicle)"
@@ -58,7 +56,16 @@
           <img loading="lazy" width="120" :src="getThumbnailURL(vehicle.type, 'small')" />
 
           <span>
-            <b class="vehicle-name"> {{ vehicle.type.replace(/_/g, ' ') }} </b>
+            <span
+              class="vehicle-name"
+              :class="{
+                'sponsor-only':
+                  vehicle.sponsorOnlyTimestamp && vehicle.sponsorOnlyTimestamp > Date.now(),
+                'team-only': vehicle.teamOnly,
+              }"
+            >
+              <b>{{ vehicle.type.replace(/_/g, ' ') }}</b>
+            </span>
 
             <div class="vehicle-group">
               {{ $t(`wiki.${vehicle.group}`) }} |
@@ -238,14 +245,6 @@ export default defineComponent({
     background-color: #435288;
   }
 
-  &[data-sponsor-only='true'] {
-    box-shadow: 0 0 5px 0 $sponsorColor;
-  }
-
-  &[data-team-only='true'] {
-    box-shadow: 0 0 5px 0 $teamColor;
-  }
-
   & > span {
     display: flex;
     flex-direction: column;
@@ -258,6 +257,22 @@ export default defineComponent({
   overflow: hidden;
   text-wrap: nowrap;
   text-overflow: ellipsis;
+}
+
+.sponsor-only {
+  color: $sponsorColor;
+
+  &::after {
+    content: '*';
+  }
+}
+
+.team-only {
+  color: $teamColor;
+
+  &::after {
+    content: '*';
+  }
 }
 
 .vehicle-props {

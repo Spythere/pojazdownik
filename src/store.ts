@@ -13,6 +13,7 @@ import { defineStore } from 'pinia';
 import {
   acceptableWeight,
   carDataList,
+  isTractionUnit,
   isTrainPassenger,
   locoDataList,
   maxStockSpeed,
@@ -96,25 +97,27 @@ export const useStore = defineStore({
 
     stockSupportsColdStart: (state) => {
       if (state.stockList.length == 0) return false;
-      if (!state.stockList[0].isLoco) return false;
+      if (!isTractionUnit(state.stockList[0].vehicleRef)) return false;
 
       const headingLoco = state.stockList[0];
 
       return (
-        state.vehiclesData?.vehicleProps.find((stock) => stock.type == headingLoco.constructionType)
-          ?.coldStart ?? false
+        state.vehiclesData?.vehicleProps.find(
+          (stock) => stock.type == headingLoco.vehicleRef.constructionType
+        )?.coldStart ?? false
       );
     },
 
     stockSupportsDoubleManning: (state) => {
       if (state.stockList.length == 0) return false;
-      if (!state.stockList[0].isLoco) return false;
+      if (!isTractionUnit(state.stockList[0].vehicleRef)) return false;
 
       const headingLoco = state.stockList[0];
 
       return (
-        state.vehiclesData?.vehicleProps.find((stock) => stock.type == headingLoco.constructionType)
-          ?.doubleManned ?? false
+        state.vehiclesData?.vehicleProps.find(
+          (stock) => stock.type == headingLoco.vehicleRef.constructionType
+        )?.doubleManned ?? false
       );
     },
   },

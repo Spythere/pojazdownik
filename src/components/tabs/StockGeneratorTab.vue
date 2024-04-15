@@ -119,6 +119,7 @@ import { useStore } from '../../store';
 
 import stockMixin from '../../mixins/stockMixin';
 import { ICargo, ICarWagon, IStock } from '../../types';
+import { isTractionUnit } from '../../utils/vehicleUtils';
 
 export default defineComponent({
   name: 'stock-generator',
@@ -186,8 +187,8 @@ export default defineComponent({
       if (!this.isCarGroupingEnabled) return false;
 
       stockList.sort((s1, s2) => {
-        return (s1.constructionType + s1.cargo?.id).localeCompare(
-          s2.constructionType + s2.cargo?.id
+        return (s1.vehicleRef.constructionType + s1.cargo?.id).localeCompare(
+          s2.vehicleRef.constructionType + s2.cargo?.id
         );
       });
     },
@@ -238,7 +239,11 @@ export default defineComponent({
       };
 
       for (let i = 0; i < 10; i++) {
-        this.store.stockList.splice(this.store.stockList[0]?.isLoco ? 1 : 0);
+        this.store.stockList.splice(
+          this.store.stockList.length > 0 && isTractionUnit(this.store.stockList[0].vehicleRef)
+            ? 1
+            : 0
+        );
 
         let carCount = 0;
         const maxWeight =
