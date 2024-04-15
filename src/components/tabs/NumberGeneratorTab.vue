@@ -6,26 +6,26 @@
     </div>
 
     <div class="tab_content">
-      <div class="category-select">
-        <label for="category"> {{ $t('numgen.train-category') }}</label>
-        <select id="category" v-model="chosenCategory" @change="randomizeTrainNumber()">
-          <option :value="null" disabled>
-            {{ $t('numgen.train-category') }}
-          </option>
-          <option
-            v-for="(_, category) in genData.categoriesRules"
-            :key="category"
-            :value="category"
-          >
-            {{ $t(`numgen.categories.${category}`) }}
-          </option>
-        </select>
-      </div>
+      <div class="inputs">
+        <label>
+          <span>{{ $t('numgen.train-category') }}</span>
+          <select v-model="chosenCategory" @change="randomizeTrainNumber()">
+            <option :value="null" disabled>
+              {{ $t('numgen.train-category') }}
+            </option>
+            <option
+              v-for="(_, category) in genData.categoriesRules"
+              :key="category"
+              :value="category"
+            >
+              {{ $t(`numgen.categories.${category}`) }}
+            </option>
+          </select>
+        </label>
 
-      <div class="regions-select">
-        <div>
-          <label for="begin-region"> {{ $t('numgen.start-region') }}</label>
-          <select id="begin-region" v-model="beginRegionName" @change="randomizeTrainNumber()">
+        <label>
+          <span>{{ $t('numgen.start-region') }}</span>
+          <select v-model="beginRegionName" @change="randomizeTrainNumber()">
             <option :value="null" disabled>
               {{ $t('numgen.start-region') }}
             </option>
@@ -33,11 +33,11 @@
               {{ name }}
             </option>
           </select>
-        </div>
+        </label>
 
-        <div>
-          <label for="end-region"> {{ $t('numgen.end-region') }}</label>
-          <select id="end-region" v-model="endRegionName" @change="randomizeTrainNumber()">
+        <label>
+          <span> {{ $t('numgen.end-region') }}</span>
+          <select v-model="endRegionName" @change="randomizeTrainNumber()">
             <option :value="null" disabled>
               {{ $t('numgen.end-region') }}
             </option>
@@ -45,7 +45,7 @@
               {{ name }}
             </option>
           </select>
-        </div>
+        </label>
       </div>
 
       <div class="generated-number" @click="copyNumber">
@@ -227,12 +227,6 @@ const randomizeTrainNumber = (randomizeRegions = false) => {
 @import '../../styles/tab.scss';
 @import '../../styles/global.scss';
 
-label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 0.5em;
-}
-
 .category-select {
   select {
     width: auto;
@@ -242,23 +236,22 @@ label {
   margin-bottom: 1em;
 }
 
-.regions-select {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.inputs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15em, 1fr));
+
+  flex-wrap: wrap;
   gap: 0.5em;
+}
 
-  div {
-    width: 100%;
-  }
+.inputs > label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
 
-  select {
-    width: 100%;
-  }
-
-  label {
-    display: block;
-    margin-bottom: 0.5em;
+  span {
+    color: #ccc;
+    font-weight: bold;
   }
 }
 
