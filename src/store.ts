@@ -34,8 +34,6 @@ export const useStore = defineStore({
     isColdStart: false,
     isDoubleManned: false,
 
-    imageLoading: false,
-
     chosenLocoGroup: 'loco-electric' as LocoGroupType,
     chosenCarGroup: 'wagon-passenger' as WagonGroupType,
 
@@ -126,7 +124,6 @@ export const useStore = defineStore({
       try {
         const vehiclesData = (await http.get<IVehiclesData>('/vehicles')).data;
         this.vehiclesData = vehiclesData;
-
       } catch (error) {
         console.error(error);
       }

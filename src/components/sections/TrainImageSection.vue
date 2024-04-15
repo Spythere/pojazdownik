@@ -1,64 +1,65 @@
 <template>
   <section class="train-image-section">
-    <div class="image-wrapper">
+    <div v-if="store.chosenVehicle">
       <img
-        :src="
-          store.chosenVehicle
-            ? getThumbnailURL(store.chosenVehicle.type, 'small')
-            : '/images/placeholder.jpg'
-        "
-        tabindex="0"
+        :src="getThumbnailURL(store.chosenVehicle.type, 'small')"
+        :data-preview-active="store.chosenVehicle !== null"
         :data-sponsor-only="store.chosenVehicle?.restrictions.sponsorOnly"
         :data-team-only="store.chosenVehicle?.restrictions.teamOnly"
         @click="onImageClick"
         @keydown.enter="onImageClick"
         @error="onImageError"
+        tabindex="0"
       />
-    </div>
 
-    <div class="image-info" v-if="store.chosenVehicle">
-      <b class="text--accent">{{ store.chosenVehicle.type }}</b> &bull;
-      <b style="color: #ccc">
-        {{
-          $t(
-            `preview.${isLocomotive(store.chosenVehicle) ? store.chosenVehicle.group : store.chosenVehicle.group}`
-          )
-        }}
-      </b>
-
-      <div style="color: #ccc">
-        <div>
-          {{ store.chosenVehicle.length }}m | {{ (store.chosenVehicle.weight / 1000).toFixed(1) }}t
-          | {{ store.chosenVehicle.maxSpeed }} km/h
-        </div>
-
-        <div v-if="isLocomotive(store.chosenVehicle)">
-          {{ $t('preview.cabin') }} {{ store.chosenVehicle.cabinType }}
-        </div>
-
-        <div v-else>
+      <div class="image-info">
+        <b class="text--accent">{{ store.chosenVehicle.type }}</b> &bull;
+        <b style="color: #ccc">
           {{
-            store.chosenVehicle.group == 'wagon-freight'
-              ? $t(`usage.${store.chosenVehicle.constructionType}`)
-              : `${$t('preview.construction')} ${store.chosenVehicle.constructionType}`
+            $t(
+              `preview.${isTractionUnit(store.chosenVehicle) ? store.chosenVehicle.group : store.chosenVehicle.group}`
+            )
           }}
+        </b>
+
+        <div style="color: #ccc">
+          <div>
+            {{ store.chosenVehicle.length }}m |
+            {{ (store.chosenVehicle.weight / 1000).toFixed(1) }}t |
+            {{ store.chosenVehicle.maxSpeed }} km/h
+          </div>
+
+          <div v-if="isTractionUnit(store.chosenVehicle)">
+            {{ $t('preview.cabin') }} {{ store.chosenVehicle.cabinType }}
+          </div>
+
+          <div v-else>
+            {{
+              store.chosenVehicle.group == 'wagon-freight'
+                ? $t(`usage.${store.chosenVehicle.constructionType}`)
+                : `${$t('preview.construction')} ${store.chosenVehicle.constructionType}`
+            }}
+          </div>
+
+          <b v-if="store.chosenVehicle.restrictions.sponsorOnly > 0" class="sponsor-only">{{
+            $t('preview.sponsor-only', [
+              new Date(store.chosenVehicle.restrictions['sponsorOnly']).toLocaleDateString(
+                $i18n.locale == 'pl' ? 'pl-PL' : 'en-GB'
+              ),
+            ])
+          }}</b>
+
+          <b v-if="store.chosenVehicle.restrictions['teamOnly']" class="team-only">{{
+            $t('preview.team-only')
+          }}</b>
         </div>
-
-        <b v-if="store.chosenVehicle.restrictions.sponsorOnly > 0" class="sponsor-only">{{
-          $t('preview.sponsor-only', [
-            new Date(store.chosenVehicle.restrictions['sponsorOnly']).toLocaleDateString(
-              $i18n.locale == 'pl' ? 'pl-PL' : 'en-GB'
-            ),
-          ])
-        }}</b>
-
-        <b v-if="store.chosenVehicle.restrictions['teamOnly']" class="team-only">{{
-          $t('preview.team-only')
-        }}</b>
       </div>
     </div>
 
-    <div class="image-info" v-else>{{ $t('preview.desc') }}</div>
+    <div v-else>
+      <img src="/images/placeholder.jpg" alt="placeholder image" />
+      <div class="image-info">{{ $t('preview.desc') }}</div>
+    </div>
   </section>
 </template>
 
@@ -66,7 +67,7 @@
 import { computed, defineComponent } from 'vue';
 import { useStore } from '../../store';
 import { isTractionUnit } from '../../utils/vehicleUtils';
-import { ILocomotive, IVehicle } from '../../types';
+import { IVehicle } from '../../types';
 import imageMixin from '../../mixins/imageMixin';
 
 export default defineComponent({
@@ -87,28 +88,14 @@ export default defineComponent({
     };
   },
 
-  watch: {
-    chosenVehicle(vehicle: IVehicle, prevVehicle: IVehicle) {
-      if (vehicle && vehicle.type != prevVehicle?.type) {
-        this.store.imageLoading = true;
-      }
-    },
-  },
-
   methods: {
-    onImageLoad() {
-      this.store.imageLoading = false;
-    },
+    isTractionUnit,
 
     onImageError(e: Event) {
       const el = e.target as HTMLImageElement;
       if (el.src == '/images/placeholder.jpg') return;
 
       el.src = '/images/placeholder.jpg';
-    },
-
-    isLocomotive(vehicle: IVehicle): vehicle is ILocomotive {
-      return isTractionUnit(vehicle);
     },
 
     onImageClick(e: Event) {
@@ -131,22 +118,25 @@ export default defineComponent({
 .train-image-section {
   display: flex;
   flex-direction: column;
+  align-items: center;
   text-align: center;
 
-  grid-row: 3;
-  grid-column: 1;
-
   margin-top: 1em;
-  height: 22em;
+  height: 250px;
+
+  & > div {
+    max-width: 100%;
+    width: 380px;
+  }
 }
 
 img {
-  max-width: 380px;
   width: 100%;
-  height: 100%;
-  border: 1px solid white;
 
-  cursor: zoom-in;
+  &[data-preview-active='true'] {
+    border: 1px solid white;
+    cursor: zoom-in;
+  }
 
   &[data-sponsor-only='true'] {
     border: 1px solid $sponsorColor;
@@ -157,18 +147,16 @@ img {
   }
 }
 
-.sponsor-only {
-  color: $sponsorColor;
-}
+.placeholder {
+  height: 250px;
 
-.team-only {
-  color: $teamColor;
+  background-color: $bgColor;
 }
 
 .image-info {
   font-size: 1.1em;
   padding: 0.5em;
-  margin: 0.5em auto;
+  // margin: 0.5em auto;
   line-height: 1.35;
 
   width: 100%;

@@ -14,8 +14,6 @@ export default defineComponent({
 
   methods: {
     previewStock(stock: IStock) {
-      // if (this.store.chosenVehicle?.imageSrc != stock.imgSrc) this.store.imageLoading = true;
-
       if (stock.isLoco) {
         const chosenLoco = this.store.locoDataList.find((v) => v.type == stock.type) || null;
         this.store.chosenVehicle = chosenLoco;
