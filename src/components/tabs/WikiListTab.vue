@@ -7,6 +7,15 @@
     <div class="tab_content">
       <div class="actions">
         <label>
+          <span>{{ $t('wiki.labels.search-vehicle') }}</span>
+          <input
+            type="text"
+            :placeholder="$t('wiki.labels.search-vehicle-placeholder')"
+            v-model="searchedVehicleTypeName"
+          />
+        </label>
+
+        <label>
           <span>{{ $t('wiki.labels.vehicles') }}</span>
           <select name="filter-type" id="filter-type" v-model="filterType">
             <option v-for="filter in filters" :key="filter" :value="filter">
@@ -31,15 +40,6 @@
             <option value="asc">{{ $t('wiki.sort-direction.asc') }}</option>
             <option value="desc">{{ $t('wiki.sort-direction.desc') }}</option>
           </select>
-        </label>
-
-        <label>
-          <span>{{ $t('wiki.labels.search-vehicle') }}</span>
-          <input
-            type="text"
-            :placeholder="$t('wiki.labels.search-vehicle-placeholder')"
-            v-model="searchedVehicleTypeName"
-          />
         </label>
       </div>
 
