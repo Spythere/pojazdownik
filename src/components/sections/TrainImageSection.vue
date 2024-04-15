@@ -67,7 +67,6 @@
 import { computed, defineComponent } from 'vue';
 import { useStore } from '../../store';
 import { isTractionUnit } from '../../utils/vehicleUtils';
-import { IVehicle } from '../../types';
 import imageMixin from '../../mixins/imageMixin';
 
 export default defineComponent({
