@@ -50,7 +50,7 @@
           :data-preview="vehicle.type === store.chosenVehicle?.type"
           @click="previewVehicle(vehicle)"
           @dblclick="addVehicle(vehicle)"
-          @keydown.enter="previewVehicle(vehicle)"
+          @keydown.enter="onVehicleSelect(vehicle)"
           tabindex="0"
         >
           <img loading="lazy" width="120" :src="getThumbnailURL(vehicle.type, 'small')" />
@@ -117,7 +117,17 @@ export default defineComponent({
       sorterDirection: 'asc' as SorterDirection,
 
       filterType: 'vehicles-all' as FilterType,
+
+      lastScrollTop: 0,
     };
+  },
+
+  deactivated() {
+    this.lastScrollTop = (this.$refs['vehicles'] as HTMLUListElement)?.scrollTop || 0;
+  },
+
+  activated() {
+    (this.$refs['vehicles'] as HTMLUListElement)?.scrollTo({ top: this.lastScrollTop });
   },
 
   watch: {
@@ -133,7 +143,8 @@ export default defineComponent({
   methods: {
     isTractionUnit,
 
-    onItemSelect(vehicle: IVehicle) {
+    onVehicleSelect(vehicle: IVehicle) {
+      if (this.store.chosenVehicle?.type === vehicle.type) this.addVehicle(vehicle);
       this.previewVehicle(vehicle);
     },
 
