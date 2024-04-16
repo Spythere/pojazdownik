@@ -97,6 +97,7 @@ const allowDrop = (e: DragEvent) => {
   display: flex;
   overflow: auto;
   background-color: #353a57;
+  min-height: 100px;
 }
 
 .thumbnail-item {
