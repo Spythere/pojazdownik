@@ -12,6 +12,6 @@ jobs:
         uses: SethCohen/github-releases-to-discord@v1.13.1
         with:
           webhook_url: ${{ secrets.WEBHOOK_URL }}
-          color: "ffd700"
+          color: "15844367"
           footer_title: "Changelog - Pojazdownik"
           footer_timestamp: true
