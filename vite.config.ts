@@ -6,7 +6,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
-    port: 2137,
+    port: 2138,
   },
   plugins: [
     vue(),
@@ -38,28 +38,12 @@ export default defineConfig({
               },
             },
           },
-          {
-            urlPattern: new RegExp('^https://static.spythere.eu/images/*', 'i'),
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'spythere-api-cache',
-              expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24, // <== 1 day
-              },
-              cacheableResponse: {
-                statuses: [200, 302],
-              },
-            },
-          },
+
           {
             urlPattern: new RegExp('^https://stacjownik.spythere.eu/vehicles', 'i'),
             handler: 'NetworkFirst',
             options: {
               cacheName: 'vehicles-cache',
-              cacheableResponse: {
-                statuses: [200],
-              },
             },
           },
         ],

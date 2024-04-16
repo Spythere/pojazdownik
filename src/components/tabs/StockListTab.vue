@@ -4,214 +4,225 @@
       <h2>{{ $t('stocklist.title') }}</h2>
     </div>
 
-    <div class="stock_actions">
-      <button class="btn btn--image" @click="clickFileInput">
-        <input type="file" @change="uploadStock" ref="conFile" accept=".con,.txt" />
-        <img src="/images/icon-upload.svg" alt="upload icon" />
-        {{ $t('stocklist.action-upload') }}
-      </button>
+    <div class="tab_content">
+      <div class="stock_actions">
+        <button class="btn btn--image" @click="clickFileInput">
+          <input type="file" @change="uploadStock" ref="conFile" accept=".con,.txt" />
+          <img src="/images/icon-upload.svg" alt="upload icon" />
+          {{ $t('stocklist.action-upload') }}
+        </button>
 
-      <button
-        class="btn btn--image"
-        :data-disabled="stockIsEmpty"
-        :disabled="stockIsEmpty"
-        @click="downloadStock"
-      >
-        <img src="/images/icon-download.svg" alt="download icon" />
-        {{ $t('stocklist.action-download') }}
-      </button>
+        <button
+          class="btn btn--image"
+          :data-disabled="stockIsEmpty"
+          :disabled="stockIsEmpty"
+          @click="downloadStock"
+        >
+          <img src="/images/icon-download.svg" alt="download icon" />
+          {{ $t('stocklist.action-download') }}
+        </button>
 
-      <button
-        class="btn btn--image"
-        :data-disabled="stockIsEmpty"
-        :disabled="stockIsEmpty"
-        @click="copyToClipboard"
-      >
-        <img src="/images/icon-copy.svg" alt="copy icon" />
-        {{ $t('stocklist.action-copy') }}
-      </button>
+        <button
+          class="btn btn--image"
+          :data-disabled="stockIsEmpty"
+          :disabled="stockIsEmpty"
+          @click="copyToClipboard"
+        >
+          <img src="/images/icon-copy.svg" alt="copy icon" />
+          {{ $t('stocklist.action-copy') }}
+        </button>
 
-      <button
-        class="btn btn--image"
-        :data-disabled="stockIsEmpty"
-        :disabled="stockIsEmpty"
-        @click="resetStock"
-      >
-        <img src="/images/icon-reset.svg" alt="reset icon" />
-        {{ $t('stocklist.action-reset') }}
-      </button>
+        <button
+          class="btn btn--image"
+          :data-disabled="stockIsEmpty"
+          :disabled="stockIsEmpty"
+          @click="resetStock"
+        >
+          <img src="/images/icon-reset.svg" alt="reset icon" />
+          {{ $t('stocklist.action-reset') }}
+        </button>
 
-      <button
-        class="btn btn--image"
-        :data-disabled="stockIsEmpty"
-        :disabled="stockIsEmpty"
-        @click="shuffleCars"
-      >
-        <img src="/images/icon-shuffle.svg" alt="shuffle icon" />
-        {{ $t('stocklist.action-shuffle') }}
-      </button>
-    </div>
+        <button
+          class="btn btn--image"
+          :data-disabled="stockIsEmpty"
+          :disabled="stockIsEmpty"
+          @click="shuffleCars"
+        >
+          <img src="/images/icon-shuffle.svg" alt="shuffle icon" />
+          {{ $t('stocklist.action-shuffle') }}
+        </button>
+      </div>
 
-    <div class="stock_controls" :data-disabled="store.chosenStockListIndex == -1">
-      <button
-        class="btn btn--image"
-        :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
-        @click="moveUpStock(store.chosenStockListIndex)"
-      >
-        <img :src="getIconURL('higher')" alt="move up vehicle" />
-        {{ $t('stocklist.action-move-up') }}
-      </button>
+      <div class="stock_controls" :data-disabled="store.chosenStockListIndex == -1">
+        <button
+          class="btn btn--image"
+          :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
+          @click="moveUpStock(store.chosenStockListIndex)"
+        >
+          <img :src="getIconURL('higher')" alt="move up vehicle" />
+          {{ $t('stocklist.action-move-up') }}
+        </button>
 
-      <button
-        class="btn btn--image"
-        :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
-        @click="moveDownStock(store.chosenStockListIndex)"
-      >
-        <img :src="getIconURL('lower')" alt="move down vehicle" />
-        {{ $t('stocklist.action-move-down') }}
-      </button>
+        <button
+          class="btn btn--image"
+          :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
+          @click="moveDownStock(store.chosenStockListIndex)"
+        >
+          <img :src="getIconURL('lower')" alt="move down vehicle" />
+          {{ $t('stocklist.action-move-down') }}
+        </button>
 
-      <button
-        class="btn btn--image"
-        :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
-        @click="removeStock(store.chosenStockListIndex)"
-      >
-        <img :src="getIconURL('remove')" alt="remove vehicle" />
-        {{ $t('stocklist.action-remove') }}
-      </button>
-    </div>
+        <button
+          class="btn btn--image"
+          :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
+          @click="removeStock(store.chosenStockListIndex)"
+        >
+          <img :src="getIconURL('remove')" alt="remove vehicle" />
+          {{ $t('stocklist.action-remove') }}
+        </button>
+      </div>
 
-    <div class="stock_specs">
-      <b class="real-stock-info" v-if="chosenRealComposition">
-        <span class="text--accent">
-          <img :src="getIconURL(chosenRealComposition.type)" :alt="chosenRealComposition.type" />
-          {{ chosenRealComposition.number }} {{ chosenRealComposition.name }}
+      <div class="stock_specs">
+        <b class="real-stock-info" v-if="chosenRealComposition">
+          <span class="text--accent">
+            <img :src="getIconURL(chosenRealComposition.type)" :alt="chosenRealComposition.type" />
+            {{ chosenRealComposition.number }} {{ chosenRealComposition.name }}
+          </span>
+          |
+        </b>
+
+        <span>
+          {{ $t('stocklist.mass') }}
+          <span class="text--accent">{{ (store.totalWeight / 1000).toFixed(1) }}t</span>
+          ({{ $t('stocklist.mass-accepted') }}:
+          <span class="text--accent">{{
+            store.acceptableWeight ? `${~~(store.acceptableWeight / 1000)}t` : '-'
+          }}</span
+          >) - {{ $t('stocklist.length') }}:
+          <span class="text--accent">{{ store.totalLength }}m</span>
+          - {{ $t('stocklist.vmax') }}
+          <span tabindex="0" :data-tooltip="$t('stocklist.disclaimer')">(?)</span>:
+          <span class="text--accent">{{ store.maxStockSpeed }} km/h</span>
         </span>
-        |
-      </b>
-
-      <span>
-        {{ $t('stocklist.mass') }}
-        <span class="text--accent">{{ (store.totalWeight / 1000).toFixed(1) }}t</span>
-        ({{ $t('stocklist.mass-accepted') }}:
-        <span class="text--accent">{{
-          store.acceptableWeight ? `${~~(store.acceptableWeight / 1000)}t` : '-'
-        }}</span
-        >) - {{ $t('stocklist.length') }}:
-        <span class="text--accent">{{ store.totalLength }}m</span>
-        - {{ $t('stocklist.vmax') }}
-        <span tabindex="0" :data-tooltip="$t('stocklist.disclaimer')">(?)</span>:
-        <span class="text--accent">{{ store.maxStockSpeed }} km/h</span>
-      </span>
-    </div>
-
-    <div class="stock_spawn-settings">
-      <Checkbox v-if="store.stockSupportsColdStart" v-model="store.isColdStart">
-        {{ $t('stocklist.coldstart-info') }}
-      </Checkbox>
-
-      <Checkbox v-if="store.stockSupportsDoubleManning" v-model="store.isDoubleManned">
-        {{ $t('stocklist.doublemanning-info') }}
-      </Checkbox>
-    </div>
-
-    <div class="stock_warnings" v-if="hasAnyWarnings">
-      <div class="warning" v-if="locoNotSuitable">
-        (!) {{ $t('stocklist.warning-not-suitable') }}
       </div>
 
-      <div class="warning" v-if="lengthExceeded && store.isTrainPassenger">
-        (!) {{ $t('stocklist.warning-passenger-too-long') }}
+      <div></div>
+
+      <div class="stock_spawn-settings">
+        <Checkbox :disabled="!store.stockSupportsColdStart" v-model="store.isColdStart">
+          {{ $t('stocklist.coldstart-info') }}
+        </Checkbox>
+
+        <Checkbox :disabled="!store.stockSupportsDoubleManning" v-model="store.isDoubleManned">
+          {{ $t('stocklist.doublemanning-info') }}
+        </Checkbox>
       </div>
 
-      <div class="warning" v-if="lengthExceeded && !store.isTrainPassenger">
-        (!) {{ $t('stocklist.warning-freight-too-long') }}
-      </div>
+      <div class="stock_warnings" v-if="hasAnyWarnings">
+        <div class="warning" v-if="locoNotSuitable">
+          (!) {{ $t('stocklist.warning-not-suitable') }}
+        </div>
 
-      <div class="warning" v-if="teamOnlyVehicles.length > 0">
-        (!)
-        {{
-          $t('stocklist.warning-team-only-vehicle', [
-            teamOnlyVehicles.map((v) => v.type).join(', '),
-          ])
-        }}
-      </div>
+        <div class="warning" v-if="lengthExceeded && store.isTrainPassenger">
+          (!) {{ $t('stocklist.warning-passenger-too-long') }}
+        </div>
 
-      <div class="warning" v-if="weightExceeded">
-        (!)
-        <i18n-t keypath="stocklist.warning-too-heavy">
-          <template #href>
-            <a
-              target="_blank"
-              href="https://docs.google.com/spreadsheets/d/1KVa5vn2d8XGkXQFwbavVudwKqUQxbLOucHWs2VYqAUE"
-            >
-              {{ $t('stocklist.acceptable-mass-docs') }}
-            </a>
-          </template>
-        </i18n-t>
-      </div>
+        <div class="warning" v-if="lengthExceeded && !store.isTrainPassenger">
+          (!) {{ $t('stocklist.warning-freight-too-long') }}
+        </div>
 
-      <div class="warning" v-if="locoCountExceeded">
-        {{ $t('stocklist.warning-too-many-locos') }}
-      </div>
-    </div>
+        <div class="warning" v-if="teamOnlyVehicles.length > 0">
+          (!)
+          {{
+            $t('stocklist.warning-team-only-vehicle', [
+              teamOnlyVehicles.map((v) => v.vehicleRef.type).join(', '),
+            ])
+          }}
+        </div>
 
-    <StockThumbnails :onListItemClick="onListItemClick" />
-
-    <!-- Stock list -->
-    <div class="list-wrapper">
-      <div v-if="stockIsEmpty" class="list-empty">
-        <div class="stock-info">{{ $t('stocklist.list-empty') }}</div>
-      </div>
-
-      <ul v-else>
-        <transition-group name="stock-list-anim">
-          <li
-            v-for="(stock, i) in store.stockList"
-            :key="stock.id"
-            :class="{ loco: stock.isLoco }"
-            tabindex="0"
-            @click="onListItemClick(i)"
-            @keydown.enter="onListItemClick(i)"
-            @keydown.w="moveUpStock(i)"
-            @keydown.s="moveDownStock(i)"
-            @keydown.backspace="removeStock(i)"
-            ref="itemRefs"
-          >
-            <div
-              class="stock-info"
-              @dragstart="onDragStart(i)"
-              @drop="onDrop($event, i)"
-              @dragover="allowDrop"
-              draggable="true"
-            >
-              <span class="stock-info-no" :data-selected="i == store.chosenStockListIndex">
-                <span v-if="i == store.chosenStockListIndex">&bull;&nbsp;</span>
-                {{ i + 1 }}.
-              </span>
-
-              <span
-                class="stock-info-type"
-                :data-sponsor-only="stock.restrictions.sponsorOnly"
-                :data-team-only="stock.restrictions.teamOnly"
+        <div class="warning" v-if="weightExceeded">
+          (!)
+          <i18n-t keypath="stocklist.warning-too-heavy">
+            <template #href>
+              <a
+                target="_blank"
+                href="https://docs.google.com/spreadsheets/d/1KVa5vn2d8XGkXQFwbavVudwKqUQxbLOucHWs2VYqAUE"
               >
-                {{ stock.isLoco ? stock.type : getCarSpecFromType(stock.type) }}
-              </span>
+                {{ $t('stocklist.acceptable-mass-docs') }}
+              </a>
+            </template>
+          </i18n-t>
+        </div>
 
-              <span class="stock-info-cargo" v-if="stock.cargo">
-                {{ stock.cargo.id }}
-              </span>
+        <div class="warning" v-if="locoCountExceeded">
+          {{ $t('stocklist.warning-too-many-locos') }}
+        </div>
+      </div>
 
-              <span class="stock-info-length">{{ stock.length }}m</span>
+      <StockThumbnails :onListItemClick="onListItemClick" />
 
-              <span class="stock-info-mass">
-                {{ ((stock.weight + (stock.cargo?.weight ?? 0)) / 1000).toFixed(1) }}t
-              </span>
-              <span class="stock-info-speed">{{ stock.maxSpeed }}km/h</span>
-            </div>
-          </li>
-        </transition-group>
-      </ul>
+      <!-- Stock list -->
+      <div class="list-wrapper">
+        <div v-if="stockIsEmpty" class="list-empty">
+          <div class="stock-info">{{ $t('stocklist.list-empty') }}</div>
+        </div>
+
+        <ul v-else>
+          <transition-group name="stock-list-anim">
+            <li
+              v-for="(stock, i) in store.stockList"
+              :key="stock.id"
+              :class="{ loco: isTractionUnit(stock.vehicleRef) }"
+              tabindex="0"
+              @click="onListItemClick(i)"
+              @keydown.enter="onListItemClick(i)"
+              @keydown.w="moveUpStock(i)"
+              @keydown.s="moveDownStock(i)"
+              @keydown.backspace="removeStock(i)"
+              ref="itemRefs"
+            >
+              <div
+                class="stock-info"
+                @dragstart="onDragStart(i)"
+                @drop="onDrop($event, i)"
+                @dragover="allowDrop"
+                draggable="true"
+              >
+                <span class="stock-info-no" :data-selected="i == store.chosenStockListIndex">
+                  <span v-if="i == store.chosenStockListIndex">&bull;&nbsp;</span>
+                  {{ i + 1 }}.
+                </span>
+
+                <span
+                  class="stock-info-type"
+                  :data-sponsor-only="
+                    stock.vehicleRef.sponsorOnlyTimestamp &&
+                    stock.vehicleRef.sponsorOnlyTimestamp > Date.now()
+                  "
+                  :data-team-only="stock.vehicleRef.teamOnly"
+                >
+                  {{
+                    isTractionUnit(stock.vehicleRef)
+                      ? stock.vehicleRef.type
+                      : getCarSpecFromType(stock.vehicleRef.type)
+                  }}
+                </span>
+
+                <span class="stock-info-cargo" v-if="stock.cargo">
+                  {{ stock.cargo.id }}
+                </span>
+
+                <span class="stock-info-length">{{ stock.vehicleRef.length }}m</span>
+
+                <span class="stock-info-mass">
+                  {{ ((stock.vehicleRef.weight + (stock.cargo?.weight ?? 0)) / 1000).toFixed(1) }}t
+                </span>
+                <span class="stock-info-speed">{{ stock.vehicleRef.maxSpeed }}km/h</span>
+              </div>
+            </li>
+          </transition-group>
+        </ul>
+      </div>
     </div>
   </section>
 </template>
@@ -226,6 +237,7 @@ import stockPreviewMixin from '../../mixins/stockPreviewMixin';
 import StockThumbnails from '../utils/StockThumbnails.vue';
 import stockMixin from '../../mixins/stockMixin';
 import Checkbox from '../common/Checkbox.vue';
+import { isTractionUnit } from '../../utils/vehicleUtils';
 
 export default defineComponent({
   name: 'stock-list',
@@ -250,7 +262,7 @@ export default defineComponent({
 
   computed: {
     chosenRealComposition() {
-      const currentStockString = this.store.stockList.map((s) => s.type).join(';');
+      const currentStockString = this.store.stockList.map((s) => s.vehicleRef.type).join(';');
 
       return this.store.realCompositionList.find((rc) => rc.stockString == currentStockString);
     },
@@ -265,7 +277,9 @@ export default defineComponent({
       return this.store.stockList
         .map((stock, i) => {
           let stockTypeStr =
-            stock.isLoco || !stock.cargo ? stock.type : `${stock.type}:${stock.cargo.id}`;
+            isTractionUnit(stock.vehicleRef) || !stock.cargo
+              ? stock.vehicleRef.type
+              : `${stock.vehicleRef.type}:${stock.cargo.id}`;
 
           if (i == 0 && (includeColdStart || includeDoubleManned))
             return `${stockTypeStr},${includeColdStart ? 'c' : ''}${includeDoubleManned ? 'd' : ''}`;
@@ -300,22 +314,24 @@ export default defineComponent({
       return (
         !this.store.isTrainPassenger &&
         this.store.stockList.length > 1 &&
-        !this.store.stockList.every((stock) => stock.isLoco) &&
-        this.store.stockList.some((stock) => stock.isLoco && stock.type.startsWith('EP'))
+        !this.store.stockList.every((stock) => isTractionUnit(stock.vehicleRef)) &&
+        this.store.stockList.some(
+          (stock) => isTractionUnit(stock.vehicleRef) && stock.vehicleRef.type.startsWith('EP')
+        )
       );
     },
 
     locoCountExceeded() {
       return (
         this.store.stockList.reduce((acc, stock) => {
-          if (stock.isLoco) acc += stock.count;
+          if (isTractionUnit(stock.vehicleRef)) acc += 1;
           return acc;
         }, 0) > 2
       );
     },
 
     teamOnlyVehicles() {
-      return this.store.stockList.filter((stock) => stock.restrictions.teamOnly);
+      return this.store.stockList.filter((stock) => stock.vehicleRef.teamOnly);
     },
 
     hasAnyWarnings() {
@@ -330,6 +346,8 @@ export default defineComponent({
   },
 
   methods: {
+    isTractionUnit,
+
     copyToClipboard() {
       navigator.clipboard.writeText(this.stockString);
 
@@ -346,7 +364,8 @@ export default defineComponent({
       const stock = this.store.stockList[stockID];
 
       this.store.chosenStockListIndex =
-        this.store.chosenStockListIndex == stockID && this.store.chosenVehicle?.type == stock.type
+        this.store.chosenStockListIndex == stockID &&
+        this.store.chosenVehicle?.type == stock.vehicleRef.type
           ? -1
           : stockID;
 
@@ -375,20 +394,6 @@ export default defineComponent({
     resetStock() {
       this.store.stockList.length = 0;
       this.store.chosenStockListIndex = -1;
-    },
-
-    addStock(index: number) {
-      if (index == -1) return;
-
-      this.store.stockList[index].count++;
-    },
-
-    subStock(index: number) {
-      if (index == -1) return;
-
-      if (this.store.stockList[index].count < 2) return;
-
-      this.store.stockList[index].count--;
     },
 
     removeStock(index: number) {
@@ -424,7 +429,7 @@ export default defineComponent({
 
     shuffleCars() {
       const availableIndexes = this.store.stockList.reduce((acc, stock, i) => {
-        if (!stock.isLoco) acc.push(i);
+        if (!isTractionUnit(stock.vehicleRef)) acc.push(i);
 
         return acc;
       }, [] as number[]);
@@ -446,7 +451,7 @@ export default defineComponent({
     downloadStock() {
       if (this.store.stockList.length == 0) return alert(this.$t('stocklist.alert-empty'));
 
-      const defaultName = `${this.chosenRealComposition ? this.chosenRealComposition.stockId + ' ' : ''}${this.store.stockList[0].type} ${(this.store.totalWeight / 1000).toFixed(1)}t; ${
+      const defaultName = `${this.chosenRealComposition ? this.chosenRealComposition.stockId + ' ' : ''}${this.store.stockList[0].vehicleRef.type} ${(this.store.totalWeight / 1000).toFixed(1)}t; ${
         this.store.totalLength
       }m; vmax ${this.store.maxStockSpeed}`;
 
@@ -519,11 +524,10 @@ export default defineComponent({
 @import '../../styles/global';
 @import '../../styles/tab.scss';
 
-.stock-list-tab {
+.tab_content {
   display: flex;
   flex-direction: column;
   gap: 0.5em;
-  position: relative;
 }
 
 .warning {
@@ -645,7 +649,7 @@ li > .stock-info {
     color: $teamColor;
   }
 
-  &[data-sponsor-only] {
+  &[data-sponsor-only='true'] {
     color: $sponsorColor;
   }
 }

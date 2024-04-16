@@ -1,18 +1,20 @@
 <template>
   <label>
-    <input type="checkbox" v-model="model" />
+    <input type="checkbox" :data-disabled="disabled" :disabled="disabled" v-model="model" />
     <div><slot /></div>
   </label>
 </template>
 
 <script lang="ts" setup>
 const model = defineModel();
+
+defineProps({
+  disabled: Boolean,
+});
 </script>
 
 <style lang="scss" scoped>
 label {
-  cursor: pointer;
-
   text-transform: uppercase;
   transition: color 200ms;
 }
@@ -20,6 +22,7 @@ label {
 div {
   padding: 0.25em 0.5em;
   color: white;
+  cursor: pointer;
 
   background-color: #222;
   border-radius: 0.25em;
@@ -52,6 +55,17 @@ input {
     &::before {
       color: palegreen;
       content: '\2714';
+    }
+  }
+
+  &:disabled {
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+
+    + div {
+      opacity: 0.55;
+      cursor: auto;
     }
   }
 }

@@ -148,7 +148,7 @@
       "TD": "TD - domestic freight (intermodal)",
       "TM": "TM - domestic freight (cargo)",
       "TN": "TN - domestic freight (no cargo)",
-      "TK": "TK - freight (stations & sidings service)",
+      "TK": "TK - freight (stations & sidings)",
       "TS": "TS - empty freight test drive",
 
       "LT": "LT - locomotive only",
@@ -162,19 +162,30 @@
   },
   "wiki": {
     "title": "LIST OF AVAILABLE VEHICLES",
-    "action-vehicles": "TRACTION UNITS",
-    "action-carriages": "CARRIAGES",
-    "search": "Search for a vehicle...",
-    "header": {
-      "image": "Image",
-      "type": "Name",
-      "group": "Type group",
-      "constructionType": "Construction",
-      "coldStart": "Cold start",
-      "length": "Length",
-      "weight": "Mass",
-      "maxSpeed": "Speed",
-      "cargoCount": "Cargo count"
+    "labels": {
+      "vehicles": "Vehicles",
+      "sort-by": "Sort by",
+      "sort-direction": "Sort direction",
+      "search-vehicle": "Find a vehicle",
+      "search-vehicle-placeholder": "Input a vehicle name"
+    },
+    "filters": {
+      "vehicles-all": "all",
+      "vehicles-traction": "traction units",
+      "vehicles-wagon": "wagons"
+    },
+    "sort-by": {
+      "type": "name",
+      "group": "type group",
+      "length": "length",
+      "weight": "mass",
+      "maxSpeed": "speed",
+      "coldStart": "cold start",
+      "cargoCount": "cargo count"
+    },
+    "sort-direction": {
+      "asc": "ascending",
+      "desc": "descending"
     },
     "unit-electric": "EMU",
     "unit-diesel": "DMU",

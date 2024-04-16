@@ -98,8 +98,8 @@
     "title": "GENERATOR NUMERU POCIĄGU",
     "subtitle": "Generuje realny numer pociągu na podstawie instrukcji Ir-11",
     "alert": "Numer został skopiowany do twojego schowka!",
-    "start-region": "Początkowy obszar konstrukcyjny",
-    "end-region": "Końcowy obszar konstrukcyjny",
+    "start-region": "Obszar początkowy",
+    "end-region": "Obszar końcowy",
     "train-category": "Kategoria pociągu",
     "number-info": "Wygenerowany numer pociągu:",
     "warning": "Wybierz kategorię oraz (opcjonalnie) obszary konstrukcyjne",
@@ -129,17 +129,17 @@
       "EC": "EC - ekspres międzynarodowy",
       "EN": "EN - ekspres krajowy nocny",
 
-      "MP": "MP - międzywojewódzki pośpieszny",
+      "MP": "MP - międzywoj. pośpieszny",
       "RP": "RP - wojewódzki pośpieszny",
-      "MO": "MO - międzywojewódzki osobowy",
+      "MO": "MO - międzywoj. osobowy",
       "RO": "RO - wojewódzki osobowy",
 
-      "MM": "MM - międzynarodowy pośpieszny",
-      "MH": "MH - międzywoj. pośpieszny nocny / hotelowy",
-      "RM": "RM - wojewódzki osobowy międzynarodowy",
-      "RA": "RA - wojewódzki osobowy algomeracyjny",
+      "MM": "MM - międzynar. pośpieszny",
+      "MH": "MH - międzywoj. pośpieszny hotelowy",
+      "RM": "RM - woj. osobowy międzynarodowy",
+      "RA": "RA - woj. osobowy algomeracyjny",
 
-      "PW": "PW - pasażerski próżny (\"służbowy\")",
+      "PW": "PW - pasażerski próżny - służbowy",
       "PX": "PX - pasażerski próżny próbny",
 
       "TC": "TC - towarowy międzynarodowy intermodalny",
@@ -148,7 +148,7 @@
       "TD": "TD - towarowy krajowy intermodalny",
       "TM": "TM - towarowy krajowy masowy",
       "TN": "TN - towarowy krajowy niemasowy",
-      "TK": "TK - towarowy do obsługi stacji i bocznic",
+      "TK": "TK - towarowy (stacje i bocznice)",
       "TS": "TS - towarowy próżny próbny",
 
       "LT": "LT - lokomotywa luzem",
@@ -162,19 +162,30 @@
   },
   "wiki": {
     "title": "LISTA DOSTĘPNYCH POJAZDÓW",
-    "action-vehicles": "POJ. TRAKCYJNE",
-    "action-carriages": "WAGONY",
-    "search": "Wyszukaj pojazd...",
-    "header": {
-      "image": "Zdjęcie",
-      "type": "Nazwa",
-      "group": "Rodzaj",
-      "constructionType": "Konstrukcja",
-      "coldStart": "Zimny start",
-      "length": "Długość",
-      "weight": "Masa",
-      "maxSpeed": "Prędkość",
-      "cargoCount": "Ładunki"
+    "labels": {
+      "vehicles": "Pojazdy",
+      "sort-by": "Sortuj wg",
+      "sort-direction": "Kierunek sortowania",
+      "search-vehicle": "Wyszukaj pojazd",
+      "search-vehicle-placeholder": "Wpisz nazwę pojazdu"
+    },
+    "filters": {
+      "vehicles-all": "wszystkie",
+      "vehicles-traction": "trakcyjne",
+      "vehicles-wagon": "wagony"
+    },
+    "sort-by": {
+      "type": "nazwa",
+      "group": "rodzaj",
+      "length": "długość",
+      "weight": "masa",
+      "maxSpeed": "prędkość",
+      "coldStart": "zimny start",
+      "cargoCount": "ładunki"
+    },
+    "sort-direction": {
+      "asc": "rosnąco",
+      "desc": "malejąco"
     },
     "loco-diesel": "Spalinowóz",
     "loco-electric": "Elektrowóz",

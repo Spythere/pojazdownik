@@ -54,11 +54,12 @@ export interface ILocomotive {
   constructionType: string;
   cabinType: string;
   maxSpeed: number;
-  restrictions: Record<RestrictionType, any>;
   weight: number;
   length: number;
   coldStart: boolean;
   doubleManned: boolean;
+  sponsorOnlyTimestamp: number;
+  teamOnly: boolean;
 }
 
 export interface ICarWagon {
@@ -66,25 +67,18 @@ export interface ICarWagon {
   group: WagonGroupType;
   constructionType: string;
   loadable: boolean;
-  restrictions: Record<RestrictionType, any>;
   maxSpeed: number;
   weight: number;
   length: number;
   cargoTypes: ICargo[];
+  sponsorOnlyTimestamp: number;
+  teamOnly: boolean;
 }
 
 export interface IStock {
   id: string;
-  type: string;
-  group: LocoGroupType | WagonGroupType;
-  constructionType: string;
-  length: number;
-  weight: number;
-  maxSpeed: number;
+  vehicleRef: IVehicle;
   cargo?: ICargo;
-  isLoco: boolean;
-  restrictions: Record<RestrictionType, any>;
-  count: number;
 }
 
 export interface IRealComposition {

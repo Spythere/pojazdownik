@@ -42,7 +42,9 @@ main {
 
 @media screen and (max-width: $breakpointMd) {
   main {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
   }
 }
 </style>

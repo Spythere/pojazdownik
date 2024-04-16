@@ -5,7 +5,10 @@
       v-for="(stock, stockIndex) in store.stockList"
       :key="stockIndex"
       :data-selected="store.chosenStockListIndex == stockIndex"
-      :data-sponsor="stock.restrictions.sponsorOnly"
+      :data-sponsor-only="
+        stock.vehicleRef.sponsorOnlyTimestamp && stock.vehicleRef.sponsorOnlyTimestamp > Date.now()
+      "
+      :data-team-only="stock.vehicleRef.teamOnly"
       draggable="true"
       @dragstart="onDragStart(stockIndex)"
       @drop="onDrop($event, stockIndex)"
@@ -13,14 +16,14 @@
       @click="onListItemClick(stockIndex)"
     >
       <b>
-        {{ stock.type }}
+        {{ stock.vehicleRef.type }}
       </b>
 
       <img
         draggable="false"
-        :src="`https://rj.td2.info.pl/dist/img/thumbnails/${stock.type}.png`"
-        :alt="stock.type"
-        :title="stock.type"
+        :src="`https://rj.td2.info.pl/dist/img/thumbnails/${stock.vehicleRef.type}.png`"
+        :alt="stock.vehicleRef.type"
+        :title="stock.vehicleRef.type"
         @error="stockImageError($event, stock)"
       />
     </div>
@@ -43,7 +46,7 @@ const onListItemClick = (index: number) => {
 };
 
 const stockImageError = (e: Event, stock: IStock) => {
-  (e.target as HTMLImageElement).src = `images/${stock.group}-unknown.png`;
+  (e.target as HTMLImageElement).src = `images/${stock.vehicleRef.group}-unknown.png`;
 };
 
 watch(
@@ -88,10 +91,13 @@ const allowDrop = (e: DragEvent) => {
 </script>
 
 <style lang="scss" scoped>
+@import '../../styles/global.scss';
+
 .stock-thumbnails {
   display: flex;
   overflow: auto;
   background-color: #353a57;
+  min-height: 100px;
 }
 
 .thumbnail-item {
@@ -121,8 +127,12 @@ const allowDrop = (e: DragEvent) => {
     margin: 0 1em;
   }
 
-  &[data-sponsor='true'] > b {
-    color: salmon;
+  &[data-sponsor-only='true'] > b {
+    color: $sponsorColor;
+  }
+
+  &[data-team-only='true'] > b {
+    color: $teamColor;
   }
 
   img {

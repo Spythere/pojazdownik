@@ -39,7 +39,8 @@ export function locoDataList(vehiclesData: IVehiclesData | undefined) {
       constructionType,
       cabinType,
 
-      restrictions: restrictions ?? {},
+      sponsorOnlyTimestamp: restrictions?.sponsorOnly ?? 0,
+      teamOnly: restrictions?.teamOnly ?? false,
 
       maxSpeed: locoProps.speed,
       length: locoProps.length,
@@ -75,7 +76,8 @@ export function carDataList(vehiclesData: IVehiclesData | undefined) {
       loadable: wagonProps.cargoTypes ? wagonProps.cargoTypes.length > 0 : false,
       cargoTypes: wagonProps?.cargoTypes ?? [],
 
-      restrictions: restrictions ?? {},
+      sponsorOnlyTimestamp: restrictions?.sponsorOnly ?? 0,
+      teamOnly: restrictions?.teamOnly ?? false,
 
       maxSpeed: wagonProps.speed,
       weight: wagonProps?.weight || 0,
@@ -88,25 +90,26 @@ export function carDataList(vehiclesData: IVehiclesData | undefined) {
 
 export function totalWeight(stockList: IStock[]) {
   return stockList.reduce(
-    (acc, stock) => acc + (stock.weight + (stock.cargo?.weight ?? 0)) * stock.count,
+    (acc, stock) => acc + (stock.vehicleRef.weight + (stock.cargo?.weight ?? 0)),
     0
   );
 }
 
 export function totalLength(stockList: IStock[]) {
-  return stockList.reduce((acc, stock) => acc + stock.length * stock.count, 0);
+  return stockList.reduce((acc, stock) => acc + stock.vehicleRef.length, 0);
 }
 
 export function maxStockSpeed(stockList: IStock[]) {
   const stockSpeedLimit = stockList.reduce(
-    (acc, stock) => (stock.maxSpeed < acc || acc == 0 ? stock.maxSpeed : acc),
+    (acc, stock) => (stock.vehicleRef.maxSpeed < acc || acc == 0 ? stock.vehicleRef.maxSpeed : acc),
     0
   );
-  const headingLoco = stockList[0]?.isLoco ? stockList[0] : undefined;
+  const headingLoco =
+    stockList[0] && isTractionUnit(stockList[0].vehicleRef) ? stockList[0] : undefined;
 
   if (!headingLoco) return stockSpeedLimit;
 
-  const locoType = headingLoco.type.split('-')[0];
+  const locoType = headingLoco.vehicleRef.type.split('-')[0];
 
   if (/^(EN|2EN|SN)/.test(locoType)) return stockSpeedLimit;
 
@@ -121,9 +124,9 @@ export function maxStockSpeed(stockList: IStock[]) {
 }
 
 export function acceptableWeight(stockList: IStock[]) {
-  if (stockList.length == 0 || !stockList[0].isLoco) return 0;
+  if (stockList.length == 0 || !isTractionUnit(stockList[0].vehicleRef)) return 0;
 
-  const activeLocomotiveType = stockList[0].type.split('-')[0];
+  const activeLocomotiveType = stockList[0].vehicleRef.type.split('-')[0];
 
   const locoMassLimit = calculateMassLimit(
     activeLocomotiveType as MassLimitLocoType,
@@ -135,9 +138,9 @@ export function acceptableWeight(stockList: IStock[]) {
 
 export function isTrainPassenger(stockList: IStock[]) {
   if (stockList.length == 0) return false;
-  if (stockList.every((stock) => stock.isLoco)) return false;
+  if (stockList.every((stock) => isTractionUnit(stock.vehicleRef))) return false;
 
   return stockList
-    .filter((stock) => !stock.isLoco)
-    .every((stock) => stock.group === 'wagon-passenger');
+    .filter((stock) => !isTractionUnit(stock.vehicleRef))
+    .every((stock) => stock.vehicleRef.group === 'wagon-passenger');
 }
