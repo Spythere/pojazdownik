@@ -97,7 +97,9 @@ export const useStore = defineStore({
 
     stockSupportsColdStart: (state) => {
       if (state.stockList.length == 0) return false;
+
       if (!isTractionUnit(state.stockList[0].vehicleRef)) return false;
+      else if (state.stockList.length > 1) return false;
 
       const headingLoco = state.stockList[0];
 
