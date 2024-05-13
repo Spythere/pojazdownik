@@ -67,7 +67,9 @@ export default defineComponent({
         let vehicle: IVehicle | null = null;
         let vehicleCargo: ICargo | null = null;
 
-        const isTractionUnit = /^(EU|EP|ET|SM|EN|2EN|SN)/.test(type);
+        const isTractionUnit = /^([a-zA-Z\d]{0,}-\d{0,})/.test(type);
+
+        console.log(type, isTractionUnit);
 
         if (isTractionUnit) {
           const [locoType, spawnProps] = type.split(',');
