@@ -8,6 +8,9 @@ export default defineConfig({
   server: {
     port: 2138,
   },
+  preview: {
+    port: 4138,
+  },
   plugins: [
     vue(),
     VitePWA({
@@ -25,25 +28,10 @@ export default defineConfig({
 
         runtimeCaching: [
           {
-            urlPattern: new RegExp('^https://rj.td2.info.pl/dist/img/thumbnails/*', 'i'),
+            urlPattern: /^https:\/\/.*\.spythere\.eu\/.*/i,
             handler: 'CacheFirst',
             options: {
-              cacheName: 'swdr-images-cache',
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24, // <== 1 day
-              },
-              cacheableResponse: {
-                statuses: [200],
-              },
-            },
-          },
-
-          {
-            urlPattern: new RegExp('^https://stacjownik.spythere.eu/vehicles', 'i'),
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'vehicles-cache',
+              cacheName: 'spythere-cache',
             },
           },
         ],

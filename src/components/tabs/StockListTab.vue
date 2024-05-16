@@ -146,7 +146,7 @@
             <template #href>
               <a
                 target="_blank"
-                href="https://docs.google.com/spreadsheets/d/1KVa5vn2d8XGkXQFwbavVudwKqUQxbLOucHWs2VYqAUE"
+                href="https://docs.google.com/spreadsheets/d/1BvTU-U7huIaEheov22TrhTtROUM4MwVfdbq03GVAEM8"
               >
                 {{ $t('stocklist.acceptable-mass-docs') }}
               </a>
