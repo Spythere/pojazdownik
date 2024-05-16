@@ -21,7 +21,7 @@
 
       <img
         draggable="false"
-        :src="`https://rj.td2.info.pl/dist/img/thumbnails/${stock.vehicleRef.type}.png`"
+        :src="`https://static.spythere.eu/thumbnails/${stock.vehicleRef.type}.png`"
         :alt="stock.vehicleRef.type"
         :title="stock.vehicleRef.type"
         @error="stockImageError($event, stock)"
