@@ -23,7 +23,7 @@
 
           <datalist id="readyStockDataList">
             <option
-              v-for="stock in store.realCompositionList"
+              v-for="stock in filteredCompositionList"
               :value="stock.stockId"
               :key="stock.name"
             >
@@ -39,7 +39,7 @@
 
           <datalist id="readyStockStringList">
             <option
-              v-for="stockType in computedAvailableStockTypes"
+              v-for="stockType in availableCompositionTypes"
               :value="stockType"
               :key="stockType"
             >
@@ -54,7 +54,7 @@
       </div>
 
       <ul class="card_list" ref="list" @scroll="onListScroll">
-        <li v-for="rStock in computedReadyStockList" :key="rStock.stockId">
+        <li v-for="rStock in filteredCompositionList" :key="rStock.stockId">
           <!-- :data-last-selected="store.ch === rStock.stockId" -->
           <div
             class="stock-title"
@@ -141,7 +141,7 @@ export default defineComponent({
   },
 
   computed: {
-    computedReadyStockList(): IRealComposition[] {
+    filteredCompositionList() {
       return this.store.realCompositionList
         .filter(
           (rc) =>
@@ -155,7 +155,7 @@ export default defineComponent({
         .filter((_, i) => i <= this.visibleIndexesTo);
     },
 
-    computedAvailableStockTypes() {
+    availableCompositionTypes() {
       return this.store.realCompositionList
         .reduce((acc, rs) => {
           rs.stockString.split(';').forEach((s) => {
@@ -169,7 +169,7 @@ export default defineComponent({
   },
 
   watch: {
-    computedReadyStockList(curr, prev) {
+    filteredCompositionList(curr, prev) {
       if (curr.length < prev.length) {
         this.visibleIndexesTo = 20;
         (this.$refs['list'] as HTMLElement).scrollTo({

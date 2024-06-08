@@ -2,7 +2,8 @@ import {
   ICarWagon,
   ILocomotive,
   IStock,
-  IVehiclesData,
+  IVehicleData,
+  IVehiclesAPIResponse,
   LocoGroupType,
   WagonGroupType,
 } from '../types';
@@ -17,71 +18,53 @@ export function isTractionUnit(vehicle: ILocomotive | ICarWagon): vehicle is ILo
   return (vehicle as ILocomotive).cabinType !== undefined;
 }
 
-export function locoDataList(vehiclesData: IVehiclesData | undefined) {
+export function locoDataList(vehiclesData: IVehicleData[] | undefined) {
   if (!vehiclesData) return [];
 
-  return vehiclesData.vehicleList.reduce<ILocomotive[]>((acc, vehicleInfoArray) => {
-    // check if data array has 5 elements (locos & units only)
-    if (vehicleInfoArray.length != 5) return acc;
-
-    const [type, constructionType, cabinType, group, restrictions] = vehicleInfoArray;
-    const locoProps = vehiclesData.vehicleProps.find((prop) => constructionType == prop.type);
-
-    if (!locoProps) {
-      console.warn('Brak atrybutów dla pojazdu:', type);
-      return acc;
-    }
+  return vehiclesData.reduce<ILocomotive[]>((acc, data) => {
+    if (!data.cabinName) return acc;
 
     acc.push({
-      group: group as LocoGroupType,
+      group: data.type as LocoGroupType,
+      type: data.name,
 
-      type,
-      constructionType,
-      cabinType,
+      constructionType: data.group.name,
+      cabinType: data.cabinName,
 
-      sponsorOnlyTimestamp: restrictions?.sponsorOnly ?? 0,
-      teamOnly: restrictions?.teamOnly ?? false,
+      sponsorOnlyTimestamp: data.restrictions?.sponsorOnly ?? 0,
+      teamOnly: data.restrictions?.teamOnly ?? false,
 
-      maxSpeed: locoProps.speed,
-      length: locoProps.length,
-      weight: locoProps.weight,
+      maxSpeed: data.group.speed,
+      length: data.group.length,
+      weight: data.group.weight,
 
-      coldStart: locoProps.coldStart ?? false,
-      doubleManned: locoProps.doubleManned ?? false,
+      coldStart: data.group.locoProps?.coldStart ?? false,
+      doubleManned: data.group.locoProps?.doubleManned ?? false,
     });
 
     return acc;
   }, []);
 }
 
-export function carDataList(vehiclesData: IVehiclesData | undefined) {
+export function carDataList(vehiclesData: IVehicleData[] | undefined) {
   if (!vehiclesData) return [];
 
-  return vehiclesData.vehicleList.reduce<ICarWagon[]>((acc, vehicleInfoArray) => {
-    // check if data array has 4 elements (wagons only)
-    if (vehicleInfoArray.length != 4) return acc;
-
-    const [type, constructionType, group, restrictions] = vehicleInfoArray;
-    const wagonProps = vehiclesData.vehicleProps.find((prop) => constructionType == prop.type);
-
-    if (!wagonProps) {
-      console.warn('Brak atrybutów dla pojazdu:', type);
-      return acc;
-    }
+  return vehiclesData.reduce<ICarWagon[]>((acc, data) => {
+    if (data.cabinName !== null) return acc;
 
     acc.push({
-      group: group as WagonGroupType,
-      type,
-      constructionType,
-      loadable: wagonProps.cargoTypes ? wagonProps.cargoTypes.length > 0 : false,
-      cargoTypes: wagonProps?.cargoTypes ?? [],
+      group: data.type as WagonGroupType,
+      type: data.name,
+      constructionType: data.group.name,
+      loadable: data.group.cargoTypes !== null && data.group.cargoTypes.length > 0,
+      cargoTypes: data.group?.cargoTypes ?? [],
 
-      sponsorOnlyTimestamp: restrictions?.sponsorOnly ?? 0,
-      teamOnly: restrictions?.teamOnly ?? false,
+      sponsorOnlyTimestamp: data.restrictions?.sponsorOnly ?? 0,
+      teamOnly: data.restrictions?.teamOnly ?? false,
 
-      maxSpeed: wagonProps.speed,
-      weight: wagonProps?.weight || 0,
-      length: wagonProps?.length || 0,
+      maxSpeed: data.group.speed,
+      length: data.group.length,
+      weight: data.group.weight,
     });
 
     return acc;
