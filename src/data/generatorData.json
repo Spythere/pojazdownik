@@ -1,0 +1,57 @@
+{
+  "cargo": {
+    "kontenery": ["627Z:all", "412Z:all"],
+    "chłodnia": ["202Lc:all"],
+    "drobnica": ["426S:all", "208Kf:all", "401Ka_PKP_Gags:all", "401Ka_PKPC_Gags:all"],
+    "węgiel": ["412W:coal_01", "413S:coal_413S", "429W:coal_01", "401Zb:coal_02"],
+    "ruda": ["412W:ore_01", "401Zl:ore_35", "429W:ore_01"],
+    "piasek": [
+      "412W:sand_01",
+      "412W:sand_02",
+      "413S:sand_413S",
+      "401Zl:sand_30",
+      "429W:sand_01",
+      "429W:sand_02",
+      "401Zb:sand_03",
+      "418Va:sand_418V",
+      "418Vb:sand_418V"
+    ],
+    "kreda": ["413S:chalk_413S"],
+    "kamień": [
+      "412W:stone_01",
+      "412W:stone_50",
+      "401Zl:stone_25",
+      "429W:stone_01",
+      "401Zb:stone_02",
+      "418Va:stone_418V",
+      "418Vb:stone_418V"
+    ],
+    "złom": ["412W:scrap_01", "412W:scrap_02", "429W:scrap_01", "429W:scrap_02"],
+    "paliwo": ["29R_CTLL:all", "29R_PKP:all", "445Rb:all"],
+    "melasa": ["29R_PLPOL:all"],
+    "żwir": ["441V"],
+    "koła": ["424Z:wheels_01"],
+    "drewno": ["424Z:woods_01", "424Z:woods_02"],
+    "szyny": ["424Z:rails_01"],
+    "kable": ["424Z:cables_01", "24Z:cables_Ks", "401Ze:cables_02"],
+    "kruszywo": ["59WS:all"],
+    "techniczne": ["209c", "304Ca", "102a_PKPE", "401Ka_PKP_XGa:all"],
+    "poczta": ["211K:all"],
+    "cement": [
+      "408S:cement_4",
+      "206S_CEMET:cement_3",
+      "206S_SPEED:cement_3",
+      "220S_CEMET:cement_3"
+    ],
+    "wapno": ["408S:lime_4", "206S_CEMET:lime_3", "206S_SPEED:lime_3", "220S_CEMET:lime_3"],
+    "soda": ["408S:soda_4", "206S_CEMET:soda_3", "206S_SPEED:soda_3", "220S_CEMET:soda_3"],
+    "pszenica": ["206Sh_PKP_Ugpps:wheat_3", "206Sh_PKPC_Ugpps:wheat_3"],
+    "kukurydza": ["206Sh_PKP_Ugpps:corn_3", "206Sh_PKPC_Ugpps:corn_3"],
+    "pasza": ["206Sh_PKP_Ugpps:forage_3", "206Sh_PKPC_Ugpps:forage_3"],
+    "pojazdy": ["426Z:tank_01", "426Z:truck_01", "426Z:vehicles_01"],
+    "karbid": ["421S:carbide_01"],
+    "wrażliwe": ["425S:all", "421S:carbide_01"],
+    "stal": ["401Ze:steel_01", "401Ze:steel_02"],
+    "gaz": ["WB117:all"]
+  }
+}

@@ -69,8 +69,6 @@ export default defineComponent({
 
         const isTractionUnit = /^([a-zA-Z\d]{0,}-\d{0,})/.test(type);
 
-        console.log(type, isTractionUnit);
-
         if (isTractionUnit) {
           const [locoType, spawnProps] = type.split(',');
           vehicle = this.store.locoDataList.find((loco) => loco.type == locoType) || null;

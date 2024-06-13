@@ -1,5 +1,5 @@
 import {
-  IVehiclesData,
+  IVehiclesAPIResponse,
   ICarWagon,
   ILocomotive,
   ICargo,
@@ -8,6 +8,7 @@ import {
   IRealComposition,
   LocoGroupType,
   WagonGroupType,
+  IVehicleData,
 } from './types';
 import { defineStore } from 'pinia';
 import {
@@ -23,6 +24,8 @@ import {
 
 import i18n from './i18n-setup';
 import http from './http';
+
+import realCompositionsJSON from './data/realCompositions.json';
 
 export const useStore = defineStore({
   id: 'store',
@@ -52,9 +55,11 @@ export const useStore = defineStore({
     isRandomizerCardOpen: false,
     isRealStockListCardOpen: false,
 
-    vehiclesData: undefined as IVehiclesData | undefined,
+    vehiclesData: undefined as IVehicleData[] | undefined,
 
     lastFocusedElement: null as HTMLElement | null,
+
+    compatibleSimulatorVersion: '2024.1.2',
   }),
 
   getters: {
@@ -73,26 +78,23 @@ export const useStore = defineStore({
     realCompositionList: (state) => {
       if (!state.vehiclesData) return [];
 
-      return Object.keys(state.vehiclesData.realCompositions).reduce<IRealComposition[]>(
-        (acc, key) => {
-          const [type, number, ...name] = key.split(' ');
+      return Object.keys(realCompositionsJSON).reduce<IRealComposition[]>((acc, key) => {
+        const [type, number, ...name] = key.split(' ');
 
-          const obj = {
-            number: number.replace(/_/g, '/'),
-            name: name.join(' '),
-            stockString: state.vehiclesData!.realCompositions[key],
-            type,
-          };
+        const obj = {
+          number: number.replace(/_/g, '/'),
+          name: name.join(' '),
+          stockString: realCompositionsJSON[key as keyof typeof realCompositionsJSON],
+          type,
+        };
 
-          acc.push({
-            stockId: `${obj.type} ${obj.number} ${obj.name}`,
-            ...obj,
-          });
+        acc.push({
+          stockId: `${obj.type} ${obj.number} ${obj.name}`,
+          ...obj,
+        });
 
-          return acc;
-        },
-        []
-      );
+        return acc;
+      }, []);
     },
 
     stockSupportsColdStart: (state) => {
@@ -104,9 +106,8 @@ export const useStore = defineStore({
       const headingLoco = state.stockList[0];
 
       return (
-        state.vehiclesData?.vehicleProps.find(
-          (stock) => stock.type == headingLoco.vehicleRef.constructionType
-        )?.coldStart ?? false
+        state.vehiclesData?.find((vehicle) => vehicle.name == headingLoco.vehicleRef.type)?.group
+          .locoProps?.coldStart ?? false
       );
     },
 
@@ -117,9 +118,8 @@ export const useStore = defineStore({
       const headingLoco = state.stockList[0];
 
       return (
-        state.vehiclesData?.vehicleProps.find(
-          (stock) => stock.type == headingLoco.vehicleRef.constructionType
-        )?.doubleManned ?? false
+        state.vehiclesData?.find((vehicle) => vehicle.name == headingLoco.vehicleRef.type)?.group
+          .locoProps?.doubleManned ?? false
       );
     },
   },
@@ -127,7 +127,7 @@ export const useStore = defineStore({
   actions: {
     async fetchVehiclesAPI() {
       try {
-        const vehiclesData = (await http.get<IVehiclesData>('/vehicles')).data;
+        const vehiclesData = (await http.get<IVehiclesAPIResponse>('/api/getVehicles')).data;
         this.vehiclesData = vehiclesData;
       } catch (error) {
         console.error(error);
@@ -136,14 +136,6 @@ export const useStore = defineStore({
 
     async setupAPIData() {
       await this.fetchVehiclesAPI();
-      this.mergeBackendTranslations();
-    },
-
-    async mergeBackendTranslations() {
-      if (!this.vehiclesData) return;
-
-      i18n.global.mergeLocaleMessage('pl', this.vehiclesData.vehicleLocales.pl);
-      i18n.global.mergeLocaleMessage('en', this.vehiclesData.vehicleLocales.en);
     },
 
     handleRouting() {

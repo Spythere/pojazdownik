@@ -21,32 +21,7 @@ export interface ICargo {
   weight: number;
 }
 
-export interface IVehiclesData {
-  simulatorVersion: string;
-
-  generator: {
-    cargo: {
-      [key: string]: string[];
-    };
-  };
-
-  vehicleList: any[][];
-
-  vehicleProps: IVehicleProps[];
-
-  vehicleLocales: {
-    pl: {
-      cargo: Record<string, string>;
-      usage: Record<string, string>;
-    };
-    en: {
-      cargo: Record<string, string>;
-      usage: Record<string, string>;
-    };
-  };
-
-  realCompositions: Record<string, string>;
-}
+export type IVehiclesAPIResponse = IVehicleData[];
 
 export interface ILocomotive {
   type: string;
@@ -87,4 +62,39 @@ export interface IRealComposition {
   type: string;
   number: string;
   name: string;
+}
+
+export interface IVehicleData {
+  id: number;
+  name: string;
+  type: string;
+  cabinName: string | null;
+  restrictions: IVehicleRestrictions | null;
+  vehicleGroupsId: number;
+  group: IVehicleGroup;
+}
+
+export interface IVehicleRestrictions {
+  sponsorOnly: number | null;
+  teamOnly: boolean | null;
+}
+
+export interface IVehicleGroup {
+  id: number;
+  name: string;
+  speed: number;
+  length: number;
+  weight: number;
+  cargoTypes: IVehicleCargoType[] | null;
+  locoProps: IVehicleLocoProps | null;
+}
+
+export interface IVehicleCargoType {
+  id: string;
+  weight: number;
+}
+
+export interface IVehicleLocoProps {
+  coldStart: boolean;
+  doubleManned: boolean;
 }

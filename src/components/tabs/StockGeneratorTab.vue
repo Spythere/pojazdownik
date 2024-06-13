@@ -121,6 +121,8 @@ import stockMixin from '../../mixins/stockMixin';
 import { ICargo, ICarWagon, IStock } from '../../types';
 import { isTractionUnit } from '../../utils/vehicleUtils';
 
+import generatorDataJSON from '../../data/generatorData.json';
+
 export default defineComponent({
   name: 'stock-generator',
   mixins: [stockMixin],
@@ -150,15 +152,13 @@ export default defineComponent({
     },
 
     computedCargoData() {
-      if (!this.store.vehiclesData?.generator.cargo) return [];
-
-      const cargoGeneratorData = this.store.vehiclesData.generator.cargo;
+      const cargoGeneratorData = generatorDataJSON.cargo;
 
       return Object.keys(cargoGeneratorData)
         .sort((v1, v2) => this.$t(`cargo.${v1}`).localeCompare(this.$t(`cargo.${v2}`)))
         .map((v) => ({
           name: v,
-          cargoList: cargoGeneratorData[v],
+          cargoList: cargoGeneratorData[v as keyof typeof generatorDataJSON.cargo],
         }));
     },
   },
@@ -196,7 +196,7 @@ export default defineComponent({
     generateStock(empty = false) {
       const generatedChosenStockList = this.chosenCargoTypes.reduce(
         (acc, type) => {
-          this.store.vehiclesData?.generator.cargo[type]
+          generatorDataJSON.cargo[type as keyof typeof generatorDataJSON.cargo]
             .filter((c) => !this.excludedCarTypes.includes(c.split(':')[0]))
             .forEach((c) => {
               const [type, cargoType] = c.split(':');
