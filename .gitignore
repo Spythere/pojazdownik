@@ -26,6 +26,3 @@ node_modules
 
 # Dev files
 stockInfoDev.json
-
-# Lock files
-yarn.lock
