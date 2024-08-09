@@ -128,36 +128,37 @@
       "EI": "EI - domestic express",
       "EC": "EC - international express",
       "EN": "EN - domestic night express",
-
+  
       "MP": "MP - intervoivodeship bullet",
-      "RP": "RP - voivodeship bullet",
       "MO": "MO - intervoivodeship regio",
-      "RO": "RO - voivodeship regio",
-
       "MM": "MM - international bullet",
-      "MH": "MH - intervoivodeship bullet (night / hotel)",
+      "MH": "MH - intervoivodeship night bullet",
+      
+      "RP": "RP - voivodeship bullet",
       "RM": "RM - international voivodeship regio",
+      "RO": "RO - voivodeship regio",
       "RA": "RA - voivodeship regio (urban)",
-
+  
       "PW": "PW - empty passenger",
       "PX": "PX - empty passenger test drive",
-
+  
       "TC": "TC - international freight (intermodal)",
-      "TG": "TG - international freight (cargo)",
-      "TR": "TR - international freight (no cargo)",
+      "TG": "TG - international freight (organized cargo)",
+      "TR": "TR - international freight (unorganized cargo)",
       "TD": "TD - domestic freight (intermodal)",
-      "TM": "TM - domestic freight (cargo)",
-      "TN": "TN - domestic freight (no cargo)",
-      "TK": "TK - freight (stations & sidings)",
+      "TM": "TM - domestic freight (organized cargo)",
+      "TN": "TN - domestic freight (unorganized cargo)",
+      "TK": "TK - freight (for stations & sidings)",
       "TS": "TS - empty freight test drive",
-
-      "LT": "LT - locomotive only",
-      "LT-new": "LT - freight locomotive only",
-
+      "TH": "TH - locomotive rolling stock (over 3 vehicles)",
+  
+      "LT": "LT - freight locomotive only",
       "LP": "LP - passenger locomotive only",
-      "LS": "LS - shunting locomotive",
-
-      "ZN": "ZN - inspection / diagnostic"
+      "LS": "LS - shunting locomotive only",
+      "LZ": "LS - shunting locomotive only",
+  
+      "ZN": "ZN - inspection / diagnostic type",
+      "ZU": "ZU - other maintenance type"
     }
   },
   "wiki": {

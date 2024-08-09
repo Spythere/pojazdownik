@@ -150,14 +150,15 @@
       "TN": "TN - towarowy krajowy niemasowy",
       "TK": "TK - towarowy (stacje i bocznice)",
       "TS": "TS - towarowy próżny próbny",
+      "TH": "TH - skład lokomotyw (powyżej 3 pojazdów)",
 
-      "LT": "LT - lokomotywa luzem",
-      "LT-new": "LT - lokomotywa towarowa luzem",
-
+      "LT": "LT - lokomotywa towarowa luzem",
       "LP": "LP - lokomotywa pasażerska luzem",
-      "LS": "LS - lokomotywa manewrowa",
+      "LS": "LS - lokomotywa manewrowa luzem",
+      "LZ": "LZ - lokomotywa dla poc. utrzymaniowo-naprawczych",
 
-      "ZN": "ZN - inspekcyjny / diagnostyczny"
+      "ZN": "ZN - inspekcyjny / diagnostyczny",
+      "ZU": "ZU - inny utrzymaniowy"
     }
   },
   "wiki": {
