@@ -163,6 +163,7 @@
   },
   "wiki": {
     "title": "LISTA DOSTĘPNYCH POJAZDÓW",
+    "no-vehicles": "Brak pojazdów do pokazania przy obecnych filtrach!",
     "labels": {
       "vehicles": "Pojazdy",
       "sort-by": "Sortuj wg",
