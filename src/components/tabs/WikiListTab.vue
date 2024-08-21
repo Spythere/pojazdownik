@@ -6,41 +6,48 @@
 
     <div class="tab_content">
       <div class="actions">
-        <label>
-          <span>{{ $t('wiki.labels.search-vehicle') }}</span>
+        <div class="action action-input">
+          <label for="search-vehicle">
+            {{ $t('wiki.labels.search-vehicle') }}
+            <button class="reset-btn" @click="resetSearchInput">
+              <img src="/images/icon-exit.svg" alt="reset vehicle input icon" />
+            </button>
+          </label>
           <input
             type="text"
+            id="search-vehicle"
+            name="search-vehicle"
             :placeholder="$t('wiki.labels.search-vehicle-placeholder')"
             v-model="searchedVehicleTypeName"
           />
-        </label>
+        </div>
 
-        <label>
-          <span>{{ $t('wiki.labels.vehicles') }}</span>
+        <div class="action action-select">
+          <label for="filter-type">{{ $t('wiki.labels.vehicles') }}</label>
           <select name="filter-type" id="filter-type" v-model="filterType">
             <option v-for="filter in filters" :key="filter" :value="filter">
               {{ $t(`wiki.filters.${filter}`) }}
             </option>
           </select>
-        </label>
+        </div>
 
-        <label>
-          <span>{{ $t('wiki.labels.sort-by') }}</span>
+        <div class="action action-select">
+          <label for="sorter-type">{{ $t('wiki.labels.sort-by') }}</label>
           <select name="sorter-type" id="sorter-type" v-model="sorterType">
             <option v-for="sorter in sorters" :key="sorter" :value="sorter">
               {{ $t(`wiki.sort-by.${sorter}`) }}
             </option>
           </select>
-        </label>
+        </div>
 
-        <label>
-          <span>{{ $t('wiki.labels.sort-direction') }}</span>
+        <div class="action action-select">
+          <label for="sorter-direction">{{ $t('wiki.labels.sort-direction') }}</label>
 
           <select name="sorter-direction" id="sorter-direction" v-model="sorterDirection">
             <option value="asc">{{ $t('wiki.sort-direction.asc') }}</option>
             <option value="desc">{{ $t('wiki.sort-direction.desc') }}</option>
           </select>
-        </label>
+        </div>
       </div>
 
       <ul class="vehicles" ref="vehicles">
@@ -79,6 +86,10 @@
           </span>
         </li>
       </ul>
+
+      <div class="no-vehicles-warning" v-if="computedVehicles.length == 0">
+        {{ $t('wiki.no-vehicles') }}
+      </div>
     </div>
   </section>
 </template>
@@ -148,23 +159,24 @@ export default defineComponent({
       this.previewVehicle(vehicle);
     },
 
+    resetSearchInput() {
+      this.searchedVehicleTypeName = '';
+    },
+
     filterVehicles(v: IVehicle) {
-      if (this.searchedVehicleTypeName)
-        return v.type
-          .toLocaleLowerCase()
-          .includes(this.searchedVehicleTypeName.toLocaleLowerCase());
+      if (
+        this.searchedVehicleTypeName != '' &&
+        !v.type.toLocaleLowerCase().includes(this.searchedVehicleTypeName.toLocaleLowerCase())
+      )
+        return false;
 
-      switch (this.filterType) {
-        case 'vehicles-all':
-          return true;
-        case 'vehicles-traction':
-          return isTractionUnit(v);
-        case 'vehicles-wagon':
-          return !isTractionUnit(v);
+      if (
+        (this.filterType == 'vehicles-traction' && !isTractionUnit(v)) ||
+        (this.filterType == 'vehicles-wagon' && isTractionUnit(v))
+      )
+        return false;
 
-        default:
-          return false;
-      }
+      return true;
     },
 
     sortVehicles(v1: IVehicle, v2: IVehicle) {
@@ -179,21 +191,6 @@ export default defineComponent({
         case 'length':
         case 'maxSpeed':
           return Math.sign(v1[this.sorterType] - v2[this.sorterType]) * direction;
-
-        // case 'cargoCount':
-        //   return (
-        //     Math.sign(
-        //       (!isTractionUnit(v1) ? v1.cargoTypes.length || -1 : -1) -
-        //         (!isTractionUnit(row2.vehicle) ? row2.vehicle.cargoTypes.length || -1 : -1)
-        //     ) * direction
-        //   );
-
-        // case 'coldStart':
-        //   return (
-        //     ((isTractionUnit(v1) && v1.coldStart ? 1 : -1) -
-        //       (isTractionUnit(row2.vehicle) && row2.vehicle.coldStart ? 1 : -1)) *
-        //     direction
-        //   );
 
         default:
           return v1.type.localeCompare(v2.type) * direction;
@@ -220,14 +217,27 @@ export default defineComponent({
   gap: 0.5em;
 }
 
-.actions > label {
+.action {
   display: flex;
   flex-direction: column;
-  gap: 0.25em;
+  gap: 0.5em;
 
-  span {
+  label {
     color: #ccc;
+    position: relative;
   }
+}
+
+.action.action-input label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.reset-btn {
+  display: flex;
+  background-color: #161c2e;
+  border-radius: 0.25em;
 }
 
 .vehicles {
@@ -288,6 +298,12 @@ export default defineComponent({
 
 .vehicle-props {
   color: #ccc;
+}
+
+.no-vehicles-warning {
+  text-align: center;
+  padding: 1em;
+  background-color: #161c2e;
 }
 
 @media screen and (max-width: $breakpointSm) {

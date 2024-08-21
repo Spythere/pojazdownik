@@ -115,6 +115,10 @@ button {
   &:hover {
     color: $accentColor;
   }
+
+  &:focus-visible {
+    outline: 1px solid $accentColor;
+  }
 }
 
 [data-tooltip]:hover::after,
