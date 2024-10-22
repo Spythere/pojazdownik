@@ -28,7 +28,7 @@
             v-for="thumbnail in getVehicleThumbnails(stock.vehicleRef.type)"
             draggable="false"
             style="min-width: 200px"
-            :src="`https://static.spythere.eu/thumbnails/v2/${thumbnail.src}.png`"
+            :src="`https://stacjownik.spythere.eu/static/thumbnails/${thumbnail.src}.png`"
             :alt="stock.vehicleRef.type"
             :title="stock.vehicleRef.type"
             @load="($event) => (($event.target as HTMLImageElement).style.minWidth = 'auto')"

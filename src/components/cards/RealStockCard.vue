@@ -76,7 +76,7 @@
               <div class="thumbnail-container">
                 <div>{{ stockType }}</div>
                 <img
-                  :src="`https://static.spythere.eu/thumbnails/${stockType}.png`"
+                  :src="`https://stacjownik.spythere.eu/static/thumbnails/${stockType}.png`"
                   :title="stockType"
                   style="opacity: 0"
                   @error="(e) => onStockItemError(e, stockType)"

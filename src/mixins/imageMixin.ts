@@ -7,7 +7,7 @@ export default defineComponent({
     },
 
     getThumbnailURL(vehicleType: string, size: 'small' | 'large') {
-      return `https://static.spythere.eu/images/${vehicleType}--${size == 'small' ? 300 : 800}px.jpg`;
+      return `https://stacjownik.spythere.eu/static/images/${vehicleType}--${size == 'small' ? 300 : 800}px.jpg`;
     },
   },
 });
