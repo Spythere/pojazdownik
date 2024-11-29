@@ -128,20 +128,20 @@
       "EI": "EI - domestic express",
       "EC": "EC - international express",
       "EN": "EN - domestic night express",
-  
+
       "MP": "MP - intervoivodeship bullet",
       "MO": "MO - intervoivodeship regio",
       "MM": "MM - international bullet",
       "MH": "MH - intervoivodeship night bullet",
-      
+
       "RP": "RP - voivodeship bullet",
       "RM": "RM - international voivodeship regio",
       "RO": "RO - voivodeship regio",
       "RA": "RA - voivodeship regio (urban)",
-  
+
       "PW": "PW - empty passenger",
       "PX": "PX - empty passenger test drive",
-  
+
       "TC": "TC - international freight (intermodal)",
       "TG": "TG - international freight (organized cargo)",
       "TR": "TR - international freight (unorganized cargo)",
@@ -151,12 +151,12 @@
       "TK": "TK - freight (for stations & sidings)",
       "TS": "TS - empty freight test drive",
       "TH": "TH - locomotive rolling stock (over 3 vehicles)",
-  
+
       "LT": "LT - freight locomotive only",
       "LP": "LP - passenger locomotive only",
       "LS": "LS - shunting locomotive only",
       "LZ": "LS - shunting locomotive only",
-  
+
       "ZN": "ZN - inspection / diagnostic type",
       "ZU": "ZU - other maintenance type"
     }
@@ -173,8 +173,14 @@
     },
     "filters": {
       "vehicles-all": "all",
-      "vehicles-traction": "traction units",
-      "vehicles-wagon": "wagons"
+      "vehicles-tractions-all": "traction units - all",
+      "vehicles-tractions-electric": "electric locomotives",
+      "vehicles-tractions-diesel": "diesel locomotives",
+      "vehicles-tractions-emu": "electric units",
+      "vehicles-tractions-dmu": "diesel units",
+      "vehicles-wagons-all": "wagons - all",
+      "vehicles-wagons-passenger": "wagons - passenger",
+      "vehicles-wagons-freight": "wagons - freight"
     },
     "sort-by": {
       "type": "name",

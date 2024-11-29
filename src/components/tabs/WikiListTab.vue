@@ -104,12 +104,21 @@ import stockMixin from '../../mixins/stockMixin';
 import imageMixin from '../../mixins/imageMixin';
 
 const sorters = ['type', 'group', 'length', 'weight', 'maxSpeed'] as const;
-const filters = ['vehicles-all', 'vehicles-traction', 'vehicles-wagon'] as const;
+
+enum VehicleFilter {
+  AllVehicles = 'vehicles-all',
+  AllTractions = 'vehicles-tractions-all',
+  ElectricTraction = 'vehicles-tractions-electric',
+  DieselTraction = 'vehicles-tractions-diesel',
+  EmuTraction = 'vehicles-tractions-emu',
+  DmuTraction = 'vehicles-tractions-dmu',
+  AllWagons = 'vehicles-wagons-all',
+  PassengerWagons = 'vehicles-wagons-passenger',
+  FreightWagons = 'vehicles-wagons-freight',
+}
 
 type SorterType = (typeof sorters)[number];
 type SorterDirection = 'asc' | 'desc';
-
-type FilterType = (typeof filters)[number];
 
 export default defineComponent({
   mixins: [stockPreviewMixin, stockMixin, imageMixin],
@@ -120,14 +129,14 @@ export default defineComponent({
       observer: null as IntersectionObserver | null,
 
       sorters: sorters,
-      filters: filters,
+      filters: Object.values(VehicleFilter),
 
       searchedVehicleTypeName: '',
 
       sorterType: 'type' as SorterType,
       sorterDirection: 'asc' as SorterDirection,
 
-      filterType: 'vehicles-all' as FilterType,
+      filterType: VehicleFilter.AllVehicles,
 
       lastScrollTop: 0,
     };
@@ -170,11 +179,31 @@ export default defineComponent({
       )
         return false;
 
-      if (
-        (this.filterType == 'vehicles-traction' && !isTractionUnit(v)) ||
-        (this.filterType == 'vehicles-wagon' && isTractionUnit(v))
-      )
-        return false;
+      switch (this.filterType) {
+        case VehicleFilter.AllTractions:
+          return isTractionUnit(v);
+
+        case VehicleFilter.ElectricTraction:
+          return isTractionUnit(v) && v.group == 'loco-electric';
+
+        case VehicleFilter.DieselTraction:
+          return isTractionUnit(v) && v.group == 'loco-diesel';
+
+        case VehicleFilter.EmuTraction:
+          return isTractionUnit(v) && v.group == 'unit-electric';
+
+        case VehicleFilter.DmuTraction:
+          return isTractionUnit(v) && v.group == 'unit-diesel';
+
+        case VehicleFilter.AllWagons:
+          return !isTractionUnit(v);
+
+        case VehicleFilter.PassengerWagons:
+          return !isTractionUnit(v) && v.group == 'wagon-passenger';
+
+        case VehicleFilter.FreightWagons:
+          return !isTractionUnit(v) && v.group == 'wagon-freight';
+      }
 
       return true;
     },
