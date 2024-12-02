@@ -9,7 +9,7 @@ import {
   LocoGroupType,
   WagonGroupType,
   IVehicleData,
-} from './types';
+} from './types/common.types';
 import { defineStore } from 'pinia';
 import {
   acceptableWeight,

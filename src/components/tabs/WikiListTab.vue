@@ -98,7 +98,7 @@
 import { defineComponent } from 'vue';
 import { useStore } from '../../store';
 import stockPreviewMixin from '../../mixins/stockPreviewMixin';
-import { IVehicle } from '../../types';
+import { IVehicle } from '../../types/common.types';
 import { isTractionUnit } from '../../utils/vehicleUtils';
 import stockMixin from '../../mixins/stockMixin';
 import imageMixin from '../../mixins/imageMixin';

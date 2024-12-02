@@ -126,7 +126,7 @@ import imageMixin from '../../mixins/imageMixin';
 import { useStore } from '../../store';
 import stockPreviewMixin from '../../mixins/stockPreviewMixin';
 import stockMixin from '../../mixins/stockMixin';
-import { LocoGroupType, WagonGroupType } from '../../types';
+import { LocoGroupType, WagonGroupType } from '../../types/common.types';
 
 export default defineComponent({
   mixins: [imageMixin, stockPreviewMixin, stockMixin],

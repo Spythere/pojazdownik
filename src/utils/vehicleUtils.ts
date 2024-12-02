@@ -6,7 +6,7 @@ import {
   IVehiclesAPIResponse,
   LocoGroupType,
   WagonGroupType,
-} from '../types';
+} from '../types/common.types';
 import {
   MassLimitLocoType,
   SpeedLimitLocoType,
