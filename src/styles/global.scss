@@ -138,7 +138,8 @@ button {
   cursor: pointer;
 }
 
-.btn {
+.btn,
+.link-btn {
   padding: 0.4em 0.75em;
 
   outline: none;
@@ -204,6 +205,10 @@ button {
       outline: 1px solid white;
     }
   }
+}
+
+.link-btn.router-link-active {
+  color: $accentColor;
 }
 
 select,

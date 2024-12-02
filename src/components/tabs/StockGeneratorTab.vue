@@ -280,10 +280,9 @@ export default defineComponent({
 
       const bestStockList = bestGeneration.stockList;
 
-      this.groupStock(bestStockList);
-
       this.store.stockList = bestGeneration.stockList;
-      this.store.stockSectionMode = 'stock-list';
+      this.groupStock(bestStockList);
+      this.$router.push('/');
     },
 
     previewCar(type: string) {

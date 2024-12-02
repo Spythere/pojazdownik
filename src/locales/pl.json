@@ -41,10 +41,10 @@
     "construction": "Typ konstrukcji:"
   },
   "topbar": {
-    "stock-list": "SKŁAD",
-    "wiki-list": "POJAZDY",
-    "number-generator": "GNR NUMERU",
-    "stock-generator": "GNR SKŁADU"
+    "stock": "SKŁAD",
+    "wiki": "POJAZDY",
+    "numgen": "GNR NUMERU",
+    "stockgen": "GNR SKŁADU"
   },
   "stocklist": {
     "title": "EDYTOR SKŁADU",

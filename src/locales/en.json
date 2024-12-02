@@ -41,10 +41,10 @@
     "construction": "Construction type:"
   },
   "topbar": {
-    "stock-list": "STOCK",
-    "wiki-list": "VEHICLES",
-    "number-generator": "NUMBER GEN.",
-    "stock-generator": "STOCK GEN."
+    "stock": "STOCK",
+    "wiki": "VEHICLES",
+    "numgen": "NUMBER GEN.",
+    "stockgen": "STOCK GEN."
   },
   "stocklist": {
     "title": "STOCK EDITOR",

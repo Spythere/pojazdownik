@@ -50,8 +50,6 @@ export const useStore = defineStore({
 
     vehiclePreviewSrc: '',
 
-    stockSectionMode: 'stock-list',
-
     isRandomizerCardOpen: false,
     isRealStockListCardOpen: false,
 
@@ -139,18 +137,8 @@ export const useStore = defineStore({
     },
 
     handleRouting() {
-      switch (window.location.pathname) {
-        case '/numgnr':
-          this.stockSectionMode = 'number-generator';
-          break;
-        case '/stockgnr':
-          this.stockSectionMode = 'stock-generator';
-          break;
-        case '/vehicles':
-          this.stockSectionMode = 'wiki-list';
-          break;
-        default:
-          break;
+      if (window.location.search.includes('trainId=')) {
+        const trainId = window.location.search;
       }
     },
   },
