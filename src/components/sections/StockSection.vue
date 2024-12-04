@@ -1,9 +1,9 @@
 <template>
   <section class="stock-section">
     <div class="section_modes">
-      <router-link v-for="(route, i) in testRoutes" :key="route" class="link-btn" :to="`/${route}`">
-        <span class="text--accent">{{ i + 1 }}.</span> {{ $t(`topbar.${route}`) }}
-        <span v-if="route == 'stock-list'">({{ store.stockList.length }})</span>
+      <router-link v-for="(route, i) in routes" :key="route.name" class="link-btn" :to="route.href">
+        <span class="text--accent">{{ i + 1 }}.</span> {{ $t(`topbar.${route.name}`) }}
+        <span class="text--grayed" v-if="route.name == 'stock'">({{ store.stockList.length }})</span>
       </router-link>
     </div>
 
@@ -18,12 +18,30 @@
 <script lang="ts" setup>
 import { onMounted } from 'vue';
 import { useStore } from '../../store';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 const store = useStore();
 const route = useRoute();
+const router = useRouter();
 
-const testRoutes = ['stock', 'wiki', 'numgen', 'stockgen'];
+const routes = [
+  {
+    name: 'stock',
+    href: '/',
+  },
+  {
+    name: 'wiki',
+    href: '/wiki',
+  },
+  {
+    name: 'numgen',
+    href: '/numgen',
+  },
+  {
+    name: 'stockgen',
+    href: '/stockgen',
+  },
+];
 
 onMounted(() => {
   window.addEventListener('keydown', (e) => {
@@ -32,8 +50,7 @@ onMounted(() => {
     if (/^[1234]$/.test(e.key)) {
       const keyNum = Number(e.key);
 
-      // store.stockSectionMode = sectionModes[keyNum - 1];
-      // (sectionButtonRefs.value[keyNum - 1] as HTMLButtonElement)?.focus();
+      router.push(routes[keyNum - 1].href);
     }
   });
 });
@@ -72,10 +89,6 @@ onMounted(() => {
   gap: 0.5em;
 
   margin-bottom: 1em;
-}
-
-a.router-link-active {
-  color: gold;
 }
 
 @media screen and (max-width: 650px) {
