@@ -1,6 +1,6 @@
 import { defineComponent } from 'vue';
 import { useStore } from '../store';
-import { ICarWagon, ILocomotive, IStock, ICargo, IVehicle } from '../types';
+import { ICarWagon, ILocomotive, IStock, ICargo, IVehicle } from '../types/common.types';
 import { isTractionUnit } from '../utils/vehicleUtils';
 
 export default defineComponent({

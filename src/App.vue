@@ -1,7 +1,8 @@
 <template>
   <AppModals />
   <ImageFullscreenPreview v-if="store.vehiclePreviewSrc" />
-  <AppContainerView />
+ 
+  <router-view></router-view>
 </template>
 
 <script lang="ts">

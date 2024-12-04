@@ -41,10 +41,10 @@
     "construction": "Typ konstrukcji:"
   },
   "topbar": {
-    "stock-list": "SKŁAD",
-    "wiki-list": "POJAZDY",
-    "number-generator": "GNR NUMERU",
-    "stock-generator": "GNR SKŁADU"
+    "stock": "SKŁAD",
+    "wiki": "POJAZDY",
+    "numgen": "GNR NUMERU",
+    "stockgen": "GNR SKŁADU"
   },
   "stocklist": {
     "title": "EDYTOR SKŁADU",
@@ -173,8 +173,14 @@
     },
     "filters": {
       "vehicles-all": "wszystkie",
-      "vehicles-traction": "trakcyjne",
-      "vehicles-wagon": "wagony"
+      "vehicles-tractions-all": "trakcyjne - wszystkie",
+      "vehicles-tractions-electric": "elektrowozy",
+      "vehicles-tractions-diesel": "spalinowozy",
+      "vehicles-tractions-emu": "EZT",
+      "vehicles-tractions-dmu": "SZT",
+      "vehicles-wagons-all": "wagony - wszystkie",
+      "vehicles-wagons-passenger": "wagony pasażerskie",
+      "vehicles-wagons-freight": "wagony towarowe"
     },
     "sort-by": {
       "type": "nazwa",

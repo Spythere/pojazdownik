@@ -1,5 +1,4 @@
 export type IVehicle = ILocomotive | ICarWagon;
-export type StockSectionMode = 'STOCK_LIST' | 'STOCK_GENERATOR';
 
 export type LocoGroupType = 'loco-electric' | 'loco-diesel' | 'unit-electric' | 'unit-diesel';
 export type WagonGroupType = 'wagon-passenger' | 'wagon-freight';

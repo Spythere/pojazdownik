@@ -100,7 +100,7 @@ import { useStore } from '../../store';
 import imageMixin from '../../mixins/imageMixin';
 import stockMixin from '../../mixins/stockMixin';
 
-import { IRealComposition, VehicleGroupType } from '../../types';
+import { IRealComposition, VehicleGroupType } from '../../types/common.types';
 
 function getVehicleType(stockType: string): VehicleGroupType {
   if (/^E/.test(stockType)) return 'loco-electric';
