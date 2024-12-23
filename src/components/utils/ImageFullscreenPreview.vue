@@ -5,7 +5,7 @@
     @keydown.esc="store.vehiclePreviewSrc = ''"
     tabindex="0"
   >
-    <img :src="store.vehiclePreviewSrc" alt="preview" />
+    <img :src="store.vehiclePreviewSrc" alt="preview" @error="onImageError" />
   </div>
 </template>
 
@@ -22,6 +22,14 @@ export default defineComponent({
 
   mounted() {
     this.$el.focus();
+  },
+
+  methods: {
+    onImageError(event: Event) {
+      if(!event.target || !(event.target instanceof HTMLImageElement)) return
+
+      event.target.src = '/images/no-vehicle-image.png';
+    },
   },
 });
 </script>

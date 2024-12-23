@@ -60,7 +60,12 @@
           @keydown.enter="onVehicleSelect(vehicle)"
           tabindex="0"
         >
-          <img loading="lazy" width="120" :src="getThumbnailURL(vehicle.type, 'small')" />
+          <img
+            loading="lazy"
+            width="120"
+            :src="getThumbnailURL(vehicle.type, 'small')"
+            @error="onThumbnailImageError"
+          />
 
           <span>
             <span
@@ -162,6 +167,13 @@ export default defineComponent({
 
   methods: {
     isTractionUnit,
+
+    onThumbnailImageError(e: Event) {
+      const el = e.target as HTMLImageElement;
+      
+      if (el.src == '/images/no-vehicle-image.png') return;
+      el.src = '/images/no-vehicle-image.png';
+    },
 
     onVehicleSelect(vehicle: IVehicle) {
       if (this.store.chosenVehicle?.type === vehicle.type) this.addVehicle(vehicle);

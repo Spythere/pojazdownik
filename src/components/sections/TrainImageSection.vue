@@ -4,7 +4,7 @@
       <div class="image-wrapper">
         <img
           :src="getThumbnailURL(store.chosenVehicle.type, 'small')"
-          :data-preview-active="store.chosenVehicle !== null"
+          :data-preview-available="isDataPreviewAvailable"
           :data-sponsor-only="
             store.chosenVehicle.sponsorOnlyTimestamp &&
             store.chosenVehicle.sponsorOnlyTimestamp > Date.now()
@@ -111,30 +111,41 @@ export default defineComponent({
     };
   },
 
+  computed: {
+    isDataPreviewAvailable() {
+      return this.imageStatus == 'loaded' && this.store.chosenVehicle != null;
+    },
+  },
+
   methods: {
     isTractionUnit,
 
     onImageError(e: Event) {
       const el = e.target as HTMLImageElement;
-      if (el.src == '/images/placeholder.jpg') return;
+      if (el.src == '/images/no-vehicle-image.png') return;
 
-      el.src = '/images/placeholder.jpg';
+      el.src = '/images/no-vehicle-image.png';
       this.imageStatus = 'error';
     },
 
     onImageLoad(e: Event) {
+      if (this.imageStatus == 'error') return;
+
       this.imageStatus = 'loaded';
     },
 
     onImageClick(e: Event) {
-      const target = e.target as HTMLElement;
+      const target = e.target as HTMLImageElement;
 
       const chosenVehicle = this.store.chosenVehicle;
 
       if (!chosenVehicle) return;
 
       this.store.lastFocusedElement = target;
-      this.store.vehiclePreviewSrc = this.getThumbnailURL(chosenVehicle.type, 'large');
+
+      if (this.isDataPreviewAvailable) {
+        this.store.vehiclePreviewSrc = this.getThumbnailURL(chosenVehicle.type, 'large');
+      }
     },
   },
 });
@@ -161,7 +172,7 @@ export default defineComponent({
 img {
   width: 100%;
 
-  &[data-preview-active='true'] {
+  &[data-preview-available='true'] {
     border: 1px solid white;
     cursor: zoom-in;
   }

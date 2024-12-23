@@ -57,7 +57,7 @@ export const useStore = defineStore({
 
     lastFocusedElement: null as HTMLElement | null,
 
-    compatibleSimulatorVersion: '2024.2.1',
+    compatibleSimulatorVersion: '2024.3.1',
   }),
 
   getters: {
