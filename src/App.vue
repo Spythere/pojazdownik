@@ -1,7 +1,7 @@
 <template>
   <AppModals />
   <ImageFullscreenPreview v-if="store.vehiclePreviewSrc" />
- 
+
   <router-view></router-view>
 </template>
 
@@ -15,9 +15,7 @@ import AppModals from './components/app/AppModals.vue';
 export default defineComponent({
   components: { ImageFullscreenPreview, AppContainerView, AppModals },
   data() {
-    return {
-      store: useStore(),
-    };
+    return { store: useStore() };
   },
 
   async created() {
@@ -28,21 +26,19 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import './styles/global.scss';
-
 /* APP */
 #app {
   margin: 0 auto;
 
-  color: $textColor;
+  color: global.$textColor;
   font-size: 1em;
   padding: 0;
 
-  @media screen and (max-width: $breakpointMd) {
+  @media screen and (max-width: global.$breakpointMd) {
     font-size: calc(0.7rem + 0.75vw);
   }
 
-  @media screen and (orientation: landscape) and (max-width: $breakpointMd) {
+  @media screen and (orientation: landscape) and (max-width: global.$breakpointMd) {
     font-size: calc(0.75rem + 0.4vw);
   }
 }

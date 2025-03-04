@@ -20,8 +20,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '../../styles/global.scss';
-
 main {
   display: grid;
   gap: 1em;
@@ -32,7 +30,7 @@ main {
   grid-template-columns: 1fr 2fr;
   grid-template-rows: auto 360px minmax(300px, 1fr);
 
-  background-color: darken($color: $bgColor, $amount: 5);
+  background-color: global.$bgColorDarker;
   border-radius: 1em;
 
   min-height: 950px;
@@ -40,7 +38,7 @@ main {
   padding: 1em;
 }
 
-@media screen and (max-width: $breakpointMd) {
+@media screen and (max-width: global.$breakpointMd) {
   main {
     display: flex;
     flex-direction: column;

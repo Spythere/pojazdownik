@@ -57,7 +57,7 @@ onMounted(() => {
 </script>
 
 <style lang="scss">
-@import '../../styles/global.scss';
+
 
 // Tab change animation
 .tab-change {

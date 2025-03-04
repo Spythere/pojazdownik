@@ -521,8 +521,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '../../styles/global';
-@import '../../styles/tab.scss';
+
+@use '@/styles/tab';
 
 .tab_content {
   display: flex;
@@ -533,7 +533,7 @@ export default defineComponent({
 .warning {
   padding: 0.25em;
   margin: 0.25em 0;
-  background: $accentColor;
+  background: global.$accentColor;
   color: black;
 
   font-weight: bold;
@@ -600,7 +600,7 @@ export default defineComponent({
 }
 
 .list-empty {
-  background-color: $secondaryColor;
+  background-color: global.$secondaryColor;
   border-radius: 0.5em;
   padding: 0.75em;
   font-weight: bold;
@@ -643,14 +643,14 @@ li > .stock-info {
 
 .stock-info-no,
 .stock-info-type {
-  background-color: $secondaryColor;
+  background-color: global.$secondaryColor;
 
   &[data-team-only='true'] {
-    color: $teamColor;
+    color: global.$teamColor;
   }
 
   &[data-sponsor-only='true'] {
-    color: $sponsorColor;
+    color: global.$sponsorColor;
   }
 }
 
@@ -659,7 +659,7 @@ li > .stock-info {
   text-align: right;
 
   &[data-selected='true'] {
-    color: $accentColor;
+    color: global.$accentColor;
   }
 }
 
@@ -694,7 +694,7 @@ li > .stock-info {
   }
 }
 
-@media screen and (max-width: $breakpointMd) {
+@media screen and (max-width: global.$breakpointMd) {
   ul {
     min-height: auto;
   }

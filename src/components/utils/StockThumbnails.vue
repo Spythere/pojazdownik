@@ -173,7 +173,7 @@ const getVehicleThumbnails = (vehicleString: string) => {
 </script>
 
 <style lang="scss" scoped>
-@import '../../styles/global.scss';
+
 
 .stock-thumbnails {
   overflow: auto;
@@ -201,11 +201,11 @@ ul {
   }
 
   &[data-sponsor-only='true'] > b {
-    color: $sponsorColor;
+    color: global.$sponsorColor;
   }
 
   &[data-team-only='true'] > b {
-    color: $teamColor;
+    color: global.$teamColor;
   }
 
   img {
