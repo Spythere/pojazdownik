@@ -57,9 +57,10 @@
     "action-move-up": "MOVE UP",
     "action-move-down": "MOVE DOWN",
     "action-remove": "REMOVE",
-    "action-upload": "LOAD",
-    "action-download": "DOWNLOAD",
-    "action-copy": "COPY",
+    "action-upload-file": "LOAD FILE",
+    "action-upload-clipboard": "LOAD CLIPBOARD",
+    "action-download": "DOWNLOAD TO FILE",
+    "action-copy": "COPY TO CLIPBOARD",
     "action-reset": "RESET",
     "action-shuffle": "SHUFFLE",
     "mass": "Mass",
@@ -69,14 +70,15 @@
     "coldstart-info": "Locomotive cold start",
     "doublemanning-info": "Double manning",
     "list-empty": "Stock list is empty!",
-
     "warning-not-suitable": "EP series locomotives are designed for passenger traffic only!",
     "warning-passenger-too-long": "Maximum length of a passenger train may not be greater than 350m!",
     "warning-freight-too-long": "Maximum length of a freight train may not be greater than 650m!",
     "warning-too-many-locos": "This train has too many traction units!",
     "warning-too-heavy": "This train is too heavy! Check {href}",
     "warning-team-only-vehicle": "There's at least one vehicle available only for TD2 team members in your stock composition! ({0})",
-    "acceptable-mass-docs": "acceptable rolling stock masses (PL)"
+    "acceptable-mass-docs": "acceptable rolling stock masses (PL)",
+    "stock-loading-error": "An error occurred: cannot parse data from the file - make sure it's in a proper format!",
+    "stock-clipboard-error": "An error occurred: cannot read data from the clipboard - make sure the site has been granted right permissions for this action!"
   },
   "stockgen": {
     "title": "FREIGHT TRAIN GENERATOR",
@@ -108,7 +110,6 @@
     "action-random-region": "DRAW REGIONS",
     "action-random-number": "DRAW LAST DIGITS",
     "action-random-category": "DRAW A CATEGORY",
-
     "rules": {
       "first-digit": "First digit:",
       "second-digit": "Second digit:",
@@ -123,25 +124,20 @@
       "for-region-end": "for the terminating construction region",
       "from-range": "from range of"
     },
-
     "categories": {
       "EI": "EI - domestic express",
       "EC": "EC - international express",
       "EN": "EN - domestic night express",
-
       "MP": "MP - intervoivodeship bullet",
       "MO": "MO - intervoivodeship regio",
       "MM": "MM - international bullet",
       "MH": "MH - intervoivodeship night bullet",
-
       "RP": "RP - voivodeship bullet",
       "RM": "RM - international voivodeship regio",
       "RO": "RO - voivodeship regio",
       "RA": "RA - voivodeship regio (urban)",
-
       "PW": "PW - empty passenger",
       "PX": "PX - empty passenger test drive",
-
       "TC": "TC - international freight (intermodal)",
       "TG": "TG - international freight (organized cargo)",
       "TR": "TR - international freight (unorganized cargo)",
@@ -151,12 +147,10 @@
       "TK": "TK - freight (for stations & sidings)",
       "TS": "TS - empty freight test drive",
       "TH": "TH - locomotive rolling stock (over 3 vehicles)",
-
       "LT": "LT - freight locomotive only",
       "LP": "LP - passenger locomotive only",
       "LS": "LS - shunting locomotive only",
       "LZ": "LS - shunting locomotive only",
-
       "ZN": "ZN - inspection / diagnostic type",
       "ZU": "ZU - other maintenance type"
     }

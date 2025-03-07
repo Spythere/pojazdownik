@@ -44,6 +44,8 @@ export const useStore = defineStore({
     stockList: [] as IStock[],
     cargoOptions: [] as any[][],
 
+    storageStockList: [] as IStock[][],
+
     swapVehicles: false,
 
     chosenStockListIndex: -1,

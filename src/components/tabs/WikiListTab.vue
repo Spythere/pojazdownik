@@ -1,9 +1,5 @@
 <template>
   <section class="wiki-list tab">
-    <div class="tab_header">
-      <h2>{{ $t('wiki.title') }}</h2>
-    </div>
-
     <div class="tab_content">
       <div class="actions">
         <div class="action action-input">

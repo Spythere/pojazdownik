@@ -1,9 +1,5 @@
 <template>
   <div class="stock-generator tab">
-    <div class="tab_header">
-      <h2>{{ $t('stockgen.title') }}</h2>
-    </div>
-
     <div class="tab_content">
       <div>
         <h2>{{ $t('stockgen.properties-title') }}</h2>

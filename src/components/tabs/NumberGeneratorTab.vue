@@ -224,8 +224,7 @@ const randomizeTrainNumber = (randomizeRegions = false) => {
 </script>
 
 <style lang="scss" scoped>
-
-
+@use '../../styles/tab';
 
 .category-select {
   select {

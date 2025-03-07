@@ -1,15 +1,16 @@
 <template>
   <section class="stock-list-tab">
-    <div class="tab_header">
-      <h2>{{ $t('stocklist.title') }}</h2>
-    </div>
-
     <div class="tab_content">
       <div class="stock_actions">
         <button class="btn btn--image" @click="clickFileInput">
-          <input type="file" @change="uploadStock" ref="conFile" accept=".con,.txt" />
+          <input type="file" @change="uploadStockFromFile" ref="conFile" accept=".con,.txt" />
           <img src="/images/icon-upload.svg" alt="upload icon" />
-          {{ $t('stocklist.action-upload') }}
+          {{ $t('stocklist.action-upload-file') }}
+        </button>
+
+        <button class="btn btn--image" @click="uploadStockFromClipboard">
+          <img src="/images/icon-upload.svg" alt="upload icon" />
+          {{ $t('stocklist.action-upload-clipboard') }}
         </button>
 
         <button
@@ -471,7 +472,7 @@ export default defineComponent({
       a.dispatchEvent(e);
     },
 
-    uploadStock() {
+    uploadStockFromFile() {
       const inputEl = this.$refs['conFile'] as HTMLInputElement;
       const files = inputEl.files;
 
@@ -492,6 +493,23 @@ export default defineComponent({
       reader.onerror = (err) => console.error(err);
 
       inputEl.value = '';
+    },
+
+    async uploadStockFromClipboard() {
+      try {
+        const content = await navigator.clipboard.readText();
+        this.loadStockFromString(content);
+      } catch (error) {
+        switch (error) {
+          case 'stock-loading-error':
+            alert(this.$t('stocklist.stock-loading-error'));
+            break;
+
+          default:
+            alert(this.$t('stocklist.stock-clipboard-error'));
+            break;
+        }
+      }
     },
 
     onDragStart(vehicleIndex: number) {
@@ -521,7 +539,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-
 @use '@/styles/tab';
 
 .tab_content {
@@ -571,7 +588,7 @@ export default defineComponent({
   display: grid;
   gap: 0.5em;
 
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 
   button {
     width: 100%;

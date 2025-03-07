@@ -3,7 +3,7 @@
     <LogoSection />
     <InputsSection />
     <TrainImageSection />
-    <StockSection />
+    <TabsSection />
   </main>
 </template>
 
@@ -12,10 +12,10 @@ import { defineComponent } from 'vue';
 import LogoSection from '../sections/LogoSection.vue';
 import InputsSection from '../sections/InputsSection.vue';
 import TrainImageSection from '../sections/TrainImageSection.vue';
-import StockSection from '../sections/StockSection.vue';
+import TabsSection from '../sections/TabsSection.vue';
 
 export default defineComponent({
-  components: { LogoSection, InputsSection, TrainImageSection, StockSection },
+  components: { LogoSection, InputsSection, TrainImageSection, TabsSection },
 });
 </script>
 
