@@ -18,6 +18,8 @@ import {
   isTrainPassenger,
   locoDataList,
   maxStockSpeed,
+  stockSupportsColdStart,
+  stockSupportsDoubleManning,
   totalLength,
   totalWeight,
 } from './utils/vehicleUtils';
@@ -75,6 +77,30 @@ export const useStore = defineStore({
     isTrainPassenger: (state) => isTrainPassenger(state.stockList),
     acceptableWeight: (state) => acceptableWeight(state.stockList),
 
+    stockSupportsColdStart: (state) => stockSupportsColdStart(state.stockList),
+    stockSupportsDoubleManning: (state) => stockSupportsDoubleManning(state.stockList),
+
+    stockString: (state) => {
+      if (state.stockList.length == 0) return '';
+
+      const coldStartActive = stockSupportsColdStart(state.stockList);
+      const doubleManningActive = stockSupportsDoubleManning(state.stockList);
+
+      return state.stockList
+        .map((stock, i) => {
+          let stockTypeStr =
+            isTractionUnit(stock.vehicleRef) || !stock.cargo
+              ? stock.vehicleRef.type
+              : `${stock.vehicleRef.type}:${stock.cargo.id}`;
+
+          if (i == 0)
+            return `${stockTypeStr},${coldStartActive ? 'c' : ''}${doubleManningActive ? 'd' : ''}`;
+
+          return stockTypeStr;
+        })
+        .join(';');
+    },
+
     realCompositionList: (state) => {
       if (!state.vehiclesData) return [];
 
@@ -95,32 +121,6 @@ export const useStore = defineStore({
 
         return acc;
       }, []);
-    },
-
-    stockSupportsColdStart: (state) => {
-      if (state.stockList.length == 0) return false;
-
-      if (!isTractionUnit(state.stockList[0].vehicleRef)) return false;
-      else if (state.stockList.length > 1) return false;
-
-      const headingLoco = state.stockList[0];
-
-      return (
-        state.vehiclesData?.find((vehicle) => vehicle.name == headingLoco.vehicleRef.type)?.group
-          .locoProps?.coldStart ?? false
-      );
-    },
-
-    stockSupportsDoubleManning: (state) => {
-      if (state.stockList.length == 0) return false;
-      if (!isTractionUnit(state.stockList[0].vehicleRef)) return false;
-
-      const headingLoco = state.stockList[0];
-
-      return (
-        state.vehiclesData?.find((vehicle) => vehicle.name == headingLoco.vehicleRef.type)?.group
-          .locoProps?.doubleManned ?? false
-      );
     },
   },
 

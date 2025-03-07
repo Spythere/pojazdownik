@@ -289,27 +289,6 @@ export default defineComponent({
       return this.store.realCompositionList.find((rc) => rc.stockString == currentStockString);
     },
 
-    stockString() {
-      if (this.store.stockList.length == 0) return '';
-
-      const includeColdStart = this.store.isColdStart && this.store.stockSupportsColdStart;
-      const includeDoubleManned =
-        this.store.isDoubleManned && this.store.stockSupportsDoubleManning;
-
-      return this.store.stockList
-        .map((stock, i) => {
-          let stockTypeStr =
-            isTractionUnit(stock.vehicleRef) || !stock.cargo
-              ? stock.vehicleRef.type
-              : `${stock.vehicleRef.type}:${stock.cargo.id}`;
-
-          if (i == 0 && (includeColdStart || includeDoubleManned))
-            return `${stockTypeStr},${includeColdStart ? 'c' : ''}${includeDoubleManned ? 'd' : ''}`;
-
-          return stockTypeStr;
-        })
-        .join(';');
-    },
 
     stockIsEmpty() {
       return this.store.stockList.length == 0;
@@ -371,7 +350,7 @@ export default defineComponent({
     isTractionUnit,
 
     copyToClipboard() {
-      navigator.clipboard.writeText(this.stockString);
+      navigator.clipboard.writeText(this.store.stockString);
 
       setTimeout(() => {
         alert(this.$t('stocklist.alert-copied'));
@@ -481,7 +460,7 @@ export default defineComponent({
 
       if (!fileName) return;
 
-      const blob = new Blob([this.stockString]);
+      const blob = new Blob([this.store.stockString]);
       const file = fileName + '.con';
 
       var e = document.createEvent('MouseEvents'),

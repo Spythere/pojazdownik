@@ -7,28 +7,47 @@
 
     <div class="tab_content">
       <div class="tab_actions">
-        <button class="btn btn--image">
+        <button
+          class="btn btn--image"
+          @click="saveStockDataToStorage"
+          :disabled="store.stockList.length == 0"
+          :data-disabled="store.stockList.length == 0"
+        >
           <FolderArrowDownIcon />
           ZAPISZ OBECNY SKŁAD
         </button>
-        <button class="btn btn--image">
+        <button
+          class="btn btn--image"
+          @click="removeStockIndexFromStorage"
+          :disabled="currentStockIndex == -1"
+          :data-disabled="currentStockIndex == -1"
+        >
           <TrashIcon />
           <span>USUŃ ZAPISANY SKŁAD</span>
         </button>
       </div>
+
+      <ul class="storage-stock-list">
+        <li v-for="(stockList, i) in storageStockData" :key="i">
+        </li>
+      </ul>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { defineComponent, onActivated, Reactive, reactive } from 'vue';
+import { onActivated, Reactive, reactive, ref } from 'vue';
 import { IStock } from '../../types/common.types';
 import { FolderArrowDownIcon, TrashIcon } from '@heroicons/vue/20/solid';
+import { useStore } from '../../store';
+
+const store = useStore();
 
 let storageStockData: Reactive<IStock[][]> = reactive([]);
+const currentStockIndex = ref(-1);
 
 onActivated(() => {
-  loadStockDataFromStorage();
+  // loadStockDataFromStorage();
 });
 
 function loadStockDataFromStorage() {
@@ -46,21 +65,28 @@ function loadStockDataFromStorage() {
   }
 }
 
-function saveStockDataToStorage(stockList: IStock[]) {
-  storageStockData.push(stockList);
+function saveStockDataToStorage() {
+  if (store.stockList.length == 0) return;
+
+  storageStockData.push(store.stockList);
 
   try {
     localStorage.setItem('savedStockData', JSON.stringify(storageStockData));
+    currentStockIndex.value = storageStockData.length;
   } catch (error) {
     console.error('Wystąpił błąd podczas zapisywania składu do localStorage!', error);
+    storageStockData.pop();
   }
 }
 
-function removeStockIndexFromStorage(stockIndex: number) {
-  storageStockData.splice(stockIndex, 1);
+function removeStockIndexFromStorage() {
+  if (currentStockIndex.value == -1) return;
+
+  storageStockData.splice(currentStockIndex.value, 1);
 
   try {
     localStorage.setItem('savedStockData', JSON.stringify(storageStockData));
+    currentStockIndex.value = currentStockIndex.value - 1;
   } catch (error) {
     console.error('Wystąpił błąd podczas usuwania składu z localStorage!', error);
   }
