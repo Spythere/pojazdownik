@@ -190,9 +190,9 @@ button {
     align-items: center;
     gap: 0.5em;
 
-    img {
-      width: 1.3em;
-      vertical-align: middle;
+    img, svg {
+      width: 20px;
+      height: 20px;
     }
   }
 

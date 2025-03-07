@@ -4,12 +4,12 @@
       <div class="stock_actions">
         <button class="btn btn--image" @click="clickFileInput">
           <input type="file" @change="uploadStockFromFile" ref="conFile" accept=".con,.txt" />
-          <img src="/images/icon-upload.svg" alt="upload icon" />
+          <ArrowUpTrayIcon />
           {{ $t('stocklist.action-upload-file') }}
         </button>
 
         <button class="btn btn--image" @click="uploadStockFromClipboard">
-          <img src="/images/icon-upload.svg" alt="upload icon" />
+          <ArrowUpTrayIcon />
           {{ $t('stocklist.action-upload-clipboard') }}
         </button>
 
@@ -19,7 +19,7 @@
           :disabled="stockIsEmpty"
           @click="downloadStock"
         >
-          <img src="/images/icon-download.svg" alt="download icon" />
+          <ArrowDownTrayIcon />
           {{ $t('stocklist.action-download') }}
         </button>
 
@@ -29,7 +29,7 @@
           :disabled="stockIsEmpty"
           @click="copyToClipboard"
         >
-          <img src="/images/icon-copy.svg" alt="copy icon" />
+          <ClipboardDocumentIcon />
           {{ $t('stocklist.action-copy') }}
         </button>
 
@@ -39,7 +39,7 @@
           :disabled="stockIsEmpty"
           @click="resetStock"
         >
-          <img src="/images/icon-reset.svg" alt="reset icon" />
+          <ArrowUturnLeftIcon />
           {{ $t('stocklist.action-reset') }}
         </button>
 
@@ -49,7 +49,7 @@
           :disabled="stockIsEmpty"
           @click="shuffleCars"
         >
-          <img src="/images/icon-shuffle.svg" alt="shuffle icon" />
+          <ArrowPathIcon />
           {{ $t('stocklist.action-shuffle') }}
         </button>
       </div>
@@ -60,7 +60,7 @@
           :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
           @click="moveUpStock(store.chosenStockListIndex)"
         >
-          <img :src="getIconURL('higher')" alt="move up vehicle" />
+          <ChevronUpIcon />
           {{ $t('stocklist.action-move-up') }}
         </button>
 
@@ -69,7 +69,7 @@
           :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
           @click="moveDownStock(store.chosenStockListIndex)"
         >
-          <img :src="getIconURL('lower')" alt="move down vehicle" />
+          <ChevronDownIcon />
           {{ $t('stocklist.action-move-down') }}
         </button>
 
@@ -78,7 +78,7 @@
           :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
           @click="removeStock(store.chosenStockListIndex)"
         >
-          <img :src="getIconURL('remove')" alt="remove vehicle" />
+          <TrashIcon />
           {{ $t('stocklist.action-remove') }}
         </button>
       </div>
@@ -239,10 +239,31 @@ import StockThumbnails from '../utils/StockThumbnails.vue';
 import stockMixin from '../../mixins/stockMixin';
 import Checkbox from '../common/Checkbox.vue';
 import { isTractionUnit } from '../../utils/vehicleUtils';
+import {
+  ArrowDownTrayIcon,
+  ArrowPathIcon,
+  ArrowUpTrayIcon,
+  ArrowUturnLeftIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  ClipboardDocumentIcon,
+  TrashIcon,
+} from '@heroicons/vue/20/solid';
 
 export default defineComponent({
   name: 'stock-list',
-  components: { StockThumbnails, Checkbox },
+  components: {
+    StockThumbnails,
+    Checkbox,
+    ArrowDownTrayIcon,
+    ArrowPathIcon,
+    ArrowUpTrayIcon,
+    ArrowUturnLeftIcon,
+    ChevronDownIcon,
+    ChevronUpIcon,
+    ClipboardDocumentIcon,
+    TrashIcon,
+  },
 
   mixins: [imageMixin, stockMixin, stockPreviewMixin],
 
