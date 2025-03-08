@@ -44,7 +44,8 @@
     "stock": "STOCK",
     "wiki": "VEHICLES",
     "numgen": "NUMBER GEN.",
-    "stockgen": "STOCK GEN."
+    "stockgen": "STOCK GEN.",
+    "storage": "SAVED STOCKS"
   },
   "stocklist": {
     "title": "STOCK EDITOR",
