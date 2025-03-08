@@ -2,15 +2,21 @@
   <section class="stock-list-tab">
     <div class="tab_content">
       <div class="stock_actions">
-        <button class="btn btn--image" @click="clickFileInput">
+        <button
+          class="btn btn--image"
+          @click="clickFileInput"
+          :data-button-tooltip="$t('stocklist.action-upload-file')"
+        >
           <input type="file" @change="uploadStockFromFile" ref="conFile" accept=".con,.txt" />
-          <ArrowUpTrayIcon />
-          {{ $t('stocklist.action-upload-file') }}
+          <FolderPlusIcon />
         </button>
 
-        <button class="btn btn--image" @click="uploadStockFromClipboard">
-          <ArrowUpTrayIcon />
-          {{ $t('stocklist.action-upload-clipboard') }}
+        <button
+          class="btn btn--image"
+          @click="uploadStockFromClipboard"
+          :data-button-tooltip="$t('stocklist.action-upload-clipboard')"
+        >
+          <ClipboardDocumentCheckIcon />
         </button>
 
         <button
@@ -18,9 +24,9 @@
           :data-disabled="stockIsEmpty"
           :disabled="stockIsEmpty"
           @click="downloadStock"
+          :data-button-tooltip="$t('stocklist.action-download')"
         >
           <ArrowDownTrayIcon />
-          {{ $t('stocklist.action-download') }}
         </button>
 
         <button
@@ -28,9 +34,19 @@
           :data-disabled="stockIsEmpty"
           :disabled="stockIsEmpty"
           @click="copyToClipboard"
+          :data-button-tooltip="$t('stocklist.action-copy')"
         >
-          <ClipboardDocumentIcon />
-          {{ $t('stocklist.action-copy') }}
+          <DocumentDuplicateIcon />
+        </button>
+
+        <button
+          class="btn btn--image"
+          :data-disabled="stockIsEmpty"
+          :disabled="stockIsEmpty"
+          @click="saveStockDataToStorage"
+          :data-button-tooltip="$t('stocklist.action-bookmark')"
+        >
+          <BookmarkIcon />
         </button>
 
         <button
@@ -38,9 +54,9 @@
           :data-disabled="stockIsEmpty"
           :disabled="stockIsEmpty"
           @click="resetStock"
+          :data-button-tooltip="$t('stocklist.action-reset')"
         >
           <ArrowUturnLeftIcon />
-          {{ $t('stocklist.action-reset') }}
         </button>
 
         <button
@@ -48,9 +64,9 @@
           :data-disabled="stockIsEmpty"
           :disabled="stockIsEmpty"
           @click="shuffleCars"
+          :data-button-tooltip="$t('stocklist.action-shuffle')"
         >
           <ArrowPathIcon />
-          {{ $t('stocklist.action-shuffle') }}
         </button>
       </div>
 
@@ -244,10 +260,14 @@ import {
   ArrowPathIcon,
   ArrowUpTrayIcon,
   ArrowUturnLeftIcon,
+  BookmarkIcon,
   ChevronDownIcon,
   ChevronUpIcon,
   ClipboardDocumentIcon,
+  FolderPlusIcon,
+  ClipboardDocumentCheckIcon,
   TrashIcon,
+  DocumentDuplicateIcon,
 } from '@heroicons/vue/20/solid';
 
 export default defineComponent({
@@ -255,13 +275,17 @@ export default defineComponent({
   components: {
     StockThumbnails,
     Checkbox,
+    FolderPlusIcon,
     ArrowDownTrayIcon,
     ArrowPathIcon,
     ArrowUpTrayIcon,
     ArrowUturnLeftIcon,
+    BookmarkIcon,
     ChevronDownIcon,
     ChevronUpIcon,
     ClipboardDocumentIcon,
+    ClipboardDocumentCheckIcon,
+    DocumentDuplicateIcon,
     TrashIcon,
   },
 
@@ -288,7 +312,6 @@ export default defineComponent({
 
       return this.store.realCompositionList.find((rc) => rc.stockString == currentStockString);
     },
-
 
     stockIsEmpty() {
       return this.store.stockList.length == 0;
@@ -495,6 +518,30 @@ export default defineComponent({
       inputEl.value = '';
     },
 
+    saveStockDataToStorage() {
+      if (this.store.stockList.length == 0) return;
+
+      const defaultName = `${this.store.stockList[0].vehicleRef.type} ${(this.store.totalWeight / 1000).toFixed(1)}t; ${this.store.totalLength}m; vmax ${this.store.maxStockSpeed}`;
+      const entryName = prompt(this.$t('stocklist.prompt-bookmark'), defaultName);
+
+      if (!entryName) return;
+
+      if (entryName in this.store.storageStockData) {
+        const overwriteData = confirm(this.$t('stocklist.prompt-bookmark-overwrite'));
+
+        if (!overwriteData) return;
+      }
+
+      this.store.storageStockData[entryName] = this.store.stockString;
+
+      try {
+        localStorage.setItem('savedStockData', JSON.stringify(this.store.storageStockData));
+        this.store.chosenStorageStockName = entryName;
+      } catch (error) {
+        console.error('Wystąpił błąd podczas zapisywania składu do localStorage!', error);
+      }
+    },
+
     async uploadStockFromClipboard() {
       try {
         const content = await navigator.clipboard.readText();
@@ -588,7 +635,7 @@ export default defineComponent({
   display: grid;
   gap: 0.5em;
 
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
 
   button {
     width: 100%;

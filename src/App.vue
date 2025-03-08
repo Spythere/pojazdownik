@@ -18,9 +18,29 @@ export default defineComponent({
     return { store: useStore() };
   },
 
-  async created() {
-    this.store.handleRouting();
+  created() {
+    this.loadStockDataFromStorage();
     this.store.setupAPIData();
+  },
+
+  methods: {
+    loadStockDataFromStorage() {
+      const savedData = localStorage.getItem('savedStockData');
+
+      if (!savedData) {
+        localStorage.setItem('savedStockData', JSON.stringify({}));
+        return;
+      }
+
+      try {
+        this.store.storageStockData = JSON.parse(savedData);
+      } catch (error) {
+        console.error(
+          'Wystąpił błąd podczas przetwarzania danych o składach z localStorage!',
+          error
+        );
+      }
+    },
   },
 });
 </script>

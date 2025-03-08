@@ -122,21 +122,43 @@ button {
   }
 }
 
-[data-tooltip]:hover::after,
-[data-tooltip]:focus::after {
-  position: absolute;
-  transform: translateX(10px);
-
-  content: attr(data-tooltip);
-  color: white;
-  background: black;
-  padding: 0.5em;
-  max-width: 300px;
-  z-index: 100;
-}
-
 [data-tooltip] {
   cursor: pointer;
+
+  &:hover::after,
+  &:focus-visible::after {
+    position: absolute;
+    transform: translateX(10px);
+
+    content: attr(data-tooltip);
+    color: white;
+    background: black;
+    padding: 0.5em;
+    max-width: 300px;
+    z-index: 100;
+  }
+}
+
+[data-button-tooltip] {
+  position: relative;
+
+  &:hover::after,
+  &:focus-visible::after {
+    position: absolute;
+
+    width: 100%;
+    max-width: 300px;
+
+    top: 100%;
+    transform: translateY(5px);
+    border-radius: inherit;
+
+    content: attr(data-button-tooltip);
+    color: white;
+    background: #111;
+    padding: 0.5em;
+    z-index: 100;
+  }
 }
 
 .btn,
@@ -190,7 +212,8 @@ button {
     align-items: center;
     gap: 0.5em;
 
-    img, svg {
+    img,
+    svg {
       width: 20px;
       height: 20px;
     }
@@ -200,7 +223,8 @@ button {
     font-weight: bold;
     transition: all 250ms;
     background: none;
-    padding: 0;
+    padding: 0.25em;
+    border-radius: 0;
 
     &:focus-visible {
       outline: 1px solid white;

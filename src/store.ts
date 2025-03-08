@@ -61,6 +61,9 @@ export const useStore = defineStore({
 
     lastFocusedElement: null as HTMLElement | null,
 
+    storageStockData: {} as Record<string, string>,
+    chosenStorageStockName: '',
+
     compatibleSimulatorVersion: '2024.3.1',
   }),
 
@@ -136,12 +139,6 @@ export const useStore = defineStore({
 
     async setupAPIData() {
       await this.fetchVehiclesAPI();
-    },
-
-    handleRouting() {
-      if (window.location.search.includes('trainId=')) {
-        const trainId = window.location.search;
-      }
     },
   },
 });
