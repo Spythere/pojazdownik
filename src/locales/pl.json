@@ -208,6 +208,12 @@
     "search-stock": "Szukaj po pojazdach",
     "action-reset": "RESETUJ"
   },
+  "storage": {
+    "title": "ZAPISANE SKŁADY",
+    "subtitle": "Zarządzaj składami zapisanymi lokalnie w pamięci przeglądarki",
+    "remove-confirm": "Czy na pewno chcesz usunąć ten wpis?",
+    "no-entires": "Brak zapisanych składów - dodaj nowy przez zakładkę ze Składem"
+  },
   "cargo": {
     "kontenery": "kontenery",
     "chłodnia": "chłodnia",

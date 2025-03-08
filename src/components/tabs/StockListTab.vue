@@ -523,12 +523,18 @@ export default defineComponent({
       if (!entryName) return;
 
       if (entryName in this.store.storageStockData) {
-        const overwriteData = confirm(this.$t('stocklist.prompt-bookmark-overwrite'));
+        const overwriteDataConfirm = confirm(this.$t('stocklist.prompt-bookmark-overwrite'));
 
-        if (!overwriteData) return;
+        if (!overwriteDataConfirm) return;
+
+        this.store.storageStockData[entryName].updatedAt = new Date();
       }
 
-      this.store.storageStockData[entryName] = this.store.stockString;
+      this.store.storageStockData[entryName] = {
+        id: entryName,
+        createdAt: new Date(),
+        stockString: this.store.stockString,
+      };
 
       try {
         localStorage.setItem('savedStockData', JSON.stringify(this.store.storageStockData));

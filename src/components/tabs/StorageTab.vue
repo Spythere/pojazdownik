@@ -1,17 +1,14 @@
 <template>
   <section class="tab storage-tab">
     <div class="tab_header">
-      <h2>ZAPISANE SKŁADY</h2>
-      <h3>Zarządzaj składami zapisanymi w pamięci przeglądarki</h3>
+      <h2>{{ $t('storage.title') }}</h2>
+      <h3>{{ $t('storage.subtitle') }}</h3>
     </div>
 
     <div class="tab_content">
       <div class="storage-list-wrapper">
         <transition-group name="storage-list-anim" tag="ul" class="storage-list">
-          <li
-            v-for="(stockString, stockName) in store.storageStockData"
-            :key="stockName"
-          >
+          <li v-for="(storageEntry, stockName) in store.storageStockData" :key="stockName">
             <div class="storage-item-top">
               <button class="btn btn--text btn-name" @click="chooseStorageStock(stockName)">
                 {{ stockName }}
@@ -34,12 +31,16 @@
 
             <div class="storage-item-expandable" v-if="expandedEntries.includes(stockName)">
               {{
-                stockString
+                storageEntry.stockString
                   .split(';')
                   .map((s) => s.split(/:|,/)[0])
                   .join(' + ')
               }}
             </div>
+          </li>
+
+          <li v-if="Object.keys(store.storageStockData).length == 0" class="storage-no-entries">
+            {{ $t('storage.no-entires') }}
           </li>
         </transition-group>
       </div>
@@ -75,8 +76,18 @@ export default defineComponent({
     expandedEntries: [] as string[],
   }),
 
+  computed: {
+    storageStockDataList() {
+      // return Object.keys(this.store.storageStockData).
+    },
+  },
+
   methods: {
     removeStockIndexFromStorage(stockName: string) {
+      let removeConfirm = confirm(this.$t('storage.remove-confirm'));
+
+      if (!removeConfirm) return;
+
       delete this.store.storageStockData[stockName];
       this.store.chosenStorageStockName = '';
 
@@ -89,7 +100,7 @@ export default defineComponent({
 
     chooseStorageStock(stockName: string) {
       try {
-        this.loadStockFromString(this.store.storageStockData[stockName]);
+        this.loadStockFromString(this.store.storageStockData[stockName].stockString);
         this.store.chosenStorageStockName = stockName;
         this.$router.push('/');
       } catch (error) {
@@ -156,6 +167,13 @@ ul.storage-list > li {
   margin-top: 0.5em;
 }
 
+.storage-no-entries {
+  padding: 1em;
+  font-size: 1.15em;
+  font-weight: bold;
+  text-align: center;
+}
+
 .storage-list-anim {
   &-move,
   &-enter-active,
@@ -174,6 +192,7 @@ ul.storage-list > li {
 
   &-leave-active {
     position: absolute;
+    width: 100%;
   }
 }
 </style>

@@ -9,6 +9,7 @@ import {
   LocoGroupType,
   WagonGroupType,
   IVehicleData,
+  StorageStockEntry,
 } from './types/common.types';
 import { defineStore } from 'pinia';
 import {
@@ -46,8 +47,6 @@ export const useStore = defineStore({
     stockList: [] as IStock[],
     cargoOptions: [] as any[][],
 
-    storageStockList: [] as IStock[][],
-
     swapVehicles: false,
 
     chosenStockListIndex: -1,
@@ -61,7 +60,7 @@ export const useStore = defineStore({
 
     lastFocusedElement: null as HTMLElement | null,
 
-    storageStockData: {} as Record<string, string>,
+    storageStockData: {} as Record<string, StorageStockEntry>,
     chosenStorageStockName: '',
 
     compatibleSimulatorVersion: '2024.3.1',
