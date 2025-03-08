@@ -171,9 +171,9 @@
           </i18n-t>
         </div>
 
-        <div class="warning" v-if="locoCountExceeded">
+        <!-- <div class="warning" v-if="locoCountExceeded">
           {{ $t('stocklist.warning-too-many-locos') }}
-        </div>
+        </div> -->
       </div>
 
       <StockThumbnails :onListItemClick="onListItemClick" />
@@ -345,14 +345,14 @@ export default defineComponent({
       );
     },
 
-    locoCountExceeded() {
-      return (
-        this.store.stockList.reduce((acc, stock) => {
-          if (isTractionUnit(stock.vehicleRef)) acc += 1;
-          return acc;
-        }, 0) > 2
-      );
-    },
+    // locoCountExceeded() {
+    //   return (
+    //     this.store.stockList.reduce((acc, stock) => {
+    //       if (isTractionUnit(stock.vehicleRef)) acc += 1;
+    //       return acc;
+    //     }, 0) > 2
+    //   );
+    // },
 
     teamOnlyVehicles() {
       return this.store.stockList.filter((stock) => stock.vehicleRef.teamOnly);
@@ -360,11 +360,7 @@ export default defineComponent({
 
     hasAnyWarnings() {
       return (
-        this.locoCountExceeded ||
-        this.weightExceeded ||
-        this.lengthExceeded ||
-        this.locoNotSuitable ||
-        this.teamOnlyVehicles
+        this.weightExceeded || this.lengthExceeded || this.locoNotSuitable || this.teamOnlyVehicles
       );
     },
   },
