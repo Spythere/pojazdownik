@@ -1,9 +1,9 @@
 <template>
   <section class="inputs-section">
     <div class="input_container">
-      <h2 class="input_header">{{ $t('inputs.title') }}</h2>
-
       <div class="input_list type">
+        <label for="cargo-select">{{ $t('inputs.vehicles-title') }}</label>
+
         <div class="vehicle-types locos">
           <button
             v-for="locoType in locomotiveTypeList"
@@ -35,6 +35,8 @@
       </div>
 
       <div class="input_list type">
+        <label for="cargo-select">{{ $t('inputs.carwagons-title') }}</label>
+
         <div class="vehicle-types carwagons">
           <button
             v-for="carType in carTypeList"
@@ -235,10 +237,6 @@ export default defineComponent({
   max-width: 380px;
 }
 
-.input_header {
-  margin-bottom: 1em;
-}
-
 button.btn--choice {
   font-size: 0.9em;
   padding: 0.3em 0.6em;
@@ -286,6 +284,10 @@ button.btn--choice {
   gap: 0.25em;
 
   margin-bottom: 0.5em;
+
+  button {
+    width: 100%;
+  }
 }
 
 @media screen and (max-width: global.$breakpointMd) {
