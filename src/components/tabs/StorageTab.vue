@@ -11,7 +11,6 @@
           <li
             v-for="(stockString, stockName) in store.storageStockData"
             :key="stockName"
-            :data-current="store.chosenStorageStockName == stockName"
           >
             <div class="storage-item-top">
               <button class="btn btn--text btn-name" @click="chooseStorageStock(stockName)">
@@ -73,7 +72,6 @@ export default defineComponent({
 
   data: () => ({
     store: useStore(),
-
     expandedEntries: [] as string[],
   }),
 
@@ -93,6 +91,7 @@ export default defineComponent({
       try {
         this.loadStockFromString(this.store.storageStockData[stockName]);
         this.store.chosenStorageStockName = stockName;
+        this.$router.push('/');
       } catch (error) {
         console.log(error);
       }
@@ -117,6 +116,8 @@ export default defineComponent({
 
 .storage-list-wrapper {
   position: relative;
+  height: 730px;
+  overflow: auto;
 }
 
 ul.storage-list {

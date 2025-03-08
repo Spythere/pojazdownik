@@ -631,10 +631,14 @@ export default defineComponent({
   display: grid;
   gap: 0.5em;
 
-  grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
 
   button {
     width: 100%;
+
+    &[data-button-tooltip] {
+      font-size: 0.85em;
+    }
 
     input {
       opacity: 0;

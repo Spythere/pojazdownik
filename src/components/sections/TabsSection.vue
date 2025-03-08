@@ -105,15 +105,13 @@ onMounted(() => {
   margin-bottom: 1em;
 }
 
-@media screen and (max-width: 400px) {
+@media screen and (max-width: global.$breakpointSm) {
   .tabs-modes {
     grid-template-areas:
       'stock wiki'
       'storage storage'
       'numgen stockgen';
     grid-template-columns: repeat(2, 1fr);
-
-    // grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   }
 }
 </style>
