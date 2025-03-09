@@ -212,7 +212,10 @@
     "title": "BOOKMARKED COMPOSITIONS",
     "subtitle": "Manage your rolling stock compositions saved locally in the browser memory",
     "remove-confirm": "Are you sure you want to delete this entry?",
-    "no-entires": "No bookmarked compositions - save a new one in the Stock tab"
+    "no-entires": "No bookmarked compositions - save a new one in the Stock tab",
+    "created-at": "Created at:",
+    "updated-at": "Updated at:",
+    "stock-title": "Rolling stock:"
   },
   "cargo": {
     "kontenery": "containers",

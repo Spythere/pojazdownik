@@ -34,14 +34,17 @@
             </div>
 
             <div class="storage-item-expandable" v-if="expandedEntries.includes(storageEntry.id)">
-              <i>Stworzony: {{ new Date(storageEntry.createdAt).toLocaleString($i18n.locale) }}</i>
+              <i>
+                {{ $t('storage.created-at') }}
+                {{ new Date(storageEntry.createdAt).toLocaleString($i18n.locale) }}</i
+              >
               <i v-if="storageEntry.updatedAt">
-                &bull; Zaktualizowany:
+                &bull; {{ $t('storage.updated-at') }}
                 {{ new Date(storageEntry.updatedAt).toLocaleString($i18n.locale) }}</i
               >
 
               <div style="margin-top: 0.5em">
-                <i>Skład: </i>
+                <i>{{ $t('storage.stock-title') }} </i>
                 {{
                   storageEntry.stockString
                     .split(';')

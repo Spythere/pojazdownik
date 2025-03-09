@@ -212,7 +212,10 @@
     "title": "ZAPISANE SKŁADY",
     "subtitle": "Zarządzaj składami zapisanymi lokalnie w pamięci przeglądarki",
     "remove-confirm": "Czy na pewno chcesz usunąć ten wpis?",
-    "no-entires": "Brak zapisanych składów - dodaj nowy przez zakładkę ze Składem"
+    "no-entires": "Brak zapisanych składów - dodaj nowy przez zakładkę ze Składem",
+    "created-at": "Stworzony:",
+    "updated-at": "Zaktualizowany:",
+    "stock-title": "Skład:"
   },
   "cargo": {
     "kontenery": "kontenery",
