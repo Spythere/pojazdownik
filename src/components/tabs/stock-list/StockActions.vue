@@ -242,7 +242,7 @@ export default defineComponent({
     saveStockDataToStorage() {
       if (this.store.stockList.length == 0) return;
 
-      const defaultName = `${this.store.stockList[0].vehicleRef.type} ${(this.store.totalWeight / 1000).toFixed(1)}t; ${this.store.totalLength}m; vmax ${this.store.maxStockSpeed}`;
+      const defaultName = this.fileUtils.getCurrentStockFileName();
       const entryName = prompt(this.$t('stocklist.prompt-bookmark'), defaultName);
 
       if (!entryName) return;

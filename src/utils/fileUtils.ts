@@ -14,7 +14,7 @@ export const useFileUtils = () => {
 
     // Append real composition to the name if chosen
     if (currentRealComp != undefined) {
-      fileName += currentRealComp.stockId;
+      fileName += `${currentRealComp.stockId} `;
     }
 
     // Append default props

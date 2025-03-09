@@ -10,9 +10,8 @@
           {{ store.chosenStorageStockName.slice(0, 40) }}
           {{ store.chosenStorageStockName.length > 41 ? '...' : '' }}
         </span>
-        |
       </b>
-
+      <span v-if="store.chosenStorageStockName && chosenRealComposition"> | </span>
       <b class="real-stock-info" v-if="chosenRealComposition">
         <span class="text--accent">
           <img :src="getIconURL(chosenRealComposition.type)" :alt="chosenRealComposition.type" />
