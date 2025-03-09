@@ -100,7 +100,7 @@ export interface IVehicleLocoProps {
 
 export interface StorageStockEntry {
   id: string;
-  createdAt: Date;
-  updatedAt?: Date;
+  createdAt: number;
+  updatedAt?: number;
   stockString: string;
 }

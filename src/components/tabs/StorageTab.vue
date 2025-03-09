@@ -8,38 +8,51 @@
     <div class="tab_content">
       <div class="storage-list-wrapper">
         <transition-group name="storage-list-anim" tag="ul" class="storage-list">
-          <li v-for="(storageEntry, stockName) in store.storageStockData" :key="stockName">
+          <li v-for="storageEntry in storageStockDataList" :key="storageEntry.id">
             <div class="storage-item-top">
-              <button class="btn btn--text btn-name" @click="chooseStorageStock(stockName)">
-                {{ stockName }}
-              </button>
+              <h3>
+                {{ storageEntry.id }}
+              </h3>
 
               <div class="storage-item-top-actions">
-                <button class="btn btn--text" @click="toggleStorageEntryExpand(stockName)">
+                <button class="btn btn--icon" @click="chooseStorageStock(storageEntry.id)">
+                  <ArrowRightEndOnRectangleIcon style="width: 25px" />
+                </button>
+
+                <button class="btn btn--icon" @click="toggleStorageEntryExpand(storageEntry.id)">
                   <ChevronDownIcon
-                    v-if="!expandedEntries.includes(stockName)"
+                    v-if="!expandedEntries.includes(storageEntry.id)"
                     style="width: 25px"
                   />
                   <ChevronUpIcon v-else style="width: 25px" />
                 </button>
 
-                <button class="btn btn--text" @click="removeStockIndexFromStorage(stockName)">
+                <button class="btn btn--icon" @click="removeStockIndexFromStorage(storageEntry.id)">
                   <TrashIcon style="width: 25px" />
                 </button>
               </div>
             </div>
 
-            <div class="storage-item-expandable" v-if="expandedEntries.includes(stockName)">
-              {{
-                storageEntry.stockString
-                  .split(';')
-                  .map((s) => s.split(/:|,/)[0])
-                  .join(' + ')
-              }}
+            <div class="storage-item-expandable" v-if="expandedEntries.includes(storageEntry.id)">
+              <i>Stworzony: {{ new Date(storageEntry.createdAt).toLocaleString($i18n.locale) }}</i>
+              <i v-if="storageEntry.updatedAt">
+                &bull; Zaktualizowany:
+                {{ new Date(storageEntry.updatedAt).toLocaleString($i18n.locale) }}</i
+              >
+
+              <div style="margin-top: 0.5em">
+                <i>Skład: </i>
+                {{
+                  storageEntry.stockString
+                    .split(';')
+                    .map((s) => s.split(/:|,/)[0])
+                    .join(' + ')
+                }}
+              </div>
             </div>
           </li>
 
-          <li v-if="Object.keys(store.storageStockData).length == 0" class="storage-no-entries">
+          <li v-if="Object.keys(storageStockDataList).length == 0" class="storage-no-entries">
             {{ $t('storage.no-entires') }}
           </li>
         </transition-group>
@@ -52,6 +65,7 @@
 import { defineComponent } from 'vue';
 
 import {
+  ArrowRightEndOnRectangleIcon,
   ChevronDownIcon,
   ChevronUpIcon,
   FolderArrowDownIcon,
@@ -67,6 +81,7 @@ export default defineComponent({
     ChevronUpIcon,
     FolderArrowDownIcon,
     TrashIcon,
+    ArrowRightEndOnRectangleIcon,
   },
 
   mixins: [stockMixin],
@@ -78,7 +93,12 @@ export default defineComponent({
 
   computed: {
     storageStockDataList() {
-      // return Object.keys(this.store.storageStockData).
+      return Object.values(this.store.storageStockData)
+        .sort((a, b) => (b.updatedAt ?? b.createdAt) - (a.updatedAt ?? a.createdAt))
+        .map((data) => ({
+          ...data,
+          isExpanded: false,
+        }));
     },
   },
 
@@ -152,15 +172,20 @@ ul.storage-list > li {
   align-items: center;
 }
 
-.storage-item-top button.btn-name {
+.storage-item-top > h3 {
   font-size: 1.2em;
   width: 100%;
   text-align: left;
+  margin: 0;
 }
 
 .storage-item-top-actions {
   display: flex;
   gap: 0.5em;
+
+  & > button {
+    background-color: #333;
+  }
 }
 
 .storage-item-expandable {

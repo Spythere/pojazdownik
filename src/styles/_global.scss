@@ -230,6 +230,14 @@ button {
       outline: 1px solid white;
     }
   }
+
+  &--icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 0.25em;
+  }
 }
 
 .link-btn.router-link-exact-active {

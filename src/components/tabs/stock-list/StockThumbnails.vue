@@ -46,7 +46,7 @@
 
 <script setup lang="ts">
 import { Ref, computed, nextTick, ref, watch } from 'vue';
-import { useStore } from '../../store';
+import { useStore } from '../../../store';
 
 const store = useStore();
 const emit = defineEmits(['listItemClick']);
@@ -173,8 +173,6 @@ const getVehicleThumbnails = (vehicleString: string) => {
 </script>
 
 <style lang="scss" scoped>
-
-
 .stock-thumbnails {
   overflow: auto;
   background-color: #353a57;
