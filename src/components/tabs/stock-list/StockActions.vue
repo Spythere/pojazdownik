@@ -247,8 +247,6 @@ export default defineComponent({
 
       if (!entryName) return;
 
-      let updatedAt: number | undefined = undefined;
-
       if (entryName in this.store.storageStockData) {
         const overwriteDataConfirm = confirm(this.$t('stocklist.prompt-bookmark-overwrite'));
 
@@ -267,6 +265,7 @@ export default defineComponent({
       try {
         localStorage.setItem('savedStockData', JSON.stringify(this.store.storageStockData));
         this.store.chosenStorageStockName = entryName;
+        this.store.chosenStorageStockString = this.store.stockString;
       } catch (error) {
         console.error('Wystąpił błąd podczas zapisywania składu do localStorage!', error);
       }

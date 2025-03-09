@@ -62,6 +62,7 @@ export const useStore = defineStore({
 
     storageStockData: {} as Record<string, StorageStockEntry>,
     chosenStorageStockName: '',
+    chosenStorageStockString: '',
 
     compatibleSimulatorVersion: '2024.3.1',
   }),
@@ -85,8 +86,9 @@ export const useStore = defineStore({
     stockString: (state) => {
       if (state.stockList.length == 0) return '';
 
-      const coldStartActive = stockSupportsColdStart(state.stockList);
-      const doubleManningActive = stockSupportsDoubleManning(state.stockList);
+      const coldStartActive = state.isColdStart && stockSupportsColdStart(state.stockList);
+      const doubleManningActive =
+        state.isDoubleManned && stockSupportsDoubleManning(state.stockList);
 
       return state.stockList
         .map((stock, i) => {
@@ -95,7 +97,7 @@ export const useStore = defineStore({
               ? stock.vehicleRef.type
               : `${stock.vehicleRef.type}:${stock.cargo.id}`;
 
-          if (i == 0)
+          if (i == 0 && (coldStartActive || doubleManningActive))
             return `${stockTypeStr},${coldStartActive ? 'c' : ''}${doubleManningActive ? 'd' : ''}`;
 
           return stockTypeStr;

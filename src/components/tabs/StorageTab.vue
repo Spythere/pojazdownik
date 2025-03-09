@@ -110,6 +110,7 @@ export default defineComponent({
 
       delete this.store.storageStockData[stockName];
       this.store.chosenStorageStockName = '';
+      this.store.chosenStorageStockString = '';
 
       try {
         localStorage.setItem('savedStockData', JSON.stringify(this.store.storageStockData));
@@ -122,6 +123,8 @@ export default defineComponent({
       try {
         this.loadStockFromString(this.store.storageStockData[stockName].stockString);
         this.store.chosenStorageStockName = stockName;
+        this.store.chosenStorageStockString = this.store.storageStockData[stockName].stockString;
+
         this.$router.push('/');
       } catch (error) {
         console.log(error);

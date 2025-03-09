@@ -22,12 +22,6 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
-import { useStore } from '../../store';
-
-import imageMixin from '../../mixins/imageMixin';
-import stockPreviewMixin from '../../mixins/stockPreviewMixin';
-import stockMixin from '../../mixins/stockMixin';
-
 import StockActions from './stock-list/StockActions.vue';
 import StockSpecs from './stock-list/StockSpecs.vue';
 import StockSpawnSettings from './stock-list/StockSpawnSettings.vue';
@@ -36,6 +30,7 @@ import StockList from './stock-list/StockList.vue';
 
 export default defineComponent({
   name: 'stock-list',
+
   components: {
     StockActions,
     StockSpecs,
@@ -43,28 +38,6 @@ export default defineComponent({
     StockWarnings,
     StockList,
   },
-
-  mixins: [imageMixin, stockMixin, stockPreviewMixin],
-
-  setup() {
-    const store = useStore();
-
-    return {
-      store,
-    };
-  },
-
-  data: () => ({}),
-
-  // computed: {
-  //   chosenStockVehicle() {
-  //     return this.store.chosenStockListIndex == -1
-  //       ? undefined
-  //       : this.store.stockList[this.store.chosenStockListIndex];
-  //   },
-  // },
-
-  methods: {},
 });
 </script>
 

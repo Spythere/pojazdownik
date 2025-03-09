@@ -1,20 +1,25 @@
 <template>
   <div class="stock_specs">
-    <b class="real-stock-info" v-if="store.chosenStorageStockName">
-      <span class="text--accent">
-        <BookmarkIcon />
-        {{ store.chosenStorageStockName }}
-      </span>
-      |
-    </b>
+    <div v-if="store.chosenStorageStockName || chosenRealComposition">
+      <b class="bookmarked-stock-info" v-if="store.chosenStorageStockName">
+        <span
+          class="text--accent"
+          :title="store.chosenStorageStockName.length > 41 ? store.chosenStorageStockName : ''"
+        >
+          <BookmarkIcon />
+          {{ store.chosenStorageStockName.slice(0, 40) }}
+          {{ store.chosenStorageStockName.length > 41 ? '...' : '' }}
+        </span>
+        |
+      </b>
 
-    <!-- <b class="real-stock-info" v-if="store.chosenRealComposition">
-      <span class="text--accent">
-        <img :src="getIconURL(chosenRealComposition.type)" :alt="chosenRealComposition.type" />
-        {{ chosenRealComposition.number }} {{ chosenRealComposition.name }}
-      </span>
-      |
-    </b> -->
+      <b class="real-stock-info" v-if="chosenRealComposition">
+        <span class="text--accent">
+          <img :src="getIconURL(chosenRealComposition.type)" :alt="chosenRealComposition.type" />
+          {{ chosenRealComposition.number }} {{ chosenRealComposition.name }}
+        </span>
+      </b>
+    </div>
 
     <span>
       {{ $t('stocklist.mass') }}
@@ -36,18 +41,31 @@
 import { defineComponent } from 'vue';
 import { useStore } from '../../../store';
 import imageMixin from '../../../mixins/imageMixin';
+import { BookmarkIcon } from '@heroicons/vue/20/solid';
 
 export default defineComponent({
+  components: { BookmarkIcon },
+
   mixins: [imageMixin],
 
   data: () => ({
     store: useStore(),
   }),
+
+  computed: {
+    chosenRealComposition() {
+      const currentStockString = this.store.stockList.map((s) => s.vehicleRef.type).join(';');
+
+      return this.store.realCompositionList.find((rc) => rc.stockString == currentStockString);
+    },
+  },
 });
 </script>
 
 <style scoped>
+.bookmarked-stock-info,
 .real-stock-info {
+  svg,
   img {
     height: 1.3ch;
   }

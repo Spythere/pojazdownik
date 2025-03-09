@@ -23,6 +23,20 @@ export default defineComponent({
     this.store.setupAPIData();
   },
 
+  computed: {
+    currentStockString() {
+      return this.store.stockString;
+    },
+  },
+
+  watch: {
+    currentStockString(val: string) {
+      if (val != this.store.chosenStorageStockString) {
+        this.store.chosenStorageStockName = '';
+      }
+    },
+  },
+
   methods: {
     loadStockDataFromStorage() {
       const savedData = localStorage.getItem('savedStockData');
