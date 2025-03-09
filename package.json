@@ -1,6 +1,6 @@
 {
   "name": "pojazdownik",
-  "version": "1.8.13",
+  "version": "1.9.0",
   "private": true,
   "type": "module",
   "scripts": {
