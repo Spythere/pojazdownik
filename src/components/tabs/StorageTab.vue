@@ -45,12 +45,7 @@
 
               <div style="margin-top: 0.5em">
                 <i>{{ $t('storage.stock-title') }} </i>
-                {{
-                  storageEntry.stockString
-                    .split(';')
-                    .map((s) => s.split(/:|,/)[0])
-                    .join(' + ')
-                }}
+                {{ shortenStockString(storageEntry.stockString) }}
               </div>
             </div>
           </li>
@@ -106,6 +101,19 @@ export default defineComponent({
   },
 
   methods: {
+    shortenStockString(stockString: string) {
+      return Array.from(
+        stockString.split(';').reduce(
+          (acc, s) => {
+            const stockName = s.split(/:|,/)[0];
+            acc.set(stockName, (acc.get(stockName) ?? 0) + 1);
+
+            return acc;
+          },
+          new Map() as Map<string, number>
+        )
+      ).map(([stockName, count]) => `${count}x ${stockName.replace(/_/g, ' ')}`).join(', ');
+    },
     removeStockIndexFromStorage(stockName: string) {
       let removeConfirm = confirm(this.$t('storage.remove-confirm'));
 
