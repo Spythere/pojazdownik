@@ -9,6 +9,7 @@ import {
   LocoGroupType,
   WagonGroupType,
   IVehicleData,
+  StorageStockEntry,
 } from './types/common.types';
 import { defineStore } from 'pinia';
 import {
@@ -18,6 +19,8 @@ import {
   isTrainPassenger,
   locoDataList,
   maxStockSpeed,
+  stockSupportsColdStart,
+  stockSupportsDoubleManning,
   totalLength,
   totalWeight,
 } from './utils/vehicleUtils';
@@ -57,6 +60,10 @@ export const useStore = defineStore({
 
     lastFocusedElement: null as HTMLElement | null,
 
+    storageStockData: {} as Record<string, StorageStockEntry>,
+    chosenStorageStockName: '',
+    chosenStorageStockString: '',
+
     compatibleSimulatorVersion: '2024.3.1',
   }),
 
@@ -72,6 +79,31 @@ export const useStore = defineStore({
     maxStockSpeed: (state) => maxStockSpeed(state.stockList),
     isTrainPassenger: (state) => isTrainPassenger(state.stockList),
     acceptableWeight: (state) => acceptableWeight(state.stockList),
+
+    stockSupportsColdStart: (state) => stockSupportsColdStart(state.stockList),
+    stockSupportsDoubleManning: (state) => stockSupportsDoubleManning(state.stockList),
+
+    stockString: (state) => {
+      if (state.stockList.length == 0) return '';
+
+      const coldStartActive = state.isColdStart && stockSupportsColdStart(state.stockList);
+      const doubleManningActive =
+        state.isDoubleManned && stockSupportsDoubleManning(state.stockList);
+
+      return state.stockList
+        .map((stock, i) => {
+          let stockTypeStr =
+            isTractionUnit(stock.vehicleRef) || !stock.cargo
+              ? stock.vehicleRef.type
+              : `${stock.vehicleRef.type}:${stock.cargo.id}`;
+
+          if (i == 0 && (coldStartActive || doubleManningActive))
+            return `${stockTypeStr},${coldStartActive ? 'c' : ''}${doubleManningActive ? 'd' : ''}`;
+
+          return stockTypeStr;
+        })
+        .join(';');
+    },
 
     realCompositionList: (state) => {
       if (!state.vehiclesData) return [];
@@ -94,32 +126,6 @@ export const useStore = defineStore({
         return acc;
       }, []);
     },
-
-    stockSupportsColdStart: (state) => {
-      if (state.stockList.length == 0) return false;
-
-      if (!isTractionUnit(state.stockList[0].vehicleRef)) return false;
-      else if (state.stockList.length > 1) return false;
-
-      const headingLoco = state.stockList[0];
-
-      return (
-        state.vehiclesData?.find((vehicle) => vehicle.name == headingLoco.vehicleRef.type)?.group
-          .locoProps?.coldStart ?? false
-      );
-    },
-
-    stockSupportsDoubleManning: (state) => {
-      if (state.stockList.length == 0) return false;
-      if (!isTractionUnit(state.stockList[0].vehicleRef)) return false;
-
-      const headingLoco = state.stockList[0];
-
-      return (
-        state.vehiclesData?.find((vehicle) => vehicle.name == headingLoco.vehicleRef.type)?.group
-          .locoProps?.doubleManned ?? false
-      );
-    },
   },
 
   actions: {
@@ -134,12 +140,6 @@ export const useStore = defineStore({
 
     async setupAPIData() {
       await this.fetchVehiclesAPI();
-    },
-
-    handleRouting() {
-      if (window.location.search.includes('trainId=')) {
-        const trainId = window.location.search;
-      }
     },
   },
 });

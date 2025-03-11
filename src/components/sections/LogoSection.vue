@@ -21,14 +21,8 @@ export default {
   data() {
     return {
       localeActions: [
-        {
-          name: 'POLSKI',
-          locale: 'pl',
-        },
-        {
-          name: 'ENGLISH',
-          locale: 'en',
-        },
+        { name: 'POLSKI', locale: 'pl' },
+        { name: 'ENGLISH', locale: 'en' },
       ],
     };
   },
@@ -46,8 +40,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../../styles/global.scss';
-
 .logo-section {
   grid-row: 1;
   grid-column: 1;
@@ -66,7 +58,7 @@ export default {
 
   button[data-selected='true'] {
     font-weight: bold;
-    color: $accentColor;
+    color: global.$accentColor;
     text-decoration: underline;
   }
 }

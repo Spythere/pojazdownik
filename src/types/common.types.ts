@@ -97,3 +97,10 @@ export interface IVehicleLocoProps {
   coldStart: boolean;
   doubleManned: boolean;
 }
+
+export interface StorageStockEntry {
+  id: string;
+  createdAt: number;
+  updatedAt?: number;
+  stockString: string;
+}

@@ -2,14 +2,21 @@ import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 
 import { VitePWA } from 'vite-plugin-pwa';
+import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  server: {
-    port: 2138,
+  server: { port: 2138 },
+  preview: { port: 4138 },
+  css: {
+    preprocessorOptions: {
+      scss: { additionalData: `@use '@/styles/global';`, silenceDeprecations: ['legacy-js-api'] },
+    },
   },
-  preview: {
-    port: 4138,
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+    },
   },
   plugins: [
     vue(),
@@ -18,10 +25,7 @@ export default defineConfig({
 
       includeAssets: ['/images/*.{png,svg,jpg}', '/fonts/*.{woff,woff2,ttf}'],
 
-      devOptions: {
-        suppressWarnings: true,
-        enabled: true,
-      },
+      devOptions: { suppressWarnings: true, enabled: true },
 
       workbox: {
         cleanupOutdatedCaches: true,
@@ -31,9 +35,7 @@ export default defineConfig({
           {
             urlPattern: /^https:\/\/.*\.spythere\.eu\/.*/i,
             handler: 'StaleWhileRevalidate',
-            options: {
-              cacheName: 'spythere-cache',
-            },
+            options: { cacheName: 'spythere-cache' },
           },
         ],
       },

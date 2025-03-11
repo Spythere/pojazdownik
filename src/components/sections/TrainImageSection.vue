@@ -152,7 +152,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '../../styles/global';
+
 
 .train-image-section {
   display: flex;
@@ -178,11 +178,11 @@ img {
   }
 
   &[data-sponsor-only='true'] {
-    border: 1px solid $sponsorColor;
+    border: 1px solid global.$sponsorColor;
   }
 
   &[data-team-only='true'] {
-    border: 1px solid $teamColor;
+    border: 1px solid global.$teamColor;
   }
 }
 
@@ -216,25 +216,25 @@ img {
   width: 100%;
   max-width: 380px;
 
-  background-color: $secondaryColor;
+  background-color: global.$secondaryColor;
   font-weight: bold;
 }
 
 .placeholder {
   height: 250px;
 
-  background-color: $bgColor;
+  background-color: global.$bgColor;
 }
 
 .sponsor-only {
-  color: $sponsorColor;
+  color: global.$sponsorColor;
 }
 
 .team-only {
-  color: $teamColor;
+  color: global.$teamColor;
 }
 
-@media screen and (max-width: $breakpointMd) {
+@media screen and (max-width: global.$breakpointMd) {
   .train-image-section {
     justify-content: center;
   }

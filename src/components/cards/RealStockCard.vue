@@ -220,8 +220,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '../../styles/global.scss';
-
 .action-exit {
   display: flex;
   background-color: #333;
@@ -249,7 +247,7 @@ export default defineComponent({
 
   z-index: 100;
 
-  @media screen and (max-width: $breakpointSm) {
+  @media screen and (max-width: global.$breakpointSm) {
     height: 80vh;
   }
 }
@@ -281,7 +279,7 @@ export default defineComponent({
     width: 35%;
   }
 
-  @media screen and (max-width: $breakpointSm) {
+  @media screen and (max-width: global.$breakpointSm) {
     flex-wrap: wrap;
 
     input {
@@ -309,7 +307,7 @@ ul {
     padding: 0.1em;
 
     &[data-last-selected='true'] .stock-title {
-      border: 1px solid $accentColor;
+      border: 1px solid global.$accentColor;
     }
 
     .stock-title {
@@ -325,7 +323,7 @@ ul {
       background: #222;
     }
 
-    @media screen and (max-width: $breakpointSm) {
+    @media screen and (max-width: global.$breakpointSm) {
       grid-template-columns: 1fr;
       // grid-template-rows: 1fr 1fr;
     }

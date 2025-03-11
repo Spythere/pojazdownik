@@ -1,9 +1,5 @@
 <template>
   <div class="stock-generator tab">
-    <div class="tab_header">
-      <h2>{{ $t('stockgen.title') }}</h2>
-    </div>
-
     <div class="tab_content">
       <div>
         <h2>{{ $t('stockgen.properties-title') }}</h2>
@@ -227,16 +223,10 @@ export default defineComponent({
 
           return acc;
         },
-        [] as {
-          constructionType: string;
-          carPool: { carWagon: ICarWagon; cargo?: ICargo }[];
-        }[]
+        [] as { constructionType: string; carPool: { carWagon: ICarWagon; cargo?: ICargo }[] }[]
       );
 
-      let bestGeneration: { stockList: IStock[]; value: number } = {
-        stockList: [],
-        value: 0,
-      };
+      let bestGeneration: { stockList: IStock[]; value: number } = { stockList: [], value: 0 };
 
       for (let i = 0; i < 10; i++) {
         this.store.stockList.splice(
@@ -324,8 +314,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '../../styles/global.scss';
-@import '../../styles/tab.scss';
+@use '@/styles/tab';
 
 h2 {
   margin-top: 0;
@@ -346,7 +335,7 @@ h2 {
     text-transform: uppercase;
     font-weight: bold;
 
-    background-color: $secondaryColor;
+    background-color: global.$secondaryColor;
 
     &[data-excluded='true'] {
       background-color: gray;
@@ -360,7 +349,7 @@ h2 {
       padding: 5px;
 
       transform: translate(-8px, -50%);
-      background-color: $bgColor;
+      background-color: global.$bgColor;
       color: white;
     }
   }
@@ -401,7 +390,7 @@ h2 {
 }
 
 .generator_warning {
-  background-color: $accentColor;
+  background-color: global.$accentColor;
   padding: 0.5em;
   text-align: justify;
   font-weight: bold;

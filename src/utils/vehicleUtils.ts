@@ -127,3 +127,19 @@ export function isTrainPassenger(stockList: IStock[]) {
     .filter((stock) => !isTractionUnit(stock.vehicleRef))
     .every((stock) => stock.vehicleRef.group === 'wagon-passenger');
 }
+
+export function stockSupportsColdStart(stockList: IStock[]) {
+  return (
+    stockList.length == 1 &&
+    isTractionUnit(stockList[0].vehicleRef) &&
+    stockList[0].vehicleRef.coldStart
+  );
+}
+
+export function stockSupportsDoubleManning(stockList: IStock[]) {
+  return (
+    stockList.length != 0 &&
+    isTractionUnit(stockList[0].vehicleRef) &&
+    stockList[0].vehicleRef.doubleManned
+  );
+}

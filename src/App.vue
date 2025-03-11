@@ -1,7 +1,7 @@
 <template>
   <AppModals />
   <ImageFullscreenPreview v-if="store.vehiclePreviewSrc" />
- 
+
   <router-view></router-view>
 </template>
 
@@ -15,34 +15,64 @@ import AppModals from './components/app/AppModals.vue';
 export default defineComponent({
   components: { ImageFullscreenPreview, AppContainerView, AppModals },
   data() {
-    return {
-      store: useStore(),
-    };
+    return { store: useStore() };
   },
 
-  async created() {
-    this.store.handleRouting();
+  created() {
+    this.loadStockDataFromStorage();
     this.store.setupAPIData();
+  },
+
+  computed: {
+    currentStockString() {
+      return this.store.stockString;
+    },
+  },
+
+  watch: {
+    currentStockString(val: string) {
+      if (val != this.store.chosenStorageStockString) {
+        this.store.chosenStorageStockName = '';
+      }
+    },
+  },
+
+  methods: {
+    loadStockDataFromStorage() {
+      const savedData = localStorage.getItem('savedStockData');
+
+      if (!savedData) {
+        localStorage.setItem('savedStockData', JSON.stringify({}));
+        return;
+      }
+
+      try {
+        this.store.storageStockData = JSON.parse(savedData);
+      } catch (error) {
+        console.error(
+          'Wystąpił błąd podczas przetwarzania danych o składach z localStorage!',
+          error
+        );
+      }
+    },
   },
 });
 </script>
 
 <style lang="scss">
-@import './styles/global.scss';
-
 /* APP */
 #app {
   margin: 0 auto;
 
-  color: $textColor;
+  color: global.$textColor;
   font-size: 1em;
   padding: 0;
 
-  @media screen and (max-width: $breakpointMd) {
+  @media screen and (max-width: global.$breakpointMd) {
     font-size: calc(0.7rem + 0.75vw);
   }
 
-  @media screen and (orientation: landscape) and (max-width: $breakpointMd) {
+  @media screen and (orientation: landscape) and (max-width: global.$breakpointMd) {
     font-size: calc(0.75rem + 0.4vw);
   }
 }

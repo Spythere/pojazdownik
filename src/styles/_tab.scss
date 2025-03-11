@@ -1,4 +1,4 @@
-@import './global.scss';
+@use 'global';
 
 .tab {
   height: 100%;
@@ -7,7 +7,7 @@
   &_header {
     padding: 0.5em 1em;
 
-    background-color: $secondaryColor;
+    background-color: global.$secondaryColor;
     text-align: center;
 
     h2 {

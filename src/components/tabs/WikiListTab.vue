@@ -1,9 +1,5 @@
 <template>
   <section class="wiki-list tab">
-    <div class="tab_header">
-      <h2>{{ $t('wiki.title') }}</h2>
-    </div>
-
     <div class="tab_content">
       <div class="actions">
         <div class="action action-input">
@@ -248,7 +244,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '../../styles/tab.scss';
+@use '@/styles/tab';
 
 .actions {
   display: grid;
@@ -322,7 +318,7 @@ export default defineComponent({
 }
 
 .sponsor-only {
-  color: $sponsorColor;
+  color: global.$sponsorColor;
 
   &::after {
     content: '*';
@@ -330,7 +326,7 @@ export default defineComponent({
 }
 
 .team-only {
-  color: $teamColor;
+  color: global.$teamColor;
 
   &::after {
     content: '*';
@@ -347,7 +343,7 @@ export default defineComponent({
   background-color: #161c2e;
 }
 
-@media screen and (max-width: $breakpointSm) {
+@media screen and (max-width: global.$breakpointSm) {
   .actions-panel {
     align-items: stretch;
     flex-direction: column;

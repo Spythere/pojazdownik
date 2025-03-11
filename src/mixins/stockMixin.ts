@@ -53,6 +53,7 @@ export default defineComponent({
 
     loadStockFromString(stockString: string) {
       const stockArray = stockString.trim().split(';');
+      let failureCount = 0;
 
       this.store.stockList.length = 0;
       this.store.chosenVehicle = null;
@@ -85,10 +86,19 @@ export default defineComponent({
           if (cargo) vehicleCargo = vehicle?.cargoTypes.find((c) => c.id == cargo) || null;
         }
 
-        if (!vehicle) console.warn('Brak pojazdu / rodzaj pojazdu źle wczytany:', type);
+        if (!vehicle && type) {
+          failureCount++;
+          console.warn(`Wystąpił błąd - nie wczytano pojazdu o nazwie: ${type}`);
+          return;
+        }
 
         this.addVehicle(vehicle, vehicleCargo);
       });
+
+      if (failureCount != 0 && failureCount == stockArray.length) {
+        console.warn('Wystąpił błąd - niepoprawny format');
+        throw 'stock-loading-error';
+      }
     },
   },
 });

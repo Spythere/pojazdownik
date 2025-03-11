@@ -12,7 +12,9 @@
     "title": "WYBIERZ POJAZD",
     "input-vehicle": "Wybierz pojazd trakcyjny",
     "input-carwagon": "Wybierz wagon",
-    "cargo-title": "Ładunek (tylko wybrane towarowe)",
+    "vehicles-title": "Pojazdy trakcyjne",
+    "carwagons-title": "Wagony",
+    "cargo-title": "Dostępne ładunki",
     "no-cargo-available": "brak dostępnych ładunków",
     "cargo-empty": "próżny",
     "loco-electric": "ELEKTR.",
@@ -44,7 +46,8 @@
     "stock": "SKŁAD",
     "wiki": "POJAZDY",
     "numgen": "GNR NUMERU",
-    "stockgen": "GNR SKŁADU"
+    "stockgen": "GNR SKŁADU",
+    "storage": "ZAPISANE SKŁADY"
   },
   "stocklist": {
     "title": "EDYTOR SKŁADU",
@@ -52,16 +55,20 @@
     "alert-copied": "Skład został skopiowany do twojego schowka!",
     "alert-empty": "Lista pojazdów jest pusta!",
     "prompt-file": "Nazwij plik, a następnie pobierz do folderu Presets (Dokumenty/TTSK/TrainDriver2):",
+    "prompt-bookmark": "Nazwij skład do zapisania:",
+    "prompt-bookmark-overwrite": "Skład o tej nazwie jest już zapisany. Czy chcesz go podmienić?",
     "vehicle-no": "POJAZD NR",
     "no-vehicle-chosen": "NIE WYBRANO POJAZDU",
     "action-move-up": "PRZENIEŚ WYŻEJ",
     "action-move-down": "PRZENIEŚ NIŻEJ",
     "action-remove": "USUŃ",
-    "action-upload": "WCZYTAJ",
-    "action-download": "POBIERZ",
-    "action-copy": "SKOPIUJ",
+    "action-upload-file": "WCZYTAJ Z PLIKU",
+    "action-upload-clipboard": "WCZYTAJ ZE SCHOWKA",
+    "action-download": "POBIERZ DO PLIKU",
+    "action-copy": "SKOPIUJ DO SCHOWKA",
     "action-reset": "ZRESETUJ",
     "action-shuffle": "PRZETASUJ",
+    "action-bookmark": "ZAPISZ",
     "mass": "Masa",
     "mass-accepted": "dopuszczalna",
     "length": "Długość",
@@ -69,14 +76,15 @@
     "coldstart-info": "Zimny start",
     "doublemanning-info": "Podwójna obsada",
     "list-empty": "Lista pojazdów jest pusta!",
-
     "warning-not-suitable": "Lokomotywy serii EP są przeznaczone jedynie do ruchu pasażerskiego!",
     "warning-passenger-too-long": "Maksymalna długość składów pasażerskich nie może przekraczać 350m!",
     "warning-freight-too-long": "Maksymalna długość składów innych niż pasażerskie nie może przekraczać 650m!",
     "warning-too-many-locos": "Ten skład posiada za dużo pojazdów trakcyjnych!",
     "warning-too-heavy": "Ten skład jest za ciężki! Sprawdź {href}",
     "warning-team-only-vehicle": "W zestawieniu znajduje się co najmniej jeden pojazd dostępny tylko dla członków zespołu TD2! ({0})",
-    "acceptable-mass-docs": "dopuszczalne masy składów"
+    "acceptable-mass-docs": "dopuszczalne masy składów",
+    "stock-loading-error": "Wystąpił błąd: nie można przetworzyć danych ze schowka! Upewnij się, że są one w poprawnym formacie!",
+    "stock-clipboard-error": "Wystąpił błąd: nie można odczytać danych ze schowka! Upewnij się, że nadałeś uprawnienia stronie do tej akcji!"
   },
   "stockgen": {
     "title": "GENERATOR SKŁADU TOWAROWEGO",
@@ -108,7 +116,6 @@
     "action-random-region": "LOSUJ OBSZARY",
     "action-random-number": "LOSUJ KOŃCÓWKĘ",
     "action-random-category": "LOSUJ KATEGORIĘ",
-
     "rules": {
       "first-digit": "Pierwsza cyfra:",
       "second-digit": "Druga cyfra:",
@@ -123,25 +130,20 @@
       "for-region-end": "dla końcowego obszaru konstrukcyjnego",
       "from-range": "z przedziału"
     },
-
     "categories": {
       "EI": "EI - ekspres krajowy",
       "EC": "EC - ekspres międzynarodowy",
       "EN": "EN - ekspres krajowy nocny",
-
       "MP": "MP - międzywoj. pośpieszny",
       "RP": "RP - wojewódzki pośpieszny",
       "MO": "MO - międzywoj. osobowy",
       "RO": "RO - wojewódzki osobowy",
-
       "MM": "MM - międzynar. pośpieszny",
       "MH": "MH - międzywoj. pośpieszny hotelowy",
       "RM": "RM - woj. osobowy międzynarodowy",
       "RA": "RA - woj. osobowy aglomeracyjny",
-
       "PW": "PW - pasażerski próżny - służbowy",
       "PX": "PX - pasażerski próżny próbny",
-
       "TC": "TC - towarowy międzynarodowy intermodalny",
       "TG": "TG - towarowy międzynarodowy masowy",
       "TR": "TR - towarowy międzynarodowy niemasowy",
@@ -151,12 +153,10 @@
       "TK": "TK - towarowy (stacje i bocznice)",
       "TS": "TS - towarowy próżny próbny",
       "TH": "TH - skład lokomotyw (powyżej 3 pojazdów)",
-
       "LT": "LT - lokomotywa towarowa luzem",
       "LP": "LP - lokomotywa pasażerska luzem",
       "LS": "LS - lokomotywa manewrowa luzem",
       "LZ": "LZ - lokomotywa dla poc. utrzymaniowo-naprawczych",
-
       "ZN": "ZN - inspekcyjny / diagnostyczny",
       "ZU": "ZU - inny utrzymaniowy"
     }
@@ -207,6 +207,15 @@
     "search-name": "Szukaj po nazwie",
     "search-stock": "Szukaj po pojazdach",
     "action-reset": "RESETUJ"
+  },
+  "storage": {
+    "title": "ZAPISANE SKŁADY",
+    "subtitle": "Zarządzaj składami zapisanymi lokalnie w pamięci przeglądarki",
+    "remove-confirm": "Czy na pewno chcesz usunąć ten wpis?",
+    "no-entires": "Brak zapisanych składów - dodaj nowy przez zakładkę ze Składem",
+    "created-at": "Stworzony:",
+    "updated-at": "Zaktualizowany:",
+    "stock-title": "Skład:"
   },
   "cargo": {
     "kontenery": "kontenery",

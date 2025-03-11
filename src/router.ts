@@ -4,6 +4,7 @@ import WikiListTab from './components/tabs/WikiListTab.vue';
 import StockListTab from './components/tabs/StockListTab.vue';
 import NumberGeneratorTab from './components/tabs/NumberGeneratorTab.vue';
 import StockGeneratorTab from './components/tabs/StockGeneratorTab.vue';
+import StorageTab from './components/tabs/StorageTab.vue';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -39,6 +40,13 @@ const routes: RouteRecordRaw[] = [
         component: AppContainerView,
         meta: {
           viewMode: StockGeneratorTab,
+        },
+      },
+      {
+        path: 'storage',
+        component: AppContainerView,
+        meta: {
+          viewMode: StorageTab,
         },
       },
     ],

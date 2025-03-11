@@ -1,9 +1,9 @@
 <template>
   <section class="inputs-section">
     <div class="input_container">
-      <h2 class="input_header">{{ $t('inputs.title') }}</h2>
-
       <div class="input_list type">
+        <label for="cargo-select">{{ $t('inputs.vehicles-title') }}</label>
+
         <div class="vehicle-types locos">
           <button
             v-for="locoType in locomotiveTypeList"
@@ -35,6 +35,8 @@
       </div>
 
       <div class="input_list type">
+        <label for="cargo-select">{{ $t('inputs.carwagons-title') }}</label>
+
         <div class="vehicle-types carwagons">
           <button
             v-for="carType in carTypeList"
@@ -134,33 +136,15 @@ export default defineComponent({
   data: () => ({
     store: useStore(),
     locomotiveTypeList: [
-      {
-        id: 'loco-electric',
-        desc: 'ELEKTRYCZNE',
-      },
-      {
-        id: 'loco-diesel',
-        desc: 'SPALINOWE',
-      },
-      {
-        id: 'unit-electric',
-        desc: 'ELEKTR. ZESPOŁY TRAKCYJNE',
-      },
-      {
-        id: 'unit-diesel',
-        desc: 'SPAL. ZESPOŁY TRAKCYJNE',
-      },
+      { id: 'loco-electric', desc: 'ELEKTRYCZNE' },
+      { id: 'loco-diesel', desc: 'SPALINOWE' },
+      { id: 'unit-electric', desc: 'ELEKTR. ZESPOŁY TRAKCYJNE' },
+      { id: 'unit-diesel', desc: 'SPAL. ZESPOŁY TRAKCYJNE' },
     ] as { id: LocoGroupType; desc: string }[],
 
     carTypeList: [
-      {
-        id: 'wagon-passenger',
-        desc: 'PASAŻERSKIE',
-      },
-      {
-        id: 'wagon-freight',
-        desc: 'TOWAROWE',
-      },
+      { id: 'wagon-passenger', desc: 'PASAŻERSKIE' },
+      { id: 'wagon-freight', desc: 'TOWAROWE' },
     ] as { id: WagonGroupType; desc: string }[],
   }),
 
@@ -240,8 +224,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '../../styles/global';
-
 .inputs-section {
   display: flex;
   justify-content: center;
@@ -255,16 +237,12 @@ export default defineComponent({
   max-width: 380px;
 }
 
-.input_header {
-  margin-bottom: 1em;
-}
-
 button.btn--choice {
   font-size: 0.9em;
   padding: 0.3em 0.6em;
 
   &[data-selected='true'] {
-    background-color: $accentColor;
+    background-color: global.$accentColor;
     color: black;
   }
 
@@ -282,12 +260,12 @@ button.btn--choice {
     display: block;
 
     font-weight: bold;
-    color: $accentColor;
+    color: global.$accentColor;
     margin-bottom: 0.3em;
   }
 
   select:focus {
-    border-color: $accentColor;
+    border-color: global.$accentColor;
   }
 }
 
@@ -306,9 +284,13 @@ button.btn--choice {
   gap: 0.25em;
 
   margin-bottom: 0.5em;
+
+  button {
+    width: 100%;
+  }
 }
 
-@media screen and (max-width: $breakpointMd) {
+@media screen and (max-width: global.$breakpointMd) {
   .inputs-section {
     justify-content: center;
     text-align: center;
