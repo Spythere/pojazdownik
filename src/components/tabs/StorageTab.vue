@@ -184,6 +184,7 @@ ul.storage-list > li {
 .storage-item-top {
   display: flex;
   align-items: center;
+  gap: 0.5em;
 }
 
 .storage-item-top > h3 {
