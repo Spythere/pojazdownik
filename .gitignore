@@ -24,5 +24,8 @@ pnpm-debug.log*
 *.sw?
 node_modules
 
+# Lock files
+*.lock
+
 # Dev files
 stockInfoDev.json
