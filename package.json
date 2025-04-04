@@ -1,6 +1,6 @@
 {
   "name": "pojazdownik",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -12,8 +12,8 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@heroicons/vue": "^2.2.0",
     "axios": "^1.4.0",
+    "lucide-vue-next": "^0.487.0",
     "pinia": "^2.0.17",
     "prettier": "^3.0.3",
     "vue": "^3.2.37",

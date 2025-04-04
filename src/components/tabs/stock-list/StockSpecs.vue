@@ -1,20 +1,26 @@
 <template>
-  <div class="stock_specs">
+  <div class="stock-specs">
     <div v-if="store.chosenStorageStockName || chosenRealComposition">
-      <b class="bookmarked-stock-info" v-if="store.chosenStorageStockName">
+      <b v-if="store.chosenStorageStockName">
         <span
           class="text--accent"
           :title="store.chosenStorageStockName.length > 41 ? store.chosenStorageStockName : ''"
         >
-          <BookmarkIcon />
+          <BookmarkCheck :size="19" />
           {{ store.chosenStorageStockName.slice(0, 40) }}
           {{ store.chosenStorageStockName.length > 41 ? '...' : '' }}
         </span>
       </b>
+
       <span v-if="store.chosenStorageStockName && chosenRealComposition"> | </span>
+
       <b class="real-stock-info" v-if="chosenRealComposition">
         <span class="text--accent">
-          <img :src="getIconURL(chosenRealComposition.type)" :alt="chosenRealComposition.type" />
+          <img
+            class="real-stock-icon"
+            :src="getIconURL(chosenRealComposition.type)"
+            :alt="chosenRealComposition.type"
+          />
           {{ chosenRealComposition.number }} {{ chosenRealComposition.name }}
         </span>
       </b>
@@ -40,10 +46,10 @@
 import { defineComponent } from 'vue';
 import { useStore } from '../../../store';
 import imageMixin from '../../../mixins/imageMixin';
-import { BookmarkIcon } from '@heroicons/vue/20/solid';
+import { BookmarkCheck } from 'lucide-vue-next';
 
 export default defineComponent({
-  components: { BookmarkIcon },
+  components: { BookmarkCheck },
 
   mixins: [imageMixin],
 
@@ -62,11 +68,11 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.bookmarked-stock-info,
-.real-stock-info {
-  svg,
-  img {
-    height: 1.3ch;
-  }
+.real-stock-icon {
+  height: 1.3ch;
+}
+
+.stock-specs svg {
+  vertical-align: text-top;
 }
 </style>

@@ -68,6 +68,7 @@
     "action-copy": "COPY TO CLIPBOARD",
     "action-reset": "RESET",
     "action-shuffle": "SHUFFLE",
+    "action-switch": "TURN AROUND",
     "action-bookmark": "BOOKMARK",
     "mass": "Mass",
     "mass-accepted": "accepted",

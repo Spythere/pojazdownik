@@ -64,7 +64,7 @@ export const useStore = defineStore({
     chosenStorageStockName: '',
     chosenStorageStockString: '',
 
-    compatibleSimulatorVersion: '2024.3.1',
+    compatibleSimulatorVersion: '2025.1.1',
   }),
 
   getters: {
