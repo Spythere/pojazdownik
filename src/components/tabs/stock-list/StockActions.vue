@@ -7,7 +7,7 @@
         :data-button-tooltip="$t('stocklist.action-upload-file')"
       >
         <input type="file" @change="uploadStockFromFile" ref="conFile" accept=".con,.txt" />
-        <FolderPlusIcon />
+        <FolderUp :stroke-width="2.5" />
       </button>
 
       <button
@@ -15,7 +15,7 @@
         @click="uploadStockFromClipboard"
         :data-button-tooltip="$t('stocklist.action-upload-clipboard')"
       >
-        <ClipboardDocumentCheckIcon />
+        <ClipboardPaste :stroke-width="2.5" />
       </button>
 
       <button
@@ -25,7 +25,7 @@
         @click="downloadStock"
         :data-button-tooltip="$t('stocklist.action-download')"
       >
-        <ArrowDownTrayIcon />
+        <FolderDown :stroke-width="2.5" />
       </button>
 
       <button
@@ -35,7 +35,7 @@
         @click="copyToClipboard"
         :data-button-tooltip="$t('stocklist.action-copy')"
       >
-        <DocumentDuplicateIcon />
+        <ClipboardCopy :stroke-width="2.5" />
       </button>
 
       <button
@@ -45,7 +45,7 @@
         @click="saveStockDataToStorage"
         :data-button-tooltip="$t('stocklist.action-bookmark')"
       >
-        <BookmarkIcon />
+        <Bookmark :stroke-width="2.5" />
       </button>
 
       <button
@@ -55,7 +55,7 @@
         @click="resetStock"
         :data-button-tooltip="$t('stocklist.action-reset')"
       >
-        <ArrowUturnLeftIcon />
+        <ListRestart :stroke-width="2.5" />
       </button>
 
       <button
@@ -65,7 +65,7 @@
         @click="shuffleCars"
         :data-button-tooltip="$t('stocklist.action-shuffle')"
       >
-        <ArrowPathIcon />
+        <Shuffle :stroke-width="2.5" />
       </button>
     </div>
 
@@ -75,7 +75,7 @@
         :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
         @click="stockListUtils.moveUpStock(store.chosenStockListIndex)"
       >
-        <ChevronUpIcon />
+        <ChevronUp :stroke-width="2.5" />
         {{ $t('stocklist.action-move-up') }}
       </button>
 
@@ -84,7 +84,7 @@
         :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
         @click="stockListUtils.moveDownStock(store.chosenStockListIndex)"
       >
-        <ChevronDownIcon />
+        <ChevronDown :stroke-width="2.5" />
         {{ $t('stocklist.action-move-down') }}
       </button>
 
@@ -93,7 +93,7 @@
         :tabindex="store.chosenStockListIndex == -1 ? -1 : 0"
         @click="stockListUtils.removeStock(store.chosenStockListIndex)"
       >
-        <TrashIcon />
+        <Trash2 :stroke-width="2.5" />
         {{ $t('stocklist.action-remove') }}
       </button>
     </div>
@@ -108,33 +108,38 @@ import { isTractionUnit } from '../../../utils/vehicleUtils';
 import { useFileUtils } from '../../../utils/fileUtils';
 import stockMixin from '../../../mixins/stockMixin';
 import { useStockListUtils } from '../../../utils/stockListUtils';
+
 import {
-  ArrowDownTrayIcon,
-  ArrowPathIcon,
-  ArrowUturnLeftIcon,
-  BookmarkIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-  ClipboardDocumentCheckIcon,
-  DocumentDuplicateIcon,
-  FolderPlusIcon,
-  TrashIcon,
-} from '@heroicons/vue/20/solid';
+  Bookmark,
+  ChevronDown,
+  ChevronUp,
+  ClipboardCopy,
+  ClipboardPaste,
+  Download,
+  FolderDown,
+  FolderUp,
+  ListRestart,
+  Repeat,
+  Shuffle,
+  Trash2,
+} from 'lucide-vue-next';
 
 export default defineComponent({
   mixins: [stockMixin],
 
   components: {
-    ArrowDownTrayIcon,
-    ArrowPathIcon,
-    ArrowUturnLeftIcon,
-    BookmarkIcon,
-    ChevronDownIcon,
-    ChevronUpIcon,
-    ClipboardDocumentCheckIcon,
-    DocumentDuplicateIcon,
-    FolderPlusIcon,
-    TrashIcon,
+    Bookmark,
+    ChevronDown,
+    ChevronUp,
+    ClipboardCopy,
+    ClipboardPaste,
+    Download,
+    FolderUp,
+    ListRestart,
+    Repeat,
+    Shuffle,
+    FolderDown,
+    Trash2,
   },
 
   data: () => ({

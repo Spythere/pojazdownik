@@ -16,19 +16,16 @@
 
               <div class="storage-item-top-actions">
                 <button class="btn btn--icon" @click="chooseStorageStock(storageEntry.id)">
-                  <ArrowRightEndOnRectangleIcon style="width: 25px" />
+                  <LogIn />
                 </button>
 
                 <button class="btn btn--icon" @click="toggleStorageEntryExpand(storageEntry.id)">
-                  <ChevronDownIcon
-                    v-if="!expandedEntries.includes(storageEntry.id)"
-                    style="width: 25px"
-                  />
-                  <ChevronUpIcon v-else style="width: 25px" />
+                  <ChevronDown v-if="!expandedEntries.includes(storageEntry.id)" />
+                  <ChevronUp v-else />
                 </button>
 
                 <button class="btn btn--icon" @click="removeStockIndexFromStorage(storageEntry.id)">
-                  <TrashIcon style="width: 25px" />
+                  <Trash2 />
                 </button>
               </div>
             </div>
@@ -62,24 +59,16 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
-import {
-  ArrowRightEndOnRectangleIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-  FolderArrowDownIcon,
-  TrashIcon,
-} from '@heroicons/vue/20/solid';
-
 import { useStore } from '../../store';
 import stockMixin from '../../mixins/stockMixin';
+import { ChevronDown, ChevronUp, LogIn, Trash2 } from 'lucide-vue-next';
 
 export default defineComponent({
   components: {
-    ChevronDownIcon,
-    ChevronUpIcon,
-    FolderArrowDownIcon,
-    TrashIcon,
-    ArrowRightEndOnRectangleIcon,
+    ChevronDown,
+    ChevronUp,
+    LogIn,
+    Trash2,
   },
 
   mixins: [stockMixin],
@@ -112,7 +101,9 @@ export default defineComponent({
           },
           new Map() as Map<string, number>
         )
-      ).map(([stockName, count]) => `${count}x ${stockName.replace(/_/g, ' ')}`).join(', ');
+      )
+        .map(([stockName, count]) => `${count}x ${stockName.replace(/_/g, ' ')}`)
+        .join(', ');
     },
     removeStockIndexFromStorage(stockName: string) {
       let removeConfirm = confirm(this.$t('storage.remove-confirm'));
@@ -188,7 +179,6 @@ ul.storage-list > li {
 }
 
 .storage-item-top > h3 {
-  font-size: 1.2em;
   width: 100%;
   text-align: left;
   margin: 0;
