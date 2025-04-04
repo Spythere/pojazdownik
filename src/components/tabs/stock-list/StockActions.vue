@@ -67,6 +67,16 @@
       >
         <Shuffle :stroke-width="2.5" />
       </button>
+
+      <button
+        class="btn btn--image"
+        :data-disabled="stockIsEmpty"
+        :disabled="stockIsEmpty"
+        @click="turnAroundCars"
+        :data-button-tooltip="$t('stocklist.action-switch')"
+      >
+        <Repeat :stroke-width="2.5" />
+      </button>
     </div>
 
     <div class="actions-bottom" :data-disabled="store.chosenStockListIndex == -1">
@@ -199,6 +209,22 @@ export default defineComponent({
         this.store.stockList[randAvailableIndex] = this.store.stockList[i];
         this.store.stockList[i] = tempSwap;
       }
+    },
+
+    turnAroundCars() {
+      if (this.store.stockList.length <= 1) return;
+
+      const isFirstTractionUnit = isTractionUnit(this.store.stockList[0].vehicleRef);
+
+      const sliceToSwap = isFirstTractionUnit
+        ? this.store.stockList.slice(1)
+        : this.store.stockList.slice();
+
+      sliceToSwap.reverse();
+
+      if (isFirstTractionUnit) sliceToSwap.unshift(this.store.stockList[0]);
+
+      this.store.stockList = sliceToSwap;
     },
 
     downloadStock() {
