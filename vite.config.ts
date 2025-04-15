@@ -34,7 +34,7 @@ export default defineConfig({
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/.*\.spythere\.eu\/.*/i,
-            handler: 'StaleWhileRevalidate',
+            handler: 'NetworkFirst',
             options: { cacheName: 'spythere-cache' },
           },
         ],
