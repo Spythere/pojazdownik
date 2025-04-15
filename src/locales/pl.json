@@ -6,7 +6,8 @@
     "disclaimer": "Ta strona ma charakter informacyjny. Autor nie ponosi odpowiedzialności za tworzenie pociągów niezgodnych z {tos}!",
     "tos": "regulaminem symulatora Train Driver 2",
     "tos-href": "https://docs.google.com/document/d/1UAAPUtN0d_RoS4RgOzEzllJZJhA0VcizzCzKW4QylbY/edit",
-    "version-check": "Strona jest kompletna dla wersji {version} symulatora TD2"
+    "version-check": "Strona jest kompletna dla wersji {version} symulatora TD2",
+    "vehicles-count": "Strona zawiera obecnie {all} pojazdów - w tym {units} jednostek trakcyjnych i {cars} wagonów!"
   },
   "inputs": {
     "title": "WYBIERZ POJAZD",

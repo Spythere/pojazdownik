@@ -6,7 +6,8 @@
     "disclaimer": "This site has only an informational intent. The author does not carry any responsibility for creating trains against {tos}!",
     "tos": "Train Driver 2 simulator rules",
     "tos-href": "https://docs.google.com/document/d/1UAAPUtN0d_RoS4RgOzEzllJZJhA0VcizzCzKW4QylbY/edit#heading=h.1ldcvhomwjp9",
-    "version-check": "Site is complete for version {version} of Train Driver 2 simulator"
+    "version-check": "Site is complete for version {version} of Train Driver 2 simulator",
+    "vehicles-count": "Site contains currently {all} vehicles - including {units} traction units and {cars} car wagons!"
   },
   "inputs": {
     "title": "CHOOSE A VEHICLE",

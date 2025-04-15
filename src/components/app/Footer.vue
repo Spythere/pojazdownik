@@ -9,7 +9,13 @@
     </i18n-t>
 
     <div class="text--grayed" v-if="store.vehiclesData">
-      {{ $t('footer.version-check', { version: store.compatibleSimulatorVersion }) }}
+      {{
+        $t('footer.vehicles-count', {
+          all: vehiclesCounters.all,
+          units: vehiclesCounters.units,
+          cars: vehiclesCounters.cars,
+        })
+      }}
     </div>
 
     <div>
@@ -32,6 +38,27 @@ export default defineComponent({
       VERSION: packageInfo.version,
       store: useStore(),
     };
+  },
+
+  computed: {
+    vehiclesCounters() {
+      let counters = {
+        all: 0,
+        cars: 0,
+        units: 0,
+      };
+
+      if (!this.store.vehiclesData) return counters;
+
+      this.store.vehiclesData?.forEach((v) => {
+        counters.all += 1;
+
+        if (v.group.locoProps !== null) counters.units += 1;
+        else counters.cars += 1;
+      });
+
+      return counters;
+    },
   },
 });
 </script>
