@@ -101,3 +101,17 @@ export function stockSupportsColdStart(stockList: IStock[]) {
 export function stockSupportsDoubleManning(stockList: IStock[]) {
   return stockList.length != 0 && isTractionUnit(stockList[0].vehicleRef) && stockList[0].vehicleRef.doubleManned;
 }
+
+export function getCargoWarnings(stockList: IStock[]) {
+  let warnings: Set<string> = new Set();
+
+  stockList.forEach((stockVehicle) => {
+    if (stockVehicle.vehicleRef.group == 'wagon-freight') {
+      if (stockVehicle.cargo && stockVehicle.cargo.id.startsWith('wt_20')) warnings.add('warning_wt_20_pn');
+      else if (stockVehicle.vehicleRef.type.startsWith('WB117')) warnings.add(stockVehicle.cargo ? 'warning_un1965_twr' : 'warning_un1965_tn');
+      else if (stockVehicle.vehicleRef.type.startsWith('445Rb')) warnings.add(stockVehicle.cargo ? 'warning_un1202_twr' : 'warning_un1202_tn');
+    }
+  });
+
+  return warnings;
+}
