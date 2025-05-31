@@ -1,18 +1,5 @@
-import {
-  ICarWagon,
-  ILocomotive,
-  IStock,
-  IVehicleData,
-  IVehiclesAPIResponse,
-  LocoGroupType,
-  WagonGroupType,
-} from '../types/common.types';
-import {
-  MassLimitLocoType,
-  SpeedLimitLocoType,
-  calculateMassLimit,
-  calculateSpeedLimit,
-} from './vehicleLimitsUtils';
+import { ICarWagon, ILocomotive, IStock, IVehicleData, LocoGroupType, WagonGroupType } from '../types/common.types';
+import { MassLimitLocoType, calculateMassLimit, calculateSpeedLimit } from './vehicleLimitsUtils';
 
 export function isTractionUnit(vehicle: ILocomotive | ICarWagon): vehicle is ILocomotive {
   return (vehicle as ILocomotive).cabinType !== undefined;
@@ -79,10 +66,7 @@ export function carDataList(vehiclesData: IVehicleData[] | undefined) {
 }
 
 export function totalWeight(stockList: IStock[]) {
-  return stockList.reduce(
-    (acc, stock) => acc + (stock.vehicleRef.weight + (stock.cargo?.weight ?? 0)),
-    0
-  );
+  return stockList.reduce((acc, stock) => acc + (stock.vehicleRef.weight + (stock.cargo?.weight ?? 0)), 0);
 }
 
 export function totalLength(stockList: IStock[]) {
@@ -98,10 +82,7 @@ export function acceptableWeight(stockList: IStock[]) {
 
   const activeLocomotiveType = stockList[0].vehicleRef.type.split('-')[0];
 
-  const locoMassLimit = calculateMassLimit(
-    activeLocomotiveType as MassLimitLocoType,
-    isTrainPassenger(stockList)
-  );
+  const locoMassLimit = calculateMassLimit(activeLocomotiveType as MassLimitLocoType, isTrainPassenger(stockList));
 
   return locoMassLimit;
 }
@@ -110,23 +91,13 @@ export function isTrainPassenger(stockList: IStock[]) {
   if (stockList.length == 0) return false;
   if (stockList.every((stock) => isTractionUnit(stock.vehicleRef))) return false;
 
-  return stockList
-    .filter((stock) => !isTractionUnit(stock.vehicleRef))
-    .every((stock) => stock.vehicleRef.group === 'wagon-passenger');
+  return stockList.filter((stock) => !isTractionUnit(stock.vehicleRef)).every((stock) => stock.vehicleRef.group === 'wagon-passenger');
 }
 
 export function stockSupportsColdStart(stockList: IStock[]) {
-  return (
-    stockList.length == 1 &&
-    isTractionUnit(stockList[0].vehicleRef) &&
-    stockList[0].vehicleRef.coldStart
-  );
+  return stockList.length == 1 && isTractionUnit(stockList[0].vehicleRef) && stockList[0].vehicleRef.coldStart;
 }
 
 export function stockSupportsDoubleManning(stockList: IStock[]) {
-  return (
-    stockList.length != 0 &&
-    isTractionUnit(stockList[0].vehicleRef) &&
-    stockList[0].vehicleRef.doubleManned
-  );
+  return stockList.length != 0 && isTractionUnit(stockList[0].vehicleRef) && stockList[0].vehicleRef.doubleManned;
 }
