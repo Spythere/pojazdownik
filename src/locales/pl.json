@@ -101,7 +101,7 @@
     "chosen-empty-warning": "Wybierz co najmniej jeden ładunek, aby zobaczyć wagony, które go posiadają!",
     "chosen-warning": "Wagony posiadające wybrane ładunki. Najedź na nazwę, aby zobaczyć podgląd wagonu. Kliknij, aby wyłączyć z losowania (tylko podświetlone nazwy będą uwzględnione).",
     "action-generate": "WYGENERUJ",
-    "action-generate-empty": "WYGENERUJ PRÓŻNE WAGONY",
+    "action-generate-empty": "WYGENERUJ SAME WAGONY",
     "action-reset": "ZRESETUJ ŁADUNKI"
   },
   "numgen": {
@@ -221,6 +221,8 @@
   },
   "cargo": {
     "kontenery": "kontenery",
+    "biomasa": "biomasa",
+    "biomasa-puste": "biomasa (puste)",
     "chłodnia": "chłodnia",
     "drobnica": "drobnica",
     "węgiel": "węgiel",

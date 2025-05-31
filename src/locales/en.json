@@ -101,7 +101,7 @@
     "chosen-empty-warning": "Choose at least one cargo type to see available cars!",
     "chosen-warning": "Cars containing chosen cargo are shown below. Hover over a type to see a preview of the car. Click it to include/exclude it from a drawing (only highlighted types will be included).",
     "action-generate": "GENERATE",
-    "action-generate-empty": "GENERATE EMPTY",
+    "action-generate-empty": "GENERATE CARS ALONE",
     "action-reset": "RESET CARGO"
   },
   "numgen": {
@@ -221,6 +221,8 @@
   },
   "cargo": {
     "kontenery": "containers",
+    "biomasa": "biomass",
+    "biomasa-puste": "biomass (empty)",
     "chłodnia": "refrigerator",
     "drobnica": "loose cargo",
     "węgiel": "coal",
