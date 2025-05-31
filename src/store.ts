@@ -25,13 +25,11 @@ import {
   totalWeight,
 } from './utils/vehicleUtils';
 
-import i18n from './i18n-setup';
 import http from './http';
 
 import realCompositionsJSON from './data/realCompositions.json';
 
-export const useStore = defineStore({
-  id: 'store',
+export const useStore = defineStore('store', {
   state: () => ({
     chosenCar: null as ICarWagon | null,
     chosenLoco: null as ILocomotive | null,

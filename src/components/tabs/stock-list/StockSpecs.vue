@@ -2,10 +2,7 @@
   <div class="stock-specs">
     <div v-if="store.chosenStorageStockName || chosenRealComposition">
       <b v-if="store.chosenStorageStockName">
-        <span
-          class="text--accent"
-          :title="store.chosenStorageStockName.length > 41 ? store.chosenStorageStockName : ''"
-        >
+        <span class="text--accent" :title="store.chosenStorageStockName.length > 41 ? store.chosenStorageStockName : ''">
           <BookmarkCheck :size="19" />
           {{ store.chosenStorageStockName.slice(0, 40) }}
           {{ store.chosenStorageStockName.length > 41 ? '...' : '' }}
@@ -16,11 +13,7 @@
 
       <b class="real-stock-info" v-if="chosenRealComposition">
         <span class="text--accent">
-          <img
-            class="real-stock-icon"
-            :src="getIconURL(chosenRealComposition.type)"
-            :alt="chosenRealComposition.type"
-          />
+          <img class="real-stock-icon" :src="getIconURL(chosenRealComposition.type)" :alt="chosenRealComposition.type" />
           {{ chosenRealComposition.number }} {{ chosenRealComposition.name }}
         </span>
       </b>
@@ -30,14 +23,11 @@
       {{ $t('stocklist.mass') }}
       <span class="text--accent">{{ (store.totalWeight / 1000).toFixed(1) }}t</span>
       ({{ $t('stocklist.mass-accepted') }}:
-      <span class="text--accent">{{
-        store.acceptableWeight ? `${~~(store.acceptableWeight / 1000)}t` : '-'
-      }}</span
+      <span class="text--accent">{{ store.acceptableWeight ? `${~~(store.acceptableWeight / 1000)}t` : '-' }}</span
       >) - {{ $t('stocklist.length') }}:
       <span class="text--accent">{{ store.totalLength }}m</span>
-      - {{ $t('stocklist.vmax') }}
-      <span tabindex="0" :data-tooltip="$t('stocklist.disclaimer')">(?)</span>:
-      <span class="text--accent">{{ store.maxStockSpeed }} km/h</span>
+      - {{ $t('stocklist.vmax') }} <span tabindex="0" :data-tooltip="$t('stocklist.disclaimer')">(?)</span>:
+      <span class="text--accent">{{ isFinite(store.maxStockSpeed) ? store.maxStockSpeed : '--' }} km/h</span>
     </span>
   </div>
 </template>
