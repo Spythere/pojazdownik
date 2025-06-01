@@ -101,7 +101,7 @@
     "chosen-empty-warning": "Wybierz co najmniej jeden ładunek, aby zobaczyć wagony, które go posiadają!",
     "chosen-warning": "Wagony posiadające wybrane ładunki. Najedź na nazwę, aby zobaczyć podgląd wagonu. Kliknij, aby wyłączyć z losowania (tylko podświetlone nazwy będą uwzględnione).",
     "action-generate": "WYGENERUJ",
-    "action-generate-empty": "WYGENERUJ PRÓŻNE WAGONY",
+    "action-generate-empty": "WYGENERUJ SAME WAGONY",
     "action-reset": "ZRESETUJ ŁADUNKI"
   },
   "numgen": {
@@ -221,6 +221,8 @@
   },
   "cargo": {
     "kontenery": "kontenery",
+    "biomasa": "biomasa",
+    "biomasa-puste": "biomasa (puste)",
     "chłodnia": "chłodnia",
     "drobnica": "drobnica",
     "węgiel": "węgiel",
@@ -322,5 +324,14 @@
     "418Vb_WIEBE": "drobnica, ładunki sypkie (piasek, kamień)",
     "418Vb_ZOS": "drobnica, ładunki sypkie (piasek, kamień)",
     "418Vb_ZUE": "drobnica, ładunki sypkie (piasek, kamień)"
+  },
+  "cargo-warnings": {
+    "title": "Skład z dodatkowymi uwagami przewozowymi:",
+    "warning_wt_20_pn": "PN: przekroczona skrajnia (Innofreight - C45)",
+    "warning_un1965_twr": "TWR: gazy węglowodorowe skroplone (UN 1965)",
+    "warning_un1965_tn": "TN: gazy węglowodorowe skroplone - puste cysterny (UN 1965)",
+    "warning_un1202_twr": "TWR: olej napędowy (UN 1202)",
+    "warning_un1202_tn": "TN: olej napędowy - puste cysterny (UN 1202)",
+    "warning_military_pn": "PN: transport wojskowy"
   }
 }

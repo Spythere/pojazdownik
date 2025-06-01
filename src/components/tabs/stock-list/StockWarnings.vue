@@ -2,31 +2,25 @@
   <div class="stock_warnings" v-if="hasAnyWarnings">
     <div class="warning" v-if="locoNotSuitable">(!) {{ $t('stocklist.warning-not-suitable') }}</div>
 
-    <div class="warning" v-if="lengthExceeded && store.isTrainPassenger">
-      (!) {{ $t('stocklist.warning-passenger-too-long') }}
-    </div>
+    <div class="warning" v-if="lengthExceeded && store.isTrainPassenger">(!) {{ $t('stocklist.warning-passenger-too-long') }}</div>
 
-    <div class="warning" v-if="lengthExceeded && !store.isTrainPassenger">
-      (!) {{ $t('stocklist.warning-freight-too-long') }}
-    </div>
+    <div class="warning" v-if="lengthExceeded && !store.isTrainPassenger">(!) {{ $t('stocklist.warning-freight-too-long') }}</div>
 
     <div class="warning" v-if="teamOnlyVehicles.length > 0">
       (!)
-      {{
-        $t('stocklist.warning-team-only-vehicle', [
-          teamOnlyVehicles.map((v) => v.vehicleRef.type).join(', '),
-        ])
-      }}
+      {{ $t('stocklist.warning-team-only-vehicle', [teamOnlyVehicles.map((v) => v.vehicleRef.type).join(', ')]) }}
+    </div>
+
+    <div class="warning" v-if="store.cargoWarnings.size > 0">
+      (!) <b>{{ $t('cargo-warnings.title') }}</b>
+      {{ [...store.cargoWarnings].map((v) => $t(`cargo-warnings.${v}`)).join('; ') }}
     </div>
 
     <div class="warning" v-if="weightExceeded">
       (!)
       <i18n-t keypath="stocklist.warning-too-heavy">
         <template #href>
-          <a
-            target="_blank"
-            href="https://docs.google.com/spreadsheets/d/1BvTU-U7huIaEheov22TrhTtROUM4MwVfdbq03GVAEM8"
-          >
+          <a target="_blank" href="https://docs.google.com/spreadsheets/d/1BvTU-U7huIaEheov22TrhTtROUM4MwVfdbq03GVAEM8">
             {{ $t('stocklist.acceptable-mass-docs') }}
           </a>
         </template>
@@ -55,16 +49,11 @@ export default defineComponent({
     },
 
     hasAnyWarnings() {
-      return (
-        this.weightExceeded || this.lengthExceeded || this.locoNotSuitable || this.teamOnlyVehicles
-      );
+      return this.weightExceeded || this.lengthExceeded || this.locoNotSuitable || this.teamOnlyVehicles;
     },
 
     lengthExceeded() {
-      return (
-        (this.store.totalLength > 350 && this.store.isTrainPassenger) ||
-        (this.store.totalLength > 650 && !this.store.isTrainPassenger)
-      );
+      return (this.store.totalLength > 350 && this.store.isTrainPassenger) || (this.store.totalLength > 650 && !this.store.isTrainPassenger);
     },
 
     weightExceeded() {
@@ -76,9 +65,7 @@ export default defineComponent({
         !this.store.isTrainPassenger &&
         this.store.stockList.length > 1 &&
         !this.store.stockList.every((stock) => isTractionUnit(stock.vehicleRef)) &&
-        this.store.stockList.some(
-          (stock) => isTractionUnit(stock.vehicleRef) && stock.vehicleRef.type.startsWith('EP')
-        )
+        this.store.stockList.some((stock) => isTractionUnit(stock.vehicleRef) && stock.vehicleRef.type.startsWith('EP'))
       );
     },
   },

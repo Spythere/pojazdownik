@@ -28,12 +28,14 @@ export interface ILocomotive {
   constructionType: string;
   cabinType: string;
   maxSpeed: number;
+  maxSpeedLoco: number;
   weight: number;
   length: number;
   coldStart: boolean;
   doubleManned: boolean;
   sponsorOnlyTimestamp: number;
   teamOnly: boolean;
+  massSpeeds: VehicleGroupMassSpeeds | null;
 }
 
 export interface ICarWagon {
@@ -42,11 +44,13 @@ export interface ICarWagon {
   constructionType: string;
   loadable: boolean;
   maxSpeed: number;
+  maxSpeedLoaded: number;
   weight: number;
   length: number;
   cargoTypes: ICargo[];
   sponsorOnlyTimestamp: number;
   teamOnly: boolean;
+  massSpeeds: VehicleGroupMassSpeeds | null;
 }
 
 export interface IStock {
@@ -83,10 +87,13 @@ export interface IVehicleGroup {
   id: number;
   name: string;
   speed: number;
+  speedLoaded?: number;
+  speedLoco?: number;
   length: number;
   weight: number;
   cargoTypes: IVehicleCargoType[] | null;
   locoProps: IVehicleLocoProps | null;
+  massSpeeds: VehicleGroupMassSpeeds | null;
 }
 
 export interface IVehicleCargoType {
@@ -97,6 +104,12 @@ export interface IVehicleCargoType {
 export interface IVehicleLocoProps {
   coldStart: boolean;
   doubleManned: boolean;
+}
+
+export interface VehicleGroupMassSpeeds {
+  passenger: Record<string, number> | null;
+  cargo: Record<string, number> | null;
+  none: number | null;
 }
 
 export interface StorageStockEntry {

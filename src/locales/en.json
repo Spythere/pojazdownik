@@ -101,7 +101,7 @@
     "chosen-empty-warning": "Choose at least one cargo type to see available cars!",
     "chosen-warning": "Cars containing chosen cargo are shown below. Hover over a type to see a preview of the car. Click it to include/exclude it from a drawing (only highlighted types will be included).",
     "action-generate": "GENERATE",
-    "action-generate-empty": "GENERATE EMPTY",
+    "action-generate-empty": "GENERATE CARS ALONE",
     "action-reset": "RESET CARGO"
   },
   "numgen": {
@@ -221,6 +221,8 @@
   },
   "cargo": {
     "kontenery": "containers",
+    "biomasa": "biomass",
+    "biomasa-puste": "biomass (empty)",
     "chłodnia": "refrigerator",
     "drobnica": "loose cargo",
     "węgiel": "coal",
@@ -323,5 +325,14 @@
     "418Vb_WIEBE": "loose cargo (sand, stone)",
     "418Vb_ZOS": "loose cargo (sand, stone)",
     "418Vb_ZUE": "loose cargo (sand, stone)"
+  },
+  "cargo-warnings": {
+    "title": "Rolling stock containing extra cargo warnings:",
+    "warning_wt_20_pn": "PN: exceeded gauge (Innofreight - C45)",
+    "warning_un1965_twr": "TWR: LPG (UN 1965)",
+    "warning_un1965_tn": "TN: LPG - empty tank (UN 1965)",
+    "warning_un1202_twr": "TWR: diesel fuel (UN 1202)",
+    "warning_un1202_tn": "TN: diesel fuel - empty tank (UN 1202)",
+    "warning_military_pn": "PN: military transport"
   }
 }

@@ -15,6 +15,7 @@ import { defineStore } from 'pinia';
 import {
   acceptableWeight,
   carDataList,
+  getCargoWarnings,
   isTractionUnit,
   isTrainPassenger,
   locoDataList,
@@ -25,13 +26,11 @@ import {
   totalWeight,
 } from './utils/vehicleUtils';
 
-import i18n from './i18n-setup';
 import http from './http';
 
 import realCompositionsJSON from './data/realCompositions.json';
 
-export const useStore = defineStore({
-  id: 'store',
+export const useStore = defineStore('store', {
   state: () => ({
     chosenCar: null as ICarWagon | null,
     chosenLoco: null as ILocomotive | null,
@@ -70,15 +69,13 @@ export const useStore = defineStore({
   getters: {
     locoDataList: (state) => locoDataList(state.vehiclesData),
     carDataList: (state) => carDataList(state.vehiclesData),
-    vehicleDataList: (state) => [
-      ...locoDataList(state.vehiclesData),
-      ...carDataList(state.vehiclesData),
-    ],
+    vehicleDataList: (state) => [...locoDataList(state.vehiclesData), ...carDataList(state.vehiclesData)],
     totalWeight: (state) => totalWeight(state.stockList),
     totalLength: (state) => totalLength(state.stockList),
     maxStockSpeed: (state) => maxStockSpeed(state.stockList),
     isTrainPassenger: (state) => isTrainPassenger(state.stockList),
     acceptableWeight: (state) => acceptableWeight(state.stockList),
+    cargoWarnings: (state) => getCargoWarnings(state.stockList),
 
     stockSupportsColdStart: (state) => stockSupportsColdStart(state.stockList),
     stockSupportsDoubleManning: (state) => stockSupportsDoubleManning(state.stockList),
@@ -87,15 +84,11 @@ export const useStore = defineStore({
       if (state.stockList.length == 0) return '';
 
       const coldStartActive = state.isColdStart && stockSupportsColdStart(state.stockList);
-      const doubleManningActive =
-        state.isDoubleManned && stockSupportsDoubleManning(state.stockList);
+      const doubleManningActive = state.isDoubleManned && stockSupportsDoubleManning(state.stockList);
 
       return state.stockList
         .map((stock, i) => {
-          let stockTypeStr =
-            isTractionUnit(stock.vehicleRef) || !stock.cargo
-              ? stock.vehicleRef.type
-              : `${stock.vehicleRef.type}:${stock.cargo.id}`;
+          let stockTypeStr = isTractionUnit(stock.vehicleRef) || !stock.cargo ? stock.vehicleRef.type : `${stock.vehicleRef.type}:${stock.cargo.id}`;
 
           if (i == 0 && (coldStartActive || doubleManningActive))
             return `${stockTypeStr},${coldStartActive ? 'c' : ''}${doubleManningActive ? 'd' : ''}`;

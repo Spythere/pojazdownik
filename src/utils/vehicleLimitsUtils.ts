@@ -1,29 +1,47 @@
-import speedLimits from '../constants/speedLimits.json';
 import massLimits from '../constants/massLimits.json';
+import { IStock } from '../types/common.types';
 
-export type SpeedLimitLocoType = keyof typeof speedLimits;
 export type MassLimitLocoType = keyof typeof massLimits;
 
-export function calculateSpeedLimit(
-  locoType: SpeedLimitLocoType,
-  stockTotalWeight: number,
-  stockCount: number,
-  isTrainPassenger: boolean
-) {
-  if (speedLimits[locoType] === undefined) return 0;
+export function calculateSpeedLimit(stockList: IStock[], isPassenger: boolean, stockMass: number) {
+  // Check the whole consist speed limit
+  const stockMaxSpeed = stockList.reduce((acc, vehicle, i) => {
+    let vehicleSpeed = vehicle.vehicleRef.maxSpeed;
 
-  if (stockCount == 1) return speedLimits[locoType]['none'];
+    if (
+      vehicle.vehicleRef.group == 'wagon-freight' &&
+      vehicle.cargo !== undefined &&
+      vehicle.vehicleRef.maxSpeedLoaded
+    ) {
+      vehicleSpeed = vehicle.vehicleRef.maxSpeedLoaded;
+    }
 
-  const stockType = isTrainPassenger ? 'passenger' : 'cargo';
-  const speedTable = speedLimits[locoType][stockType];
+    return Math.min(vehicleSpeed, acc);
+  }, Infinity);
 
-  if (!speedTable) return undefined;
+  // Check the head vehicle speed limit
+  const headVehicle = stockList[0];
 
-  let speedLimit = 0;
-  for (const mass in speedTable)
-    if (stockTotalWeight > Number(mass)) speedLimit = (speedTable as any)[mass];
+  // Omit speed check for head vehicle if there's no data for it
+  if (!headVehicle || !headVehicle.vehicleRef.massSpeeds) return stockMaxSpeed;
 
-  return speedLimit;
+  const massSpeeds =
+    headVehicle.vehicleRef.massSpeeds[
+      stockList.length == 1 ? 'none' : isPassenger ? 'passenger' : 'cargo'
+    ];
+
+  // Omit speed check if there's no data on mass speeds
+  if (!massSpeeds) return stockMaxSpeed;
+
+  // Number type for locomotives alone
+  if (typeof massSpeeds === 'number') return massSpeeds;
+
+  // Record type for passenger or cargo, find the closest range
+  const massKey = Object.keys(massSpeeds).findLast((massKey) => stockMass >= Number(massKey));
+
+  const massMaxSpeed = massKey ? massSpeeds[massKey] : Infinity;
+
+  return Math.min(massMaxSpeed, stockMaxSpeed);
 }
 
 export function calculateMassLimit(locoType: MassLimitLocoType, isTrainPassenger: boolean) {
