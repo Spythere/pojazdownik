@@ -326,11 +326,12 @@
     "418Vb_ZUE": "drobnica, ładunki sypkie (piasek, kamień)"
   },
   "cargo-warnings": {
-    "title": "Uwagi przewozowe:",
+    "title": "Skład z dodatkowymi uwagami przewozowymi:",
     "warning_wt_20_pn": "PN: przekroczona skrajnia (Innofreight - C45)",
     "warning_un1965_twr": "TWR: gazy węglowodorowe skroplone (UN 1965)",
     "warning_un1965_tn": "TN: gazy węglowodorowe skroplone - puste cysterny (UN 1965)",
     "warning_un1202_twr": "TWR: olej napędowy (UN 1202)",
-    "warning_un1202_tn": "TN: olej napędowy - puste cysterny (UN 1202)"
+    "warning_un1202_tn": "TN: olej napędowy - puste cysterny (UN 1202)",
+    "warning_military_pn": "PN: transport wojskowy"
   }
 }

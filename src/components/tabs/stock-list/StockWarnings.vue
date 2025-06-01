@@ -12,7 +12,7 @@
     </div>
 
     <div class="warning" v-if="store.cargoWarnings.size > 0">
-      {{ $t('cargo-warnings.title') }}
+      (!) <b>{{ $t('cargo-warnings.title') }}</b>
       {{ [...store.cargoWarnings].map((v) => $t(`cargo-warnings.${v}`)).join('; ') }}
     </div>
 

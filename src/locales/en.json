@@ -327,11 +327,12 @@
     "418Vb_ZUE": "loose cargo (sand, stone)"
   },
   "cargo-warnings": {
-    "title": "Cargo warnings:",
+    "title": "Rolling stock containing extra cargo warnings:",
     "warning_wt_20_pn": "PN: exceeded gauge (Innofreight - C45)",
     "warning_un1965_twr": "TWR: LPG (UN 1965)",
     "warning_un1965_tn": "TN: LPG - empty tank (UN 1965)",
     "warning_un1202_twr": "TWR: diesel fuel (UN 1202)",
-    "warning_un1202_tn": "TN: diesel fuel - empty tank (UN 1202)"
+    "warning_un1202_tn": "TN: diesel fuel - empty tank (UN 1202)",
+    "warning_military_pn": "PN: military transport"
   }
 }
