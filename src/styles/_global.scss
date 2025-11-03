@@ -13,16 +13,6 @@ $teamColor: #ff4848;
 @font-face {
   font-family: 'Lato';
   src:
-    url('/fonts/Lato-Light.woff2') format('woff2'),
-    url('/fonts/Lato-Light.woff') format('woff');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Lato';
-  src:
     url('/fonts/Lato-Bold.woff2') format('woff2'),
     url('/fonts/Lato-Bold.woff') format('woff');
   font-weight: bold;
@@ -350,7 +340,7 @@ hr {
     outline: none;
   }
 
-  label > input:checked + span {
+  label>input:checked+span {
     color: $accentColor;
     border-color: $accentColor;
   }
@@ -358,6 +348,7 @@ hr {
 
 // Vue Transition anims
 .slide-top {
+
   &-enter-from,
   &-leave-to {
     transform: translateY(-100%);
@@ -370,6 +361,7 @@ hr {
 }
 
 .card-appear {
+
   &-enter-from,
   &-leave-to {
     opacity: 0;
