@@ -16,6 +16,8 @@
       {{ [...store.cargoWarnings].map((v) => $t(`cargo-warnings.${v}`)).join('; ') }}
     </div>
 
+    <div class="warning" v-if="!isRearPRSM4">(!) {{ $t('stocklist.warning-prsm4-not-at-the-rear') }}</div>
+
     <div class="warning" v-if="weightExceeded">
       (!)
       <i18n-t keypath="stocklist.warning-too-heavy">
@@ -67,6 +69,12 @@ export default defineComponent({
         !this.store.stockList.every((stock) => isTractionUnit(stock.vehicleRef)) &&
         this.store.stockList.some((stock) => isTractionUnit(stock.vehicleRef) && stock.vehicleRef.type.startsWith('EP'))
       );
+    },
+
+    isRearPRSM4() {
+      if (this.store.stockList.length <= 1) return true;
+
+      return this.store.stockList.findIndex((stock) => stock.vehicleRef.type.startsWith('PRSM4')) == (this.store.stockList.length - 1 || -1);
     },
   },
 });

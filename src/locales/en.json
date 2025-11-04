@@ -84,6 +84,7 @@
     "warning-too-many-locos": "This train has too many traction units!",
     "warning-too-heavy": "This train is too heavy! Check {href}",
     "warning-team-only-vehicle": "There's at least one vehicle available only for TD2 team members in your stock composition! ({0})",
+    "warning-prsm4-not-at-the-rear": "PRSM4 welding car must be at the end of a train!",
     "acceptable-mass-docs": "acceptable rolling stock masses (PL)",
     "stock-loading-error": "An error occurred: cannot parse data from the file - make sure it's in a proper format!",
     "stock-clipboard-error": "An error occurred: cannot read data from the clipboard - make sure the site has been granted right permissions for this action!"

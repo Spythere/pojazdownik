@@ -84,6 +84,7 @@
     "warning-too-many-locos": "Ten skład posiada za dużo pojazdów trakcyjnych!",
     "warning-too-heavy": "Ten skład jest za ciężki! Sprawdź {href}",
     "warning-team-only-vehicle": "W zestawieniu znajduje się co najmniej jeden pojazd dostępny tylko dla członków zespołu TD2! ({0})",
+    "warning-prsm4-not-at-the-rear": "Zgrzewarka PRSM4 może znajdować się jedynie na końcu składu w przypadku jazdy pociągowej!",
     "acceptable-mass-docs": "dopuszczalne masy składów",
     "stock-loading-error": "Wystąpił błąd: nie można przetworzyć danych ze schowka! Upewnij się, że są one w poprawnym formacie!",
     "stock-clipboard-error": "Wystąpił błąd: nie można odczytać danych ze schowka! Upewnij się, że nadałeś uprawnienia stronie do tej akcji!"
