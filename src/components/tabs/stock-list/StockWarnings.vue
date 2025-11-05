@@ -1,8 +1,6 @@
 <template>
   <div class="stock_warnings" v-if="hasAnyWarnings">
-    <div class="warning" v-if="locoNotSuitable">
-        <TriangleAlertIcon :size="20" :stroke-width="2" /> {{ $t('stocklist.warning-not-suitable') }}
-    </div>
+    <div class="warning" v-if="locoNotSuitable"><TriangleAlertIcon :size="20" :stroke-width="2" /> {{ $t('stocklist.warning-not-suitable') }}</div>
 
     <div class="warning" v-if="lengthExceeded && store.isTrainPassenger">
       <TriangleAlertIcon :size="20" :stroke-width="2" /> {{ $t('stocklist.warning-passenger-too-long') }}
@@ -81,7 +79,9 @@ export default defineComponent({
     isRearPRSM4() {
       if (this.store.stockList.length <= 1) return true;
 
-      return this.store.stockList.findIndex((stock) => stock.vehicleRef.type.startsWith('PRSM4')) == (this.store.stockList.length - 1 || -1);
+      const index = this.store.stockList.findIndex((stock) => stock.vehicleRef.type.startsWith('PRSM4'));
+
+      return index != -1 ? index == this.store.stockList.length - 1 : true;
     },
   },
 });
@@ -95,7 +95,6 @@ export default defineComponent({
   color: black;
 
   font-weight: bold;
-  
 
   .lucide {
     vertical-align: text-bottom;
