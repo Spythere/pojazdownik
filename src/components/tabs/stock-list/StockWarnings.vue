@@ -1,25 +1,33 @@
 <template>
   <div class="stock_warnings" v-if="hasAnyWarnings">
-    <div class="warning" v-if="locoNotSuitable">(!) {{ $t('stocklist.warning-not-suitable') }}</div>
+    <div class="warning" v-if="locoNotSuitable">
+        <TriangleAlertIcon :size="20" :stroke-width="2" /> {{ $t('stocklist.warning-not-suitable') }}
+    </div>
 
-    <div class="warning" v-if="lengthExceeded && store.isTrainPassenger">(!) {{ $t('stocklist.warning-passenger-too-long') }}</div>
+    <div class="warning" v-if="lengthExceeded && store.isTrainPassenger">
+      <TriangleAlertIcon :size="20" :stroke-width="2" /> {{ $t('stocklist.warning-passenger-too-long') }}
+    </div>
 
-    <div class="warning" v-if="lengthExceeded && !store.isTrainPassenger">(!) {{ $t('stocklist.warning-freight-too-long') }}</div>
+    <div class="warning" v-if="lengthExceeded && !store.isTrainPassenger">
+      <TriangleAlertIcon :size="20" :stroke-width="2" /> {{ $t('stocklist.warning-freight-too-long') }}
+    </div>
 
     <div class="warning" v-if="teamOnlyVehicles.length > 0">
-      (!)
+      <TriangleAlertIcon :size="20" :stroke-width="2" />
       {{ $t('stocklist.warning-team-only-vehicle', [teamOnlyVehicles.map((v) => v.vehicleRef.type).join(', ')]) }}
     </div>
 
     <div class="warning" v-if="store.cargoWarnings.size > 0">
-      (!) <b>{{ $t('cargo-warnings.title') }}</b>
+      <TriangleAlertIcon :size="20" :stroke-width="2" /> <b>{{ $t('cargo-warnings.title') }}</b>
       {{ [...store.cargoWarnings].map((v) => $t(`cargo-warnings.${v}`)).join('; ') }}
     </div>
 
-    <div class="warning" v-if="!isRearPRSM4">(!) {{ $t('stocklist.warning-prsm4-not-at-the-rear') }}</div>
+    <div class="warning" v-if="!isRearPRSM4">
+      <TriangleAlertIcon :size="20" :stroke-width="2" /> {{ $t('stocklist.warning-prsm4-not-at-the-rear') }}
+    </div>
 
     <div class="warning" v-if="weightExceeded">
-      (!)
+      <TriangleAlertIcon :size="20" :stroke-width="2" />
       <i18n-t keypath="stocklist.warning-too-heavy">
         <template #href>
           <a target="_blank" href="https://docs.google.com/spreadsheets/d/1BvTU-U7huIaEheov22TrhTtROUM4MwVfdbq03GVAEM8">
@@ -28,10 +36,6 @@
         </template>
       </i18n-t>
     </div>
-
-    <!-- <div class="warning" v-if="locoCountExceeded">
-          {{ $t('stocklist.warning-too-many-locos') }}
-        </div> -->
   </div>
 </template>
 
@@ -39,8 +43,11 @@
 import { defineComponent } from 'vue';
 import { useStore } from '../../../store';
 import { isTractionUnit } from '../../../utils/vehicleUtils';
+import { TriangleAlertIcon } from 'lucide-vue-next';
 
 export default defineComponent({
+  components: { TriangleAlertIcon },
+
   data: () => ({
     store: useStore(),
   }),
@@ -88,6 +95,11 @@ export default defineComponent({
   color: black;
 
   font-weight: bold;
+  
+
+  .lucide {
+    vertical-align: text-bottom;
+  }
 
   a {
     color: black;
