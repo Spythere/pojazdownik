@@ -11,6 +11,14 @@ import { useStore } from './store';
 import ImageFullscreenPreview from './components/utils/ImageFullscreenPreview.vue';
 import AppContainerView from './views/AppContainerView.vue';
 import AppModals from './components/app/AppModals.vue';
+import { registerSW } from 'virtual:pwa-register';
+
+registerSW({
+  immediate: true,
+  onNeedRefresh() {
+    console.log('Needs refresh!');
+  },
+});
 
 export default defineComponent({
   components: { ImageFullscreenPreview, AppContainerView, AppModals },
@@ -49,10 +57,7 @@ export default defineComponent({
       try {
         this.store.storageStockData = JSON.parse(savedData);
       } catch (error) {
-        console.error(
-          'Wystąpił błąd podczas przetwarzania danych o składach z localStorage!',
-          error
-        );
+        console.error('Wystąpił błąd podczas przetwarzania danych o składach z localStorage!', error);
       }
     },
   },
