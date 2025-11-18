@@ -326,7 +326,10 @@
     "418Vb_WIEBE": "drobnica, ładunki sypkie (piasek, kamień)",
     "418Vb_ZOS": "drobnica, ładunki sypkie (piasek, kamień)",
     "418Vb_ZUE": "drobnica, ładunki sypkie (piasek, kamień)",
-    "PRSM4": "zgrzewarka torowa"
+    "PRSM4": "zgrzewarka torowa",
+    "Luban_XH_short": "krótki wagon mieszkalny",
+    "Luban_XH_long": "długi wagon mieszkalny",
+    "Luban_XH_workshop": "wagon warsztatowy"
   },
   "cargo-warnings": {
     "title": "Skład z dodatkowymi uwagami przewozowymi:",
