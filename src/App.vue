@@ -65,19 +65,22 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+@use './styles/global';
+@use './styles/responsive';
+
 /* APP */
 #app {
   margin: 0 auto;
 
-  color: global.$textColor;
+  color: var(--textColor);
   font-size: 1em;
   padding: 0;
 
-  @media screen and (max-width: global.$breakpointMd) {
+  @include responsive.midScreen {
     font-size: calc(0.7rem + 0.75vw);
   }
 
-  @media screen and (orientation: landscape) and (max-width: global.$breakpointMd) {
+  @include responsive.midScreenLandscape {
     font-size: calc(0.75rem + 0.4vw);
   }
 }

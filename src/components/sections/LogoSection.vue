@@ -58,7 +58,7 @@ export default {
 
   button[data-selected='true'] {
     font-weight: bold;
-    color: global.$accentColor;
+    color: var(--accentColor);
     text-decoration: underline;
   }
 }

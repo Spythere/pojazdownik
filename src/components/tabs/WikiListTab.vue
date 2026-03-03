@@ -245,6 +245,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @use '@/styles/tab';
+@use '@/styles/responsive';
 
 .actions {
   display: grid;
@@ -318,7 +319,7 @@ export default defineComponent({
 }
 
 .sponsor-only {
-  color: global.$sponsorColor;
+  color: var(--accentColor);
 
   &::after {
     content: '*';
@@ -326,7 +327,7 @@ export default defineComponent({
 }
 
 .team-only {
-  color: global.$teamColor;
+  color: var(--teamColor);
 
   &::after {
     content: '*';
@@ -343,7 +344,7 @@ export default defineComponent({
   background-color: #161c2e;
 }
 
-@media screen and (max-width: global.$breakpointSm) {
+@include responsive.smallScreen {
   .actions-panel {
     align-items: stretch;
     flex-direction: column;

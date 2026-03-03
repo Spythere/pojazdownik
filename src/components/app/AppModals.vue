@@ -3,22 +3,15 @@
     <keep-alive>
       <RealStockCard v-if="store.isRealStockListCardOpen" />
     </keep-alive>
+
+    <MigrationInfoCard v-if="store.isMigrationCardOpen" />
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script lang="ts" setup>
 import { useStore } from '../../store';
 import RealStockCard from '../cards/RealStockCard.vue';
+import MigrationInfoCard from '../cards/MigrationInfoCard.vue';
 
-export default defineComponent({
-  components: { RealStockCard },
-  data() {
-    return {
-      store: useStore(),
-    };
-  },
-});
+const store = useStore();
 </script>
-
-<style scoped></style>

@@ -1,0 +1,20 @@
+$breakpointMd: 960px;
+$breakpointSm: 550px;
+
+@mixin smallScreen() {
+  @media only screen and (max-width: $breakpointSm) {
+    @content;
+  }
+}
+
+@mixin midScreen() {
+  @media only screen and (max-width: $breakpointMd) {
+    @content;
+  }
+}
+
+@mixin midScreenLandscape() {
+  @media only screen and (orientation: landscape) and (max-device-height: $breakpointMd) {
+    @content;
+  }
+}

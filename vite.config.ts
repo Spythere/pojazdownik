@@ -10,7 +10,7 @@ export default defineConfig({
   preview: { port: 4138 },
   css: {
     preprocessorOptions: {
-      scss: { additionalData: `@use '@/styles/global';`, silenceDeprecations: ['legacy-js-api'] },
+      scss: { silenceDeprecations: ['legacy-js-api'] },
     },
   },
   resolve: {
@@ -23,13 +23,11 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
 
-      includeAssets: ['/images/*.{png,svg,jpg}', '/fonts/*.{woff,woff2,ttf}'],
-
       devOptions: { suppressWarnings: true, enabled: true },
 
       workbox: {
         cleanupOutdatedCaches: true,
-        globPatterns: ['**/*.{js,css,html,jpg,png,svg,img,woff,woff2}'],
+        globPatterns: ['**/*.{js,css,html,ico,woff,woff2,ttf}', '**/*.{png,jpg,jpeg,svg,webp,gif}'],
 
         runtimeCaching: [
           {

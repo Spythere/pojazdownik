@@ -91,7 +91,7 @@ export default defineComponent({
 .warning {
   padding: 0.25em;
   margin: 0.25em 0;
-  background: global.$accentColor;
+  background: var(--accentColor);
   color: black;
 
   font-weight: bold;

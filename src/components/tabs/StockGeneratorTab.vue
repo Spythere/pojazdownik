@@ -335,7 +335,7 @@ h2 {
     text-transform: uppercase;
     font-weight: bold;
 
-    background-color: global.$secondaryColor;
+    background-color: var(--secondaryColor);
 
     &[data-excluded='true'] {
       background-color: gray;
@@ -349,7 +349,7 @@ h2 {
       padding: 5px;
 
       transform: translate(-8px, -50%);
-      background-color: global.$bgColor;
+      background-color: var(--bgColor);
       color: white;
     }
   }
@@ -390,7 +390,7 @@ h2 {
 }
 
 .generator_warning {
-  background-color: global.$accentColor;
+  background-color: var(--accentColor);
   padding: 0.5em;
   text-align: justify;
   font-weight: bold;
