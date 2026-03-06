@@ -53,15 +53,6 @@ a {
   text-decoration: none;
 
   transition: color 250ms;
-
-  &:visited {
-    color: white;
-  }
-
-  &:hover,
-  &:focus {
-    color: var(--accentColor);
-  }
 }
 
 select,
@@ -329,7 +320,7 @@ hr {
 }
 
 // Vue Transition anims
-.slide-top {
+.slide-top-anim {
   &-enter-from,
   &-leave-to {
     transform: translateY(-100%);
@@ -341,7 +332,19 @@ hr {
   }
 }
 
-.card-appear {
+.slide-bottom-anim {
+  &-enter-from,
+  &-leave-to {
+    transform: translateY(100%);
+  }
+
+  &-enter-active,
+  &-leave-active {
+    transition: transform 100ms ease-in-out;
+  }
+}
+
+.card-appear-anim {
   &-enter-from,
   &-leave-to {
     opacity: 0;
