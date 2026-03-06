@@ -81,27 +81,15 @@
       <hr />
 
       <div class="tab_actions">
-        <button
-          class="btn"
-          :data-disabled="computedChosenCarTypes.size == 0"
-          @click="generateStock()"
-        >
+        <button class="btn" :data-disabled="computedChosenCarTypes.size == 0" @click="generateStock()">
           {{ $t('stockgen.action-generate') }}
         </button>
 
-        <button
-          class="btn"
-          :data-disabled="computedChosenCarTypes.size == 0"
-          @click="generateStock(true)"
-        >
+        <button class="btn" :data-disabled="computedChosenCarTypes.size == 0" @click="generateStock(true)">
           {{ $t('stockgen.action-generate-empty') }}
         </button>
 
-        <button
-          class="btn"
-          :data-disabled="computedChosenCarTypes.size == 0"
-          @click="resetChosenCargo"
-        >
+        <button class="btn" :data-disabled="computedChosenCarTypes.size == 0" @click="resetChosenCargo">
           {{ $t('stockgen.action-reset') }}
         </button>
       </div>
@@ -183,9 +171,7 @@ export default defineComponent({
       if (!this.isCarGroupingEnabled) return false;
 
       stockList.sort((s1, s2) => {
-        return (s1.vehicleRef.constructionType + s1.cargo?.id).localeCompare(
-          s2.vehicleRef.constructionType + s2.cargo?.id
-        );
+        return (s1.vehicleRef.constructionType + s1.cargo?.id).localeCompare(s2.vehicleRef.constructionType + s2.cargo?.id);
       });
     },
 
@@ -202,14 +188,11 @@ export default defineComponent({
 
               if (!cargoType || empty) cargoObjs.push(undefined);
               else if (cargoType == 'all') cargoObjs.push(...carWagonObjs[0]!.cargoTypes);
-              else
-                cargoObjs.push(carWagonObjs[0]?.cargoTypes.find((cargo) => cargo.id == cargoType));
+              else cargoObjs.push(carWagonObjs[0]?.cargoTypes.find((cargo) => cargo.id == cargoType));
 
               carWagonObjs.forEach((cw) => {
                 cargoObjs.forEach((cargoObj) => {
-                  const chosenStock = acc.find((a) =>
-                    a.constructionType.includes(cw.constructionType)
-                  );
+                  const chosenStock = acc.find((a) => a.constructionType.includes(cw.constructionType));
 
                   if (!chosenStock)
                     acc.push({
@@ -229,24 +212,15 @@ export default defineComponent({
       let bestGeneration: { stockList: IStock[]; value: number } = { stockList: [], value: 0 };
 
       for (let i = 0; i < 10; i++) {
-        this.store.stockList.splice(
-          this.store.stockList.length > 0 && isTractionUnit(this.store.stockList[0].vehicleRef)
-            ? 1
-            : 0
-        );
+        this.store.stockList.splice(this.store.stockList.length > 0 && isTractionUnit(this.store.stockList[0].vehicleRef) ? 1 : 0);
 
         let carCount = 0;
-        const maxWeight =
-          this.store.acceptableWeight > 0
-            ? Math.min(this.store.acceptableWeight, this.maxTons * 1000)
-            : this.maxTons * 1000;
+        const maxWeight = this.store.acceptableWeight > 0 ? Math.min(this.store.acceptableWeight, this.maxTons * 1000) : this.maxTons * 1000;
 
         // eslint-disable-next-line no-constant-condition
         while (true) {
-          const randomStockType =
-            generatedChosenStockList[~~(Math.random() * generatedChosenStockList.length)];
-          const { carWagon, cargo } =
-            randomStockType.carPool[~~(Math.random() * randomStockType.carPool.length)];
+          const randomStockType = generatedChosenStockList[~~(Math.random() * generatedChosenStockList.length)];
+          const { carWagon, cargo } = randomStockType.carPool[~~(Math.random() * randomStockType.carPool.length)];
 
           if (
             this.store.totalWeight + (carWagon.weight + (cargo?.weight ?? 0)) > maxWeight ||
@@ -334,8 +308,6 @@ h2 {
     text-align: center;
     text-transform: uppercase;
     font-weight: bold;
-
-    background-color: var(--secondaryColor);
 
     &[data-excluded='true'] {
       background-color: gray;
