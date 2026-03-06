@@ -224,7 +224,8 @@ const randomizeTrainNumber = (randomizeRegions = false) => {
 </script>
 
 <style lang="scss" scoped>
-@use '../../styles/tab';
+@use '@/styles/tab';
+@use '@/styles/responsive';
 
 .category-select {
   select {
@@ -263,7 +264,7 @@ const randomizeTrainNumber = (randomizeRegions = false) => {
 
   margin: 0.5em 0;
   padding: 0.5em;
-  background-color: global.$secondaryColor;
+  background-color: var(--secondaryColor);
 }
 
 .category-rules {
@@ -281,13 +282,13 @@ const randomizeTrainNumber = (randomizeRegions = false) => {
   margin: 0.25em 0;
 }
 
-@media screen and (max-width: global.$breakpointMd) {
+@include responsive.midScreen {
   .number-generator {
     min-height: 100vh;
   }
 }
 
-@media screen and (max-width: global.$breakpointSm) {
+@include responsive.smallScreen {
   .regions-select {
     flex-wrap: wrap;
   }

@@ -165,7 +165,7 @@ ul.storage-list {
 
 ul.storage-list > li {
   padding: 0.5em;
-  background-color: global.$secondaryColor;
+  background-color: var(--secondaryColor);
 
   &[data-current='true'] {
     background-color: #3b3b3b;

@@ -52,6 +52,7 @@ export const useStore = defineStore('store', {
 
     vehiclePreviewSrc: '',
 
+    isMigrationInfoOpen: false,
     isRandomizerCardOpen: false,
     isRealStockListCardOpen: false,
 

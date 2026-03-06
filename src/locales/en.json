@@ -339,5 +339,13 @@
     "warning_un1965_tn": "TN: LPG - empty tank (UN 1965)",
     "warning_un1202_tn": "TN: diesel fuel (UN 1202)",
     "warning_military_pn": "PN: military transport"
+  },
+  "migrate-info": {
+    "tooltip-content": "Information about migration of\nStacjownik site!",
+    "header-text": "Information about the site migration",
+    "paragraph-1-html": "Due to the migration of all my applications to a common dedicated domain, <b>Pojazdownik is being moved to:</b>",
+    "paragraph-2-link-text": "https://pojazdownik-td2.spythere.eu/",
+    "paragraph-3-text": "This website will no longer receive future updates and <b>after March 14th</b> it will only redirect to the address above.",
+    "confirm-btn": "ROGER THAT!"
   }
 }

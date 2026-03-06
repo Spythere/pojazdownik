@@ -199,11 +199,11 @@ ul {
   }
 
   &[data-sponsor-only='true'] > b {
-    color: global.$sponsorColor;
+    color: var(--accentColor);
   }
 
   &[data-team-only='true'] > b {
-    color: global.$teamColor;
+    color: var(--teamColor);
   }
 
   img {

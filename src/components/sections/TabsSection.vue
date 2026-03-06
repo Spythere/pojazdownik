@@ -69,6 +69,8 @@ onMounted(() => {
 </script>
 
 <style lang="scss">
+@use '@/styles/responsive';
+
 // Tab change animation
 .tab-change {
   &-enter-from,
@@ -105,7 +107,7 @@ onMounted(() => {
   margin-bottom: 1em;
 }
 
-@media screen and (max-width: global.$breakpointSm) {
+@include responsive.smallScreen {
   .tabs-modes {
     grid-template-areas:
       'stock wiki'
