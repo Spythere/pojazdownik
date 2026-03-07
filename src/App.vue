@@ -45,7 +45,7 @@ function handleMigrationInfo() {
 
   // Do not show if already acknowledged
   if (showInfo === 'false') return;
-  
+
   setTimeout(() => {
     store.isMigrationInfoOpen = true;
   }, 2000);
@@ -81,10 +81,6 @@ function loadStockDataFromStorage() {
 
   @include responsive.midScreen {
     font-size: calc(0.7rem + 0.75vw);
-  }
-
-  @include responsive.midScreenLandscape {
-    font-size: calc(0.75rem + 0.4vw);
   }
 }
 </style>
