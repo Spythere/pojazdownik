@@ -342,6 +342,7 @@
   },
   "migrate-info": {
     "line-1": "Pojazdownik is being moved to a new domain - {0}! You can still use the current website, but it will no longer be updated and will be shut down in the nearest future!",
-    "link": "https://pojazdownik-td2.spythere.eu/"
+    "link": "https://pojazdownik-td2.spythere.eu/",
+    "accept-btn": "ROGER THAT!"
   }
 }

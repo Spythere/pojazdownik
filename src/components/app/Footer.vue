@@ -34,7 +34,7 @@ import { useStore } from '../../store';
 export default defineComponent({
   data() {
     return {
-      isOnProductionHost: location.hostname == 'pojazdownik-td2.web.app',
+      isOnProductionHost: location.hostname == 'pojazdownik-td2.web.app' || location.hostname == 'pojazdownik-td2.spythere.eu',
       VERSION: packageInfo.version,
       store: useStore(),
     };
