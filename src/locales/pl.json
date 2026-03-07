@@ -341,6 +341,7 @@
   },
   "migrate-info": {
     "line-1": "Pojazdownik zostaje przeniesiony na nową domenę - {0}! Możesz korzystać z obecnej strony, jednak nie będzie ona otrzymywać już aktualizacji i w przyszłości zostanie wyłączona!",
-    "link": "https://pojazdownik-td2.spythere.eu/"
+    "link": "https://pojazdownik-td2.spythere.eu/",
+    "accept-btn": "PRZYJĄŁEM!"
   }
 }

@@ -25,7 +25,7 @@ registerSW({
 
 onMounted(() => {
   loadStockDataFromStorage();
-  showMigrationInfo();
+  handleMigrationInfo();
   store.setupAPIData();
 });
 
@@ -37,9 +37,9 @@ watchEffect(() => {
   }
 });
 
-function showMigrationInfo() {
+function handleMigrationInfo() {
   // Show only on old domain
-  if (location.hostname !== 'pojazdownik-td2.web.app' && location.hostname !== 'localhost') return;
+  if (location.hostname !== 'pojazdownik-td2.web.app') return;
 
   const showInfo = localStorage.getItem('showMigrationInfo');
 
