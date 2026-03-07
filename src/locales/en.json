@@ -341,11 +341,7 @@
     "warning_military_pn": "PN: military transport"
   },
   "migrate-info": {
-    "tooltip-content": "Information about migration of\nStacjownik site!",
-    "header-text": "Information about the site migration",
-    "paragraph-1-html": "Due to the migration of all my applications to a common dedicated domain, <b>Pojazdownik is being moved to:</b>",
-    "paragraph-2-link-text": "https://pojazdownik-td2.spythere.eu/",
-    "paragraph-3-text": "This website will no longer receive future updates and <b>after March 14th</b> it will only redirect to the address above.",
-    "confirm-btn": "ROGER THAT!"
+    "line-1": "Pojazdownik is being moved to a new domain - {0}! You can still use the current website, but it will no longer be updated and will be shut down in the nearest future!",
+    "link": "https://pojazdownik-td2.spythere.eu/"
   }
 }
