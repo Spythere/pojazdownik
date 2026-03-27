@@ -331,7 +331,8 @@
     "PRSM4": "rail welding car",
     "Luban_XH_short": "short residential car",
     "Luban_XH_long": "long residential car",
-    "Luban_XH_workshop": "workshop car"
+    "Luban_XH_workshop": "workshop car",
+    "EDK40": "crane car"
   },
   "cargo-warnings": {
     "title": "Rolling stock containing extra cargo warnings:",
