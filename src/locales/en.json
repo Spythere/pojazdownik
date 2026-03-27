@@ -332,7 +332,7 @@
     "Luban_XH_short": "short residential car",
     "Luban_XH_long": "long residential car",
     "Luban_XH_workshop": "workshop car",
-    "EDK40": "crane car"
+    "EDK80": "crane car"
   },
   "cargo-warnings": {
     "title": "Rolling stock containing extra cargo warnings:",
