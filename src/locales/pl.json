@@ -330,7 +330,8 @@
     "PRSM4": "zgrzewarka torowa",
     "Luban_XH_short": "krótki wagon mieszkalny",
     "Luban_XH_long": "długi wagon mieszkalny",
-    "Luban_XH_workshop": "wagon warsztatowy"
+    "Luban_XH_workshop": "wagon warsztatowy",
+    "EDK80": "dźwig kolejowy"
   },
   "cargo-warnings": {
     "title": "Skład z dodatkowymi uwagami przewozowymi:",
