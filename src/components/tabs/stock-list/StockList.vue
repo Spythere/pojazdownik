@@ -11,6 +11,7 @@
         <li
           v-for="(stock, i) in store.stockList"
           :key="stock.id"
+          class="stock-item"
           :class="{ loco: isTractionUnit(stock.vehicleRef) }"
           tabindex="0"
           @click="onListItemClick(i)"
@@ -150,6 +151,7 @@ export default defineComponent({
   border-radius: 0.5em;
   padding: 0.75em;
   font-weight: bold;
+  width: 100%;
 }
 
 ul {
@@ -160,7 +162,6 @@ ul > li {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-width: 500px;
   white-space: nowrap;
 
   margin: 0.25em 0;
