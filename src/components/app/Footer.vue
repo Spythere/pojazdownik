@@ -58,6 +58,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 footer {
   text-align: center;
-  padding-bottom: 0.5em;
+  padding: 0 0.5em 0.5em 0.5em;
 }
 </style>
