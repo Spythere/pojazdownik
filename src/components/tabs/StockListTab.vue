@@ -1,21 +1,19 @@
 <template>
   <section class="stock-list-tab">
-    <div class="tab_content">
-      <!-- Stock Actions -->
-      <StockActions />
+    <!-- Stock Actions -->
+    <StockActions />
 
-      <!-- Stock Specs -->
-      <StockSpecs />
+    <!-- Stock Specs -->
+    <StockSpecs />
 
-      <!-- Stock Spawn Settings -->
-      <StockSpawnSettings />
+    <!-- Stock Spawn Settings -->
+    <StockSpawnSettings />
 
-      <!-- Stock Warnings -->
-      <StockWarnings />
+    <!-- Stock Warnings -->
+    <StockWarnings />
 
-      <!-- Stock List -->
-      <StockList />
-    </div>
+    <!-- Stock List -->
+    <StockList />
   </section>
 </template>
 
@@ -42,7 +40,14 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@use '@/styles/tab';
+@use '../../styles/tab';
+
+.stock-list-tab {
+  display: grid;
+  grid-template-rows: auto auto auto auto 1fr;
+  gap: 0.5em;
+  overflow: hidden;
+}
 
 .tab_content {
   display: flex;

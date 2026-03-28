@@ -2,12 +2,12 @@
   <div class="list-wrapper">
     <StockThumbnails :onListItemClick="onListItemClick" />
 
-    <div v-if="stockIsEmpty" class="list-empty">
-      <div class="stock-info">{{ $t('stocklist.list-empty') }}</div>
-    </div>
-
-    <ul v-else>
+    <ul>
       <transition-group name="stock-list-anim">
+        <li v-if="stockIsEmpty" class="list-empty">
+          {{ $t('stocklist.list-empty') }}
+        </li>
+
         <li
           v-for="(stock, i) in store.stockList"
           :key="stock.id"
@@ -139,7 +139,10 @@ export default defineComponent({
 @use '@/styles/responsive';
 
 .list-wrapper {
+  display: grid;
+  grid-template-rows: auto 1fr;
   position: relative;
+  overflow: hidden;
 }
 
 .list-empty {
@@ -150,8 +153,7 @@ export default defineComponent({
 }
 
 ul {
-  overflow-y: scroll;
-  height: 500px;
+  overflow-y: auto;
 }
 
 ul > li {
@@ -159,6 +161,7 @@ ul > li {
   align-items: center;
   justify-content: space-between;
   min-width: 500px;
+  white-space: nowrap;
 
   margin: 0.25em 0;
 
@@ -239,7 +242,8 @@ li > .stock-info {
 
 @include responsive.midScreen {
   ul {
-    min-height: auto;
+    height: 100vh;
+    min-height: 400px;
   }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <section class="tab storage-tab">
+  <section class="storage-tab">
     <div class="tab_header">
       <h2>{{ $t('storage.title') }}</h2>
       <h3>{{ $t('storage.subtitle') }}</h3>
@@ -36,8 +36,7 @@
                 {{ new Date(storageEntry.createdAt).toLocaleString($i18n.locale) }}</i
               >
               <i v-if="storageEntry.updatedAt">
-                &bull; {{ $t('storage.updated-at') }}
-                {{ new Date(storageEntry.updatedAt).toLocaleString($i18n.locale) }}</i
+                &bull; {{ $t('storage.updated-at') }} {{ new Date(storageEntry.updatedAt).toLocaleString($i18n.locale) }}</i
               >
 
               <div style="margin-top: 0.5em">
@@ -146,14 +145,22 @@ export default defineComponent({
 <style lang="scss" scoped>
 @use '@/styles/tab';
 
+.storage-tab {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  overflow: hidden;
+}
+
 .tab_actions {
   grid-template-columns: repeat(2, 1fr);
 }
 
+.tab_content {
+  overflow: auto;
+}
+
 .storage-list-wrapper {
   position: relative;
-  height: 730px;
-  overflow: auto;
 }
 
 ul.storage-list {
