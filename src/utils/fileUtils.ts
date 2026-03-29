@@ -6,11 +6,13 @@ export const useFileUtils = () => {
   function getCurrentStockFileName() {
     let fileName = '';
 
+    if (store.chosenStorageStockName.trim() != '') {
+      return store.chosenStorageStockName;
+    }
+
     const currentStockString = store.stockList.map((s) => s.vehicleRef.type).join(';');
 
-    const currentRealComp = store.realCompositionList.find(
-      (rc) => rc.stockString == currentStockString
-    );
+    const currentRealComp = store.realCompositionList.find((rc) => rc.stockString == currentStockString);
 
     // Append real composition to the name if chosen
     if (currentRealComp != undefined) {
