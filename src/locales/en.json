@@ -334,7 +334,7 @@
     "Luban_XH_short": "short residential car",
     "Luban_XH_long": "long residential car",
     "Luban_XH_workshop": "workshop car",
-    "EDK80": "crane car"
+    "EDK80": "railway crane car"
   },
   "cargo-warnings": {
     "title": "Rolling stock containing extra cargo warnings:",
@@ -342,7 +342,8 @@
     "warning_un1965_twr": "TWR: LPG (UN 1965)",
     "warning_un1965_tn": "TN: LPG - empty tank (UN 1965)",
     "warning_un1202_tn": "TN: diesel fuel (UN 1202)",
-    "warning_military_pn": "PN: military transport"
+    "warning_military_pn": "PN: military transport",
+    "warning_edk80_pn": "PN: railway crane EDK80"
   },
   "migrate-info": {
     "line-1": "Pojazdownik is being moved to a new domain - {0}! You can still use the current website, but it will no longer be updated and will be shut down in the nearest future!",
