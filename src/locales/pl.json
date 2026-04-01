@@ -254,7 +254,8 @@
     "vehicles": "pojazdy",
     "sensitive": "wrażliwe",
     "steel": "stal",
-    "gas": "gaz"
+    "gas": "gaz",
+    "intermodal": "intermodalne"
   },
   "usage": {
     "Gor89": "wagon pasażerski",

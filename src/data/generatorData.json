@@ -3,6 +3,13 @@
     "containers": ["412Z:sc_20", "412Z:sc_40", "627Z:sc_20", "627Z:sc_40"],
     "food": ["412Z:tc_20_loaded", "627Z:tc_20_loaded"],
     "food-empty": ["412Z:tc_20_empty", "627Z:tc_20_empty"],
+    "intermodal": [
+      "627Z:627Z_mix1_sctc_loaded",
+      "627Z:627Z_mix2_sctc_loaded",
+      "627Z:627Z_mix3_sctc_loaded",
+      "412Z:412Z_mix1_sctc_loaded",
+      "412Z:412Z_mix1_sctc_empty"
+    ],
     "biomass": ["412Z:wt_20_biomass", "627Z:wt_20_biomass"],
     "biomass-empty": [
       "412Z:wt_20_empty",
