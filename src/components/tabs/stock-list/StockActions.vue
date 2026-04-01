@@ -110,7 +110,7 @@ import { isTractionUnit } from '../../../utils/vehicleUtils';
 import stockMixin from '../../../mixins/stockMixin';
 import { useStockListUtils } from '../../../utils/stockListUtils';
 
-import { getCurrentStockFileName } from '../../../composables/file';
+import { getCurrentStockFileName, getStockStringOutput } from '../../../composables/file';
 
 import {
   Bookmark,
@@ -166,7 +166,7 @@ export default defineComponent({
 
   methods: {
     copyToClipboard() {
-      navigator.clipboard.writeText(this.store.stockString);
+      navigator.clipboard.writeText(getStockStringOutput());
 
       setTimeout(() => {
         alert(this.$t('stocklist.alert-copied'));
@@ -224,7 +224,7 @@ export default defineComponent({
 
       if (!fileName) return;
 
-      const blob = new Blob([this.store.stockString]);
+      const blob = new Blob([getStockStringOutput()]);
       const file = fileName + '.con';
 
       var e = document.createEvent('MouseEvents'),

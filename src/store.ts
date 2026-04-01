@@ -93,8 +93,6 @@ export const useStore = defineStore('store', {
 
       return state.stockList
         .map((stock, i) => {
-          // let cargoString = '';
-
           let stockTypeStr = isTractionUnit(stock.vehicleRef) || !stock.cargo ? stock.vehicleRef.type : `${stock.vehicleRef.type}:${stock.cargo.id}`;
 
           if (i == 0 && (coldStartActive || doubleManningActive))

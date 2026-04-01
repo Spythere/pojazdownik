@@ -1,4 +1,5 @@
 import { useStore } from '../store';
+import { additionalCargoTypes } from '../utils/vehicleUtils';
 
 export function getCurrentStockFileName() {
   const store = useStore();
@@ -22,4 +23,28 @@ export function getCurrentStockFileName() {
   fileName += `${store.stockList[0].vehicleRef.type} ${(store.totalWeight / 1000).toFixed(1)}t; ${store.totalLength}m; vmax ${store.maxStockSpeed}`;
 
   return fileName;
+}
+
+export function getStockStringOutput() {
+  const store = useStore();
+
+  const stockEntries = store.stockString.split(';');
+
+  const parsedEntries = store.stockList.map((stockVehicle, i) => {
+    if (stockVehicle.cargo && /412Z|627Z/.test(stockVehicle.vehicleRef.constructionType)) {
+      const additionalCargo = additionalCargoTypes.find(
+        (c) => c.groupType == stockVehicle.vehicleRef.constructionType && c.id == stockVehicle.cargo!.id
+      );
+
+      if (additionalCargo) {
+        let cargoString = additionalCargo.cargoStringVariations[Math.floor(Math.random() * additionalCargo.cargoStringVariations.length)];
+
+        return stockEntries[i].replace(stockVehicle.cargo.id, cargoString);
+      }
+    }
+
+    return stockEntries[i];
+  });
+
+  return parsedEntries.join(';');
 }
