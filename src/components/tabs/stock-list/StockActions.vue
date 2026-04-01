@@ -1,20 +1,12 @@
 <template>
   <div class="stock_actions">
     <div class="actions-top">
-      <button
-        class="btn btn--image"
-        @click="clickFileInput"
-        :data-button-tooltip="$t('stocklist.action-upload-file')"
-      >
+      <button class="btn btn--image" @click="clickFileInput" :data-button-tooltip="$t('stocklist.action-upload-file')">
         <input type="file" @change="uploadStockFromFile" ref="conFile" accept=".con,.txt" />
         <FolderUp :stroke-width="2.5" />
       </button>
 
-      <button
-        class="btn btn--image"
-        @click="uploadStockFromClipboard"
-        :data-button-tooltip="$t('stocklist.action-upload-clipboard')"
-      >
+      <button class="btn btn--image" @click="uploadStockFromClipboard" :data-button-tooltip="$t('stocklist.action-upload-clipboard')">
         <ClipboardPaste :stroke-width="2.5" />
       </button>
 
@@ -115,9 +107,10 @@ import { defineComponent } from 'vue';
 import { useStore } from '../../../store';
 
 import { isTractionUnit } from '../../../utils/vehicleUtils';
-import { useFileUtils } from '../../../utils/fileUtils';
 import stockMixin from '../../../mixins/stockMixin';
 import { useStockListUtils } from '../../../utils/stockListUtils';
+
+import { getCurrentStockFileName } from '../../../composables/file';
 
 import {
   Bookmark,
@@ -157,12 +150,11 @@ export default defineComponent({
   }),
 
   setup() {
-    const fileUtils = useFileUtils();
     const stockListUtils = useStockListUtils();
 
     return {
-      fileUtils,
       stockListUtils,
+      getCurrentStockFileName,
     };
   },
 
@@ -202,8 +194,7 @@ export default defineComponent({
 
         availableIndexes.splice(i, -1);
 
-        const randAvailableIndex =
-          availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
+        const randAvailableIndex = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
         const tempSwap = this.store.stockList[randAvailableIndex];
 
         this.store.stockList[randAvailableIndex] = this.store.stockList[i];
@@ -216,9 +207,7 @@ export default defineComponent({
 
       const isFirstTractionUnit = isTractionUnit(this.store.stockList[0].vehicleRef);
 
-      const sliceToSwap = isFirstTractionUnit
-        ? this.store.stockList.slice(1)
-        : this.store.stockList.slice();
+      const sliceToSwap = isFirstTractionUnit ? this.store.stockList.slice(1) : this.store.stockList.slice();
 
       sliceToSwap.reverse();
 
@@ -230,7 +219,7 @@ export default defineComponent({
     downloadStock() {
       if (this.store.stockList.length == 0) return alert(this.$t('stocklist.alert-empty'));
 
-      const defaultName = this.fileUtils.getCurrentStockFileName();
+      const defaultName = this.getCurrentStockFileName();
       const fileName = prompt(this.$t('stocklist.prompt-file'), defaultName);
 
       if (!fileName) return;
@@ -273,7 +262,7 @@ export default defineComponent({
     saveStockDataToStorage() {
       if (this.store.stockList.length == 0) return;
 
-      const defaultName = this.fileUtils.getCurrentStockFileName();
+      const defaultName = this.getCurrentStockFileName();
       const entryName = prompt(this.$t('stocklist.prompt-bookmark'), defaultName);
 
       if (!entryName) return;
@@ -307,6 +296,8 @@ export default defineComponent({
         const content = await navigator.clipboard.readText();
         this.loadStockFromString(content);
       } catch (error) {
+        console.error(error);
+
         switch (error) {
           case 'stock-loading-error':
             alert(this.$t('stocklist.stock-loading-error'));
