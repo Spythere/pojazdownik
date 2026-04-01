@@ -14,6 +14,7 @@ import {
 import { defineStore } from 'pinia';
 import {
   acceptableWeight,
+  additionalCargoTypes,
   carDataList,
   getCargoWarnings,
   isTractionUnit,
@@ -26,9 +27,10 @@ import {
   totalWeight,
 } from './utils/vehicleUtils';
 
-import http from './http';
-
 import realCompositionsJSON from './data/realCompositions.json';
+import { HttpClient } from './http';
+
+const baseURL = import.meta.env.VITE_API_DEV === '1' && import.meta.env.DEV ? 'http://localhost:3001' : 'https://stacjownik.spythere.eu';
 
 export const useStore = defineStore('store', {
   state: () => ({
@@ -65,6 +67,8 @@ export const useStore = defineStore('store', {
     chosenStorageStockString: '',
 
     compatibleSimulatorVersion: '2025.1.1',
+
+    httpClient: new HttpClient(baseURL),
   }),
 
   getters: {
@@ -89,6 +93,8 @@ export const useStore = defineStore('store', {
 
       return state.stockList
         .map((stock, i) => {
+          // let cargoString = '';
+
           let stockTypeStr = isTractionUnit(stock.vehicleRef) || !stock.cargo ? stock.vehicleRef.type : `${stock.vehicleRef.type}:${stock.cargo.id}`;
 
           if (i == 0 && (coldStartActive || doubleManningActive))
@@ -125,7 +131,7 @@ export const useStore = defineStore('store', {
   actions: {
     async fetchVehiclesAPI() {
       try {
-        const vehiclesData = (await http.get<IVehiclesAPIResponse>('/api/getVehicles')).data;
+        const vehiclesData = await this.httpClient.get<IVehiclesAPIResponse>('api/getVehicles');
         this.vehiclesData = vehiclesData;
       } catch (error) {
         console.error(error);
