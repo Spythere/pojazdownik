@@ -95,16 +95,17 @@ export function carDataList(vehiclesData: IVehicleData[] | undefined) {
 
     const cargoTypes = data.group.cargoTypes || [];
 
-    if (/412Z|627Z/.test(data.group.name)) {
-      cargoTypes.push(
-        ...additionalCargoTypes
-          .filter((c) => c.groupType == data.group.name)
-          .map((c) => ({
-            id: c.id,
-            weight: c.weight,
-          }))
-      );
-    }
+    // UNUSED - ADDITIONAL CARGO TYPES FOR INTERMODALS
+    // if (/412Z|627Z/.test(data.group.name)) {
+    //   cargoTypes.push(
+    //     ...additionalCargoTypes
+    //       .filter((c) => c.groupType == data.group.name)
+    //       .map((c) => ({
+    //         id: c.id,
+    //         weight: c.weight,
+    //       }))
+    //   );
+    // }
 
     acc.push({
       group: data.type as WagonGroupType,

@@ -1,3 +1,5 @@
+import { IVehicleRestrictions } from './common.types';
+
 // API namespace
 export namespace API {
   export namespace VehiclesData {
@@ -6,7 +8,8 @@ export namespace API {
       name: string;
       type: string;
       cabinName: string | null;
-      restrictions: Record<string, any> | null;
+      restrictions: IVehicleRestrictions | null;
+
       vehicleGroupsId: number;
     }
 

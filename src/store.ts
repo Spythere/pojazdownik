@@ -130,7 +130,10 @@ export const useStore = defineStore('store', {
     async fetchVehiclesAPI() {
       try {
         const response = await this.httpClient.get<API.VehiclesData.Response>('api/getVehiclesData');
-        // this.vehiclesData = response.;
+        this.vehiclesData = response.vehicles.map((v) => ({
+          ...v,
+          group: response.vehicleGroups.find((g) => g.id == v.vehicleGroupsId)!,
+        }));
 
         console.log(response);
       } catch (error) {
