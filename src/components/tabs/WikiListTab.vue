@@ -45,11 +45,11 @@
       </div>
     </div>
 
+    <div class="no-vehicles-warning" v-if="computedVehicles.length == 0">
+      {{ $t('wiki.no-vehicles') }}
+    </div>
+    
     <ul class="vehicles" ref="vehicles">
-      <li class="no-vehicles-warning" v-if="computedVehicles.length == 0">
-        {{ $t('wiki.no-vehicles') }}
-      </li>
-
       <li
         v-for="vehicle in computedVehicles"
         :key="vehicle.type"
@@ -328,6 +328,7 @@ export default defineComponent({
 
 .no-vehicles-warning {
   text-align: center;
+  width: 100%;
   padding: 1em;
   background-color: #161c2e;
 }
