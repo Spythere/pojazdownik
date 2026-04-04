@@ -1,7 +1,7 @@
 import { defineComponent } from 'vue';
 import { useStore } from '../store';
 import { ICarWagon, ILocomotive, IStock, ICargo, IVehicle } from '../types/common.types';
-import { additionalCargoTypes, isTractionUnit } from '../utils/vehicleUtils';
+import { isTractionUnit } from '../utils/vehicleUtils';
 
 export default defineComponent({
   setup() {
@@ -75,21 +75,22 @@ export default defineComponent({
             this.store.isDoubleManned = spawnProps.includes('d');
           }
         } else {
-          const [carType, ...cargo] = type.split(':');
+          const [carType, cargo] = type.split(':');
           vehicle = this.store.carDataList.find((car) => car.type == carType) || null;
 
-          if (vehicle && cargo.length > 0) {
-            if (/412Z|627Z/.test(vehicle.constructionType)) {
-              const additionalCargo = additionalCargoTypes.find(
-                (c) => c.groupType == vehicle!.constructionType && c.cargoStringVariations.includes(cargo.join(':'))
-              );
+          if (cargo) {
+            vehicleCargo = vehicle?.cargoTypes.find((c) => c.id == cargo) || null;
 
-              if (additionalCargo) {
-                cargo[0] = additionalCargo.id;
-              }
-            }
+            // UNUSED - ADDITIONAL INTERMODAL CARGO TEST
+            // if (/412Z|627Z/.test(vehicle.constructionType)) {
+            //   const additionalCargo = additionalCargoTypes.find(
+            //     (c) => c.groupType == vehicle!.constructionType && c.cargoStringVariations.includes(cargo.join(':'))
+            //   );
 
-            vehicleCargo = vehicle?.cargoTypes.find((c) => c.id == cargo[0]) || null;
+            //   if (additionalCargo) {
+            //     cargo[0] = additionalCargo.id;
+            //   }
+            // }
           }
         }
 

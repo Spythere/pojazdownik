@@ -25,6 +25,7 @@ export function getCurrentStockFileName() {
   return fileName;
 }
 
+// UNUSED - PARSES ADDITIONAL CARGO FOR INTERMODALS
 export function getStockStringOutput() {
   const store = useStore();
 

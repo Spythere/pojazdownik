@@ -14,7 +14,6 @@ import {
 import { defineStore } from 'pinia';
 import {
   acceptableWeight,
-  additionalCargoTypes,
   carDataList,
   getCargoWarnings,
   isTractionUnit,
@@ -29,6 +28,7 @@ import {
 
 import realCompositionsJSON from './data/realCompositions.json';
 import { HttpClient } from './http';
+import { API } from './types/api.types';
 
 const baseURL = import.meta.env.VITE_API_DEV === '1' && import.meta.env.DEV ? 'http://localhost:3001' : 'https://stacjownik.spythere.eu';
 
@@ -129,8 +129,10 @@ export const useStore = defineStore('store', {
   actions: {
     async fetchVehiclesAPI() {
       try {
-        const vehiclesData = await this.httpClient.get<IVehiclesAPIResponse>('api/getVehicles');
-        this.vehiclesData = vehiclesData;
+        const response = await this.httpClient.get<API.VehiclesData.Response>('api/getVehiclesData');
+        // this.vehiclesData = response.;
+
+        console.log(response);
       } catch (error) {
         console.error(error);
       }

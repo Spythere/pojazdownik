@@ -1,6 +1,7 @@
 import { ICarWagon, ILocomotive, IStock, IVehicleData, LocoGroupType, WagonGroupType } from '../types/common.types';
 import { MassLimitLocoType, calculateMassLimit, calculateSpeedLimit } from './vehicleLimitsUtils';
 
+// UNUSED - ADDITIONAL CARGO TYPES FOR INTERMODALS
 export const additionalCargoTypes = [
   {
     groupType: '627Z',
@@ -41,12 +42,12 @@ export const additionalCargoTypes = [
     groupType: '412Z',
     id: '412Z_mix1_sctc_loaded',
     weight: 43500,
-    cargoStringVariations: ['sc_20:tc_20_loaded', 'tc_20_loaded:sc_20'],
+    cargoStringVariations: ['sc_20:tc_20_loaded:tc_20_loaded'],
   },
   {
     groupType: '412Z',
     id: '412Z_mix1_sctc_empty',
-    weight: 33970,
+    weight: 37735,
     cargoStringVariations: ['sc_20:tc_20_empty:sc_20'],
   },
 ];
