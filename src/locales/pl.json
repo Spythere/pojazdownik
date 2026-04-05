@@ -334,7 +334,7 @@
     "Luban_XH_short": "krótki wagon mieszkalny",
     "Luban_XH_long": "długi wagon mieszkalny",
     "Luban_XH_workshop": "wagon warsztatowy",
-    "EDK80": "żuraw kolejowy"
+    "EDK80": "dźwig kolejowy"
   },
   "cargo-warnings": {
     "title": "Skład z dodatkowymi uwagami przewozowymi:",
@@ -343,7 +343,7 @@
     "warning_un1965_tn": "TN: gazy węglowodorowe skroplone - puste cysterny (UN 1965)",
     "warning_un1202_tn": "TN: olej napędowy (UN 1202)",
     "warning_military_pn": "PN: transport wojskowy",
-    "warning_edk80_pn": "PN: żuraw kolejowy EDK80"
+    "warning_edk80_pn": "PN: dźwig kolejowy EDK80"
   },
   "migrate-info": {
     "line-1": "Pojazdownik zostaje przeniesiony na nową domenę - {0}! Możesz korzystać z obecnej strony, jednak nie będzie ona otrzymywać już aktualizacji i w przyszłości zostanie wyłączona!",
