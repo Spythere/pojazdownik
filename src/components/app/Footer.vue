@@ -3,7 +3,8 @@
     <div>
       &copy;
       <a href="https://td2.info.pl/profile/?u=20777" target="_blank">Spythere</a>
-      {{ new Date().getUTCFullYear() }} | v{{ VERSION }}{{ !isOnProductionHost ? 'dev' : '' }}
+      {{ new Date().getUTCFullYear() }} |
+      <a class="release-link" :href="githubReleaseHref" target="_blank">v{{ VERSION }}{{ !isOnProductionHost ? 'dev' : '' }}</a>
     </div>
 
     <div class="text--grayed" v-if="store.vehiclesData">
@@ -33,6 +34,10 @@ export default defineComponent({
   },
 
   computed: {
+    githubReleaseHref() {
+      return `https://github.com/Spythere/pojazdownik/releases/tag/${this.VERSION}`;
+    },
+
     vehiclesCounters() {
       let counters = {
         all: 0,
@@ -59,5 +64,13 @@ export default defineComponent({
 footer {
   text-align: center;
   padding: 0 0.5em 0.5em 0.5em;
+}
+
+.release-link {
+  color: var(--accentColor);
+
+  &:hover {
+    color: white;
+  }
 }
 </style>
