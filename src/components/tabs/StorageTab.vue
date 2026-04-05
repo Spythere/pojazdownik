@@ -1,57 +1,54 @@
 <template>
-  <section class="tab storage-tab">
+  <section class="storage-tab">
     <div class="tab_header">
       <h2>{{ $t('storage.title') }}</h2>
       <h3>{{ $t('storage.subtitle') }}</h3>
     </div>
 
     <div class="tab_content">
-      <div class="storage-list-wrapper">
-        <transition-group name="storage-list-anim" tag="ul" class="storage-list">
-          <li v-for="storageEntry in storageStockDataList" :key="storageEntry.id">
-            <div class="storage-item-top">
-              <h3>
-                {{ storageEntry.id }}
-              </h3>
+      <transition-group name="storage-list-anim" tag="ul" class="storage-list">
+        <li v-for="storageEntry in storageStockDataList" :key="storageEntry.id">
+          <div class="storage-item-top">
+            <h3>
+              {{ storageEntry.id }}
+            </h3>
 
-              <div class="storage-item-top-actions">
-                <button class="btn btn--icon" @click="chooseStorageStock(storageEntry.id)">
-                  <LogIn />
-                </button>
+            <div class="storage-item-top-actions">
+              <button class="btn btn--icon" @click="chooseStorageStock(storageEntry.id)">
+                <LogIn />
+              </button>
 
-                <button class="btn btn--icon" @click="toggleStorageEntryExpand(storageEntry.id)">
-                  <ChevronDown v-if="!expandedEntries.includes(storageEntry.id)" />
-                  <ChevronUp v-else />
-                </button>
+              <button class="btn btn--icon" @click="toggleStorageEntryExpand(storageEntry.id)">
+                <ChevronDown v-if="!expandedEntries.includes(storageEntry.id)" />
+                <ChevronUp v-else />
+              </button>
 
-                <button class="btn btn--icon" @click="removeStockIndexFromStorage(storageEntry.id)">
-                  <Trash2 />
-                </button>
-              </div>
+              <button class="btn btn--icon" @click="removeStockIndexFromStorage(storageEntry.id)">
+                <Trash2 />
+              </button>
             </div>
+          </div>
 
-            <div class="storage-item-expandable" v-if="expandedEntries.includes(storageEntry.id)">
-              <i>
-                {{ $t('storage.created-at') }}
-                {{ new Date(storageEntry.createdAt).toLocaleString($i18n.locale) }}</i
-              >
-              <i v-if="storageEntry.updatedAt">
-                &bull; {{ $t('storage.updated-at') }}
-                {{ new Date(storageEntry.updatedAt).toLocaleString($i18n.locale) }}</i
-              >
+          <div class="storage-item-expandable" v-if="expandedEntries.includes(storageEntry.id)">
+            <i>
+              {{ $t('storage.created-at') }}
+              {{ new Date(storageEntry.createdAt).toLocaleString($i18n.locale) }}</i
+            >
+            <i v-if="storageEntry.updatedAt">
+              &bull; {{ $t('storage.updated-at') }} {{ new Date(storageEntry.updatedAt).toLocaleString($i18n.locale) }}</i
+            >
 
-              <div style="margin-top: 0.5em">
-                <i>{{ $t('storage.stock-title') }} </i>
-                {{ shortenStockString(storageEntry.stockString) }}
-              </div>
+            <div style="margin-top: 0.5em">
+              <i>{{ $t('storage.stock-title') }} </i>
+              {{ shortenStockString(storageEntry.stockString) }}
             </div>
-          </li>
+          </div>
+        </li>
 
-          <li v-if="Object.keys(storageStockDataList).length == 0" class="storage-no-entries">
-            {{ $t('storage.no-entires') }}
-          </li>
-        </transition-group>
-      </div>
+        <li v-if="Object.keys(storageStockDataList).length == 0" class="storage-no-entries">
+          {{ $t('storage.no-entires') }}
+        </li>
+      </transition-group>
     </div>
   </section>
 </template>
@@ -146,21 +143,26 @@ export default defineComponent({
 <style lang="scss" scoped>
 @use '@/styles/tab';
 
+.storage-tab {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  overflow: hidden;
+}
+
 .tab_actions {
   grid-template-columns: repeat(2, 1fr);
 }
 
-.storage-list-wrapper {
-  position: relative;
-  height: 730px;
+.tab_content {
   overflow: auto;
+  margin-top: 1em;
+  position: relative;
 }
 
 ul.storage-list {
   display: flex;
   flex-direction: column;
   gap: 0.5em;
-  margin-top: 0.5em;
 }
 
 ul.storage-list > li {
@@ -174,12 +176,14 @@ ul.storage-list > li {
 
 .storage-item-top {
   display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.5em;
 }
 
 .storage-item-top > h3 {
-  width: 100%;
+  min-width: 350px;
   text-align: left;
   margin: 0;
 }
@@ -208,7 +212,7 @@ ul.storage-list > li {
   &-move,
   &-enter-active,
   &-leave-active {
-    transition: all 120ms ease-in-out;
+    transition: all 100ms ease-in-out;
   }
 
   &-enter-from {

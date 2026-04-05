@@ -28,11 +28,7 @@ export default defineComponent({
 
       const stock = this.getStockObject(vehicle, cargo);
 
-      if (
-        isTractionUnit(stock.vehicleRef) &&
-        this.store.stockList.length > 0 &&
-        !isTractionUnit(this.store.stockList[0].vehicleRef)
-      )
+      if (isTractionUnit(stock.vehicleRef) && this.store.stockList.length > 0 && !isTractionUnit(this.store.stockList[0].vehicleRef))
         this.store.stockList.unshift(stock);
       else this.store.stockList.push(stock);
     },
@@ -40,8 +36,7 @@ export default defineComponent({
     addLocomotive(loco: ILocomotive) {
       const stockObj = this.getStockObject(loco);
 
-      if (this.store.stockList.length > 0 && !isTractionUnit(this.store.stockList[0].vehicleRef))
-        this.store.stockList.unshift(stockObj);
+      if (this.store.stockList.length > 0 && !isTractionUnit(this.store.stockList[0].vehicleRef)) this.store.stockList.unshift(stockObj);
       else this.store.stockList.push(stockObj);
     },
 
@@ -83,7 +78,20 @@ export default defineComponent({
           const [carType, cargo] = type.split(':');
           vehicle = this.store.carDataList.find((car) => car.type == carType) || null;
 
-          if (cargo) vehicleCargo = vehicle?.cargoTypes.find((c) => c.id == cargo) || null;
+          if (cargo) {
+            vehicleCargo = vehicle?.cargoTypes.find((c) => c.id == cargo) || null;
+
+            // UNUSED - ADDITIONAL INTERMODAL CARGO TEST
+            // if (/412Z|627Z/.test(vehicle.constructionType)) {
+            //   const additionalCargo = additionalCargoTypes.find(
+            //     (c) => c.groupType == vehicle!.constructionType && c.cargoStringVariations.includes(cargo.join(':'))
+            //   );
+
+            //   if (additionalCargo) {
+            //     cargo[0] = additionalCargo.id;
+            //   }
+            // }
+          }
         }
 
         if (!vehicle && type) {

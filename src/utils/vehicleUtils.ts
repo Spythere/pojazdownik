@@ -1,6 +1,57 @@
 import { ICarWagon, ILocomotive, IStock, IVehicleData, LocoGroupType, WagonGroupType } from '../types/common.types';
 import { MassLimitLocoType, calculateMassLimit, calculateSpeedLimit } from './vehicleLimitsUtils';
 
+// UNUSED - ADDITIONAL CARGO TYPES FOR INTERMODALS
+export const additionalCargoTypes = [
+  {
+    groupType: '627Z',
+    id: '627Z_mix1_sctc_loaded',
+    weight: 96500,
+    cargoStringVariations: [
+      'sc_20:tc_20_loaded:tc_20_loaded:tc_20_loaded',
+      'tc_20_loaded:sc_20:tc_20_loaded:tc_20_loaded',
+      'tc_20_loaded:tc_20_loaded:sc_20:tc_20_loaded',
+      'tc_20_loaded:tc_20_loaded:tc_20_loaded:sc_20',
+    ],
+  },
+  {
+    groupType: '627Z',
+    id: '627Z_mix2_sctc_loaded',
+    weight: 87000,
+    cargoStringVariations: [
+      'sc_20:tc_20_loaded:tc_20_loaded:sc_20',
+      'sc_20:tc_20_loaded:sc_20:tc_20_loaded',
+      'sc_20:sc_20:tc_20_loaded:tc_20_loaded',
+      'tc_20_loaded:tc_20_loaded:sc_20:sc_20',
+      'tc_20_loaded:sc_20:tc_20_loaded:sc_20',
+      'tc_20_loaded:sc_20:sc_20:tc_20_loaded',
+    ],
+  },
+  {
+    groupType: '627Z',
+    id: '627Z_mix3_sctc_loaded',
+    weight: 77500,
+    cargoStringVariations: [
+      'sc_20:sc_20:sc_20:tc_20_loaded',
+      'sc_20:sc_20:tc_20_loaded:sc_20',
+      'sc_20:tc_20_loaded:sc_20:sc_20',
+      'tc_20_loaded:sc_20:sc_20:sc_20',
+    ],
+  },
+  {
+    groupType: '412Z',
+    id: '412Z_mix1_sctc_loaded',
+    weight: 43500,
+    cargoStringVariations: ['sc_20:tc_20_loaded:tc_20_loaded'],
+  },
+  {
+    groupType: '412Z',
+    id: '412Z_mix1_sctc_empty',
+    weight: 37735,
+    cargoStringVariations: ['sc_20:tc_20_empty:sc_20'],
+  },
+];
+
 export function isTractionUnit(vehicle: ILocomotive | ICarWagon): vehicle is ILocomotive {
   return (vehicle as ILocomotive).cabinType !== undefined;
 }
@@ -42,12 +93,26 @@ export function carDataList(vehiclesData: IVehicleData[] | undefined) {
   return vehiclesData.reduce<ICarWagon[]>((acc, data) => {
     if (data.cabinName !== null) return acc;
 
+    const cargoTypes = data.group.cargoTypes || [];
+
+    // UNUSED - ADDITIONAL CARGO TYPES FOR INTERMODALS
+    // if (/412Z|627Z/.test(data.group.name)) {
+    //   cargoTypes.push(
+    //     ...additionalCargoTypes
+    //       .filter((c) => c.groupType == data.group.name)
+    //       .map((c) => ({
+    //         id: c.id,
+    //         weight: c.weight,
+    //       }))
+    //   );
+    // }
+
     acc.push({
       group: data.type as WagonGroupType,
       type: data.name,
       constructionType: data.group.name,
       loadable: data.group.cargoTypes !== null && data.group.cargoTypes.length > 0,
-      cargoTypes: data.group?.cargoTypes ?? [],
+      cargoTypes,
 
       sponsorOnlyTimestamp: data.restrictions?.sponsorOnly ?? 0,
       teamOnly: data.restrictions?.teamOnly ?? false,
@@ -106,12 +171,13 @@ export function getCargoWarnings(stockList: IStock[]) {
   let warnings: Set<string> = new Set();
 
   stockList.forEach((stockVehicle) => {
-    if (stockVehicle.vehicleRef.group == 'wagon-freight') {
-      if (stockVehicle.cargo && stockVehicle.cargo.id.startsWith('wt_20')) warnings.add('warning_wt_20_pn');
-      else if (stockVehicle.cargo && /^(tank|vehicles|truck)/.test(stockVehicle.cargo.id)) warnings.add('warning_military_pn');
-      else if (stockVehicle.vehicleRef.type.startsWith('WB117')) warnings.add(stockVehicle.cargo ? 'warning_un1965_twr' : 'warning_un1965_tn');
-      else if (stockVehicle.vehicleRef.type.startsWith('445Rb')) warnings.add('warning_un1202_tn');
-    }
+    if (stockVehicle.vehicleRef.group != 'wagon-freight') return;
+
+    if (stockVehicle.cargo && stockVehicle.cargo.id.startsWith('wt_20')) warnings.add('warning_wt_20_pn');
+    else if (stockVehicle.vehicleRef.type.startsWith('WB117')) warnings.add(stockVehicle.cargo ? 'warning_un1965_twr' : 'warning_un1965_tn');
+    else if (stockVehicle.vehicleRef.type.startsWith('445Rb')) warnings.add('warning_un1202_tn');
+    else if (stockVehicle.vehicleRef.type.startsWith('EDK80')) warnings.add('warning_edk80_pn');
+    else if (stockVehicle.cargo && /^(tank|vehicles|truck)/.test(stockVehicle.cargo.id)) warnings.add('warning_military_pn');
   });
 
   return warnings;

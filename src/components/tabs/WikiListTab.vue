@@ -1,97 +1,86 @@
 <template>
-  <section class="wiki-list tab">
-    <div class="tab_content">
-      <div class="actions">
-        <div class="action action-input">
-          <label for="search-vehicle">
-            {{ $t('wiki.labels.search-vehicle') }}
-            <button class="reset-btn" @click="resetSearchInput">
-              <img src="/images/icon-exit.svg" alt="reset vehicle input icon" />
-            </button>
-          </label>
-          <input
-            type="text"
-            id="search-vehicle"
-            name="search-vehicle"
-            :placeholder="$t('wiki.labels.search-vehicle-placeholder')"
-            v-model="searchedVehicleTypeName"
-          />
-        </div>
-
-        <div class="action action-select">
-          <label for="filter-type">{{ $t('wiki.labels.vehicles') }}</label>
-          <select name="filter-type" id="filter-type" v-model="filterType">
-            <option v-for="filter in filters" :key="filter" :value="filter">
-              {{ $t(`wiki.filters.${filter}`) }}
-            </option>
-          </select>
-        </div>
-
-        <div class="action action-select">
-          <label for="sorter-type">{{ $t('wiki.labels.sort-by') }}</label>
-          <select name="sorter-type" id="sorter-type" v-model="sorterType">
-            <option v-for="sorter in sorters" :key="sorter" :value="sorter">
-              {{ $t(`wiki.sort-by.${sorter}`) }}
-            </option>
-          </select>
-        </div>
-
-        <div class="action action-select">
-          <label for="sorter-direction">{{ $t('wiki.labels.sort-direction') }}</label>
-
-          <select name="sorter-direction" id="sorter-direction" v-model="sorterDirection">
-            <option value="asc">{{ $t('wiki.sort-direction.asc') }}</option>
-            <option value="desc">{{ $t('wiki.sort-direction.desc') }}</option>
-          </select>
-        </div>
+  <section class="wiki-list-tab">
+    <div class="actions">
+      <div class="action action-input">
+        <label for="search-vehicle">
+          {{ $t('wiki.labels.search-vehicle') }}
+          <button class="reset-btn" @click="resetSearchInput">
+            <img src="/images/icon-exit.svg" alt="reset vehicle input icon" />
+          </button>
+        </label>
+        <input
+          type="text"
+          id="search-vehicle"
+          name="search-vehicle"
+          :placeholder="$t('wiki.labels.search-vehicle-placeholder')"
+          v-model="searchedVehicleTypeName"
+        />
       </div>
 
-      <ul class="vehicles" ref="vehicles">
-        <li
-          v-for="vehicle in computedVehicles"
-          :key="vehicle.type"
-          :data-preview="vehicle.type === store.chosenVehicle?.type"
-          @click="previewVehicle(vehicle)"
-          @dblclick="addVehicle(vehicle)"
-          @keydown.enter="onVehicleSelect(vehicle)"
-          tabindex="0"
-        >
-          <img
-            loading="lazy"
-            width="120"
-            :src="getThumbnailURL(vehicle.type, 'small')"
-            @error="onThumbnailImageError"
-          />
+      <div class="action action-select">
+        <label for="filter-type">{{ $t('wiki.labels.vehicles') }}</label>
+        <select name="filter-type" id="filter-type" v-model="filterType">
+          <option v-for="filter in filters" :key="filter" :value="filter">
+            {{ $t(`wiki.filters.${filter}`) }}
+          </option>
+        </select>
+      </div>
 
-          <span>
-            <span
-              class="vehicle-name"
-              :class="{
-                'sponsor-only':
-                  vehicle.sponsorOnlyTimestamp && vehicle.sponsorOnlyTimestamp > Date.now(),
-                'team-only': vehicle.teamOnly,
-              }"
-            >
-              <b>{{ vehicle.type.replace(/_/g, ' ') }}</b>
-            </span>
+      <div class="action action-select">
+        <label for="sorter-type">{{ $t('wiki.labels.sort-by') }}</label>
+        <select name="sorter-type" id="sorter-type" v-model="sorterType">
+          <option v-for="sorter in sorters" :key="sorter" :value="sorter">
+            {{ $t(`wiki.sort-by.${sorter}`) }}
+          </option>
+        </select>
+      </div>
 
-            <div class="vehicle-group">
-              {{ $t(`wiki.${vehicle.group}`) }} |
-              {{ isTractionUnit(vehicle) ? vehicle.cabinType : vehicle.constructionType }}
-            </div>
+      <div class="action action-select">
+        <label for="sorter-direction">{{ $t('wiki.labels.sort-direction') }}</label>
 
-            <div class="vehicle-props">
-              {{ vehicle.length }}m | {{ (vehicle.weight / 1000).toFixed(1) }}t |
-              {{ vehicle.maxSpeed }}km/h
-            </div>
-          </span>
-        </li>
-      </ul>
-
-      <div class="no-vehicles-warning" v-if="computedVehicles.length == 0">
-        {{ $t('wiki.no-vehicles') }}
+        <select name="sorter-direction" id="sorter-direction" v-model="sorterDirection">
+          <option value="asc">{{ $t('wiki.sort-direction.asc') }}</option>
+          <option value="desc">{{ $t('wiki.sort-direction.desc') }}</option>
+        </select>
       </div>
     </div>
+
+    <div class="no-vehicles-warning" v-if="computedVehicles.length == 0">
+      {{ $t('wiki.no-vehicles') }}
+    </div>
+    
+    <ul class="vehicles" ref="vehicles">
+      <li
+        v-for="vehicle in computedVehicles"
+        :key="vehicle.type"
+        :data-preview="vehicle.type === store.chosenVehicle?.type"
+        @click="previewVehicle(vehicle)"
+        @dblclick="addVehicle(vehicle)"
+        @keydown.enter="onVehicleSelect(vehicle)"
+        tabindex="0"
+      >
+        <img loading="lazy" width="120" :src="getThumbnailURL(vehicle.type, 'small')" @error="onThumbnailImageError" />
+
+        <span>
+          <span
+            class="vehicle-name"
+            :class="{
+              'sponsor-only': vehicle.sponsorOnlyTimestamp && vehicle.sponsorOnlyTimestamp > Date.now(),
+              'team-only': vehicle.teamOnly,
+            }"
+          >
+            <b>{{ vehicle.type.replace(/_/g, ' ') }}</b>
+          </span>
+
+          <div class="vehicle-group">
+            {{ $t(`wiki.${vehicle.group}`) }} |
+            {{ isTractionUnit(vehicle) ? vehicle.cabinType : vehicle.constructionType }}
+          </div>
+
+          <div class="vehicle-props">{{ vehicle.length }}m | {{ (vehicle.weight / 1000).toFixed(1) }}t | {{ vehicle.maxSpeed }}km/h</div>
+        </span>
+      </li>
+    </ul>
   </section>
 </template>
 
@@ -166,7 +155,7 @@ export default defineComponent({
 
     onThumbnailImageError(e: Event) {
       const el = e.target as HTMLImageElement;
-      
+
       if (el.src == '/images/no-vehicle-image.png') return;
       el.src = '/images/no-vehicle-image.png';
     },
@@ -181,11 +170,7 @@ export default defineComponent({
     },
 
     filterVehicles(v: IVehicle) {
-      if (
-        this.searchedVehicleTypeName != '' &&
-        !v.type.toLocaleLowerCase().includes(this.searchedVehicleTypeName.toLocaleLowerCase())
-      )
-        return false;
+      if (this.searchedVehicleTypeName != '' && !v.type.toLocaleLowerCase().includes(this.searchedVehicleTypeName.toLocaleLowerCase())) return false;
 
       switch (this.filterType) {
         case VehicleFilter.AllTractions:
@@ -247,6 +232,13 @@ export default defineComponent({
 @use '@/styles/tab';
 @use '@/styles/responsive';
 
+.wiki-list-tab {
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  gap: 0.5em;
+  overflow: hidden;
+}
+
 .actions {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(10em, 1fr));
@@ -284,10 +276,7 @@ export default defineComponent({
   gap: 0.5em;
   overflow: auto;
 
-  max-height: 730px;
-
-  margin-top: 0.75em;
-  padding: 0.25em;
+  margin-top: 1em;
 }
 
 .vehicles > li {
@@ -297,7 +286,6 @@ export default defineComponent({
   background-color: #161c2e;
   padding: 0.5em;
 
-  min-height: 75px;
   cursor: pointer;
 
   &[data-preview='true'] {
@@ -340,11 +328,17 @@ export default defineComponent({
 
 .no-vehicles-warning {
   text-align: center;
+  width: 100%;
   padding: 1em;
   background-color: #161c2e;
 }
 
-@include responsive.smallScreen {
+@include responsive.midScreen {
+  .vehicles {
+    height: 100vh;
+    min-height: 400px;
+  }
+
   .actions-panel {
     align-items: stretch;
     flex-direction: column;
