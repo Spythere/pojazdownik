@@ -1,32 +1,21 @@
 <template>
-  <AppModals />
-  <ImageFullscreenPreview v-if="store.vehiclePreviewSrc" />
-
-  <transition name="slide-bottom-anim">
-    <MigrationInfo v-if="store.isMigrationInfoOpen" />
-  </transition>
-
-  <router-view></router-view>
+  <div class="migration-info">
+    <img src="/favicon.svg" alt="logo" width="120" />
+    <h1><span class="text--accent">Aplikacja</span> została przeniesiona na nową domenę!</h1>
+    <h1><span class="text--accent">This app</span> has been moved to a new domain!</h1>
+    <a href="http://pojazdownik-td2.spythere.eu/">http://pojazdownik-td2.spythere.eu/</a>
+  </div>
 </template>
 
 <script lang="ts" setup>
 import { useStore } from './store';
-import ImageFullscreenPreview from './components/utils/ImageFullscreenPreview.vue';
-import AppModals from './components/app/AppModals.vue';
-import { computed, onMounted, watchEffect } from 'vue';
+import { computed, watchEffect } from 'vue';
 import { registerSW } from 'virtual:pwa-register';
-import MigrationInfo from './components/app/MigrationInfo.vue';
 
 const store = useStore();
 
 registerSW({
   immediate: true,
-});
-
-onMounted(() => {
-  loadStockDataFromStorage();
-  handleMigrationInfo();
-  store.setupAPIData();
 });
 
 const currentStockString = computed(() => store.stockString);
@@ -36,35 +25,6 @@ watchEffect(() => {
     store.chosenStorageStockName = '';
   }
 });
-
-function handleMigrationInfo() {
-  // Show only on old domain
-  if (location.hostname !== 'pojazdownik-td2.web.app') return;
-
-  const showInfo = localStorage.getItem('showMigrationInfo');
-
-  // Do not show if already acknowledged
-  if (showInfo === 'false') return;
-
-  setTimeout(() => {
-    store.isMigrationInfoOpen = true;
-  }, 2000);
-}
-
-function loadStockDataFromStorage() {
-  const savedData = localStorage.getItem('savedStockData');
-
-  if (!savedData) {
-    localStorage.setItem('savedStockData', JSON.stringify({}));
-    return;
-  }
-
-  try {
-    store.storageStockData = JSON.parse(savedData);
-  } catch (error) {
-    console.error('Wystąpił błąd podczas przetwarzania danych o składach z localStorage!', error);
-  }
-}
 </script>
 
 <style lang="scss">
@@ -81,6 +41,30 @@ function loadStockDataFromStorage() {
 
   @include responsive.midScreen {
     font-size: calc(0.7rem + 0.75vw);
+  }
+}
+
+.migration-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  min-height: 100vh;
+  text-align: center;
+  padding: 1em;
+
+  img {
+    margin-bottom: 2em;
+  }
+
+  h1 {
+    margin: 0;
+  }
+
+  a {
+    font-size: 1.85em;
+    margin-top: 1em;
+    text-decoration: underline;
   }
 }
 </style>
