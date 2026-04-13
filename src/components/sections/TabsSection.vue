@@ -1,17 +1,9 @@
 <template>
   <section class="tabs-section">
     <div class="tabs-modes">
-      <router-link
-        v-for="(route, i) in routes"
-        :key="route.name"
-        class="link-btn"
-        :to="route.href"
-        :style="{ 'grid-area': route.name }"
-      >
+      <router-link v-for="(route, i) in routes" :key="route.name" class="link-btn" :to="route.href" :style="{ 'grid-area': route.name }">
         <span class="text--accent">{{ i + 1 }}.</span> {{ $t(`topbar.${route.name}`) }}
-        <span class="text--grayed" v-if="route.name == 'stock'"
-          >({{ store.stockList.length }})</span
-        >
+        <span class="text--grayed" v-if="route.name == 'stock'">({{ store.stockList.length }})</span>
       </router-link>
     </div>
 
@@ -68,7 +60,9 @@ onMounted(() => {
 });
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+@use '@/styles/responsive';
+
 // Tab change animation
 .tab-change {
   &-enter-from,
@@ -84,6 +78,10 @@ onMounted(() => {
 
 // Section styles
 .tabs-section {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 1em;
+
   grid-row: 1 / 4;
   grid-column: 2;
 
@@ -93,25 +91,33 @@ onMounted(() => {
 
 .tabs-modes {
   display: grid;
-  grid-template-areas:
-    'stock stock wiki wiki storage storage'
-    'numgen numgen numgen stockgen stockgen stockgen';
-  grid-template-columns: repeat(6, 1fr);
-  // grid-template-rows: 1fr 1fr;
-  padding: 1px;
-
   gap: 0.5em;
+  grid-template-areas: 'stock wiki storage numgen stockgen';
 
-  margin-bottom: 1em;
+  padding: 1px;
 }
 
-@media screen and (max-width: global.$breakpointSm) {
+@media only screen and (max-width: 1200px) {
+  .tabs-modes {
+    grid-template-areas:
+      'stock stock wiki wiki storage storage'
+      'numgen numgen numgen stockgen stockgen stockgen';
+  }
+}
+
+@include responsive.smallScreen {
   .tabs-modes {
     grid-template-areas:
       'stock wiki'
       'storage storage'
       'numgen stockgen';
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@include responsive.midScreen {
+  .tabs-section {
+    min-height: 100vh;
   }
 }
 </style>

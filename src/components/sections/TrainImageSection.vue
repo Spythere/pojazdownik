@@ -5,10 +5,7 @@
         <img
           :src="getThumbnailURL(store.chosenVehicle.type, 'small')"
           :data-preview-available="isDataPreviewAvailable"
-          :data-sponsor-only="
-            store.chosenVehicle.sponsorOnlyTimestamp &&
-            store.chosenVehicle.sponsorOnlyTimestamp > Date.now()
-          "
+          :data-sponsor-only="store.chosenVehicle.sponsorOnlyTimestamp && store.chosenVehicle.sponsorOnlyTimestamp > Date.now()"
           :data-team-only="store.chosenVehicle.teamOnly"
           @click="onImageClick"
           @keydown.enter="onImageClick"
@@ -21,23 +18,15 @@
       <div class="image-info">
         <b class="text--accent">{{ store.chosenVehicle.type }}</b> &bull;
         <b style="color: #ccc">
-          {{
-            $t(
-              `preview.${isTractionUnit(store.chosenVehicle) ? store.chosenVehicle.group : store.chosenVehicle.group}`
-            )
-          }}
+          {{ $t(`preview.${isTractionUnit(store.chosenVehicle) ? store.chosenVehicle.group : store.chosenVehicle.group}`) }}
         </b>
 
         <div style="color: #ccc">
           <div>
-            {{ store.chosenVehicle.length }}m |
-            {{ (store.chosenVehicle.weight / 1000).toFixed(1) }}t |
-            {{ store.chosenVehicle.maxSpeed }} km/h
+            {{ store.chosenVehicle.length }}m | {{ (store.chosenVehicle.weight / 1000).toFixed(1) }}t | {{ store.chosenVehicle.maxSpeed }} km/h
           </div>
 
-          <div v-if="isTractionUnit(store.chosenVehicle)">
-            {{ $t('preview.cabin') }} {{ store.chosenVehicle.cabinType }}
-          </div>
+          <div v-if="isTractionUnit(store.chosenVehicle)">{{ $t('preview.cabin') }} {{ store.chosenVehicle.cabinType }}</div>
 
           <div v-else>
             {{
@@ -47,18 +36,10 @@
             }}
           </div>
 
-          <b
-            v-if="
-              store.chosenVehicle.sponsorOnlyTimestamp &&
-              store.chosenVehicle.sponsorOnlyTimestamp > Date.now()
-            "
-            class="sponsor-only"
-          >
+          <b v-if="store.chosenVehicle.sponsorOnlyTimestamp && store.chosenVehicle.sponsorOnlyTimestamp > Date.now()" class="sponsor-only">
             {{
               $t('preview.sponsor-only', [
-                new Date(store.chosenVehicle.sponsorOnlyTimestamp).toLocaleDateString(
-                  $i18n.locale == 'pl' ? 'pl-PL' : 'en-GB'
-                ),
+                new Date(store.chosenVehicle.sponsorOnlyTimestamp).toLocaleDateString($i18n.locale == 'pl' ? 'pl-PL' : 'en-GB'),
               ])
             }}
           </b>
@@ -152,7 +133,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-
+@use '@/styles/responsive';
 
 .train-image-section {
   display: flex;
@@ -164,8 +145,8 @@ export default defineComponent({
 
   & > div {
     position: relative;
-    max-width: 100%;
-    width: 380px;
+    width: 100%;
+    max-width: 380px;
   }
 }
 
@@ -178,11 +159,11 @@ img {
   }
 
   &[data-sponsor-only='true'] {
-    border: 1px solid global.$sponsorColor;
+    border: 1px solid var(--accentColor);
   }
 
   &[data-team-only='true'] {
-    border: 1px solid global.$teamColor;
+    border: 1px solid var(--teamColor);
   }
 }
 
@@ -216,25 +197,25 @@ img {
   width: 100%;
   max-width: 380px;
 
-  background-color: global.$secondaryColor;
+  background-color: var(--secondaryColor);
   font-weight: bold;
 }
 
 .placeholder {
   height: 250px;
 
-  background-color: global.$bgColor;
+  background-color: var(--bgColor);
 }
 
 .sponsor-only {
-  color: global.$sponsorColor;
+  color: var(--accentColor);
 }
 
 .team-only {
-  color: global.$teamColor;
+  color: var(--teamColor);
 }
 
-@media screen and (max-width: global.$breakpointMd) {
+@include responsive.midScreen {
   .train-image-section {
     justify-content: center;
   }

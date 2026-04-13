@@ -1,13 +1,10 @@
-@use 'global';
-
 .tab {
   height: 100%;
-  margin-top: 1px;
 
   &_header {
     padding: 0.5em 1em;
 
-    background-color: global.$secondaryColor;
+    background-color: var(--secondaryColor);
     text-align: center;
 
     h2 {
@@ -28,7 +25,6 @@
   }
 
   &_content {
-    margin-top: 1em;
     height: 100%;
   }
 

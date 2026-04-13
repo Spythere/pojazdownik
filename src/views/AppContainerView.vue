@@ -25,13 +25,22 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.app-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+@use '../styles/responsive';
 
-  min-height: 100vh;
-  padding: 0.5em;
+.app-container {
+  display: grid;
+  justify-content: center;
+  
+  grid-template-rows: minmax(900px, 1fr) auto;
+  gap: 0.5em;
+  
+  height: 100vh;
+}
+
+@include responsive.midScreen {
+  .app-container {
+    height: auto;
+    min-height: 100vh;
+  }
 }
 </style>

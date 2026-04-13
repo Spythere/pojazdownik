@@ -1,110 +1,96 @@
 <template>
-  <div class="stock-generator tab">
-    <div class="tab_content">
-      <div>
-        <h2>{{ $t('stockgen.properties-title') }}</h2>
+  <div class="stock-generator-tab">
+    <div>
+      <h2>{{ $t('stockgen.properties-title') }}</h2>
 
-        <b class="text--accent">
-          {{ $t('stockgen.properties-desc') }}
-        </b>
+      <b class="text--accent">
+        {{ $t('stockgen.properties-desc') }}
+      </b>
 
-        <div class="inputs">
-          <label>
-            <span>{{ $t('stockgen.input-mass') }}</span>
-            <input type="number" v-model="maxTons" step="100" max="4000" min="0" />
-          </label>
+      <div class="inputs">
+        <label>
+          <span>{{ $t('stockgen.input-mass') }}</span>
+          <input type="number" v-model="maxTons" step="100" max="4000" min="0" />
+        </label>
 
-          <label>
-            <span>{{ $t('stockgen.input-length') }}</span>
-            <input type="number" v-model="maxLength" step="25" max="650" min="0" />
-          </label>
+        <label>
+          <span>{{ $t('stockgen.input-length') }}</span>
+          <input type="number" v-model="maxLength" step="25" max="650" min="0" />
+        </label>
 
-          <label>
-            <span>{{ $t('stockgen.input-carcount') }}</span>
-            <input type="number" v-model="maxCarCount" step="1" max="60" min="1" />
-          </label>
-        </div>
+        <label>
+          <span>{{ $t('stockgen.input-carcount') }}</span>
+          <input type="number" v-model="maxCarCount" step="1" max="60" min="1" />
+        </label>
+      </div>
 
-        <!-- <hr style="margin: 1em 0" /> -->
+      <!-- <hr style="margin: 1em 0" /> -->
 
-        <!-- <div class="generator_options">
+      <!-- <div class="generator_options">
           <Checkbox v-model="isCarGroupingEnabled">Grupuj wylosowane wagony (ustawia podobne wagony obok siebie w składzie)</Checkbox>
         </div>  -->
+    </div>
+
+    <div>
+      <h2>{{ $t('stockgen.cargo-title') }}</h2>
+      <b>{{ $t('stockgen.cargo-desc') }}</b>
+    </div>
+
+    <div class="generator_cargo">
+      <button
+        v-for="cargo in computedCargoData"
+        :key="cargo.name"
+        class="btn"
+        :data-chosen="chosenCargoTypes.includes(cargo.name)"
+        @click="toggleCargoChosen(cargo.name, cargo.cargoList)"
+      >
+        {{ $t(`cargo.${cargo.name}`) }}
+      </button>
+    </div>
+
+    <div>
+      <h2>{{ $t('stockgen.chosen-title') }}</h2>
+
+      <div class="generator_warning">
+        <span v-if="computedChosenCarTypes.size == 0">
+          {{ $t('stockgen.chosen-empty-warning') }}
+        </span>
+
+        <span v-else>
+          {{ $t('stockgen.chosen-warning') }}
+        </span>
       </div>
+    </div>
 
-      <div>
-        <h2>{{ $t('stockgen.cargo-title') }}</h2>
-        <b>{{ $t('stockgen.cargo-desc') }}</b>
-      </div>
+    <div class="generator_vehicles" v-if="computedChosenCarTypes.size != 0">
+      <button
+        :data-chosen="true"
+        :data-excluded="excludedCarTypes.includes(carType)"
+        class="btn"
+        v-for="carType in computedChosenCarTypes"
+        :key="carType"
+        @mouseover="onMouseHover(carType)"
+        @mouseleave="onMouseLeave"
+        @click="toggleCarExclusion(carType)"
+      >
+        {{ carType }}
+      </button>
+    </div>
 
-      <div class="generator_cargo">
-        <button
-          v-for="cargo in computedCargoData"
-          :key="cargo.name"
-          class="btn"
-          :data-chosen="chosenCargoTypes.includes(cargo.name)"
-          @click="toggleCargoChosen(cargo.name, cargo.cargoList)"
-        >
-          {{ $t(`cargo.${cargo.name}`) }}
-        </button>
-      </div>
+    <hr />
 
-      <div>
-        <h2>{{ $t('stockgen.chosen-title') }}</h2>
+    <div class="tab_actions">
+      <button class="btn" :data-disabled="computedChosenCarTypes.size == 0" @click="generateStock()">
+        {{ $t('stockgen.action-generate') }}
+      </button>
 
-        <div class="generator_warning">
-          <span v-if="computedChosenCarTypes.size == 0">
-            {{ $t('stockgen.chosen-empty-warning') }}
-          </span>
+      <button class="btn" :data-disabled="computedChosenCarTypes.size == 0" @click="generateStock(true)">
+        {{ $t('stockgen.action-generate-empty') }}
+      </button>
 
-          <span v-else>
-            {{ $t('stockgen.chosen-warning') }}
-          </span>
-        </div>
-      </div>
-
-      <div class="generator_vehicles" v-if="computedChosenCarTypes.size != 0">
-        <button
-          :data-chosen="true"
-          :data-excluded="excludedCarTypes.includes(carType)"
-          class="btn"
-          v-for="carType in computedChosenCarTypes"
-          :key="carType"
-          @mouseover="onMouseHover(carType)"
-          @mouseleave="onMouseLeave"
-          @click="toggleCarExclusion(carType)"
-        >
-          {{ carType }}
-        </button>
-      </div>
-
-      <hr />
-
-      <div class="tab_actions">
-        <button
-          class="btn"
-          :data-disabled="computedChosenCarTypes.size == 0"
-          @click="generateStock()"
-        >
-          {{ $t('stockgen.action-generate') }}
-        </button>
-
-        <button
-          class="btn"
-          :data-disabled="computedChosenCarTypes.size == 0"
-          @click="generateStock(true)"
-        >
-          {{ $t('stockgen.action-generate-empty') }}
-        </button>
-
-        <button
-          class="btn"
-          :data-disabled="computedChosenCarTypes.size == 0"
-          @click="resetChosenCargo"
-        >
-          {{ $t('stockgen.action-reset') }}
-        </button>
-      </div>
+      <button class="btn" :data-disabled="computedChosenCarTypes.size == 0" @click="resetChosenCargo">
+        {{ $t('stockgen.action-reset') }}
+      </button>
     </div>
   </div>
 </template>
@@ -183,9 +169,7 @@ export default defineComponent({
       if (!this.isCarGroupingEnabled) return false;
 
       stockList.sort((s1, s2) => {
-        return (s1.vehicleRef.constructionType + s1.cargo?.id).localeCompare(
-          s2.vehicleRef.constructionType + s2.cargo?.id
-        );
+        return (s1.vehicleRef.constructionType + s1.cargo?.id).localeCompare(s2.vehicleRef.constructionType + s2.cargo?.id);
       });
     },
 
@@ -202,14 +186,11 @@ export default defineComponent({
 
               if (!cargoType || empty) cargoObjs.push(undefined);
               else if (cargoType == 'all') cargoObjs.push(...carWagonObjs[0]!.cargoTypes);
-              else
-                cargoObjs.push(carWagonObjs[0]?.cargoTypes.find((cargo) => cargo.id == cargoType));
+              else cargoObjs.push(carWagonObjs[0]?.cargoTypes.find((cargo) => cargo.id == cargoType));
 
               carWagonObjs.forEach((cw) => {
                 cargoObjs.forEach((cargoObj) => {
-                  const chosenStock = acc.find((a) =>
-                    a.constructionType.includes(cw.constructionType)
-                  );
+                  const chosenStock = acc.find((a) => a.constructionType.includes(cw.constructionType));
 
                   if (!chosenStock)
                     acc.push({
@@ -229,24 +210,15 @@ export default defineComponent({
       let bestGeneration: { stockList: IStock[]; value: number } = { stockList: [], value: 0 };
 
       for (let i = 0; i < 10; i++) {
-        this.store.stockList.splice(
-          this.store.stockList.length > 0 && isTractionUnit(this.store.stockList[0].vehicleRef)
-            ? 1
-            : 0
-        );
+        this.store.stockList.splice(this.store.stockList.length > 0 && isTractionUnit(this.store.stockList[0].vehicleRef) ? 1 : 0);
 
         let carCount = 0;
-        const maxWeight =
-          this.store.acceptableWeight > 0
-            ? Math.min(this.store.acceptableWeight, this.maxTons * 1000)
-            : this.maxTons * 1000;
+        const maxWeight = this.store.acceptableWeight > 0 ? Math.min(this.store.acceptableWeight, this.maxTons * 1000) : this.maxTons * 1000;
 
         // eslint-disable-next-line no-constant-condition
         while (true) {
-          const randomStockType =
-            generatedChosenStockList[~~(Math.random() * generatedChosenStockList.length)];
-          const { carWagon, cargo } =
-            randomStockType.carPool[~~(Math.random() * randomStockType.carPool.length)];
+          const randomStockType = generatedChosenStockList[~~(Math.random() * generatedChosenStockList.length)];
+          const { carWagon, cargo } = randomStockType.carPool[~~(Math.random() * randomStockType.carPool.length)];
 
           if (
             this.store.totalWeight + (carWagon.weight + (cargo?.weight ?? 0)) > maxWeight ||
@@ -316,6 +288,14 @@ export default defineComponent({
 <style lang="scss" scoped>
 @use '@/styles/tab';
 
+.stock-generator-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  overflow: auto;
+  padding: 0.5em;
+}
+
 h2 {
   margin-top: 0;
   margin-bottom: 0.5em;
@@ -335,8 +315,6 @@ h2 {
     text-transform: uppercase;
     font-weight: bold;
 
-    background-color: global.$secondaryColor;
-
     &[data-excluded='true'] {
       background-color: gray;
       box-shadow: none;
@@ -349,7 +327,7 @@ h2 {
       padding: 5px;
 
       transform: translate(-8px, -50%);
-      background-color: global.$bgColor;
+      background-color: var(--bgColor);
       color: white;
     }
   }
@@ -390,7 +368,7 @@ h2 {
 }
 
 .generator_warning {
-  background-color: global.$accentColor;
+  background-color: var(--accentColor);
   padding: 0.5em;
   text-align: justify;
   font-weight: bold;

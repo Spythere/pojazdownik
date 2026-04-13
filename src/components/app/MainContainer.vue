@@ -20,29 +20,29 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/responsive';
+
 main {
   display: grid;
   gap: 1em;
 
-  width: 100%;
-  max-width: 1350px;
+  width: 100vw;
+  max-width: 1600px;
 
-  grid-template-columns: 1fr 2fr;
-  grid-template-rows: auto 360px minmax(300px, 1fr);
+  grid-template-columns: minmax(380px, 1fr) 3fr;
+  grid-template-rows: auto 350px minmax(300px, 1fr);
 
-  background-color: global.$bgColorDarker;
   border-radius: 1em;
-
-  min-height: 950px;
-
+  overflow: hidden;
   padding: 1em;
 }
 
-@media screen and (max-width: global.$breakpointMd) {
+@include responsive.midScreen {
   main {
     display: flex;
     flex-direction: column;
     gap: 1em;
+    height: auto;
   }
 }
 </style>

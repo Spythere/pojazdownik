@@ -224,6 +224,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/responsive';
+
 .inputs-section {
   display: flex;
   justify-content: center;
@@ -242,7 +244,7 @@ button.btn--choice {
   padding: 0.3em 0.6em;
 
   &[data-selected='true'] {
-    background-color: global.$accentColor;
+    background-color: var(--accentColor);
     color: black;
   }
 
@@ -260,12 +262,12 @@ button.btn--choice {
     display: block;
 
     font-weight: bold;
-    color: global.$accentColor;
+    color: var(--accentColor);
     margin-bottom: 0.3em;
   }
 
   select:focus {
-    border-color: global.$accentColor;
+    border-color: var(--accentColor);
   }
 }
 
@@ -290,7 +292,7 @@ button.btn--choice {
   }
 }
 
-@media screen and (max-width: global.$breakpointMd) {
+@include responsive.midScreen {
   .inputs-section {
     justify-content: center;
     text-align: center;

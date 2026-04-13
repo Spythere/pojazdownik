@@ -26,9 +26,11 @@ import {
   totalWeight,
 } from './utils/vehicleUtils';
 
-import http from './http';
-
 import realCompositionsJSON from './data/realCompositions.json';
+import { HttpClient } from './http';
+import { API } from './types/api.types';
+
+const baseURL = import.meta.env.VITE_API_DEV === '1' && import.meta.env.DEV ? 'http://localhost:3001' : 'https://stacjownik.spythere.eu';
 
 export const useStore = defineStore('store', {
   state: () => ({
@@ -52,6 +54,7 @@ export const useStore = defineStore('store', {
 
     vehiclePreviewSrc: '',
 
+    isMigrationInfoOpen: false,
     isRandomizerCardOpen: false,
     isRealStockListCardOpen: false,
 
@@ -64,6 +67,8 @@ export const useStore = defineStore('store', {
     chosenStorageStockString: '',
 
     compatibleSimulatorVersion: '2025.1.1',
+
+    httpClient: new HttpClient(baseURL),
   }),
 
   getters: {
@@ -124,8 +129,13 @@ export const useStore = defineStore('store', {
   actions: {
     async fetchVehiclesAPI() {
       try {
-        const vehiclesData = (await http.get<IVehiclesAPIResponse>('/api/getVehicles')).data;
-        this.vehiclesData = vehiclesData;
+        const response = await this.httpClient.get<API.VehiclesData.Response>('api/getVehiclesData');
+        this.vehiclesData = response.vehicles.map((v) => ({
+          ...v,
+          group: response.vehicleGroups.find((g) => g.id == v.vehicleGroupsId)!,
+        }));
+
+        console.log(response);
       } catch (error) {
         console.error(error);
       }

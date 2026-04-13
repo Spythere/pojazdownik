@@ -1,5 +1,5 @@
 <template>
-  <div class="number-generator tab">
+  <div class="number-generator-tab">
     <div class="tab_header">
       <h2>{{ $t('numgen.title') }}</h2>
       <h3>{{ $t('numgen.subtitle') }}</h3>
@@ -224,7 +224,15 @@ const randomizeTrainNumber = (randomizeRegions = false) => {
 </script>
 
 <style lang="scss" scoped>
-@use '../../styles/tab';
+@use '@/styles/tab';
+@use '@/styles/responsive';
+
+.number-generator-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  overflow: auto;
+}
 
 .category-select {
   select {
@@ -263,7 +271,7 @@ const randomizeTrainNumber = (randomizeRegions = false) => {
 
   margin: 0.5em 0;
   padding: 0.5em;
-  background-color: global.$secondaryColor;
+  background-color: var(--secondaryColor);
 }
 
 .category-rules {
@@ -281,13 +289,13 @@ const randomizeTrainNumber = (randomizeRegions = false) => {
   margin: 0.25em 0;
 }
 
-@media screen and (max-width: global.$breakpointMd) {
-  .number-generator {
+@include responsive.midScreen {
+  .number-generator-tab {
     min-height: 100vh;
   }
 }
 
-@media screen and (max-width: global.$breakpointSm) {
+@include responsive.smallScreen {
   .regions-select {
     flex-wrap: wrap;
   }

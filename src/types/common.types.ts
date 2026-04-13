@@ -74,7 +74,6 @@ export interface IVehicleData {
   cabinName: string | null;
   restrictions: IVehicleRestrictions | null;
   vehicleGroupsId: number;
-  simulatorVersion: string;
   group: IVehicleGroup;
 }
 

@@ -2,15 +2,16 @@
   <div class="list-wrapper">
     <StockThumbnails :onListItemClick="onListItemClick" />
 
-    <div v-if="stockIsEmpty" class="list-empty">
-      <div class="stock-info">{{ $t('stocklist.list-empty') }}</div>
-    </div>
-
-    <ul v-else>
+    <ul>
       <transition-group name="stock-list-anim">
+        <li v-if="stockIsEmpty" class="list-empty">
+          {{ $t('stocklist.list-empty') }}
+        </li>
+
         <li
           v-for="(stock, i) in store.stockList"
           :key="stock.id"
+          class="stock-item"
           :class="{ loco: isTractionUnit(stock.vehicleRef) }"
           tabindex="0"
           @click="onListItemClick(i)"
@@ -20,13 +21,7 @@
           @keydown.backspace="stockListUtils.removeStock(i)"
           ref="itemRefs"
         >
-          <div
-            class="stock-info"
-            @dragstart="onDragStart(i)"
-            @drop="onDrop($event, i)"
-            @dragover="allowDrop"
-            draggable="true"
-          >
+          <div class="stock-info" @dragstart="onDragStart(i)" @drop="onDrop($event, i)" @dragover="allowDrop" draggable="true">
             <span class="stock-info-no" :data-selected="i == store.chosenStockListIndex">
               <span v-if="i == store.chosenStockListIndex">&bull;&nbsp;</span>
               {{ i + 1 }}.
@@ -34,17 +29,10 @@
 
             <span
               class="stock-info-type"
-              :data-sponsor-only="
-                stock.vehicleRef.sponsorOnlyTimestamp &&
-                stock.vehicleRef.sponsorOnlyTimestamp > Date.now()
-              "
+              :data-sponsor-only="stock.vehicleRef.sponsorOnlyTimestamp && stock.vehicleRef.sponsorOnlyTimestamp > Date.now()"
               :data-team-only="stock.vehicleRef.teamOnly"
             >
-              {{
-                isTractionUnit(stock.vehicleRef)
-                  ? stock.vehicleRef.type
-                  : getCarSpecFromType(stock.vehicleRef.type)
-              }}
+              {{ isTractionUnit(stock.vehicleRef) ? stock.vehicleRef.type : getCarSpecFromType(stock.vehicleRef.type) }}
             </span>
 
             <span class="stock-info-cargo" v-if="stock.cargo">
@@ -53,9 +41,7 @@
 
             <span class="stock-info-length">{{ stock.vehicleRef.length }}m</span>
 
-            <span class="stock-info-mass">
-              {{ ((stock.vehicleRef.weight + (stock.cargo?.weight ?? 0)) / 1000).toFixed(1) }}t
-            </span>
+            <span class="stock-info-mass"> {{ ((stock.vehicleRef.weight + (stock.cargo?.weight ?? 0)) / 1000).toFixed(1) }}t </span>
             <span class="stock-info-speed">{{ stock.vehicleRef.maxSpeed }}km/h</span>
           </div>
         </li>
@@ -123,10 +109,7 @@ export default defineComponent({
       const stock = this.store.stockList[stockID];
 
       this.store.chosenStockListIndex =
-        this.store.chosenStockListIndex == stockID &&
-        this.store.chosenVehicle?.type == stock.vehicleRef.type
-          ? -1
-          : stockID;
+        this.store.chosenStockListIndex == stockID && this.store.chosenVehicle?.type == stock.vehicleRef.type ? -1 : stockID;
 
       if (this.store.chosenStockListIndex == -1) {
         this.store.chosenVehicle = null;
@@ -154,27 +137,32 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/responsive';
+
 .list-wrapper {
+  display: grid;
+  grid-template-rows: auto 1fr;
   position: relative;
+  overflow: hidden;
 }
 
 .list-empty {
-  background-color: global.$secondaryColor;
+  background-color: var(--secondaryColor);
   border-radius: 0.5em;
   padding: 0.75em;
   font-weight: bold;
+  width: 100%;
 }
 
 ul {
-  overflow-y: scroll;
-  height: 500px;
+  overflow-y: auto;
 }
 
 ul > li {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-width: 500px;
+  white-space: nowrap;
 
   margin: 0.25em 0;
 
@@ -202,14 +190,14 @@ li > .stock-info {
 
 .stock-info-no,
 .stock-info-type {
-  background-color: global.$secondaryColor;
+  background-color: var(--secondaryColor);
 
   &[data-team-only='true'] {
-    color: global.$teamColor;
+    color: var(--teamColor);
   }
 
   &[data-sponsor-only='true'] {
-    color: global.$sponsorColor;
+    color: var(--accentColor);
   }
 }
 
@@ -218,7 +206,7 @@ li > .stock-info {
   text-align: right;
 
   &[data-selected='true'] {
-    color: global.$accentColor;
+    color: var(--accentColor);
   }
 }
 
@@ -253,9 +241,10 @@ li > .stock-info {
   }
 }
 
-@media screen and (max-width: global.$breakpointMd) {
+@include responsive.midScreen {
   ul {
-    min-height: auto;
+    height: 100vh;
+    min-height: 400px;
   }
 }
 </style>
