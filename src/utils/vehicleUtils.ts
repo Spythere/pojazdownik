@@ -177,7 +177,7 @@ export function getCargoWarnings(stockList: IStock[]) {
     else if (stockVehicle.vehicleRef.type.startsWith('WB117')) warnings.add(stockVehicle.cargo ? 'warning_un1965_twr' : 'warning_un1965_tn');
     else if (stockVehicle.vehicleRef.type.startsWith('445Rb')) warnings.add('warning_un1202_tn');
     else if (stockVehicle.vehicleRef.type.startsWith('EDK80')) warnings.add('warning_edk80_pn');
-    else if (stockVehicle.cargo && /^(tank|vehicles|truck)/.test(stockVehicle.cargo.id)) warnings.add('warning_military_pn');
+    else if (stockVehicle.cargo && /^(tank|vehicles_01|truck)/.test(stockVehicle.cargo.id)) warnings.add('warning_military_pn');
   });
 
   return warnings;
