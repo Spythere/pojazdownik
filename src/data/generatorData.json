@@ -23,7 +23,7 @@
       "627Z:wt_20_empty"
     ],
     "cold-storage": ["202Lc:all"],
-    "loose-cargo": ["426S:all", "208Kf:all", "401Ka_PKP_Gags:all", "401Ka_PKPC_Gags:all"],
+    "loose-cargo": ["426S:all", "208Kf:all", "401Ka_PKP_Gags:all", "401Ka_PKPC_Gags:all", "411V_PKPC_Facc:all", "411V_ALU_Faccpp:all", "411V_DOLWR_Facc:all", "411V_PKP_Facc:all", "411V_PNUIK_Facc:all"],
     "coal": ["412W:coal_01", "413S:coal_413S", "429W:coal_01", "401Zb:coal_02"],
     "ore": ["412W:ore_01", "401Zl:ore_35", "429W:ore_01"],
     "sand": [
