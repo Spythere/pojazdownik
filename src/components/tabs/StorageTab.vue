@@ -58,7 +58,7 @@ import { defineComponent } from 'vue';
 
 import { useStore } from '../../store';
 import stockMixin from '../../mixins/stockMixin';
-import { ChevronDown, ChevronUp, LogIn, Trash2 } from 'lucide-vue-next';
+import { ChevronDown, ChevronUp, LogIn, Trash2 } from '@lucide/vue';
 
 export default defineComponent({
   components: {
@@ -126,7 +126,7 @@ export default defineComponent({
 
         this.$router.push('/');
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     },
 

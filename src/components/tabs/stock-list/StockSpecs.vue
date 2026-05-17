@@ -36,7 +36,7 @@
 import { defineComponent } from 'vue';
 import { useStore } from '../../../store';
 import imageMixin from '../../../mixins/imageMixin';
-import { BookmarkCheck } from 'lucide-vue-next';
+import { BookmarkCheck } from '@lucide/vue';
 
 export default defineComponent({
   components: { BookmarkCheck },
