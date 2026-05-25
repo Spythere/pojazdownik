@@ -134,8 +134,6 @@ export const useStore = defineStore('store', {
           ...v,
           group: response.vehicleGroups.find((g) => g.id == v.vehicleGroupsId)!,
         }));
-
-        console.log(response);
       } catch (error) {
         console.error(error);
       }
