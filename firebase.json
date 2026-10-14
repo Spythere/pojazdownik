@@ -10,7 +10,7 @@
     ],
     "redirects": [
       {
-        "source": "**",
+        "source": "/",
         "destination": "https://pojazdownik-td2.spythere.eu/",
         "type": 301
       }

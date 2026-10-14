@@ -22,21 +22,7 @@ export default defineConfig({
     vue(),
     VitePWA({
       registerType: 'autoUpdate',
-
       devOptions: { suppressWarnings: true, enabled: true },
-
-      workbox: {
-        cleanupOutdatedCaches: true,
-        globPatterns: ['**/*.{js,css,html,ico,woff,woff2,ttf}', '**/*.{png,jpg,jpeg,svg,webp,gif}'],
-
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/.*\.spythere\.eu\/.*/i,
-            handler: 'NetworkFirst',
-            options: { cacheName: 'spythere-cache' },
-          },
-        ],
-      },
     }),
   ],
 });
