@@ -63,8 +63,7 @@ import { isTractionUnit } from '../../utils/vehicleUtils';
 import imageMixin from '../../mixins/imageMixin';
 import { watch } from 'vue';
 import { storeToRefs } from 'pinia';
-import { Ref } from 'vue';
-import { ref } from 'vue';
+import { type Ref, ref } from 'vue';
 
 export default defineComponent({
   mixins: [imageMixin],

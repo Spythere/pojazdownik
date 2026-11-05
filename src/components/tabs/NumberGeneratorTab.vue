@@ -13,11 +13,7 @@
             <option :value="null" disabled>
               {{ $t('numgen.train-category') }}
             </option>
-            <option
-              v-for="(_, category) in genData.categoriesRules"
-              :key="category"
-              :value="category"
-            >
+            <option v-for="(_, category) in genData.categoriesRules" :key="category" :value="category">
               {{ $t(`numgen.categories.${category}`) }}
             </option>
           </select>
@@ -95,11 +91,7 @@
 
         <!-- Last digits  -->
         <div>
-          <b>
-            {{
-              $t(`numgen.rules.${categoryRules[1]?.length == 3 ? 'three' : 'two'}-last-digits`)
-            }}</b
-          >
+          <b> {{ $t(`numgen.rules.${categoryRules[1]?.length == 3 ? 'three' : 'two'}-last-digits`) }}</b>
           {{ $t('numgen.rules.from-range') }}
           <b class="text--accent">{{ categoryRules[1] }}-{{ categoryRules[2] }}</b>
         </div>
@@ -133,11 +125,10 @@
 </template>
 
 <script setup lang="ts">
-import { Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import genData from '../../constants/numberGeneratorData.json';
-import { computed } from 'vue';
+import { computed, ref, type Ref } from 'vue';
 
 const i18n = useI18n();
 type RegionName = keyof typeof genData.regionNumbers;
@@ -174,19 +165,16 @@ const randomizeTrainNumber = (randomizeRegions = false) => {
 
   const regionKeys = Object.keys(genData.regionNumbers);
 
-  if (beginRegionName.value == null || randomizeRegions)
-    beginRegionName.value = regionKeys[(regionKeys.length * Math.random()) << 0] as RegionName;
+  if (beginRegionName.value == null || randomizeRegions) beginRegionName.value = regionKeys[(regionKeys.length * Math.random()) << 0] as RegionName;
 
-  if (endRegionName.value == null || randomizeRegions)
-    endRegionName.value = regionKeys[(regionKeys.length * Math.random()) << 0] as RegionName;
+  if (endRegionName.value == null || randomizeRegions) endRegionName.value = regionKeys[(regionKeys.length * Math.random()) << 0] as RegionName;
 
   let number = '';
 
   // Two first numbers (begin & end regions)
   if (beginRegionName.value == endRegionName.value) {
     const sameRegionsNumbers = genData.sameRegions[beginRegionName.value!];
-    const randRegionNumber =
-      sameRegionsNumbers[Math.floor(Math.random() * sameRegionsNumbers.length)];
+    const randRegionNumber = sameRegionsNumbers[Math.floor(Math.random() * sameRegionsNumbers.length)];
     number += randRegionNumber.toString();
   } else {
     const beginRegionNumber = genData.regionNumbers[beginRegionName.value!];
@@ -212,9 +200,7 @@ const randomizeTrainNumber = (randomizeRegions = false) => {
 
   // Remaining numbers
   const rangeNums = minRange!.length;
-  const randRange = Math.floor(
-    Math.random() * (Number(maxRange) - Number(minRange)) + Number(minRange)
-  ).toString();
+  const randRange = Math.floor(Math.random() * (Number(maxRange) - Number(minRange)) + Number(minRange)).toString();
   const leadingZeros = new Array(Math.abs(randRange.length - rangeNums)).fill('0').join('');
 
   number += `${leadingZeros}${randRange}`;

@@ -1,4 +1,4 @@
-import { IVehicleRestrictions } from './common.types';
+import { type IVehicleRestrictions } from './common.types';
 
 // API namespace
 export namespace API {

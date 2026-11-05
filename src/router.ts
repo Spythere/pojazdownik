@@ -1,10 +1,10 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import AppContainerView from './views/AppContainerView.vue';
 import WikiListTab from './components/tabs/WikiListTab.vue';
 import StockListTab from './components/tabs/StockListTab.vue';
 import NumberGeneratorTab from './components/tabs/NumberGeneratorTab.vue';
 import StockGeneratorTab from './components/tabs/StockGeneratorTab.vue';
 import StorageTab from './components/tabs/StorageTab.vue';
+import { type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
   {

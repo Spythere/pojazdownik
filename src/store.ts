@@ -1,5 +1,6 @@
-import {
-  IVehiclesAPIResponse,
+import { defineStore } from 'pinia';
+
+import type {
   ICarWagon,
   ILocomotive,
   ICargo,
@@ -11,7 +12,7 @@ import {
   IVehicleData,
   StorageStockEntry,
 } from './types/common.types';
-import { defineStore } from 'pinia';
+
 import {
   acceptableWeight,
   carDataList,
@@ -28,7 +29,7 @@ import {
 
 import realCompositionsJSON from './data/realCompositions.json';
 import { HttpClient } from './http';
-import { API } from './types/api.types';
+import type { API } from './types/api.types';
 
 const baseURL = import.meta.env.VITE_API_DEV === '1' && import.meta.env.DEV ? 'http://localhost:3001' : 'https://stacjownik.spythere.eu';
 
