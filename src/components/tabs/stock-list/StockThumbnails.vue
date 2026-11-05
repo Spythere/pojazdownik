@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { Ref, computed, nextTick, ref, watch } from 'vue';
+import { type Ref, computed, nextTick, ref, watch } from 'vue';
 import { useStore } from '../../../store';
 
 const store = useStore();

@@ -48,7 +48,7 @@
     <div class="no-vehicles-warning" v-if="computedVehicles.length == 0">
       {{ $t('wiki.no-vehicles') }}
     </div>
-    
+
     <ul class="vehicles" ref="vehicles">
       <li
         v-for="vehicle in computedVehicles"
@@ -88,7 +88,7 @@
 import { defineComponent } from 'vue';
 import { useStore } from '../../store';
 import stockPreviewMixin from '../../mixins/stockPreviewMixin';
-import { IVehicle } from '../../types/common.types';
+import type { IVehicle } from '../../types/common.types';
 import { isTractionUnit } from '../../utils/vehicleUtils';
 import stockMixin from '../../mixins/stockMixin';
 import imageMixin from '../../mixins/imageMixin';

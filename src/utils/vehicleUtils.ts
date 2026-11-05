@@ -1,5 +1,5 @@
-import { ICarWagon, ILocomotive, IStock, IVehicleData, LocoGroupType, WagonGroupType } from '../types/common.types';
-import { MassLimitLocoType, calculateMassLimit, calculateSpeedLimit } from './vehicleLimitsUtils';
+import type { ILocomotive, ICarWagon, IVehicleData, LocoGroupType, WagonGroupType, IStock } from '../types/common.types';
+import { type MassLimitLocoType, calculateMassLimit, calculateSpeedLimit } from './vehicleLimitsUtils';
 
 // UNUSED - ADDITIONAL CARGO TYPES FOR INTERMODALS
 export const additionalCargoTypes = [

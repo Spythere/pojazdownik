@@ -31,7 +31,7 @@ export default defineComponent({
   display: grid;
   justify-content: center;
   
-  grid-template-rows: minmax(900px, 1fr) auto;
+  grid-template-rows: minmax(850px, 1fr) auto;
   gap: 0.5em;
   
   height: 100vh;

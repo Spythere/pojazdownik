@@ -100,10 +100,10 @@ import { defineComponent } from 'vue';
 import { useStore } from '../../store';
 
 import stockMixin from '../../mixins/stockMixin';
-import { ICargo, ICarWagon, IStock } from '../../types/common.types';
 import { isTractionUnit } from '../../utils/vehicleUtils';
 
 import generatorDataJSON from '../../data/generatorData.json';
+import type { IStock, ICargo, ICarWagon } from '../../types/common.types';
 
 export default defineComponent({
   name: 'stock-generator',
