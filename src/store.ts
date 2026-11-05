@@ -32,6 +32,7 @@ import { HttpClient } from './http';
 import type { API } from './types/api.types';
 
 const baseURL = import.meta.env.VITE_API_DEV === '1' && import.meta.env.DEV ? 'http://localhost:3001' : 'https://stacjownik.spythere.eu';
+const STATIC_DATA_INIT_MS = 2000; // 2s
 
 export const useStore = defineStore('store', {
   state: () => ({
@@ -141,7 +142,12 @@ export const useStore = defineStore('store', {
     },
 
     async setupAPIData() {
-      await this.fetchVehiclesAPI();
+      this.fetchVehiclesAPI();
+
+      // Fetch again to refresh data after revalidating
+      setTimeout(() => {
+        this.fetchVehiclesAPI();
+      }, STATIC_DATA_INIT_MS);
     },
   },
 });
